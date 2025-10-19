@@ -1,0 +1,98 @@
+      .glass-card {
+  background: linear-gradient(
+    135deg,
+    var(--glass-bg-start),
+    var(--glass-bg-end)
+  );
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 var(--glass-shadow);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--glass-base-rgb), calc(0.1 + var(--glass-hover-opacity-boost))),
+    rgba(var(--glass-base-rgb), calc(0.05 + var(--glass-hover-opacity-boost)))
+  );
+  border-color: rgba(var(--glass-border-rgb), calc(0.18 + var(--glass-border-hover-opacity-boost)));
+}
+
+.glass-input {
+  background: rgba(var(--glass-base-rgb), 0.05) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border) !important;
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  background: rgba(var(--glass-base-rgb), 0.08) !important;
+  border-color: var(--mana-color) !important;
+  box-shadow: 0 0 0 3px var(--focus-ring) !important;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: rgba(var(--glass-base-rgb), 0.05);
+  border-radius: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--mana-color);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-dark);
+}
+
+/* Animated dot pattern background */
+@keyframes dotPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.5; }
+}
+
+.bg-dot-pattern {
+  animation: dotPulse 4s ease-in-out infinite;
+}
+
+/* Gradient text animation */
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.animate-gradient-text {
+  background-size: 200% auto;
+  animation: gradientShift 3s ease infinite;
+}
+
+/* Focus glow effect for inputs */
+.glass-input:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--focus-ring),
+              0 0 20px var(--glow-color);
+}
+
+/* Radio button custom styling */
+.glass-card [data-state="checked"] {
+  border-color: var(--mana-color);
+  background: color-mix(in oklch, var(--mana-color) 10%, transparent 90%);
+}
+
+/* Hover lift effect */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px 0 var(--hover-lift-shadow);
+}
