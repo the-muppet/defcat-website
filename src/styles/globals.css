@@ -1,1017 +1,730 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
-:root {
-  /* ==================== LAYOUT ==================== */
-  --radius: 0.625rem;
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius-lg) + 4px);
-
-  /* ==================== FONTS ==================== */
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-
-  /* ==================== MANA COLOR (Dynamic w/ colorless default) ==================== */
-  --mana-color: oklch(0.7 0 255)
-
-  /* ==================== DYNAMIC BRAND COLORS ==================== */
-  /* These derive from the mana color and create a harmonious palette */
-  --brand-primary: var(--mana-color);
-  --brand-light: color-mix(in oklch, var(--mana-color) 70%, white 30%);
-  --brand-dark: color-mix(in oklch, var(--mana-color) 80%, black 20%);
-  --brand-muted: color-mix(in oklch, var(--mana-color) 50%, var(--muted) 50%);
-
-  /* Gradient colors that shift with mana */
-  --gradient-start: var(--brand-light);
-  --gradient-mid: var(--mana-color);
-  --gradient-end: var(--brand-dark);
-
-  /* ==================== BASE COLORS - LIGHT MODE ==================== */
-  --background: oklch(0.98 0.005 247.858);
-  --foreground: oklch(27.62% 0.00237 248.216);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-
-  /* ==================== TINTED BACKGROUNDS - LIGHT ==================== */
-  --background-tinted: color-mix(in oklch, var(--background) 80%, var(--mana-color) 20%);
-  --card-tinted: color-mix(in oklch, var(--card) 75%, var(--mana-color) 25%);
-  --accent-tinted: color-mix(in oklch, var(--accent) 60%, var(--mana-color) 40%);
-  --border-tinted: color-mix(in oklch, var(--border) 70%, var(--mana-color) 30%);
-  --primary-tinted: color-mix(in oklch, var(--primary) 50%, var(--mana-color) 50%);
-  --secondary-tinted: color-mix(in oklch, var(--secondary) 75%, var(--mana-color) 25%);
-  --muted-tinted: color-mix(in oklch, var(--muted) 80%, var(--mana-color) 20%);
-
-  /* ==================== SIDEBAR ==================== */
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
-
-  /* ==================== MTG MANA COLORS (Reference) ==================== */
-  --mana-white: #f1f18aeb;
-  --mana-blue: #0d4672a9;
-  --mana-black: #3c0448bb;
-  --mana-red: #ae030ca0;
-  --mana-green: #0d7846aa;
-
-  /* ==================== BACKGROUND EFFECTS - LIGHT ==================== */
-  --bg-dot-color: color-mix(in oklch, var(--mana-color) 80%, transparent 20%);
-  --bg-dot-glow: var(--mana-color);
-  --bg-gradient-opacity: 0.5;
-  --bg-radial-top: color-mix(in oklch, var(--mana-color) 70%, transparent 30%);
-  --bg-radial-bottom: color-mix(in oklch, var(--gradient-end) 70%, transparent 30%);
-
-  /* ==================== GLASS EFFECTS - LIGHT ==================== */
-  --glass-base-rgb: 255, 255, 255;
-  --glass-border-rgb: 255, 255, 255;
-  --glass-base-shadow-rgb: 31, 38, 135;
-
-  --glass-bg-start: rgba(var(--glass-base-rgb), 0.1);
-  --glass-bg-end: rgba(var(--glass-base-rgb), 0.05);
-  --glass-border: rgba(var(--glass-border-rgb), 0.18);
-  --glass-shadow: rgba(var(--glass-base-shadow-rgb), 0.12);
-  --glass-blur: 12px;
-
-  --glass-hover-opacity-boost: 0.05;
-  --glass-border-hover-opacity-boost: 0.07;
-
-  /* ==================== SHADOWS - LIGHT ==================== */
-  --shadow-sm: rgba(0, 0, 0, 0.05);
-  --shadow-md: rgba(0, 0, 0, 0.1);
-  --shadow-lg: rgba(0, 0, 0, 0.15);
-  --shadow-xl: rgba(0, 0, 0, 0.2);
-  --shadow-2xl: rgba(0, 0, 0, 0.25);
-  --shadow-card-hover: rgba(0, 0, 0, 0.15);
-
-  /* ==================== INTERACTIVE EFFECTS - LIGHT ==================== */
-  --hover-lift-shadow: rgba(0, 0, 0, 0.15);
-  --glow-color: var(--mana-color);
-  --focus-ring: color-mix(in oklch, var(--mana-color) 20%, transparent 80%);
-  --focus-border: var(--mana-color);
-
-  /* ==================== MTG CARD VARIABLES - LIGHT ==================== */
-  --mtg-card-shadow: rgba(0, 0, 0, 0.3);
-  --mtg-card-bg-shadow: rgba(0, 0, 0, 0.4);
-  --mtg-loader-bg: color-mix(in oklch, var(--mana-color) 20%, transparent 80%);
-  --mtg-loader-color: var(--mana-color);
-  --mtg-error-color: #ef4444;
-  --mtg-loading-bg-start: #1a1a2e;
-  --mtg-loading-bg-end: #16213e;
-
-  /* Mana Symbol Glows - Use actual mana colors */
-  --w-mana: rgba(212, 175, 55, 0.5);
-  --b-mana: rgba(139, 92, 246, 0.6);
-  --r-mana: rgba(236, 72, 153, 0.5);
-  --u-mana: rgba(59, 130, 246, 0.4);
-  --g-mana: rgba(16, 185, 129, 0.3);
-  --c-mana: rgba(255, 255, 255, 0.1);
-
-  /* Rarity Glows */
-  --icon-mythic-glow: rgba(255, 107, 0, 0.6);
-  --icon-rare-glow: rgba(212, 175, 55, 0.6);
-  --icon-uncommon-glow: rgba(192, 192, 192, 0.6);
-
-  /* ==================== MOBILE ==================== */
-  --mobile-blur-reduction: 0.67;
-  --mobile-shadow-reduction: 0.75;
-}
-
-/* ==================== DARK MODE ==================== */
-.dark {
-  /* Base Colors */
-  --background: oklch(19.95% 0.00256 248.161);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(29.329% 0.00563 271.23);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-
-  /* Tinted Backgrounds - Dark */
-  --background-tinted: color-mix(in oklch, var(--background) 85%, var(--mana-color) 15%);
-  --card-tinted: color-mix(in oklch, var(--card) 80%, var(--mana-color) 20%);
-  --accent-tinted: color-mix(in oklch, var(--accent) 65%, var(--mana-color) 35%);
-  --border-tinted: color-mix(in oklch, var(--border) 75%, var(--mana-color) 25%);
-  --primary-tinted: color-mix(in oklch, var(--primary) 55%, var(--mana-color) 45%);
-  --secondary-tinted: color-mix(in oklch, var(--secondary) 80%, var(--mana-color) 20%);
-  --muted-tinted: color-mix(in oklch, var(--muted) 85%, var(--mana-color) 15%);
-
-  /* Sidebar */
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
-
-  /* Background Effects - Dark */
-  --bg-dot-color: var(--mana-color);
-  --bg-dot-glow: color-mix(in oklch, var(--mana-color) 120%, white 20%);
-  --bg-gradient-opacity: 0.6;
-  --bg-radial-top: color-mix(in oklch, var(--mana-color) 60%, transparent 40%);
-  --bg-radial-bottom: color-mix(in oklch, var(--gradient-end) 60%, transparent 40%);
-
-  /* Glass Effects - Dark */
-  --glass-base-rgb: 0, 0, 0;
-  --glass-border-rgb: 255, 255, 255;
-  --glass-base-shadow-rgb: 0, 0, 0;
-
-  --glass-bg-start: rgba(var(--glass-base-rgb), 0.4);
-  --glass-bg-end: rgba(var(--glass-base-rgb), 0.2);
-  --glass-border: rgba(var(--glass-border-rgb), 0.1);
-  --glass-shadow: rgba(var(--glass-base-shadow-rgb), 0.2);
-
-  /* Shadows - Dark */
-  --shadow-sm: rgba(0, 0, 0, 0.2);
-  --shadow-md: rgba(0, 0, 0, 0.3);
-  --shadow-lg: rgba(0, 0, 0, 0.4);
-  --shadow-xl: rgba(0, 0, 0, 0.5);
-  --shadow-2xl: rgba(0, 0, 0, 0.6);
-  --shadow-card-hover: rgba(0, 0, 0, 0.2);
-
-  /* Interactive Effects - Dark */
-  --hover-lift-shadow: rgba(0, 0, 0, 0.25);
-  --glow-color: var(--mana-color);
-  --focus-ring: color-mix(in oklch, var(--mana-color) 40%, transparent 60%);
-  --focus-border: var(--mana-color);
-
-  /* MTG Card Variables - Dark */
-  --mtg-card-shadow: rgba(0, 0, 0, 0.4);
-  --mtg-card-bg-shadow: rgba(0, 0, 0, 0.5);
-  --icon-shadow: rgba(0, 0, 0, 0.5);
-  --icon-glow-hover: var(--mana-color);
-}
-
-/* ==================== UTILITY CLASSES ==================== */
-.bg-tinted {
-  background-color: var(--background-tinted);
-}
-
-.card-tinted {
-  background-color: var(--card-tinted);
-}
-
-.accent-tinted {
-  background-color: var(--accent-tinted);
-}
-
-.border-tinted {
-  border-color: var(--border-tinted);
-}
-/* ==================== BASE STYLES ==================== */
 @layer base {
-  * {
-    border-color: var(--border);
-    outline-color: color-mix(in srgb, var(--ring) 50%, transparent);
-  }
-
-  body {
-    background-color: var(--background);
-    color: var(--foreground);
-    transition: background-color 400ms ease-out, color 400ms ease-out;
-  }
-
-  /* Smooth transitions for all tinted elements */
-  .bg-tinted,
-  .card-tinted,
-  .accent-tinted,
-  .border-tinted,
-  [style*="--mana-color"] {
-    transition: background-color 400ms ease-out, border-color 400ms ease-out, color 400ms ease-out;
-  }
-}
-
-/* ==================== KEYFRAME ANIMATIONS ==================== */
-@theme inline {
-  --animate-shine: shine var(--duration) infinite linear;
-  --animate-background-position-spin: background-position-spin 3000ms infinite alternate;
-  --animate-rainbow: rainbow var(--speed, 2s) infinite linear;
-
-  @keyframes shine {
-    0%,
-    100% {
-      background-position: 0% 0%;
-    }
-    50% {
-      background-position: 100% 100%;
-    }
-  }
-
-  @keyframes background-position-spin {
-    0% {
-      background-position: top center;
-    }
-    100% {
-      background-position: bottom center;
-    }
-  }
-
-  @keyframes rainbow {
-    0% {
-      background-position: 0%;
-    }
-    100% {
-      background-position: 200%;
-    }
-  }
-
-  --animate-gradient: gradient 8s linear infinite
-;
-  @keyframes gradient {
-  to {
-    background-position: var(--bg-size, 300%) 0;
-    }
-  }}
-
-@keyframes gradient {
-  0%,
-  100% {
-    transform: translateX(0) translateZ(0);
-  }
-  50% {
-    transform: translateX(-25%) translateZ(0);
-  }
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg) translateZ(0);
-  }
-}
-
-@keyframes foil-shimmer {
-  0%,
-  100% {
-    opacity: 0.8;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-@keyframes galaxy-pulse {
-  0%,
-  100% {
-    opacity: 0.9;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-@keyframes galaxy-stars {
-  0%,
-  100% {
-    opacity: 0.5;
-    transform: scale(1) translateZ(0);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05) translateZ(0);
-  }
-}
-
-/* ==================== UTILITY CLASSES ==================== */
-@layer utilities {
-  /* Layout Utilities */
-  .container {
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    max-width: 1280px;
-    contain: layout style;
-  }
-
-  @media (min-width: 640px) {
-    .container {
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .container {
-      padding-left: 2rem;
-      padding-right: 2rem;
-    }
-  }
-
-  .center-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .section-spacing {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
-  }
-
-  @media (min-width: 768px) {
-    .section-spacing {
-      padding-top: 4rem;
-      padding-bottom: 4rem;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .section-spacing {
-      padding-top: 5rem;
-      padding-bottom: 5rem;
-    }
-  }
-
-  /* Interactive Effects */
-  .card-hover {
-    transition: transform 200ms ease-out, box-shadow 200ms ease-out;
-  }
-
-  .card-hover:hover {
-    box-shadow: 0 10px 25px -5px var(--shadow-card-hover);
-    transform: translateY(-4px);
-    will-change: transform;
-  }
-
-  .card-hover:not(:hover) {
-    will-change: auto;
-  }
-
-  .scale-on-hover {
-    transition: transform 200ms ease-out;
-  }
-
-  .scale-on-hover:hover {
-    transform: scale(1.05);
-    will-change: transform;
-  }
-
-  .scale-on-hover:not(:hover) {
-    will-change: auto;
-  }
-
-  /* Text Effects */
-  .text-gradient {
-    background-image: linear-gradient(
-      to right,
-      var(--gradient-purple-pink-start),
-      var(--gradient-purple-pink-end)
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    contain: paint;
-  }
-
-  .glow-purple {
-    transition: filter 300ms ease-out;
-  }
-
-  .glow-purple:hover {
-    filter: drop-shadow(0 0 8px var(--glow-color));
-  }
-
-  /* MTG Mana Colors */
-  .mana-w {
-    color: var(--mana-white);
-  }
-  .mana-u {
-    color: var(--mana-blue);
-  }
-  .mana-b {
-    color: var(--mana-black);
-  }
-  .mana-r {
-    color: var(--mana-red);
-  }
-  .mana-g {
-    color: var(--mana-green);
-  }
-
-  /* Navigation */
-  .nav-item {
-    position: relative;
-    transition: color 200ms ease-out;
-  }
-
-  .nav-item::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(
-      to right,
-      var(--gradient-purple-pink-start),
-      var(--gradient-purple-pink-end)
-    );
-    transition: width 300ms ease-out;
-    contain: layout style paint;
-  }
-
-  .nav-item:hover::after {
-    width: 100%;
-  }
-
-  /* Animated Background */
-  .bg-gradient-animated {
-    background: linear-gradient(
-      -45deg,
-      var(--animated-gradient-1),
-      var(--animated-gradient-2),
-      var(--animated-gradient-3)
-    );
-    background-size: 200% 200%;
-    animation: gradient 15s ease infinite;
-    contain: layout style paint;
-  }
-
-  /* MagicUI Animations */
-  .animate-shine {
-    animation: shine var(--duration, 14s) infinite linear;
-    background-size: 200% 200%;
-    contain: paint;
-  }
-
-  .animate-background-position-spin {
-    animation: background-position-spin 3000ms infinite alternate;
-  }
-
-  /* ==================== GLASSMORPHISM  ==================== */
-
-  .glass {
-    background: linear-gradient(
-      135deg,
-      var(--glass-bg-start) 0%,
-      var(--glass-bg-end) 100%
-    );
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 8px 24px var(--glass-shadow);
-    transition: transform 300ms ease-out, border-color 300ms ease-out,
-      background 300ms ease-out;
-    contain: layout style paint;
-  }
-
-  .glass:hover {
-    background: linear-gradient(
-      135deg,
-      rgba(var(--glass-base-rgb), calc(0.1 + var(--glass-hover-opacity-boost)))
-        0%,
-      rgba(var(--glass-base-rgb), calc(0.05 + var(--glass-hover-opacity-boost)))
-        100%
-    );
-    border-color: rgba(
-      var(--glass-border-rgb),
-      calc(0.18 + var(--glass-border-hover-opacity-boost))
-    );
-    transform: translateY(-2px);
-    will-change: transform;
-  }
-
-  .glass:not(:hover) {
-    will-change: auto;
-  }
-
-  /* Card variant: slightly more prominent (0.02 opacity boost) */
-  .glass-card {
-    background: linear-gradient(
-      135deg,
-      rgba(var(--glass-base-rgb), 0.12) 0%,
-      rgba(var(--glass-base-rgb), 0.06) 100%
-    );
-    -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 2px));
-    backdrop-filter: blur(calc(var(--glass-blur) + 2px));
-    border: 1px solid rgba(var(--glass-border-rgb), 0.2);
-    border-radius: 1rem;
-    padding: 1.5rem;
-    box-shadow: 0 8px 24px var(--glass-shadow);
-    transition: transform 300ms ease-out, border-color 300ms ease-out;
-    contain: layout style paint;
-  }
-
-  .glass-card:hover {
-    border-color: rgba(var(--glass-border-rgb), 0.3);
-    transform: translateY(-3px);
-    will-change: transform;
-  }
-
-  .glass-card:not(:hover) {
-    will-change: auto;
-  }
-
-  /* Intense variant: strong effect (0.08 opacity boost + extra blur) */
-  .glass-intense {
-    background: linear-gradient(
-      135deg,
-      rgba(var(--glass-base-rgb), 0.18) 0%,
-      rgba(var(--glass-base-rgb), 0.1) 100%
-    );
-    -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 4px));
-    backdrop-filter: blur(calc(var(--glass-blur) + 4px));
-    border: 1px solid rgba(var(--glass-border-rgb), 0.3);
-    box-shadow: 0 12px 32px rgba(var(--glass-base-shadow-rgb), 0.18);
-    contain: layout style paint;
-  }
-
-  /* Subtle variant: lightweight effect (0.02 opacity reduction) */
-  .glass-subtle {
-    background: linear-gradient(
-      135deg,
-      rgba(var(--glass-base-rgb), 0.08) 0%,
-      rgba(var(--glass-base-rgb), 0.03) 100%
-    );
-    -webkit-backdrop-filter: blur(calc(var(--glass-blur) - 2px));
-    backdrop-filter: blur(calc(var(--glass-blur) - 2px));
-    border: 1px solid rgba(var(--glass-border-rgb), 0.12);
-    box-shadow: 0 4px 16px rgba(var(--glass-base-shadow-rgb), 0.08);
-    contain: layout style paint;
-  }
-
-  /* Panel: same as base glass with extra padding */
-  .glass-panel {
-    background: linear-gradient(
-      135deg,
-      var(--glass-bg-start) 0%,
-      var(--glass-bg-end) 100%
-    );
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
-    border-radius: 1rem;
-    padding: 2rem;
-    box-shadow: 0 8px 24px var(--glass-shadow);
-    contain: layout style paint;
-  }
-
-  /* Input: subtle variant with focus state */
-  .glass-input {
-    background: linear-gradient(
-      135deg,
-      var(--glass-bg-start) 0%,
-      var(--glass-bg-end) 100%
-    );
-    -webkit-backdrop-filter: blur(calc(var(--glass-blur) - 2px));
-    backdrop-filter: blur(calc(var(--glass-blur) - 2px));
-    border: 1px solid rgba(var(--glass-border-rgb), 0.2);
-    transition: border-color 300ms ease-out, box-shadow 300ms ease-out;
-  }
-
-  .glass-input:focus {
-    background: linear-gradient(
-      135deg,
-      rgba(var(--glass-base-rgb), 0.15) 0%,
-      rgba(var(--glass-base-rgb), 0.08) 100%
-    );
-    border-color: var(--focus-border);
-    box-shadow: 0 0 0 3px var(--focus-ring);
-    outline: none;
-  }
-}
-
-/* ==================== MTG CARD STYLES ==================== */
-.mtg-card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 1rem;
-  overflow: hidden;
-  box-shadow: 0 10px 25px var(--mtg-card-shadow);
-  transform-style: preserve-3d;
-  contain: layout style paint;
-}
-
-.mtg-card-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 1rem;
-  display: block;
-  pointer-events: none;
-  image-rendering: -webkit-optimize-contrast;
-}
-
-.mtg-card-shadow {
-  position: absolute;
-  top: 5%;
-  left: 5%;
-  width: 90%;
-  height: 90%;
-  background: radial-gradient(
-    circle,
-    var(--mtg-card-bg-shadow) 0%,
-    transparent 70%
-  );
-  border-radius: 1rem;
-  filter: blur(15px);
-  transform-style: preserve-3d;
-  pointer-events: none;
-  transition: opacity 300ms ease-out;
-  contain: layout style paint;
-}
-
-/* Loading & Error States */
-.mtg-card-loading {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(
-    135deg,
-    var(--mtg-loading-bg-start) 0%,
-    var(--mtg-loading-bg-end) 100%
-  );
-  border-radius: 1rem;
-  gap: 1rem;
-  contain: layout style paint;
-}
-
-.mtg-loader {
-  width: 50px;
-  height: 50px;
-  border: 4px solid var(--mtg-loader-bg);
-  border-top-color: var(--mtg-loader-color);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  will-change: transform;
-}
-
-.mtg-error-text {
-  font-size: 3rem;
-  margin: 0;
-}
-
-.mtg-error-msg {
-  color: var(--mtg-error-color);
-  text-align: center;
-  padding: 0 1rem;
-  font-size: 0.875rem;
-}
-
-/* ==================== KEYRUNE ICONS ==================== */
-.keyrune-icon {
-  filter: drop-shadow(0 2px 4px var(--icon-shadow));
-  transition: transform 300ms ease-out, filter 300ms ease-out;
-  contain: layout style paint;
-}
-
-.keyrune-icon:hover {
-  filter: drop-shadow(0 4px 8px var(--icon-glow-hover));
-  transform: scale(1.1);
-  will-change: transform;
-}
-
-.keyrune-icon:not(:hover) {
-  will-change: auto;
-}
-
-.keyrune-mythic {
-  filter: drop-shadow(0 0 8px var(--icon-mythic-glow));
-}
-
-.keyrune-rare {
-  filter: drop-shadow(0 0 8px var(--icon-rare-glow));
-}
-
-.keyrune-uncommon {
-  filter: drop-shadow(0 0 8px var(--icon-uncommon-glow));
-}
-
-/* ==================== VIEW TRANSITIONS ==================== */
-
-/* ==================== RESPONSIVE MEDIA QUERIES ==================== */
-
-/* Mobile Optimization (Small Phones) */
-@media (max-width: 480px) {
   :root {
-    /* Reduce base blur for better performance - all variants scale from this */
-    --glass-blur: 8px;
-  }
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --radius: 0.5rem;
 
-  .container {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-  }
+    /* Base colors in RGB */
+    --glass-base-rgb: 168, 85, 247;
+    --glass-border-rgb: 168, 85, 247;
+    --glass-shadow-rgb: 0, 0, 0;
 
-  .section-spacing {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-  }
-
-  .glass-card,
-  .glass-panel {
-    padding: 1rem;
-    border-radius: 0.75rem;
-  }
-
-  .mtg-card-inner {
-    border-radius: 0.75rem;
-  }
-
-  .mtg-error-text {
-    font-size: 2rem;
-  }
-
-  /* Disable expensive hover effects on touch devices */
-  .card-hover:hover,
-  .glass:hover,
-  .glass-card:hover {
-    transform: none;
-  }
-
-  /* Reduce animation complexity on mobile */
-  .bg-gradient-animated {
-    animation-duration: 20s;
-  }
-}
-
-/* Tablet and Medium Devices */
-@media (min-width: 481px) and (max-width: 768px) {
-  :root {
-    /* Moderate blur reduction for tablets */
+    /* Glass effects */
+    --glass-bg-start: rgba(168, 85, 247, 0.1);
+    --glass-bg-end: rgba(168, 85, 247, 0.05);
+    --glass-border: rgba(168, 85, 247, 0.18);
+    --glass-shadow: rgba(0, 0, 0, 0.1);
     --glass-blur: 10px;
-  }
+    --glass-hover-opacity-boost: 0.02;
+    --glass-border-hover-opacity-boost: 0.05;
 
-  .section-spacing {
-    padding-top: 2.5rem;
-    padding-bottom: 2.5rem;
-  }
+    /* Mana color defaults */
+    --mana-color: #fbbf24;
+    --mana-rgb: 251, 191, 36;
+    
+    /* Mana-tinted backgrounds */
+    --bg-tinted: rgba(251, 191, 36, 0.02);
+    --card-tinted: rgba(251, 191, 36, 0.03);
+    --accent-tinted: rgba(251, 191, 36, 0.08);
+    --border-tinted: rgba(251, 191, 36, 0.15);
+    
+    /* Dynamic gradients based on mana color */
+    --gradient-start: color-mix(in srgb, var(--mana-color) 80%, white 20%);
+    --gradient-mid: var(--mana-color);
+    --gradient-end: color-mix(in srgb, var(--mana-color) 80%, black 20%);
+    
+    /* Background gradients */
+    --bg-radial-top: rgba(251, 191, 36, 0.05);
+    --bg-radial-bottom: rgba(251, 191, 36, 0.02);
+    --bg-gradient-opacity: 0.5;
+    --bg-dot-color: rgba(251, 191, 36, 0.1);
 
-  .glass-card,
-  .glass-panel {
-    padding: 1.25rem;
-  }
-}
-
-/* Large Tablets and Small Desktops */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .section-spacing {
-    padding-top: 3.5rem;
-    padding-bottom: 3.5rem;
-  }
-}
-
-/* Touch Device Optimization */
-@media (hover: none) and (pointer: coarse) {
-  /* Disable hover effects on touch-only devices */
-  .card-hover:hover {
-    box-shadow: none;
-    transform: none;
-  }
-
-  .glass:hover,
-  .glass-card:hover {
-    transform: none;
-    border-color: var(--glass-border);
-  }
-
-  .scale-on-hover:hover {
-    transform: none;
-  }
-
-  .glow-purple:hover {
-    filter: none;
-  }
-
-  .keyrune-icon:hover {
-    transform: none;
-  }
-
-  /* Reduce glass effect intensity on mobile for better performance */
-  .glass,
-  .glass-card,
-  .glass-intense,
-  .glass-subtle,
-  .glass-panel {
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-  }
-
-  /* Make touch targets larger */
-  .nav-item {
-    padding: 0.5rem;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-  }
-
-  button,
-  a,
-  input,
-  select,
-  textarea {
-    min-height: 44px;
-  }
-}
-
-/* High DPI Displays (Retina) */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  .mtg-card-image {
-    image-rendering: -webkit-optimize-contrast;
-  }
-
-  /* Sharpen icons on retina displays */
-  .keyrune-icon {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-}
-
-/* Landscape Orientation on Mobile */
-@media (max-width: 768px) and (orientation: landscape) {
-  .section-spacing {
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
-  }
-
-  .glass-card,
-  .glass-panel {
-    padding: 1rem;
-  }
-}
-
-/* Ultra-wide Screens */
-@media (min-width: 1920px) {
-  .container {
-    max-width: 1536px;
-  }
-}
-
-/* Print Styles */
-@media print {
-  .glass,
-  .glass-card,
-  .glass-intense,
-  .glass-subtle,
-  .glass-panel,
-  .glass-input {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    background: white;
-    border: 1px solid #ccc;
-  }
-
-  .bg-gradient-animated {
-    animation: none;
-    background: white;
-  }
-
-  .text-gradient {
-    -webkit-background-clip: initial;
-    background-clip: initial;
-    color: black;
-  }
-}
-
-/* Accessibility: Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-
-  .bg-gradient-animated {
-    animation: none;
-  }
-
-  .animate-shine,
-  .animate-background-position-spin {
-    animation: none;
-  }
-}
-
-/* Accessibility: Reduced Data */
-@media (prefers-reduced-data: reduce) {
-  .glass,
-  .glass-card,
-  .glass-intense,
-  .glass-subtle,
-  .glass-panel,
-  .glass-input {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-
-  .bg-gradient-animated {
-    animation: none;
-  }
-}
-
-/* High Contrast Mode */
-@media (prefers-contrast: high) {
-  :root {
-    --glass-border: rgba(255, 255, 255, 0.5);
-    --glass-card-border: rgba(255, 255, 255, 0.5);
+    /* Focus ring */
+    --focus-ring: rgba(251, 191, 36, 0.2);
   }
 
   .dark {
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --glass-card-border: rgba(255, 255, 255, 0.3);
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+
+    /* Glass effects for dark mode */
+    --glass-base-rgb: 255, 255, 255;
+    --glass-border-rgb: 255, 255, 255;
+    --glass-shadow-rgb: 0, 0, 0;
+    --glass-bg-start: rgba(255, 255, 255, 0.08);
+    --glass-bg-end: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-shadow: rgba(0, 0, 0, 0.3);
+    --glass-blur: 16px;
+    --glass-hover-opacity-boost: 0.03;
+    --glass-border-hover-opacity-boost: 0.08;
+
+    /* Darker tinted backgrounds for dark mode */
+    --bg-tinted: rgba(251, 191, 36, 0.03);
+    --card-tinted: rgba(251, 191, 36, 0.05);
+    --accent-tinted: rgba(251, 191, 36, 0.1);
+    --border-tinted: rgba(251, 191, 36, 0.2);
+    
+    /* Enhanced gradients for dark mode */
+    --bg-radial-top: rgba(251, 191, 36, 0.08);
+    --bg-radial-bottom: rgba(251, 191, 36, 0.03);
+    --bg-gradient-opacity: 0.7;
+    --bg-dot-color: rgba(251, 191, 36, 0.15);
+    
+    /* Stronger focus ring in dark mode */
+    --focus-ring: rgba(251, 191, 36, 0.3);
   }
 
-  .glass,
-  .glass-card,
-  .glass-intense,
-  .glass-subtle,
-  .glass-panel {
-    border-width: 2px;
+  /* White mana color theme */
+  .mana-white {
+    --mana-color: #fbbf24;
+    --mana-rgb: 251, 191, 36;
+    --bg-tinted: rgba(251, 191, 36, 0.02);
+    --card-tinted: rgba(251, 191, 36, 0.03);
+    --accent-tinted: rgba(251, 191, 36, 0.08);
+    --border-tinted: rgba(251, 191, 36, 0.15);
+    --gradient-start: #fef08a;
+    --gradient-mid: #fbbf24;
+    --gradient-end: #f59e0b;
+    --bg-radial-top: rgba(251, 191, 36, 0.05);
+    --bg-radial-bottom: rgba(251, 191, 36, 0.02);
+    --bg-dot-color: rgba(251, 191, 36, 0.1);
+    --focus-ring: rgba(251, 191, 36, 0.2);
+  }
+  
+  .dark .mana-white {
+    --bg-tinted: rgba(251, 191, 36, 0.03);
+    --card-tinted: rgba(251, 191, 36, 0.05);
+    --accent-tinted: rgba(251, 191, 36, 0.1);
+    --border-tinted: rgba(251, 191, 36, 0.2);
+    --bg-radial-top: rgba(251, 191, 36, 0.08);
+    --bg-radial-bottom: rgba(251, 191, 36, 0.03);
+    --bg-dot-color: rgba(251, 191, 36, 0.15);
+    --focus-ring: rgba(251, 191, 36, 0.3);
+  }
+
+  /* Blue mana color theme */
+  .mana-blue {
+    --mana-color: #3b82f6;
+    --mana-rgb: 59, 130, 246;
+    --bg-tinted: rgba(59, 130, 246, 0.02);
+    --card-tinted: rgba(59, 130, 246, 0.03);
+    --accent-tinted: rgba(59, 130, 246, 0.08);
+    --border-tinted: rgba(59, 130, 246, 0.15);
+    --gradient-start: #60a5fa;
+    --gradient-mid: #3b82f6;
+    --gradient-end: #2563eb;
+    --bg-radial-top: rgba(59, 130, 246, 0.05);
+    --bg-radial-bottom: rgba(59, 130, 246, 0.02);
+    --bg-dot-color: rgba(59, 130, 246, 0.1);
+    --focus-ring: rgba(59, 130, 246, 0.2);
+  }
+  
+  .dark .mana-blue {
+    --bg-tinted: rgba(59, 130, 246, 0.03);
+    --card-tinted: rgba(59, 130, 246, 0.05);
+    --accent-tinted: rgba(59, 130, 246, 0.1);
+    --border-tinted: rgba(59, 130, 246, 0.2);
+    --bg-radial-top: rgba(59, 130, 246, 0.08);
+    --bg-radial-bottom: rgba(59, 130, 246, 0.03);
+    --bg-dot-color: rgba(59, 130, 246, 0.15);
+    --focus-ring: rgba(59, 130, 246, 0.3);
+  }
+
+  /* Black mana color theme */
+  .mana-black {
+    --mana-color: #6b7280;
+    --mana-rgb: 107, 114, 128;
+    --bg-tinted: rgba(107, 114, 128, 0.02);
+    --card-tinted: rgba(107, 114, 128, 0.03);
+    --accent-tinted: rgba(107, 114, 128, 0.08);
+    --border-tinted: rgba(107, 114, 128, 0.15);
+    --gradient-start: #9ca3af;
+    --gradient-mid: #6b7280;
+    --gradient-end: #4b5563;
+    --bg-radial-top: rgba(107, 114, 128, 0.05);
+    --bg-radial-bottom: rgba(107, 114, 128, 0.02);
+    --bg-dot-color: rgba(107, 114, 128, 0.1);
+    --focus-ring: rgba(107, 114, 128, 0.2);
+  }
+  
+  .dark .mana-black {
+    --bg-tinted: rgba(107, 114, 128, 0.03);
+    --card-tinted: rgba(107, 114, 128, 0.05);
+    --accent-tinted: rgba(107, 114, 128, 0.1);
+    --border-tinted: rgba(107, 114, 128, 0.2);
+    --bg-radial-top: rgba(107, 114, 128, 0.08);
+    --bg-radial-bottom: rgba(107, 114, 128, 0.03);
+    --bg-dot-color: rgba(107, 114, 128, 0.15);
+    --focus-ring: rgba(107, 114, 128, 0.3);
+  }
+
+  /* Red mana color theme */
+  .mana-red {
+    --mana-color: #ef4444;
+    --mana-rgb: 239, 68, 68;
+    --bg-tinted: rgba(239, 68, 68, 0.02);
+    --card-tinted: rgba(239, 68, 68, 0.03);
+    --accent-tinted: rgba(239, 68, 68, 0.08);
+    --border-tinted: rgba(239, 68, 68, 0.15);
+    --gradient-start: #f87171;
+    --gradient-mid: #ef4444;
+    --gradient-end: #dc2626;
+    --bg-radial-top: rgba(239, 68, 68, 0.05);
+    --bg-radial-bottom: rgba(239, 68, 68, 0.02);
+    --bg-dot-color: rgba(239, 68, 68, 0.1);
+    --focus-ring: rgba(239, 68, 68, 0.2);
+  }
+  
+  .dark .mana-red {
+    --bg-tinted: rgba(239, 68, 68, 0.03);
+    --card-tinted: rgba(239, 68, 68, 0.05);
+    --accent-tinted: rgba(239, 68, 68, 0.1);
+    --border-tinted: rgba(239, 68, 68, 0.2);
+    --bg-radial-top: rgba(239, 68, 68, 0.08);
+    --bg-radial-bottom: rgba(239, 68, 68, 0.03);
+    --bg-dot-color: rgba(239, 68, 68, 0.15);
+    --focus-ring: rgba(239, 68, 68, 0.3);
+  }
+
+  /* Green mana color theme */
+  .mana-green {
+    --mana-color: #22c55e;
+    --mana-rgb: 34, 197, 94;
+    --bg-tinted: rgba(34, 197, 94, 0.02);
+    --card-tinted: rgba(34, 197, 94, 0.03);
+    --accent-tinted: rgba(34, 197, 94, 0.08);
+    --border-tinted: rgba(34, 197, 94, 0.15);
+    --gradient-start: #4ade80;
+    --gradient-mid: #22c55e;
+    --gradient-end: #16a34a;
+    --bg-radial-top: rgba(34, 197, 94, 0.05);
+    --bg-radial-bottom: rgba(34, 197, 94, 0.02);
+    --bg-dot-color: rgba(34, 197, 94, 0.1);
+    --focus-ring: rgba(34, 197, 94, 0.2);
+  }
+  
+  .dark .mana-green {
+    --bg-tinted: rgba(34, 197, 94, 0.03);
+    --card-tinted: rgba(34, 197, 94, 0.05);
+    --accent-tinted: rgba(34, 197, 94, 0.1);
+    --border-tinted: rgba(34, 197, 94, 0.2);
+    --bg-radial-top: rgba(34, 197, 94, 0.08);
+    --bg-radial-bottom: rgba(34, 197, 94, 0.03);
+    --bg-dot-color: rgba(34, 197, 94, 0.15);
+    --focus-ring: rgba(34, 197, 94, 0.3);
   }
 }
 
-/* Low Power Mode / Battery Saver */
-@media (prefers-reduced-transparency: reduce) {
-  .glass,
-  .glass-card,
-  .glass-intense,
-  .glass-subtle,
-  .glass-panel,
-  .glass-input {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    background: var(--card);
+@layer base {
+  * {
+    @apply border-border;
   }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Glass card styles */
+.glass {
+  background: linear-gradient(
+    135deg,
+    var(--glass-bg-start),
+    var(--glass-bg-end)
+  );
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 var(--glass-shadow);
+  transition: all 0.3s ease;
+}
+
+.glass:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--glass-base-rgb), calc(0.1 + var(--glass-hover-opacity-boost))),
+    rgba(var(--glass-base-rgb), calc(0.05 + var(--glass-hover-opacity-boost)))
+  );
+  border-color: rgba(var(--glass-border-rgb), calc(0.18 + var(--glass-border-hover-opacity-boost)));
+}
+
+/* Button styles */
+.button {
+  @apply relative inline-flex items-center justify-center rounded-md text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none;
+  background: linear-gradient(
+    135deg,
+    var(--gradient-start),
+    var(--gradient-mid),
+    var(--gradient-end)
+  );
+  color: white;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 4px 12px rgba(var(--mana-rgb), 0.2);
+}
+
+.button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(var(--mana-rgb), 0.3);
+  filter: brightness(1.1);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(var(--mana-rgb), 0.2);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-tinted);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--mana-color);
+  border-radius: 6px;
+  border: 2px solid var(--background);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gradient-end);
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(var(--mana-rgb), 0.2);
+  color: var(--foreground);
+}
+
+/* Focus states */
+:focus-visible {
+  outline: 2px solid var(--mana-color);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+/* Custom animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(var(--mana-rgb), 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(var(--mana-rgb), 0.8);
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* Utility classes for transitions */
+.transition-tinted {
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+}
+
+/* Tinted Design System - Unified visual language */
+
+/* ===========================
+   Base Tinted Backgrounds
+   =========================== */
+.tinted-bg {
+  background: var(--bg-tinted);
+}
+
+.tinted-card {
+  background: var(--card-tinted);
+}
+
+.tinted-accent {
+  background: var(--accent-tinted);
+}
+
+/* ===========================
+   Tinted Glass Effects
+   =========================== */
+.glass-tinted {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--glass-base-rgb), 0.08),
+    rgba(var(--glass-base-rgb), 0.04)
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-tinted);
+}
+
+.glass-tinted-subtle {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--glass-base-rgb), 0.04),
+    rgba(var(--glass-base-rgb), 0.02)
+  );
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(var(--glass-border-rgb), 0.08);
+}
+
+.glass-tinted-strong {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--glass-base-rgb), 0.12),
+    rgba(var(--glass-base-rgb), 0.08)
+  );
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-tinted);
+}
+
+/* ===========================
+   Tinted Borders
+   =========================== */
+.border-tinted {
+  border-color: var(--border-tinted);
+}
+
+.border-tinted-strong {
+  border-color: rgba(var(--glass-border-rgb), 0.25);
+}
+
+.border-tinted-subtle {
+  border-color: rgba(var(--glass-border-rgb), 0.08);
+}
+
+/* ===========================
+   Tinted Shadows
+   =========================== */
+.shadow-tinted {
+  box-shadow: 0 4px 16px 0 rgba(var(--glass-shadow-rgb), 0.1);
+}
+
+.shadow-tinted-lg {
+  box-shadow: 0 8px 32px 0 rgba(var(--glass-shadow-rgb), 0.15);
+}
+
+.shadow-tinted-xl {
+  box-shadow: 0 16px 48px 0 rgba(var(--glass-shadow-rgb), 0.2);
+}
+
+.shadow-tinted-glow {
+  box-shadow: 
+    0 0 20px rgba(var(--mana-rgb), 0.15),
+    0 8px 32px rgba(var(--glass-shadow-rgb), 0.1);
+}
+
+/* ===========================
+   Tinted Text Colors
+   =========================== */
+.text-tinted {
+  color: var(--mana-color);
+}
+
+.text-tinted-subtle {
+  color: rgba(var(--mana-rgb), 0.7);
+}
+
+.text-tinted-strong {
+  color: var(--mana-color);
+  filter: brightness(1.2);
+}
+
+/* ===========================
+   Tinted Gradients
+   =========================== */
+.gradient-tinted {
+  background: linear-gradient(
+    135deg,
+    var(--gradient-start),
+    var(--gradient-end)
+  );
+}
+
+.gradient-tinted-radial {
+  background: radial-gradient(
+    circle at center,
+    rgba(var(--mana-rgb), 0.15),
+    transparent 70%
+  );
+}
+
+.gradient-tinted-text {
+  background: linear-gradient(
+    to right,
+    var(--gradient-start),
+    var(--gradient-end)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===========================
+   Interactive Tinted States
+   =========================== */
+.hover-tinted {
+  transition: all 0.3s ease;
+}
+
+.hover-tinted:hover {
+  background: var(--accent-tinted);
+  border-color: var(--border-tinted);
+  box-shadow: 0 4px 16px rgba(var(--mana-rgb), 0.1);
+}
+
+.focus-tinted {
+  transition: all 0.2s ease;
+}
+
+.focus-tinted:focus {
+  outline: none;
+  border-color: var(--mana-color);
+  box-shadow: 
+    0 0 0 3px rgba(var(--mana-rgb), 0.1),
+    0 0 20px rgba(var(--mana-rgb), 0.05);
+}
+
+.active-tinted:active {
+  transform: scale(0.98);
+}
+
+/* ===========================
+   Component-Specific Tinted
+   =========================== */
+
+/* Cards */
+.card-tinted {
+  background: var(--card-tinted);
+  border: 1px solid var(--border-tinted);
+  box-shadow: 0 4px 16px rgba(var(--glass-shadow-rgb), 0.08);
+}
+
+.card-tinted-glass {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--glass-base-rgb), 0.08),
+    rgba(var(--glass-base-rgb), 0.04)
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-tinted);
+  box-shadow: 0 8px 32px rgba(var(--glass-shadow-rgb), 0.1);
+}
+
+/* Buttons */
+.btn-tinted {
+  background: var(--accent-tinted);
+  border: 1px solid var(--border-tinted);
+  color: var(--foreground);
+  transition: all 0.3s ease;
+}
+
+.btn-tinted:hover {
+  background: rgba(var(--mana-rgb), 0.15);
+  border-color: rgba(var(--mana-rgb), 0.3);
+  box-shadow: 0 4px 12px rgba(var(--mana-rgb), 0.15);
+}
+
+.btn-tinted-primary {
+  background: linear-gradient(
+    135deg,
+    var(--gradient-start),
+    var(--gradient-end)
+  );
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-tinted-primary:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 8px 24px rgba(var(--mana-rgb), 0.25);
+}
+
+/* Inputs */
+.input-tinted {
+  background: rgba(var(--glass-base-rgb), 0.05);
+  border: 1px solid var(--border-tinted);
+  transition: all 0.3s ease;
+}
+
+.input-tinted:focus {
+  background: rgba(var(--glass-base-rgb), 0.08);
+  border-color: var(--mana-color);
+  box-shadow: 0 0 0 3px rgba(var(--mana-rgb), 0.08);
+}
+
+/* Badges */
+.badge-tinted {
+  background: var(--accent-tinted);
+  border: 1px solid var(--border-tinted);
+  color: var(--foreground);
+}
+
+.badge-tinted-primary {
+  background: rgba(var(--mana-rgb), 0.15);
+  border: 1px solid rgba(var(--mana-rgb), 0.3);
+  color: var(--mana-color);
+}
+
+/* ===========================
+   Overlay Effects
+   =========================== */
+.overlay-tinted {
+  position: relative;
+}
+
+.overlay-tinted::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--mana-rgb), 0.05),
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* ===========================
+   Animation Classes
+   =========================== */
+.pulse-tinted {
+  animation: pulse-tinted 2s infinite;
+}
+
+@keyframes pulse-tinted {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(var(--mana-rgb), 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(var(--mana-rgb), 0);
+  }
+}
+
+.shimmer-tinted {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-tinted::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(var(--mana-rgb), 0.1),
+    transparent
+  );
+  transform: translateX(-100%) translateY(-100%);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  to {
+    transform: translateX(100%) translateY(100%);
+  }
+}
+
+/* ===========================
+   Responsive Tinted Utilities
+   =========================== */
+@media (min-width: 640px) {
+  .sm\:glass-tinted {
+    background: linear-gradient(
+      135deg,
+      rgba(var(--glass-base-rgb), 0.08),
+      rgba(var(--glass-base-rgb), 0.04)
+    );
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+@media (min-width: 768px) {
+  .md\:glass-tinted {
+    background: linear-gradient(
+      135deg,
+      rgba(var(--glass-base-rgb), 0.08),
+      rgba(var(--glass-base-rgb), 0.04)
+    );
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* ===========================
+   Dark Mode Adjustments
+   =========================== */
+.dark .glass-tinted {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--glass-base-rgb), 0.06),
+    rgba(var(--glass-base-rgb), 0.03)
+  );
+}
+
+.dark .shadow-tinted {
+  box-shadow: 0 4px 16px 0 rgba(var(--glass-shadow-rgb), 0.2);
+}
+
+.dark .border-tinted {
+  border-color: rgba(var(--glass-border-rgb), 0.15);
 }
