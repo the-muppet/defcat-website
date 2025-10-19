@@ -39,6 +39,12 @@ const cardImageCache = new Map<string, string>()
  * @returns Promise with art_crop URL or null
  */
 export async function fetchCardArt(cardName: string): Promise<string | null> {
+  // Validate input
+  if (!cardName || typeof cardName !== 'string') {
+    console.warn('Invalid card name provided to fetchCardArt:', cardName)
+    return null
+  }
+
   // Check cache first
   const cacheKey = cardName.toLowerCase().trim()
   if (cardImageCache.has(cacheKey)) {

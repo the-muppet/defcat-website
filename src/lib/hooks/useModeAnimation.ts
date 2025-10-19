@@ -18,7 +18,6 @@ const injectBaseStyles = () => {
         ::view-transition-old(root),
         ::view-transition-new(root) {
           mix-blend-mode: normal;
-          animation: none;
           ${isHighResolution ? "transform: translateZ(0);" : ""}
         }
         
@@ -75,7 +74,7 @@ export const useModeAnimation = (
     easing = "ease-in-out",
     pseudoElement = "::view-transition-new(root)",
     globalClassName = "dark",
-    animationType = ThemeAnimationType.CIRCLE,
+    animationType = ThemeAnimationType.MANA,
     blurAmount = 2,
     styleId = "theme-switch-style",
     manaSymbol = ManaSymbol.BLACK,
@@ -210,12 +209,25 @@ export const useModeAnimation = (
         mask-repeat: no-repeat;
         mask-size: 0px;
         mask-position: ${x}px ${y}px;
-        animation: maskScale ${duration}ms ${easing} forwards;
+          animation: maskScale ${duration * 1.5}ms ${easing};
+          transform-origin: ${x}px ${y}px;
+          will-change: mask-size, mask-position;
+        }
+
+        ::view-transition-old(root),
+        .dark::view-transition-old(root) {
+          animation: maskScale ${duration}ms ${easing};
+          transform-origin: ${x}px ${y}px;
+          z-index: -1;
         will-change: mask-size, mask-position;
       }
 
       @keyframes maskScale {
-        to {
+          0% {
+            mask-size: 0px;
+            mask-position: ${x}px ${y}px;
+          }
+          100% {
           mask-size: ${finalMaskSize}px;
           mask-position: ${x - finalMaskSize / 2}px ${y - finalMaskSize / 2}px;
         }
@@ -273,7 +285,28 @@ export const useModeAnimation = (
         );
       }
     }
-  }
+
+    if (
+      animationType === ThemeAnimationType.BLUR_CIRCLE ||
+      animationType === ThemeAnimationType.MANA
+    ) {
+      transition.finished.then(() => {
+        setTimeout(() => {
+          const styleElement = document.getElementById(styleId);
+          if (styleElement) {
+            styleElement.remove();
+          }
+        }, 10);
+      }).catch(() => {
+        setTimeout(() => {
+          const styleElement = document.getElementById(styleId);
+          if (styleElement) {
+            styleElement.remove();
+          }
+        }, duration);
+      });
+    }
+  };
 
   useEffect(() => {
     if (isDarkMode) {

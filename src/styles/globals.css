@@ -1,6 +1,8 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 
 :root {
   /* ==================== LAYOUT ==================== */
@@ -244,25 +246,6 @@
     color: var(--foreground);
     transition: background-color 400ms ease-out, color 400ms ease-out;
   }
-
-  /* View Transition Fix: Move background to html during transition */
-html:has(::view-transition) {
-  background-color: var(--background);
-}
-
-html:has(::view-transition) body {
-  background-color: transparent !important;
-}
-
-::view-transition-group(root) {
-  z-index: 1;
-}
-
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
-}
 
   /* Smooth transitions for all tinted elements */
   .bg-tinted,

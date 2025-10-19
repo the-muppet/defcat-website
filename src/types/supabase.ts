@@ -136,6 +136,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "deck_cards_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "staple_cards_mv"
+            referencedColumns: ["card_id"]
+          },
+          {
             foreignKeyName: "deck_cards_deck_id_fkey"
             columns: ["deck_id"]
             isOneToOne: false
@@ -183,6 +190,78 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      deck_submissions: {
+        Row: {
+          bracket: string
+          budget: string
+          coffee_preference: string
+          color_preference: string
+          commander: string | null
+          created_at: string
+          deck_list_url: string | null
+          discord_username: string
+          email: string
+          id: string
+          ideal_date: string | null
+          mystery_deck: boolean
+          notes: string | null
+          patreon_id: string
+          patreon_tier: string
+          patreon_username: string
+          status: string | null
+          submission_month: string | null
+          theme: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          bracket: string
+          budget: string
+          coffee_preference: string
+          color_preference: string
+          commander?: string | null
+          created_at?: string
+          deck_list_url?: string | null
+          discord_username: string
+          email: string
+          id?: string
+          ideal_date?: string | null
+          mystery_deck: boolean
+          notes?: string | null
+          patreon_id: string
+          patreon_tier: string
+          patreon_username: string
+          status?: string | null
+          submission_month?: string | null
+          theme?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          bracket?: string
+          budget?: string
+          coffee_preference?: string
+          color_preference?: string
+          commander?: string | null
+          created_at?: string
+          deck_list_url?: string | null
+          discord_username?: string
+          email?: string
+          id?: string
+          ideal_date?: string | null
+          mystery_deck?: boolean
+          notes?: string | null
+          patreon_id?: string
+          patreon_tier?: string
+          patreon_username?: string
+          status?: string | null
+          submission_month?: string | null
+          theme?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
       }
       decks: {
         Row: {
@@ -303,6 +382,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_submission_status"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -530,6 +616,16 @@ export type Database = {
       }
     }
     Views: {
+      average_mana_curve_mv: {
+        Row: {
+          avg_per_deck: number | null
+          card_count: number | null
+          cmc: number | null
+          percentage: number | null
+          unique_cards: number | null
+        }
+        Relationships: []
+      }
       decks_full: {
         Row: {
           color_identity: string[] | null
@@ -590,6 +686,17 @@ export type Database = {
         }
         Relationships: []
       }
+      popular_sets_mv: {
+        Row: {
+          avg_cards_per_deck: number | null
+          deck_count: number | null
+          set_code: string | null
+          set_name: string | null
+          total_instances: number | null
+          unique_cards: number | null
+        }
+        Relationships: []
+      }
       recent_syncs: {
         Row: {
           bookmark_id: string | null
@@ -603,6 +710,74 @@ export type Database = {
           total_decks: number | null
           unchanged_decks: number | null
           updated_decks: number | null
+        }
+        Relationships: []
+      }
+      staple_cards_mv: {
+        Row: {
+          avg_copies_per_deck: number | null
+          card_id: string | null
+          card_name: string | null
+          cmc: number | null
+          colors: string[] | null
+          deck_count: number | null
+          inclusion_rate: number | null
+          mana_cost: string | null
+          rarity: string | null
+          total_copies: number | null
+          type_line: string | null
+        }
+        Relationships: []
+      }
+      submission_stats: {
+        Row: {
+          archmage_submissions: number | null
+          completed_count: number | null
+          duke_submissions: number | null
+          in_progress_count: number | null
+          mystery_deck_count: number | null
+          pending_count: number | null
+          total_submissions: number | null
+          unique_brackets: number | null
+          unique_color_combinations: number | null
+          unique_users: number | null
+          wizard_submissions: number | null
+        }
+        Relationships: []
+      }
+      top_commanders_mv: {
+        Row: {
+          avg_likes: number | null
+          avg_views: number | null
+          color_identity: string[] | null
+          commander: string | null
+          deck_count: number | null
+          total_likes: number | null
+          total_views: number | null
+        }
+        Relationships: []
+      }
+      user_submission_status: {
+        Row: {
+          max_submissions: number | null
+          patreon_tier: Database["public"]["Enums"]["patreon_tier"] | null
+          remaining_submissions: number | null
+          used_submissions: number | null
+          user_id: string | null
+        }
+        Insert: {
+          max_submissions?: never
+          patreon_tier?: Database["public"]["Enums"]["patreon_tier"] | null
+          remaining_submissions?: never
+          used_submissions?: never
+          user_id?: string | null
+        }
+        Update: {
+          max_submissions?: never
+          patreon_tier?: Database["public"]["Enums"]["patreon_tier"] | null
+          remaining_submissions?: never
+          used_submissions?: never
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -640,6 +815,10 @@ export type Database = {
           status: string
         }[]
       }
+      bytea_to_text: {
+        Args: { data: string }
+        Returns: string
+      }
       count_deck_mana_sources: {
         Args: { p_deck_id: string }
         Returns: {
@@ -676,6 +855,10 @@ export type Database = {
         Args: { moxfield_data: Json }
         Returns: string[]
       }
+      factorial_approx: {
+        Args: { n: number }
+        Returns: number
+      }
       fetch_all_mana_producers: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -696,6 +879,16 @@ export type Database = {
         Returns: {
           card_name: string
           deck_count: number
+        }[]
+      }
+      get_average_mana_curve: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          avg_per_deck: number
+          card_count: number
+          cmc: number
+          percentage: number
+          unique_cards: number
         }[]
       }
       get_card_synergies: {
@@ -731,6 +924,48 @@ export type Database = {
           total_color_pips: number
           total_lands: number
           unique_mana_sources: number
+        }[]
+      }
+      get_popular_sets: {
+        Args: { limit_count?: number }
+        Returns: {
+          avg_cards_per_deck: number
+          deck_count: number
+          set_code: string
+          set_name: string
+          total_instances: number
+          unique_cards: number
+        }[]
+      }
+      get_staple_cards: {
+        Args: {
+          exclude_lands?: boolean
+          limit_count?: number
+          min_decks?: number
+        }
+        Returns: {
+          avg_copies_per_deck: number
+          card_name: string
+          card_type: string
+          cmc: number
+          colors: string[]
+          deck_count: number
+          inclusion_rate: number
+          mana_cost: string
+          rarity: string
+          total_copies: number
+        }[]
+      }
+      get_top_commanders: {
+        Args: { limit_count?: number }
+        Returns: {
+          avg_likes: number
+          avg_views: number
+          color_identity: string[]
+          commander: string
+          deck_count: number
+          total_likes: number
+          total_views: number
         }[]
       }
       http: {
@@ -850,6 +1085,10 @@ export type Database = {
           updated_at: string
           view_count: number
         }[]
+      }
+      text_to_bytea: {
+        Args: { data: string }
+        Returns: string
       }
       urlencode: {
         Args:

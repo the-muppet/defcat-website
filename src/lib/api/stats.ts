@@ -1,9 +1,57 @@
 // lib/api/stats.ts
+'use client'
+
+import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import type { Database } from '@/types/supabase'
-import { getColorIdentity } from '@/lib/utility/color-identity'
+import { ColorIdentity } from '@/lib/utility/color-identity'
 
 type Deck = Database['public']['Tables']['decks']['Row']
+
+export interface TopCommanderStats {
+    idx:           number;
+    commander:     string;
+    deckCount:     number;
+    avgViews:      string;
+    avgLikes:      string;
+    totalViews:    number;
+    totalLikes:    number;
+    colorIdentity: string[];
+}
+
+export interface StapleCards {
+    idx:              number;
+    cardID:           string;
+    cardName:         string;
+    typeLine:         string;
+    manaCost:         string;
+    cmc:              string;
+    colors:           string[];
+    rarity:           string;
+    deckCount:        number;
+    totalCopies:      number;
+    avgCopiesPerDeck: string;
+    inclusionRate:    string;
+}
+
+export interface SetDistribution {
+    idx:             number;
+    setCode:         string;
+    setName:         string;
+    uniqueCards:     number;
+    totalInstances:  number;
+    deckCount:       number;
+    avgCardsPerDeck: string;
+}
+
+export interface ManaCurve {
+    idx:         number;
+    cmc:         number;
+    cardCount:   number;
+    uniqueCards: number;
+    avgPerDeck:  string;
+    percentage:  string;
+}
 
 export interface DeckStats {
   totalDecks: number
@@ -34,44 +82,33 @@ export async function getDeckStats(): Promise<DeckStats> {
     .from('decks')
     .select('*', { count: 'exact', head: true })
 
-  // Get all decks with commanders and color identity
-  const { data: decks } = await supabase
-    .from('decks')
-    .select('commanders, color_identity')
+  // Get top commanders from materialized view
+  const { data: topCommandersData } = await supabase
+    .from('top_commanders_mv')
+    .select('commander, deck_count, color_identity')
+    .order('deck_count', { ascending: false })
+    .limit(1)
 
-  // Calculate unique commanders
-  const commanderSet = new Set<string>()
-  const commanderCounts = new Map<string, { count: number; colors: string[] }>()
+  const { count: totalCommanders } = await supabase
+    .from('top_commanders_mv')
+    .select('*', { count: 'exact', head: true })
 
-  decks?.forEach(deck => {
-    deck.commanders?.forEach(commander => {
-      commanderSet.add(commander)
-      const existing = commanderCounts.get(commander)
-      if (existing) {
-        existing.count++
-      } else {
-        commanderCounts.set(commander, {
-          count: 1,
-          colors: deck.color_identity || []
-        })
-      }
-    })
-  })
-
-  // Find most popular commander
-  let mostPopularCommander = null
-  let maxCount = 0
-  commanderCounts.forEach((data, name) => {
-    if (data.count > maxCount) {
-      maxCount = data.count
-      mostPopularCommander = { name, count: data.count, colors: data.colors }
+  const mostPopularCommander = topCommandersData?.[0]
+    ? {
+      name: topCommandersData[0].commander || '',
+      count: topCommandersData[0].deck_count || 0,
+      colors: topCommandersData[0].color_identity || []
     }
-  })
+    : null
 
   // Get most common card across all decks
-  const { data: cardCounts } = await supabase.rpc('')
+  const { data: cardCounts } = await supabase
+    .from('staple_cards_mv')
+    .select('*')
+    .order('deck_count', { ascending: false })
+    .limit(1)
 
-  const mostCommonCard = cardCounts?.[0]
+  const mostCommonCard = cardCounts?.[0]?.card_name && cardCounts[0]?.deck_count
     ? {
       name: cardCounts[0].card_name,
       count: cardCounts[0].deck_count,
@@ -79,40 +116,21 @@ export async function getDeckStats(): Promise<DeckStats> {
     }
     : null
 
-  // Calculate average mana curve
-  const { data: deckCards } = await supabase
-    .from('deck_cards')
-    .select('deck_id, quantity, cards(cmc)')
-    .eq('board_type', 'mainboard')
+  // Get average mana curve from materialized view
+  const { data: manaCurveData } = await supabase
+    .from('average_mana_curve_mv')
+    .select('cmc, card_count')
+    .order('cmc', { ascending: true })
 
-  // Group cards by deck and calculate CMC distribution per deck
-  const deckCurves = new Map<string, Map<number, number>>()
+  const avgManaCurve = manaCurveData?.map(row => ({
+    cmc: row.cmc || 0,
+    count: row.card_count || 0
+  })) || []
 
-  deckCards?.forEach(dc => {
-    const cmc = (dc.cards as any)?.cmc
-    if (typeof cmc === 'number' && dc.deck_id) {
-      const bucket = cmc > 7 ? 7 : cmc
-
-      if (!deckCurves.has(dc.deck_id)) {
-        deckCurves.set(dc.deck_id, new Map<number, number>())
-      }
-
-      const deckCurve = deckCurves.get(dc.deck_id)!
-      deckCurve.set(bucket, (deckCurve.get(bucket) || 0) + (dc.quantity || 1))
-    }
-  })
-
-  // Calculate average across all decks
-  const avgManaCurve = Array.from({ length: 8 }, (_, cmc) => {
-    const totalForCmc = Array.from(deckCurves.values()).reduce(
-      (sum, curve) => sum + (curve.get(cmc) || 0),
-      0
-    )
-    return {
-      cmc,
-      count: deckCurves.size > 0 ? Math.round(totalForCmc / deckCurves.size) : 0
-    }
-  })
+  // Get all decks for color distribution
+  const { data: decks } = await supabase
+    .from('decks')
+    .select('color_identity')
 
   // Calculate color distribution
   const colorMap = new Map<string, number>()
@@ -126,10 +144,10 @@ export async function getDeckStats(): Promise<DeckStats> {
   const colorDistribution = Array.from(colorMap.entries())
     .map(([colors, count]) => {
       const colorArray = colors.split('')
-      const identity = getColorIdentity(colorArray)
+      const name = ColorIdentity.getName(colorArray)
       return {
         colors: colorArray,
-        name: identity?.name || `${colorArray.length}-Color`,
+        name,
         count
       }
     })
@@ -138,7 +156,7 @@ export async function getDeckStats(): Promise<DeckStats> {
 
   return {
     totalDecks: totalDecks || 0,
-    totalCommanders: commanderSet.size,
+    totalCommanders: totalCommanders || 0,
     mostPopularCommander,
     mostCommonCard,
     avgManaCurve,
@@ -159,3 +177,28 @@ export async function getLatestDeck(): Promise<Deck | null> {
   return data
 }
 
+/**
+ * React Query hook for deck statistics
+ * Caches results to prevent infinite fetching
+ */
+export function useDeckStats() {
+  return useQuery({
+    queryKey: ['deckStats'],
+    queryFn: getDeckStats,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
+  })
+}
+
+/**
+ * React Query hook for latest featured deck
+ * Caches results to prevent infinite fetching
+ */
+export function useLatestDeck() {
+  return useQuery({
+    queryKey: ['latestDeck'],
+    queryFn: getLatestDeck,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
+  })
+}

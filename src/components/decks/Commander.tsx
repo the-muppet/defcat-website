@@ -30,12 +30,22 @@ function SingleCommanderImage({
     let mounted = true
 
     const loadImage = async () => {
+      // Validate commander name before attempting to load
+      if (!commanderName || typeof commanderName !== 'string') {
+        console.warn('Invalid commander name:', commanderName)
+        if (mounted) {
+          setError(true)
+          setLoading(false)
+        }
+        return
+      }
+
       try {
         setLoading(true)
         setError(false)
-        
+
         const artCrop = await fetchCardArt(commanderName)
-        
+
         if (mounted) {
           if (artCrop) {
             setImageUrl(artCrop)
@@ -108,7 +118,10 @@ function SingleCommanderImage({
 
 // Main component that handles multiple commanders
 export function CommanderImage({ commanders, className, fallbackIcon = '🎴' }: CommanderImageProps) {
-  if (!commanders || commanders.length === 0) {
+  // Filter out null/undefined/empty values from commanders array
+  const validCommanders = commanders?.filter(c => c && c.trim() !== '') || []
+
+  if (validCommanders.length === 0) {
     return (
       <div className={cn(
         "flex items-center justify-center bg-gradient-to-br from-purple-900/50 to-pink-900/50",
@@ -122,10 +135,10 @@ export function CommanderImage({ commanders, className, fallbackIcon = '🎴' }:
     )
   }
 
-  if (commanders.length === 1) {
+  if (validCommanders.length === 1) {
     return (
-      <SingleCommanderImage 
-        commanderName={commanders[0]}
+      <SingleCommanderImage
+        commanderName={validCommanders[0]}
         className={className}
         fallbackIcon={fallbackIcon}
       />
@@ -134,9 +147,9 @@ export function CommanderImage({ commanders, className, fallbackIcon = '🎴' }:
 
   return (
     <div className={cn("grid gap-1 h-full", className)}>
-      {commanders.length === 2 ? (
+      {validCommanders.length === 2 ? (
         <div className="grid grid-cols-2 gap-1 h-full">
-          {commanders.map((commander, idx) => (
+          {validCommanders.map((commander, idx) => (
             <SingleCommanderImage
               key={`${commander}-${idx}`}
               commanderName={commander}
@@ -147,7 +160,7 @@ export function CommanderImage({ commanders, className, fallbackIcon = '🎴' }:
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-1 h-full">
-          {commanders.slice(0, 4).map((commander, idx) => (
+          {validCommanders.slice(0, 4).map((commander, idx) => (
             <SingleCommanderImage
               key={`${commander}-${idx}`}
               commanderName={commander}

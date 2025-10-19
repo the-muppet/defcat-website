@@ -6,7 +6,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle2, Sparkles, Loader2, AlertCircle } from 'lucide-react';
-import { normalizeColorIdentity, getColorIdentity } from '@/lib/utility/color-identity';
+import { ColorIdentity, COLOR_MAPPINGS } from '@/lib/utility/color-identity';
 import { useDeckSubmission } from '@/hooks/useDeckSubmission';
 import type { DeckSubmissionFormData } from '@/types/form';
 
@@ -48,57 +48,68 @@ export default function CommanderDeckForm() {
     idealDate: ''
   });
 
-  const [errors, setErrors] = useState<FormErrors>({});
-  const { submitDeck, isLoading, error: submissionError, submissionNumber } = useDeckSubmission();
+const [errors, setErrors] = useState<FormErrors>({});
+const { submitDeck, isLoading, error: submissionError, submissionNumber } = useDeckSubmission();
 
-  // Color options using actual color identities
-  const colorOptions: ColorOption[] = [
-    // Mono colors
-    { identity: 'W', label: 'Mono White' },
-    { identity: 'U', label: 'Mono Blue' },
-    { identity: 'B', label: 'Mono Black' },
-    { identity: 'R', label: 'Mono Red' },
-    { identity: 'G', label: 'Mono Green' },
-    { identity: 'C', label: 'Colorless' },
-    
-    // Two colors (Guilds)
-    { identity: 'WU', label: 'Azorius (White/Blue)' },
-    { identity: 'UB', label: 'Dimir (Blue/Black)' },
-    { identity: 'BR', label: 'Rakdos (Black/Red)' },
-    { identity: 'RG', label: 'Gruul (Red/Green)' },
-    { identity: 'GW', label: 'Selesnya (Green/White)' },
-    { identity: 'WB', label: 'Orzhov (White/Black)' },
-    { identity: 'UR', label: 'Izzet (Blue/Red)' },
-    { identity: 'BG', label: 'Golgari (Black/Green)' },
-    { identity: 'RW', label: 'Boros (Red/White)' },
-    { identity: 'GU', label: 'Simic (Green/Blue)' },
-    
-    // Three colors (Shards)
-    { identity: 'GWU', label: 'Bant (Green/White/Blue)' },
-    { identity: 'WUB', label: 'Esper (White/Blue/Black)' },
-    { identity: 'UBR', label: 'Grixis (Blue/Black/Red)' },
-    { identity: 'BRG', label: 'Jund (Black/Red/Green)' },
-    { identity: 'RGW', label: 'Naya (Red/Green/White)' },
-    
-    // Three colors (Wedges)
-    { identity: 'WBG', label: 'Abzan (White/Black/Green)' },
-    { identity: 'URW', label: 'Jeskai (Blue/Red/White)' },
-    { identity: 'BRW', label: 'Mardu (Black/Red/White)' },
-    { identity: 'GUB', label: 'Sultai (Green/Blue/Black)' },
-    { identity: 'RGU', label: 'Temur (Red/Green/Blue)' },
-    
-    // Four colors
-    { identity: 'WUBR', label: 'Yore-Tiller (No Green)' },
-    { identity: 'UBRG', label: 'Glint-Eye (No White)' },
-    { identity: 'BRGW', label: 'Dune-Brood (No Blue)' },
-    { identity: 'RGWU', label: 'Ink-Treader (No Black)' },
-    { identity: 'GWUB', label: 'Witch-Maw (No Red)' },
-    
-    // Five colors
-    { identity: 'WUBRG', label: 'WUBRG SOUP' }
-  ];
+type ColorOption = {
+  identity: string
+  label: string
+  className: string  // Add this for easy access
+}
 
-  const bracketOptions = [
+// Color options using actual color identities
+const colorOptions: ColorOption[] = [
+  // Mono colors
+  { identity: 'W', label: 'Mono White' },
+  { identity: 'U', label: 'Mono Blue' },
+  { identity: 'B', label: 'Mono Black' },
+  { identity: 'R', label: 'Mono Red' },
+  { identity: 'G', label: 'Mono Green' },
+  { identity: 'C', label: 'Colorless' },
+  
+  // Two colors (Guilds)
+  { identity: 'WU', label: 'Azorius (White/Blue)' },
+  { identity: 'UB', label: 'Dimir (Blue/Black)' },
+  { identity: 'BR', label: 'Rakdos (Black/Red)' },
+  { identity: 'RG', label: 'Gruul (Red/Green)' },
+  { identity: 'GW', label: 'Selesnya (Green/White)' },
+  { identity: 'WB', label: 'Orzhov (White/Black)' },
+  { identity: 'UR', label: 'Izzet (Blue/Red)' },
+  { identity: 'BG', label: 'Golgari (Black/Green)' },
+  { identity: 'RW', label: 'Boros (Red/White)' },
+  { identity: 'GU', label: 'Simic (Green/Blue)' },
+  
+  // Three colors (Shards)
+  { identity: 'GWU', label: 'Bant (Green/White/Blue)' },
+  { identity: 'WUB', label: 'Esper (White/Blue/Black)' },
+  { identity: 'UBR', label: 'Grixis (Blue/Black/Red)' },
+  { identity: 'BRG', label: 'Jund (Black/Red/Green)' },
+  { identity: 'RGW', label: 'Naya (Red/Green/White)' },
+  
+  // Three colors (Wedges)
+  { identity: 'WBG', label: 'Abzan (White/Black/Green)' },
+  { identity: 'URW', label: 'Jeskai (Blue/Red/White)' },
+  { identity: 'BRW', label: 'Mardu (Black/Red/White)' },
+  { identity: 'GUB', label: 'Sultai (Green/Blue/Black)' },
+  { identity: 'RGU', label: 'Temur (Red/Green/Blue)' },
+  
+  // Four colors
+  { identity: 'WUBR', label: 'Yore-Tiller (No Green)' },
+  { identity: 'UBRG', label: 'Glint-Eye (No White)' },
+  { identity: 'BRGW', label: 'Dune-Brood (No Blue)' },
+  { identity: 'RGWU', label: 'Ink-Treader (No Black)' },
+  { identity: 'GWUB', label: 'Witch-Maw (No Red)' },
+  
+  // Five colors
+  { identity: 'WUBRG', label: 'WUBRG SOUP' }
+].map(option => ({
+  ...option,
+  identity: ColorIdentity.normalize(option.identity), // Normalize to WUBRG order
+  className: ColorIdentity.getClassName(option.identity) // Add className
+}))
+  
+
+const bracketOptions = [
     'Bracket 1',
     'Bracket 2',
     'Bracket 3',
@@ -122,10 +133,10 @@ export default function CommanderDeckForm() {
     if (!formData.discordUsername.trim()) {
       newErrors.discordUsername = 'Discord username is required';
     }
-    if (!formData.mysteryDeck) {
+    if (!formData.mysteryDeck || formData.mysteryDeck.trim() === '') {
       newErrors.mysteryDeck = 'Please select an option';
     }
-    if (!formData.colorPreference) {
+    if (!formData.colorPreference || formData.colorPreference.trim() === '') {
       newErrors.colorPreference = 'Color preference is required';
     }
     if (!formData.bracket) {
@@ -189,22 +200,24 @@ export default function CommanderDeckForm() {
     }
   };
 
-  // Render mana symbols for a color identity
   const renderManaSymbols = (identity: string) => {
-    const normalized = normalizeColorIdentity(identity);
-    const colorInfo = getColorIdentity(normalized);
-    
-    if (!colorInfo) return null;
-    
-    // Use individual symbols for display
-    return (
-      <div className="flex gap-1 items-center">
-        {colorInfo.individual.map((color: string, idx: number) => (
-          <i key={idx} className={`ms ms-${color.toLowerCase()} ms-cost ms-shadow`} />
-        ))}
-      </div>
-    );
-  };
+  const className = ColorIdentity.getClassName(identity);
+  
+  // Use guild/clan symbol if available, otherwise fall back to individual colors
+  if (className.includes('guild') || className.includes('clan') || className.includes('watermark')) {
+    return <i className={`ms ${className} ms-cost ms-shadow ms-2x`} />;
+  }
+
+  // Fall back to individual color symbols
+  const individual = ColorIdentity.getIndividual(identity);
+  return (
+    <div className="flex gap-1 items-center">
+      {individual.map((color: string, idx: number) => (
+        <i key={idx} className={`ms ms-${color.toLowerCase()} ms-cost ms-shadow`} />
+      ))}
+    </div>
+  );
+};
 
   if (submissionNumber !== null) {
     return (

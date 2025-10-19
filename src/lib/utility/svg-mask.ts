@@ -16,7 +16,7 @@ const createSVGMask = (
   
   const filterAttr = blur > 0 ? 'filter="url(%23blur)"' : "";
 
-  return `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}"><defs>${blurFilter}</defs><path fill="white:"${pathData}" ${filterAttr}/></svg>')`
+ return `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}"><defs>${blurFilter}</defs><path fill="white" d="${pathData}" ${filterAttr}/></svg>')`;
 };
 
 const MANA_PATHS = {

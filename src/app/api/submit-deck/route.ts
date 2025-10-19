@@ -3,8 +3,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
-import { DeckSubmissionEmail } from '@/emails/';
+import { DeckSubmissionEmail } from '@/emails';
 import type { DeckSubmissionFormData, SubmissionResponse } from '@/types/form';
+import { ColorIdentity } from '@/lib/utility/color-identity';
 
 // Initialize Supabase client
 const supabase = createClient(
@@ -48,44 +49,7 @@ function validateSubmission(data: any): data is DeckSubmissionFormData {
 }
 
 // Get color identity name for email
-function getColorName(colorIdentity: string): string {
-  const colorNames: Record<string, string> = {
-    'W': 'Mono White',
-    'U': 'Mono Blue',
-    'B': 'Mono Black',
-    'R': 'Mono Red',
-    'G': 'Mono Green',
-    'C': 'Colorless',
-    'WU': 'Azorius',
-    'UB': 'Dimir',
-    'BR': 'Rakdos',
-    'RG': 'Gruul',
-    'GW': 'Selesnya',
-    'WB': 'Orzhov',
-    'UR': 'Izzet',
-    'BG': 'Golgari',
-    'RW': 'Boros',
-    'GU': 'Simic',
-    'GWU': 'Bant',
-    'WUB': 'Esper',
-    'UBR': 'Grixis',
-    'BRG': 'Jund',
-    'RGW': 'Naya',
-    'WBG': 'Abzan',
-    'URW': 'Jeskai',
-    'BRW': 'Mardu',
-    'GUB': 'Sultai',
-    'RGU': 'Temur',
-    'WUBR': 'No Green',
-    'UBRG': 'No White',
-    'BRGW': 'No Blue',
-    'RGWU': 'No Black',
-    'GWUB': 'No Red',
-    'WUBRG': 'Five Color'
-  };
-  
-  return colorNames[colorIdentity] || colorIdentity;
-}
+
 
 export async function POST(request: NextRequest) {
   try {
@@ -266,13 +230,13 @@ export async function POST(request: NextRequest) {
     // Send confirmation email
     try {
       await resend.emails.send({
-        from: 'DefCat Custom Decks <decks@defcat.com>', // Update with your domain
+        from: 'DefCat Custom Decks <decks@defcat.com>', 
         to: body.email,
         subject: `Deck Submission Confirmed - #${submissionNumber}`,
         react: DeckSubmissionEmail({
           patreonUsername: body.patreonUsername,
           submissionNumber,
-          colorPreference: getColorName(body.colorPreference),
+          colorPreference: ColorIdentity.getName(body.colorPreference),
           commander: body.commander || undefined,
           bracket: body.bracket,
           mysteryDeck,
@@ -301,7 +265,7 @@ export async function POST(request: NextRequest) {
           <p><strong>Email:</strong> ${body.email}</p>
           <p><strong>Mystery Deck:</strong> ${mysteryDeck ? 'Yes' : 'No'}</p>
           ${body.commander ? `<p><strong>Commander:</strong> ${body.commander}</p>` : ''}
-          <p><strong>Color Preference:</strong> ${getColorName(body.colorPreference)}</p>
+          <p><strong>Color Preference:</strong> ${ColorIdentity.getName(body.colorPreference)}</p>
           ${body.theme ? `<p><strong>Theme:</strong> ${body.theme}</p>` : ''}
           <p><strong>Bracket:</strong> ${body.bracket}</p>
           <p><strong>Budget:</strong> ${body.budget}</p>

@@ -21,6 +21,8 @@ import {
 import { AnimatedThemeToggler } from '../ui/animated-theme-toggler';
 import { ThemeAnimationType } from '@/lib/hooks/useModeAnimation';
 import { AuthLoadingModal } from '@/components/auth/auth-loading-modal';
+import { Navigation } from './Navigation';
+import { UserMenu } from '@/components/user/UserMenu';
 
 export function Header() {
   const [user, setUser] = useState<User | null>(null);
@@ -135,6 +137,17 @@ export function Header() {
                 </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
+
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link
+                  href="/decks/submission"
+                  className={navigationMenuTriggerStyle() + (pathname === '/decks/submission' ? ' bg-accent text-accent-foreground' : '')}
+                >
+                  Submit Deck
+                </Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
 
@@ -150,30 +163,12 @@ export function Header() {
           {loading ? (
             <div className="h-10 w-10 animate-pulse rounded-full bg-muted/50" />
           ) : user ? (
-            <div className="flex items-center gap-3">
-              {user.user_metadata?.patreon_tier && (
-                <TierBadge
-                  tier={user.user_metadata.patreon_tier as PatreonTier}
-                  showIcon={true}
-                  showTooltip={true}
-                />
-              )}
-              <Avatar className="ring-2 ring-defcat-purple/20 transition-all hover:ring-defcat-purple/40">
-                <AvatarImage src={user.user_metadata?.avatar_url} />
-                <AvatarFallback className="bg-gradient-to-br from-defcat-purple to-defcat-pink text-white">
-                  {user.user_metadata?.full_name?.[0] || user.email?.[0] || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleLogout}
-                className="hidden sm:flex"
-              >
-              <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
-            </div>
+            <UserMenu user={{
+              id: user.id,
+              email: user.email || '',
+              patreonTier: user.user_metadata?.patreon_tier as PatreonTier || 'Citizen',
+              role: user.user_metadata?.role || 'user'
+            }} />
           ) : (
             <Button
               size="lg"

@@ -2,7 +2,7 @@
 "use client"
 
 import { cn } from '@/lib/utils'
-import { getColorIdentity } from '@/lib/utility/color-identity'
+import { ColorIdentity } from '@/lib/utility/color-identity'
 
 interface ManaSymbolsProps {
   /**
@@ -82,7 +82,7 @@ export function ManaSymbols({
 
   // Try to get guild/clan symbol if enabled and it's a color identity array
   const colorIdentity = (useGuildSymbols && Array.isArray(mana) && !mana.some(m => m.includes('{'))) 
-    ? getColorIdentity(symbols) 
+    ? ColorIdentity.getClassName(symbols) 
     : null
 
   // If we found a guild/clan symbol, use that
@@ -91,7 +91,7 @@ export function ManaSymbols({
       <i
         className={cn(
           "ms",
-          colorIdentity.className,
+          colorIdentity,
           cost && 'ms-cost',
           shadow && 'ms-shadow',
           fixedWidth && 'ms-fw',
@@ -99,8 +99,8 @@ export function ManaSymbols({
           "transition-all duration-200 hover:scale-110",
           className
         )}
-        title={colorIdentity.name}
-        aria-label={`${colorIdentity.name} color identity`}
+        title={ColorIdentity.getName(symbols)}
+        aria-label={`${ColorIdentity.getName(symbols)} color identity`}
       />
     )
   }

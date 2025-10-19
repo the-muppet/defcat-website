@@ -9,38 +9,18 @@ import { LightRays } from "@/components/layout/LightRays"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DeckCard } from "@/components/decks/DeckCard"
 import { NumberTicker } from "@/components/ui/number-ticker"
-import { getDeckStats, getLatestDeck, type DeckStats } from "@/lib/api/stats"
-import type { Database } from "@/types/supabase"
-
-type Deck = Database['public']['Tables']['decks']['Row']
+import { useDeckStats, useLatestDeck } from "@/lib/api/stats"
 
 export default function LandingPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedColors, setSelectedColors] = useState<string[]>([])
   const [currentStatIndex, setCurrentStatIndex] = useState(0)
-  const [deckStats, setDeckStats] = useState<DeckStats | null>(null)
-  const [featuredDeck, setFeaturedDeck] = useState<Deck | null>(null)
-  const [loading, setLoading] = useState(true)
 
-  // Load data on mount
-  useEffect(() => {
-    async function loadData() {
-      try {
-        setLoading(true)
-        const [stats, deck] = await Promise.all([
-          getDeckStats(),
-          getLatestDeck()
-        ])
-        setDeckStats(stats)
-        setFeaturedDeck(deck)
-      } catch (error) {
-        console.error('Error loading data:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    loadData()
-  }, [])
+  // Use React Query hooks for data fetching with automatic caching
+  const { data: deckStats, isLoading: statsLoading } = useDeckStats()
+  const { data: featuredDeck, isLoading: deckLoading } = useLatestDeck()
+
+  const loading = statsLoading || deckLoading
 
   // Rotate stats every 5 seconds (only 2 stats now)
   useEffect(() => {

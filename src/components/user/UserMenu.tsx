@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { LogoutButton } from '../auth/logout-button'
+import { LogoutButton } from '@/components/auth/logout-button'
 import { TierBadge } from '@/components/tier'
 import type { User } from '../../types/core'
 
