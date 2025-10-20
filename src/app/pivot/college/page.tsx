@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { GraduationCap, BookOpen, Target, Zap } from "lucide-react"
+import { VideoPlayer } from "@/components/video/VideoPlayer"
 
 export default function CommanderCollegePage() {
   return (
@@ -37,14 +38,14 @@ export default function CommanderCollegePage() {
             <div className="mb-16">
               <Card className="glass border-white/10 bg-card-tinted overflow-hidden">
                 <CardContent className="p-0">
-                  <div className="aspect-video bg-muted/30 flex items-center justify-center">
-                    <div className="text-center">
-                      <BookOpen className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                      <p className="text-lg text-muted-foreground">Sales Video Coming Soon</p>
-                      <p className="text-sm text-muted-foreground/70 mt-2">
-                        Your promotional video will be embedded here
-                      </p>
-                    </div>
+                  <div className="aspect-video relative">
+                    <VideoPlayer
+                      videoId={process.env.NEXT_PUBLIC_COLLEGE_VIDEO_ID}
+                      light={true}
+                      controls={true}
+                      fallbackIcon={<BookOpen className="h-16 w-16" />}
+                      fallbackText="Sales Video Coming Soon - Add NEXT_PUBLIC_COLLEGE_VIDEO_ID to .env"
+                    />
                   </div>
                 </CardContent>
               </Card>

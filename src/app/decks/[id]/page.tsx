@@ -1,5 +1,5 @@
 /**
- * Individual Deck Detail Page - Redesigned
+ * Individual Deck Detail Page
  */
 
 'use client';

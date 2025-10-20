@@ -1,16 +1,50 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { Search } from "lucide-react"
+import { useState, useMemo } from "react"
+import { Search, Loader2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { FeaturedVideo } from "@/components/home/FeaturedVideo"
 import { SocialMediaLinks } from "@/components/home/SocialMediaLinks"
 import { RotatingAds } from "@/components/home/RotatingAds"
+import { FeaturedDeckCard } from "@/components/home/FeaturedDeckCard"
+import { DeckCard } from "@/components/decks/DeckCard"
+import { useDecks } from "@/lib/hooks/useDecks"
 
 export default function ExampleHomePage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [bracketLevel, setBracketLevel] = useState("")
+  const [selectedColors, setSelectedColors] = useState<string[]>([])
+
+  // Fetch all decks
+  const { data: allDecks, isLoading: searchLoading } = useDecks()
+
+  // Client-side filtering
+  const searchResults = useMemo(() => {
+    if (!allDecks) return []
+
+    let filtered = allDecks
+
+    // Search by name or commanders
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase()
+      filtered = filtered.filter(deck =>
+        deck.name?.toLowerCase().includes(query) ||
+        deck.commanders?.some(cmd => cmd.toLowerCase().includes(query))
+      )
+    }
+
+    // Filter by colors
+    if (selectedColors.length > 0) {
+      filtered = filtered.filter(deck =>
+        selectedColors.every(color => deck.color_identity?.includes(color))
+      )
+    }
+
+    return filtered.slice(0, 12) // Limit to 12 results
+  }, [allDecks, searchQuery, selectedColors])
+
+  const hasSearchQuery = searchQuery.trim() || bracketLevel || selectedColors.length > 0
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
@@ -113,15 +147,61 @@ export default function ExampleHomePage() {
               </div>
             </div>
 
+            {/* Search Results */}
+            {hasSearchQuery && (
+              <div className="mb-16">
+                {searchLoading ? (
+                  <Card className="glass border-white/10 bg-card-tinted">
+                    <CardContent className="p-12 flex items-center justify-center">
+                      <Loader2 className="h-12 w-12 animate-spin" style={{ color: 'var(--mana-color)' }} />
+                    </CardContent>
+                  </Card>
+                ) : searchResults && searchResults.length > 0 ? (
+                  <div>
+                    <h3 className="text-2xl font-bold mb-6">
+                      Found {searchResults.length} deck{searchResults.length !== 1 ? 's' : ''}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {searchResults.map((deck) => (
+                        <DeckCard key={deck.id} deck={deck} variant="compact" />
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <Card className="glass border-white/10 bg-card-tinted">
+                    <CardContent className="p-12 text-center">
+                      <h3 className="text-2xl font-bold mb-4">No decks found</h3>
+                      <p className="text-muted-foreground mb-6">
+                        Try adjusting your search filters
+                      </p>
+                      <Button
+                        onClick={() => {
+                          setSearchQuery("")
+                          setBracketLevel("")
+                          setSelectedColors([])
+                        }}
+                        className="btn-tinted-primary shadow-tinted-glow"
+                      >
+                        Clear Filters
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
+
             {/* New User Graphic Placeholder */}
-            {!searchQuery && (
+            {!hasSearchQuery && (
               <Card className="glass border-white/10 bg-card-tinted mb-12">
                 <CardContent className="p-12 text-center">
                   <h3 className="text-2xl font-bold mb-4">Welcome to DeckVault!</h3>
                   <p className="text-muted-foreground mb-6">
                     Browse thousands of curated Commander decks or search above to get started
                   </p>
-                  <Button className="btn-tinted-primary shadow-tinted-glow">
+                  <Button
+                    className="btn-tinted-primary shadow-tinted-glow"
+                    onClick={() => setSearchQuery("commander")}
+                  >
                     Explore Decks
                   </Button>
                 </CardContent>
@@ -139,17 +219,11 @@ export default function ExampleHomePage() {
           // videoId="YOUR_YOUTUBE_VIDEO_ID" // Uncomment and add your video ID
         />
 
-        {/* Featured Deck Section would go here */}
+        {/* Featured Deck Section */}
         <section className="py-12 px-6">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-3xl font-bold mb-6">Today's Featured Deck</h2>
-            <Card className="glass border-white/10 bg-card-tinted">
-              <CardContent className="p-8 text-center">
-                <p className="text-muted-foreground">
-                  Featured deck component will be displayed here
-                </p>
-              </CardContent>
-            </Card>
+            <FeaturedDeckCard />
           </div>
         </section>
 

@@ -27,6 +27,8 @@ import { cn } from '@/lib/utils';
 
 export function Header() {
   const [user, setUser] = useState<User | null>(null);
+  const [userTier, setUserTier] = useState<PatreonTier>('Citizen');
+  const [userRole, setUserRole] = useState<string>('user');
   const [loading, setLoading] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -38,12 +40,26 @@ export function Header() {
     const getUser = async () => {
       try {
         const { data: { user }, error } = await supabase.auth.getUser();
-        
+
         if (error) {
           console.warn('Auth not configured yet:', error.message);
           setUser(null);
         } else {
           setUser(user);
+
+          // Fetch user profile to get tier and role
+          if (user) {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('patreon_tier, role')
+              .eq('id', user.id)
+              .single();
+
+            if (profile) {
+              setUserTier(profile.patreon_tier as PatreonTier || 'Citizen');
+              setUserRole(profile.role || 'user');
+            }
+          }
         }
       } catch (error) {
         console.warn('Auth error:', error);
@@ -124,14 +140,44 @@ export function Header() {
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
                   <Link
-                    href="/tiers"
+                    href="/pivot/home"
                     className={cn(
                       navigationMenuTriggerStyle(),
                       "hover-tinted",
-                      pathname === '/tiers' && "tinted-accent border border-tinted"
+                      pathname === '/pivot/home' && "tinted-accent border border-tinted"
                     )}
                   >
-                    Tiers
+                    Home
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/pivot/college"
+                    className={cn(
+                      navigationMenuTriggerStyle(),
+                      "hover-tinted",
+                      pathname === '/pivot/college' && "tinted-accent border border-tinted"
+                    )}
+                  >
+                    College
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/pivot/store"
+                    className={cn(
+                      navigationMenuTriggerStyle(),
+                      "hover-tinted",
+                      pathname === '/pivot/store' && "tinted-accent border border-tinted"
+                    )}
+                  >
+                    Store
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
@@ -151,20 +197,23 @@ export function Header() {
                 </NavigationMenuLink>
               </NavigationMenuItem>
 
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link
-                    href="/decks/submission"
-                    className={cn(
-                      navigationMenuTriggerStyle(),
-                      "hover-tinted",
-                      pathname === '/decks/submission' && "tinted-accent border border-tinted"
-                    )}
-                  >
-                    Submit Deck
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
+              {/* Show Submit Deck only for Duke+ tier or admins */}
+              {(userRole === 'admin' || userRole === 'moderator' || ['Duke', 'Wizard', 'ArchMage'].includes(userTier)) && (
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      href="/decks/submission"
+                      className={cn(
+                        navigationMenuTriggerStyle(),
+                        "hover-tinted",
+                        pathname === '/decks/submission' && "tinted-accent border border-tinted"
+                      )}
+                    >
+                      Submit Deck
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              )}
             </NavigationMenuList>
           </NavigationMenu>
 

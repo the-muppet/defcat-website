@@ -1,19 +1,36 @@
-import React, { useState } from 'react';
-import { CheckCircle2, Sparkles, Loader2, AlertCircle, Swords, Coffee, Palette, DollarSign, Calendar, Mail, User, Hash } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import {
+  ChevronRight,
+  ChevronLeft,
+  Sparkles,
+  Palette,
+  Trophy,
+  Coffee,
+  CheckCircle,
+  Loader2,
+  AlertCircle,
+  Swords,
+  Mail,
+  Hash,
+  DollarSign,
+  Calendar,
+  MessageSquare,
+  User
+} from 'lucide-react';
+import { bracketOptions, COLOR_MAPPINGS } from '@/types/core';
 
-interface FormErrors {
-  patreonUsername?: string
-  email?: string
-  discordUsername?: string
-  mysteryDeck?: string
-  colorPreference?: string
-  bracket?: string
-  budget?: string
-  coffee?: string
-}
 
-
-export default function CommanderDeckForm() {
+export default function PagedDeckForm() {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [tierError, setTierError] = useState<string | null>(null);
+  const [userTier, setUserTier] = useState<string | null>(null);
+  const [submissionsRemaining, setSubmissionsRemaining] = useState<number | null>(null);
+  const [willBeQueued, setWillBeQueued] = useState(false);
+  const [totalSubmissions, setTotalSubmissions] = useState(0);
+  const MAX_QUEUED = 3;
   const [formData, setFormData] = useState({
     patreonUsername: '',
     email: '',
@@ -28,542 +45,760 @@ export default function CommanderDeckForm() {
     idealDate: ''
   });
 
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [selectedColor, setSelectedColor] = useState('');
-  const [selectedBracket, setSelectedBracket] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
-  const colorOptions = [
-    { id: 'mono-white', label: 'Mono White', className: 'ms-w' },
-    { id: 'mono-blue', label: 'Mono Blue', className: 'ms-u' },
-    { id: 'mono-black', label: 'Mono Black', className: 'ms-b' },
-    { id: 'mono-red', label: 'Mono Red', className: 'ms-r' },
-    { id: 'mono-green', label: 'Mono Green', className: 'ms-g' },
-    { id: 'colorless', label: 'Colorless', className: 'ms-c' },
-    { id: 'azorius', label: 'Azorius', className: 'ms-guild-azorius' },
-    { id: 'dimir', label: 'Dimir', className: 'ms-guild-dimir' },
-    { id: 'rakdos', label: 'Rakdos', className: 'ms-guild-rakdos' },
-    { id: 'gruul', label: 'Gruul', className: 'ms-guild-gruul' },
-    { id: 'selesnya', label: 'Selesnya', className: 'ms-guild-selesnya' },
-    { id: 'orzhov', label: 'Orzhov', className: 'ms-guild-orzhov' },
-    { id: 'izzet', label: 'Izzet', className: 'ms-guild-izzet' },
-    { id: 'golgari', label: 'Golgari', className: 'ms-guild-golgari' },
-    { id: 'boros', label: 'Boros', className: 'ms-guild-boros' },
-    { id: 'simic', label: 'Simic', className: 'ms-guild-simic' },
-    { id: 'bant', label: 'Bant', className: 'ms-clan-bant' },
-    { id: 'esper', label: 'Esper', className: 'ms-clan-esper' },
-    { id: 'grixis', label: 'Grixis', className: 'ms-clan-grixis' },
-    { id: 'jund', label: 'Jund', className: 'ms-b ms-r ms-u' },
-    { id: 'naya', label: 'Naya', className: 'ms-clan-naya' },
-    { id: 'abzan', label: 'Abzan', className: 'ms-clan-abzan' },
-    { id: 'jeskai', label: 'Jeskai', className: 'ms-clan-jeskai' },
-    { id: 'mardu', label: 'Mardu', className: 'ms-clan-mardu' },
-    { id: 'sultai', label: 'Sultai', className: 'ms-clan-sultai' },
-    { id: 'temur', label: 'Temur', className: 'ms-clan-temur' },
-    { id: 'wubrg', label: 'WUBRG SOUP', className: 'ms-ci-wubrg' },
-  ]
+  const totalSteps = 5;
 
-  const bracketOptions = [
-    { value: 'bracket1', label: 'Bracket 1', description: 'Casual, precon level' },
-    { value: 'bracket2', label: 'Bracket 2', description: 'Focused casual' },
-    { value: 'bracket3', label: 'Bracket 3', description: 'Optimized casual' },
-    { value: 'bracket4', label: 'Bracket 4', description: 'High power' },
-    { value: 'bracket5', label: 'Bracket 5', description: 'Fringe competitive' },
-    { value: 'cedh', label: 'cEDH', description: 'Perfect tournament optimized deck' },
-    { value: 'wild', label: 'GO WILD', description: "I DON'T CARE GO FOR IT DEFCAT" },
+  // Check tier eligibility on mount
+  useEffect(() => {
+    const checkEligibility = async () => {
+      try {
+        const supabase = createClient();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+          setTierError('Please log in to submit a deck request.');
+          setIsLoading(false);
+          return;
+        }
+
+        // Get user's profile with tier info
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('patreon_tier, email, role')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError || !profile) {
+          setTierError('Unable to verify your Patreon tier. Please ensure your account is linked.');
+          setIsLoading(false);
+          return;
+        }
+
+        const tier = profile.patreon_tier;
+        const role = profile.role;
+        setUserTier(tier);
+
+        // Admins and moderators bypass tier checks
+        const isAdmin = role === 'admin' || role === 'moderator';
+
+        // Check if user has eligible tier (skip for admins)
+        if (!isAdmin) {
+          const eligibleTiers = ['Duke', 'Wizard', 'ArchMage'];
+          if (!eligibleTiers.includes(tier)) {
+            setTierError(`Deck submissions require Duke tier ($50/month) or higher. Your current tier: ${tier || 'None'}`);
+            setIsLoading(false);
+            return;
+          }
+        }
+
+        // Check monthly submission limit (skip for admins)
+        if (!isAdmin) {
+          const maxSubmissions = tier === 'ArchMage' ? 2 : 1;
+
+          // Get all submissions this month (pending, queued, completed)
+          const { data: submissions, error: countError } = await supabase
+            .from('deck_submissions')
+            .select('status')
+            .eq('user_id', user.id)
+            .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString());
+
+          if (countError) {
+            console.error('Error checking submissions:', countError);
+          }
+
+          const activeSubmissions = submissions?.filter(s =>
+            s.status === 'pending' || s.status === 'in_progress' || s.status === 'completed'
+          ).length || 0;
+
+          const queuedSubmissions = submissions?.filter(s => s.status === 'queued').length || 0;
+          const totalSubmissionsCount = activeSubmissions + queuedSubmissions;
+
+          setTotalSubmissions(totalSubmissionsCount);
+
+          const remaining = maxSubmissions - activeSubmissions;
+          setSubmissionsRemaining(remaining);
+
+          if (queuedSubmissions >= MAX_QUEUED) {
+            setTierError(`You have ${MAX_QUEUED} deck requests already queued. Please wait for them to be processed before submitting more.`);
+            setIsLoading(false);
+            return;
+          }
+
+          if (remaining <= 0) {
+            setWillBeQueued(true);
+          }
+        } else {
+          // Admins have unlimited submissions
+          setSubmissionsRemaining(999);
+        }
+
+        if (profile.email) {
+          setFormData(prev => ({ ...prev, email: profile.email }));
+        }
+
+        setIsLoading(false);
+      } catch (err) {
+        console.error('Eligibility check error:', err);
+        setTierError('An error occurred while checking your eligibility.');
+        setIsLoading(false);
+      }
+    };
+
+    checkEligibility();
+  }, []);
+
+  const steps = [
+    { id: 1, name: 'Basic Info', icon: User },
+    { id: 2, name: 'Deck Type', icon: Sparkles },
+    { id: 3, name: 'Colors & Theme', icon: Palette },
+    { id: 4, name: 'Power Level', icon: Trophy },
+    { id: 5, name: 'Final Details', icon: Coffee }
   ];
 
-  const handleInputChange = (field: string, value: string) => {
+  const validateStep = (step) => {
+    const stepErrors = {};
+    
+    switch (step) {
+      case 1:
+        if (!formData.patreonUsername.trim()) {
+          stepErrors.patreonUsername = 'Patreon username is required';
+        }
+        if (!formData.email.trim()) {
+          stepErrors.email = 'Email is required';
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+          stepErrors.email = 'Email is invalid';
+        }
+        if (!formData.discordUsername.trim()) {
+          stepErrors.discordUsername = 'Discord username is required';
+        }
+        break;
+      case 2:
+        if (!formData.mysteryDeck) {
+          stepErrors.mysteryDeck = 'Please select an option';
+        }
+        break;
+      case 3:
+        if (formData.mysteryDeck === 'no' && !formData.commander && !formData.colorPreference) {
+          stepErrors.colorPreference = 'Please select a color or specify a commander';
+        }
+        break;
+      case 4:
+        if (!formData.bracket) {
+          stepErrors.bracket = 'Bracket selection is required';
+        }
+        if (!formData.budget.trim()) {
+          stepErrors.budget = 'Budget information is required';
+        }
+        break;
+      case 5:
+        if (!formData.coffee.trim()) {
+          stepErrors.coffee = 'Coffee preference is required';
+        }
+        break;
+      default:
+        break;
+    }
+    
+    return stepErrors;
+  };
+
+  const handleNext = () => {
+    const stepErrors = validateStep(currentStep);
+    if (Object.keys(stepErrors).length === 0) {
+      setCompletedSteps([...completedSteps, currentStep]);
+      if (currentStep < totalSteps) {
+        setCurrentStep(currentStep + 1);
+      }
+    } else {
+      setErrors(stepErrors);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors as any[typeof field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+    if (errors[field]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
     }
   };
 
-  const handleColorSelect = (colorId: string) => {
-    setSelectedColor(colorId);
-    handleInputChange('colorPreference', colorId);
-  };
-
-  const handleBracketSelect = (bracketValue: string) => {
-    setSelectedBracket(bracketValue);
-    handleInputChange('bracket', bracketValue);
-  };
-
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    if (!formData.patreonUsername.trim()) {
-      newErrors.patreonUsername = 'Patreon username is required';
-    }
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
-    }
-    if (!formData.discordUsername.trim()) {
-      newErrors.discordUsername = 'Discord username is required';
-    }
-    if (!formData.mysteryDeck) {
-      newErrors.mysteryDeck = 'Please select an option';
-    }
-    if (formData.mysteryDeck === 'no' && !formData.commander && !formData.colorPreference) {
-      newErrors.colorPreference = 'Please select a color preference or specify a commander';
-    }
-    if (!formData.bracket) {
-      newErrors.bracket = 'Bracket selection is required';
-    }
-    if (!formData.budget.trim()) {
-      newErrors.budget = 'Budget information is required';
-    }
-    if (!formData.coffee.trim()) {
-      newErrors.coffee = 'Coffee preference is required';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: { preventDefault: () => void; }) => {
-    e.preventDefault();
-    if (validateForm()) {
+  const handleSubmit = async () => {
+    const stepErrors = validateStep(currentStep);
+    if (Object.keys(stepErrors).length === 0) {
       setIsLoading(true);
-      // Simulate API call
-      setTimeout(() => {
+
+      try {
+        const supabase = createClient();
+
+        // Get current user
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+          console.error('User not authenticated:', userError);
+          setErrors({ submit: 'Please log in to submit a deck request' });
+          setIsLoading(false);
+          return;
+        }
+
+        // Determine submission status based on slots
+        const submissionStatus = willBeQueued ? 'queued' : 'pending';
+
+        // Submit deck request to database
+        const { data, error } = await supabase
+          .from('deck_submissions')
+          .insert({
+            user_id: user.id,
+            patreon_username: formData.patreonUsername,
+            email: formData.email,
+            discord_username: formData.discordUsername,
+            mystery_deck: formData.mysteryDeck === 'yes',
+            commander: formData.commander || null,
+            color_preference: formData.colorPreference,
+            theme: formData.theme || null,
+            bracket: formData.bracket,
+            budget: formData.budget,
+            coffee_preference: formData.coffee,
+            ideal_date: formData.idealDate || null,
+            status: submissionStatus
+          })
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Submission error:', error);
+          setErrors({ submit: 'Failed to submit deck request. Please try again.' });
+          setIsLoading(false);
+          return;
+        }
+
         setIsLoading(false);
         setShowSuccess(true);
-        setTimeout(() => {
-          setShowSuccess(false);
-          handleClear();
-        }, 5000);
-      }, 2000);
+      } catch (err) {
+        console.error('Unexpected error:', err);
+        setErrors({ submit: 'An unexpected error occurred. Please try again.' });
+        setIsLoading(false);
+      }
+    } else {
+      setErrors(stepErrors);
     }
   };
 
-  const handleClear = () => {
-    setFormData({
-      patreonUsername: '',
-      email: '',
-      discordUsername: '',
-      mysteryDeck: '',
-      commander: '',
-      colorPreference: '',
-      theme: '',
-      bracket: '',
-      budget: '',
-      coffee: '',
-      idealDate: ''
-    });
-    setSelectedColor('');
-    setSelectedBracket('');
-    setErrors({});
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <div className="step-content">
+            <h2 className="step-title">
+              <User className="step-icon" />
+              Let's start with the basics
+            </h2>
+            <p className="step-description">We need some information to get in touch with you about your custom deck.</p>
+            
+            <div className="form-fields">
+              <div className="form-group">
+                <label htmlFor="patreonUsername">
+                  Patreon Username <span className="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="patreonUsername"
+                  value={formData.patreonUsername}
+                  onChange={(e) => handleInputChange('patreonUsername', e.target.value)}
+                  className={`form-input ${errors.patreonUsername ? 'error' : ''}`}
+                  placeholder="Enter your Patreon username"
+                />
+                {errors.patreonUsername && (
+                  <span className="error-message">{errors.patreonUsername}</span>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="email">
+                  <Mail className="inline-icon" />
+                  Email Address <span className="required">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  className={`form-input ${errors.email ? 'error' : ''}`}
+                  placeholder="your.email@example.com"
+                />
+                {errors.email && (
+                  <span className="error-message">{errors.email}</span>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="discordUsername">
+                  <Hash className="inline-icon" />
+                  Discord Username <span className="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="discordUsername"
+                  value={formData.discordUsername}
+                  onChange={(e) => handleInputChange('discordUsername', e.target.value)}
+                  className={`form-input ${errors.discordUsername ? 'error' : ''}`}
+                  placeholder="YourDiscord#1234"
+                />
+                {errors.discordUsername && (
+                  <span className="error-message">{errors.discordUsername}</span>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+
+      case 2:
+        return (
+          <div className="step-content">
+            <h2 className="step-title">
+              <Sparkles className="step-icon" />
+              Mystery Deck or Custom Build?
+            </h2>
+            <p className="step-description">Would you like me to surprise you or do you have something specific in mind?</p>
+            
+            <div className="radio-cards">
+              <label className={`radio-card ${formData.mysteryDeck === 'yes' ? 'selected' : ''}`}>
+                <input
+                  type="radio"
+                  name="mysteryDeck"
+                  value="yes"
+                  checked={formData.mysteryDeck === 'yes'}
+                  onChange={(e) => handleInputChange('mysteryDeck', e.target.value)}
+                />
+                <div className="radio-content">
+                  <div className="radio-header">
+                    <Sparkles className="radio-icon" />
+                    <span className="radio-title">Mystery Deck</span>
+                  </div>
+                  <p className="radio-description">Yes, just make something fun, I trust you! Let the creativity flow.</p>
+                </div>
+              </label>
+
+              <label className={`radio-card ${formData.mysteryDeck === 'no' ? 'selected' : ''}`}>
+                <input
+                  type="radio"
+                  name="mysteryDeck"
+                  value="no"
+                  checked={formData.mysteryDeck === 'no'}
+                  onChange={(e) => handleInputChange('mysteryDeck', e.target.value)}
+                />
+                <div className="radio-content">
+                  <div className="radio-header">
+                    <Swords className="radio-icon" />
+                    <span className="radio-title">Custom Build</span>
+                  </div>
+                  <p className="radio-description">No, I have an idea I'm cool like that. I'll specify what I want.</p>
+                </div>
+              </label>
+            </div>
+            {errors.mysteryDeck && (
+              <span className="error-message center">{errors.mysteryDeck}</span>
+            )}
+
+            {formData.mysteryDeck === 'no' && (
+              <div className="form-group mt-4">
+                <label htmlFor="commander">
+                  Commander (Optional)
+                </label>
+                <input
+                  type="text"
+                  id="commander"
+                  value={formData.commander}
+                  onChange={(e) => handleInputChange('commander', e.target.value)}
+                  className="form-input"
+                  placeholder="e.g., Atraxa, Praetors' Voice"
+                />
+              </div>
+            )}
+          </div>
+        );
+
+      case 3:
+        return (
+          <div className="step-content">
+            <h2 className="step-title">
+              <Palette className="step-icon" />
+              Colors & Theme
+            </h2>
+            <p className="step-description">
+              {formData.mysteryDeck === 'yes' 
+                ? "Even for a mystery deck, any color preferences?" 
+                : "Select your preferred color combination and theme."}
+            </p>
+            
+            <div className="form-group">
+              <label>Color Preference {formData.mysteryDeck === 'no' && !formData.commander && <span className="required">*</span>}</label>
+              <div className="color-grid">
+                {Object.entries(COLOR_MAPPINGS).map(([colorId, colorData]) => (
+                  <button
+                    key={colorId}
+                    type="button"
+                    className={`color-option ${colorData.className} ${formData.colorPreference === colorId ? 'selected' : ''}`}
+                    onClick={() => handleInputChange('colorPreference', colorId)}
+                  >
+                    {colorData.name}
+                  </button>
+                ))}
+              </div>
+              {errors.colorPreference && (
+                <span className="error-message">{errors.colorPreference}</span>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="theme">
+                <MessageSquare className="inline-icon" />
+                Theme (Optional)
+              </label>
+              <input
+                type="text"
+                id="theme"
+                value={formData.theme}
+                onChange={(e) => handleInputChange('theme', e.target.value)}
+                className="form-input"
+                placeholder="e.g., Tribal, Artifacts, Spellslinger, Voltron"
+              />
+            </div>
+          </div>
+        );
+
+      case 4:
+        return (
+          <div className="step-content">
+            <h2 className="step-title">
+              <Trophy className="step-icon" />
+              Power Level & Budget
+            </h2>
+            <p className="step-description">Let's determine the competitive level and budget for your deck.</p>
+            
+            <div className="form-group">
+              <label>Bracket Selection <span className="required">*</span></label>
+              <div className="bracket-grid">
+                {bracketOptions.map((bracket) => (
+                  <label
+                    key={bracket.value}
+                    className={`bracket-option ${formData.bracket === bracket.value ? 'selected' : ''}`}
+                  >
+                    <input
+                      type="radio"
+                      name="bracket"
+                      value={bracket.value}
+                      checked={formData.bracket === bracket.value}
+                      onChange={(e) => handleInputChange('bracket', e.target.value)}
+                    />
+                    <div className="bracket-content">
+                      <span className="bracket-label">{bracket.label}</span>
+                      <span className="bracket-description">{bracket.description}</span>
+                    </div>
+                  </label>
+                ))}
+              </div>
+              {errors.bracket && (
+                <span className="error-message">{errors.bracket}</span>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="budget">
+                <DollarSign className="inline-icon" />
+                Budget <span className="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="budget"
+                value={formData.budget}
+                onChange={(e) => handleInputChange('budget', e.target.value)}
+                className={`form-input ${errors.budget ? 'error' : ''}`}
+                placeholder="e.g., $100, No budget, Under $500"
+              />
+              {errors.budget && (
+                <span className="error-message">{errors.budget}</span>
+              )}
+            </div>
+          </div>
+        );
+
+      case 5:
+        return (
+          <div className="step-content">
+            <h2 className="step-title">
+              <Coffee className="step-icon" />
+              Final Details
+            </h2>
+            <p className="step-description">Almost done! Just a couple more fun questions.</p>
+            
+            <div className="form-fields">
+              <div className="form-group">
+                <label htmlFor="coffee">
+                  <Coffee className="inline-icon" />
+                  Coffee Preference <span className="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="coffee"
+                  value={formData.coffee}
+                  onChange={(e) => handleInputChange('coffee', e.target.value)}
+                  className={`form-input ${errors.coffee ? 'error' : ''}`}
+                  placeholder="e.g., Black coffee, French press / Latte with oat milk"
+                />
+                {errors.coffee && (
+                  <span className="error-message">{errors.coffee}</span>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="idealDate">
+                  <Calendar className="inline-icon" />
+                  Ideal Date (Optional)
+                </label>
+                <input
+                  type="text"
+                  id="idealDate"
+                  value={formData.idealDate}
+                  onChange={(e) => handleInputChange('idealDate', e.target.value)}
+                  className="form-input"
+                  placeholder="Your answer"
+                />
+              </div>
+            </div>
+
+            <div className="review-section">
+              <h3>Review Your Submission</h3>
+              <div className="review-grid">
+                <div className="review-item">
+                  <span className="review-label">Patreon:</span>
+                  <span className="review-value">{formData.patreonUsername}</span>
+                </div>
+                <div className="review-item">
+                  <span className="review-label">Discord:</span>
+                  <span className="review-value">{formData.discordUsername}</span>
+                </div>
+                <div className="review-item">
+                  <span className="review-label">Type:</span>
+                  <span className="review-value">{formData.mysteryDeck === 'yes' ? 'Mystery Deck' : 'Custom Build'}</span>
+                </div>
+                <div className="review-item">
+                  <span className="review-label">Bracket:</span>
+                  <span className="review-value">
+                    {bracketOptions.find(b => b.value === formData.bracket)?.label || 'Not selected'}
+                  </span>
+                </div>
+                <div className="review-item">
+                  <span className="review-label">Budget:</span>
+                  <span className="review-value">{formData.budget}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4 md:p-8">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
-      </div>
-
-      <div className="max-w-7xl mx-auto relative z-10">
-        {/* Header */}
-        <div className="text-center mb-10 animate-fadeIn">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full mb-4 animate-pulse shadow-lg shadow-purple-500/50">
-            <Swords className="w-10 h-10 text-white" />
+  // Loading state while checking eligibility
+  if (isLoading) {
+    return (
+      <div className="deck-form-container">
+        <div className="form-wrapper">
+          <div className="success-container">
+            <div className="success-card">
+              <Loader2 className="animate-spin success-icon" />
+              <h2>Checking Eligibility...</h2>
+              <p>Verifying your Patreon tier and submission status</p>
+            </div>
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-4">
-            Custom Commander Deck Submission
-          </h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            If you are a patron of my $50 tier on Patreon or higher, here is where you get your custom deck made!
+        </div>
+      </div>
+    );
+  }
+
+  // Tier error state - show BEFORE form
+  if (tierError) {
+    return (
+      <div className="deck-form-container">
+        <div className="form-wrapper">
+          <div className="success-container">
+            <div className="success-card">
+              <AlertCircle className="success-icon" style={{ color: '#ef4444' }} />
+              <h2>Unable to Submit</h2>
+              <p>{tierError}</p>
+              <div className="mt-4">
+                <a href="/tiers" className="btn btn-primary">
+                  View Tiers & Pricing
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (showSuccess) {
+    return (
+      <div className="success-container">
+        <div className="success-card">
+          <CheckCircle className="success-icon" />
+          <h2>{willBeQueued ? 'Deck Request Queued!' : 'Deck Request Submitted!'}</h2>
+          <p>
+            {willBeQueued ? (
+              <>Your deck request has been queued and will be automatically processed when a slot opens up next month. You'll receive an email notification when work begins!</>
+            ) : (
+              <>Your custom Commander deck request has been received. We'll be in touch soon!</>
+            )}
           </p>
+          {!willBeQueued && submissionsRemaining !== null && submissionsRemaining > 0 && (
+            <p className="success-meta">You have {submissionsRemaining - 1} slot(s) remaining this month</p>
+          )}
+          {willBeQueued && (
+            <p className="success-meta">Queue position: {totalSubmissions + 1}</p>
+          )}
+          <button 
+            className="btn btn-primary"
+            onClick={() => {
+              setShowSuccess(false);
+              setCurrentStep(1);
+              setFormData({
+                patreonUsername: '',
+                email: '',
+                discordUsername: '',
+                mysteryDeck: '',
+                commander: '',
+                colorPreference: '',
+                theme: '',
+                bracket: '',
+                budget: '',
+                coffee: '',
+                idealDate: ''
+              });
+              setCompletedSteps([]);
+            }}
+          >
+            {totalSubmissions + 1 < MAX_QUEUED ? 'Submit Another Deck' : 'View My Submissions'}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="deck-form-container">
+      <div className="form-wrapper">
+        <div className="form-header">
+          <div className="header-logo">
+            <Swords style={{ width: 32, height: 32, color: 'white' }} />
+          </div>
+          <h1 className="header-title">Custom Commander Deck Submission</h1>
+          <p className="header-subtitle">Premium deck building for $50+ tier patrons</p>
+          {userTier && submissionsRemaining !== null && (
+            <div className="tier-info" style={{
+              marginTop: '1rem',
+              padding: '0.75rem',
+              background: willBeQueued ? 'rgba(234, 179, 8, 0.1)' : 'rgba(34, 197, 94, 0.1)',
+              border: willBeQueued ? '1px solid rgba(234, 179, 8, 0.3)' : '1px solid rgba(34, 197, 94, 0.3)',
+              borderRadius: '0.5rem'
+            }}>
+              <p style={{ margin: 0, fontSize: '0.875rem' }}>
+                <strong>{userTier} Tier:</strong> {submissionsRemaining > 0 ? (
+                  <>{submissionsRemaining} slot{submissionsRemaining !== 1 ? 's' : ''} available this month</>
+                ) : (
+                  <>All slots filled - submissions will be queued ({MAX_QUEUED - totalSubmissions} queue slots left)</>
+                )}
+              </p>
+            </div>
+          )}
         </div>
 
-        {/* Success Message */}
-        {showSuccess && (
-          <div className="mb-8 p-6 bg-green-500/20 border border-green-500 rounded-xl backdrop-blur-sm animate-slideDown">
-            <div className="flex items-center justify-center gap-3">
-              <CheckCircle2 className="w-6 h-6 text-green-400" />
-              <span className="text-lg font-semibold text-green-400">Your deck submission has been received! We'll be in touch soon.</span>
-            </div>
-          </div>
-        )}
-
-        {/* Main Form Card */}
-        <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-purple-500/20 overflow-hidden">
-          <form onSubmit={handleSubmit} className="p-8">
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Left Column */}
-              <div className="space-y-6">
-                {/* Basic Information Section */}
-                <div className="bg-slate-900/50 rounded-xl p-6 border border-purple-500/10">
-                  <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                    <User className="w-6 h-6 text-purple-400" />
-                    Basic Information
-                  </h2>
-
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Patreon Username <span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.patreonUsername}
-                        onChange={(e) => handleInputChange('patreonUsername', e.target.value)}
-                        className={`w-full px-4 py-3 bg-slate-800/50 border ${errors.patreonUsername ? 'border-red-500' : 'border-purple-500/30'} rounded-lg focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20 text-white placeholder-gray-500 transition-all`}
-                        placeholder="Enter your Patreon username"
-                      />
-                      {errors.patreonUsername && (
-                        <p className="mt-1 text-sm text-red-400">{errors.patreonUsername}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        <Mail className="inline w-4 h-4 mr-1" />
-                        Email <span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => handleInputChange('email', e.target.value)}
-                        className={`w-full px-4 py-3 bg-slate-800/50 border ${errors.email ? 'border-red-500' : 'border-purple-500/30'} rounded-lg focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20 text-white placeholder-gray-500 transition-all`}
-                        placeholder="your.email@example.com"
-                      />
-                      {errors.email && (
-                        <p className="mt-1 text-sm text-red-400">{errors.email}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        <Hash className="inline w-4 h-4 mr-1" />
-                        Discord Username <span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.discordUsername}
-                        onChange={(e) => handleInputChange('discordUsername', e.target.value)}
-                        className={`w-full px-4 py-3 bg-slate-800/50 border ${errors.discordUsername ? 'border-red-500' : 'border-purple-500/30'} rounded-lg focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20 text-white placeholder-gray-500 transition-all`}
-                        placeholder="YourDiscord#1234"
-                      />
-                      {errors.discordUsername && (
-                        <p className="mt-1 text-sm text-red-400">{errors.discordUsername}</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Mystery Deck Section */}
-                <div className="bg-slate-900/50 rounded-xl p-6 border border-purple-500/10">
-                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-purple-400" />
-                    Mystery Deck?
-                  </h3>
-                  <div className="space-y-3">
-                    <label className="flex items-center p-4 bg-slate-800/50 border border-purple-500/20 rounded-lg cursor-pointer hover:border-purple-400 transition-all group">
-                      <input
-                        type="radio"
-                        name="mysteryDeck"
-                        value="yes"
-                        checked={formData.mysteryDeck === 'yes'}
-                        onChange={(e) => handleInputChange('mysteryDeck', e.target.value)}
-                        className="w-5 h-5 text-purple-600 focus:ring-purple-500 mr-3"
-                      />
-                      <span className="text-gray-300 group-hover:text-white transition-colors">
-                        Yes, just make something fun, I trust you! 🎲
-                      </span>
-                    </label>
-                    <label className="flex items-center p-4 bg-slate-800/50 border border-purple-500/20 rounded-lg cursor-pointer hover:border-purple-400 transition-all group">
-                      <input
-                        type="radio"
-                        name="mysteryDeck"
-                        value="no"
-                        checked={formData.mysteryDeck === 'no'}
-                        onChange={(e) => handleInputChange('mysteryDeck', e.target.value)}
-                        className="w-5 h-5 text-purple-600 focus:ring-purple-500 mr-3"
-                      />
-                      <span className="text-gray-300 group-hover:text-white transition-colors">
-                        No, I have an idea I'm cool like that 😎
-                      </span>
-                    </label>
-                  </div>
-                  {errors.mysteryDeck && (
-                    <p className="mt-2 text-sm text-red-400">{errors.mysteryDeck}</p>
+        <div className="progress-bar">
+          {steps.map((step) => {
+            const Icon = step.icon;
+            const isActive = currentStep === step.id;
+            const isCompleted = completedSteps.includes(step.id);
+            
+            return (
+              <div 
+                key={step.id}
+                className={`progress-step ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}`}
+                onClick={() => {
+                  if (isCompleted || step.id < currentStep) {
+                    setCurrentStep(step.id);
+                  }
+                }}
+              >
+                <div className="progress-step-circle">
+                  {isCompleted ? (
+                    <CheckCircle style={{ width: 20, height: 20 }} />
+                  ) : (
+                    <Icon style={{ width: 20, height: 20 }} />
                   )}
                 </div>
-
-                {/* Commander & Theme */}
-                <div className="bg-slate-900/50 rounded-xl p-6 border border-purple-500/10">
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Commander (Optional)
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.commander}
-                        onChange={(e) => handleInputChange('commander', e.target.value)}
-                        className="w-full px-4 py-3 bg-slate-800/50 border border-purple-500/30 rounded-lg focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20 text-white placeholder-gray-500 transition-all"
-                        placeholder="Commander name"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Theme (Optional)
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.theme}
-                        onChange={(e) => handleInputChange('theme', e.target.value)}
-                        className="w-full px-4 py-3 bg-slate-800/50 border border-purple-500/30 rounded-lg focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20 text-white placeholder-gray-500 transition-all"
-                        placeholder="e.g., Tribal, Artifacts, Spellslinger"
-                      />
-                    </div>
-                  </div>
-                </div>
+                <span className="progress-step-label">{step.name}</span>
               </div>
+            );
+          })}
+        </div>
 
-              {/* Right Column */}
-              <div className="space-y-6">
-                {/* Color Preference Section */}
-                <div className="bg-slate-900/50 rounded-xl p-6 border border-purple-500/10">
-                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Palette className="w-5 h-5 text-purple-400" />
-                    Color Preference
-                  </h3>
-                  <div className="grid grid-cols-3 gap-2 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
-                    {colorOptions.map((color) => (
-                      <button
-                        key={color.id}
-                        type="button"
-                        onClick={() => handleColorSelect(color.id)}
-                        className={`p-3 rounded-lg text-white text-xs font-semibold transition-all transform hover:scale-105 hover:shadow-lg ${selectedColor === color.id
-                          ? 'ring-2 ring-purple-400 ring-offset-2 ring-offset-slate-900 scale-105'
-                          : ''
-                          } ${color.className}`}
-                      >
-                        {color.label}
-                      </button>
-                    ))}
-                  </div>
-                  {errors.colorPreference && (
-                    <p className="mt-2 text-sm text-red-400">{errors.colorPreference}</p>
-                  )}
-                </div>
-
-                {/* Bracket Selection */}
-                <div className="bg-slate-900/50 rounded-xl p-6 border border-purple-500/10">
-                  <h3 className="text-xl font-bold text-white mb-4">
-                    Bracket Selection <span className="text-red-400">*</span>
-                  </h3>
-                  <div className="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
-                    {bracketOptions.map((bracket) => (
-                      <button
-                        key={bracket.value}
-                        type="button"
-                        onClick={() => handleBracketSelect(bracket.value)}
-                        className={`w-full p-3 text-left rounded-lg border transition-all ${selectedBracket === bracket.value
-                          ? 'bg-purple-600/20 border-purple-400 text-white'
-                          : 'bg-slate-800/50 border-purple-500/20 text-gray-300 hover:border-purple-400 hover:text-white'
-                          }`}
-                      >
-                        <div className="font-semibold">{bracket.label}</div>
-                        <div className="text-xs opacity-75 mt-1">{bracket.description}</div>
-                      </button>
-                    ))}
-                  </div>
-                  {errors.bracket && (
-                    <p className="mt-2 text-sm text-red-400">{errors.bracket}</p>
-                  )}
-                </div>
-
-                {/* Budget & Fun Questions */}
-                <div className="bg-slate-900/50 rounded-xl p-6 border border-purple-500/10">
-                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <DollarSign className="w-5 h-5 text-purple-400" />
-                    Additional Info
-                  </h3>
-
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Budget <span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.budget}
-                        onChange={(e) => handleInputChange('budget', e.target.value)}
-                        className={`w-full px-4 py-3 bg-slate-800/50 border ${errors.budget ? 'border-red-500' : 'border-purple-500/30'} rounded-lg focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20 text-white placeholder-gray-500 transition-all`}
-                        placeholder="e.g., $100, No budget, Under $500"
-                      />
-                      {errors.budget && (
-                        <p className="mt-1 text-sm text-red-400">{errors.budget}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        <Coffee className="inline w-4 h-4 mr-1" />
-                        Coffee Preference <span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.coffee}
-                        onChange={(e) => handleInputChange('coffee', e.target.value)}
-                        className={`w-full px-4 py-3 bg-slate-800/50 border ${errors.coffee ? 'border-red-500' : 'border-purple-500/30'} rounded-lg focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20 text-white placeholder-gray-500 transition-all`}
-                        placeholder="e.g., Black coffee, French press"
-                      />
-                      {errors.coffee && (
-                        <p className="mt-1 text-sm text-red-400">{errors.coffee}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        <Calendar className="inline w-4 h-4 mr-1" />
-                        Ideal Date (Optional)
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.idealDate}
-                        onChange={(e) => handleInputChange('idealDate', e.target.value)}
-                        className="w-full px-4 py-3 bg-slate-800/50 border border-purple-500/30 rounded-lg focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20 text-white placeholder-gray-500 transition-all"
-                        placeholder="Your answer"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Form Actions */}
-            <div className="mt-8 flex flex-col sm:flex-row gap-4">
+        <div className="form-card">
+          {renderStepContent()}
+          
+          <div className="form-actions">
+            <button
+              className="btn btn-secondary"
+              onClick={handlePrevious}
+              disabled={currentStep === 1}
+              style={{ visibility: currentStep === 1 ? 'hidden' : 'visible' }}
+            >
+              <ChevronLeft style={{ width: 20, height: 20 }} />
+              Previous
+            </button>
+            
+            {currentStep < totalSteps ? (
               <button
-                type="submit"
+                className="btn btn-primary"
+                onClick={handleNext}
+              >
+                Next
+                <ChevronRight style={{ width: 20, height: 20 }} />
+              </button>
+            ) : (
+              <button
+                className="btn btn-primary"
+                onClick={handleSubmit}
                 disabled={isLoading}
-                className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-4 px-8 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25"
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <Loader2 className="animate-spin" style={{ width: 20, height: 20 }} />
                     Submitting...
                   </>
                 ) : (
                   <>
-                    <CheckCircle2 className="w-5 h-5" />
                     Submit Deck Request
+                    <CheckCircle style={{ width: 20, height: 20 }} />
                   </>
                 )}
               </button>
-              <button
-                type="button"
-                onClick={handleClear}
-                disabled={isLoading}
-                className="px-8 py-4 bg-slate-700/50 text-gray-300 font-bold rounded-lg border border-purple-500/20 hover:bg-slate-700 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Clear Form
-              </button>
-            </div>
-
-            <div className="mt-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-              <p className="text-amber-300 text-sm text-center flex items-center justify-center gap-2">
-                <AlertCircle className="w-4 h-4" />
-                Never submit passwords through this form
-              </p>
-            </div>
-          </form>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center mt-8 text-gray-400">
-          <p>This form was created for DefCat</p>
-          <p className="text-sm mt-2 opacity-70">© 2024 Custom Commander Decks</p>
+            )}
+          </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes blob {
-          0% {
-            transform: translate(0px, 0px) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          100% {
-            transform: translate(0px, 0px) scale(1);
-          }
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-
-        .animate-fadeIn {
-          animation: fadeIn 0.8s ease-out;
-        }
-
-        .animate-slideDown {
-          animation: slideDown 0.3s ease-out;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(100, 116, 139, 0.1);
-          border-radius: 3px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(147, 51, 234, 0.5);
-          border-radius: 3px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(147, 51, 234, 0.7);
-        }
-      `}</style>
     </div>
   );
 }

@@ -479,6 +479,39 @@ export type Database = {
         }
         Relationships: []
       }
+      site_config: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_sensitive: boolean | null
+          key: string
+          updated_at: string | null
+          value: string | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_sensitive?: boolean | null
+          key: string
+          updated_at?: string | null
+          value?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_sensitive?: boolean | null
+          key?: string
+          updated_at?: string | null
+          value?: string | null
+        }
+        Relationships: []
+      }
       sync_deck_logs: {
         Row: {
           action: string | null

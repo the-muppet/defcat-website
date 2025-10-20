@@ -13,8 +13,13 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY! // Use service role key for server-side operations
 );
 
-// Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY!);
+// Lazy-initialize Resend client (only when needed, avoids build-time errors)
+function getResendClient() {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error('RESEND_API_KEY is not configured');
+  }
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 // Validation helper
 function validateSubmission(data: any): data is DeckSubmissionFormData {
@@ -163,7 +168,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Convert mysteryDeck string to boolean
-    const mysteryDeck = body.mysteryDeck === 'yes';
+    const mysteryDeck = body.mysteryDeck === true;
 
     // Prepare data for Supabase
     const submissionData = {
@@ -229,8 +234,9 @@ export async function POST(request: NextRequest) {
 
     // Send confirmation email
     try {
+      const resend = getResendClient();
       await resend.emails.send({
-        from: 'DefCat Custom Decks <decks@defcat.com>', 
+        from: 'DefCat Custom Decks <decks@defcat.com>',
         to: body.email,
         subject: `Deck Submission Confirmed - #${submissionNumber}`,
         react: DeckSubmissionEmail({
@@ -250,6 +256,7 @@ export async function POST(request: NextRequest) {
 
     // Also notify admin (optional)
     try {
+      const resend = getResendClient();
       await resend.emails.send({
         from: 'DefCat Submissions <notifications@defcat.com>', // Update with your domain
         to: process.env.ADMIN_EMAIL || 'admin@defcat.com', // Update with your admin email

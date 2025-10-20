@@ -1,63 +1,24 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ShoppingBag, Tag, ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { products, type ProductCategory } from "@/data/products"
 
 const categories = ["All", "Apparel", "MTG Accessories", "Gaming Accessories", "Luxury Items"] as const
 type Category = typeof categories[number]
 
-interface Product {
-  id: string
-  name: string
-  category: Exclude<Category, "All">
-  description: string
-  discountCode?: string
-  link: string
-  imageUrl?: string
-}
-
-const products: Product[] = [
-  {
-    id: "1",
-    name: "MTG Playmat Bundle",
-    category: "MTG Accessories",
-    description: "Get 20% off premium playmats with code DEFCAT20",
-    discountCode: "DEFCAT20",
-    link: "#"
-  },
-  {
-    id: "2",
-    name: "Commander Deck Box",
-    category: "MTG Accessories",
-    description: "Free shipping on all deck boxes - no code needed",
-    link: "#"
-  },
-  {
-    id: "3",
-    name: "DefCat T-Shirt",
-    category: "Apparel",
-    description: "15% off all apparel with code VAULT15",
-    discountCode: "VAULT15",
-    link: "#"
-  },
-  {
-    id: "4",
-    name: "Gaming Chair",
-    category: "Gaming Accessories",
-    description: "Special pricing for Patreon supporters - contact for details",
-    link: "#"
-  },
-]
-
 export default function DiscountStorePage() {
   const [selectedCategory, setSelectedCategory] = useState<Category>("All")
 
-  const filteredProducts = selectedCategory === "All"
-    ? products
-    : products.filter(p => p.category === selectedCategory)
+  const filteredProducts = useMemo(() => {
+    const activeProducts = products.filter(p => p.isActive !== false)
+    return selectedCategory === "All"
+      ? activeProducts
+      : activeProducts.filter(p => p.category === selectedCategory)
+  }, [selectedCategory])
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">

@@ -1,14 +1,39 @@
 "use client"
 
+import dynamic from 'next/dynamic'
 import { Card, CardContent } from "@/components/ui/card"
-import { Youtube } from "lucide-react"
+import { Youtube, Loader2 } from "lucide-react"
+
+const ReactPlayer = dynamic(() => import('react-player'), {
+  ssr: false,
+  loading: () => (
+    <div className="aspect-video bg-muted/30 flex items-center justify-center">
+      <Loader2 className="h-12 w-12 animate-spin text-muted-foreground" />
+    </div>
+  )
+})
 
 interface FeaturedVideoProps {
   videoId?: string
+  url?: string
   title?: string
+  playing?: boolean
+  controls?: boolean
+  light?: boolean
+  muted?: boolean
 }
 
-export function FeaturedVideo({ videoId, title = "Today's Featured Video" }: FeaturedVideoProps) {
+export function FeaturedVideo({
+  videoId,
+  url,
+  title = "Today's Featured Video",
+  playing = false,
+  controls = true,
+  light = true,
+  muted = false
+}: FeaturedVideoProps) {
+  const videoUrl = url || (videoId ? `https://www.youtube.com/watch?v=${videoId}` : null)
+
   return (
     <section className="py-12 px-6">
       <div className="max-w-7xl mx-auto">
@@ -19,16 +44,25 @@ export function FeaturedVideo({ videoId, title = "Today's Featured Video" }: Fea
 
         <Card className="glass border-white/10 bg-card-tinted overflow-hidden">
           <CardContent className="p-0">
-            {videoId ? (
-              <div className="aspect-video">
-                <iframe
+            {videoUrl ? (
+              <div className="aspect-video relative">
+                <ReactPlayer
+                  url={videoUrl}
                   width="100%"
                   height="100%"
-                  src={`https://www.youtube.com/embed/${videoId}`}
-                  title="YouTube video player"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="w-full h-full"
+                  playing={playing}
+                  controls={controls}
+                  light={light}
+                  muted={muted}
+                  config={{
+                    youtube: {
+                      playerVars: {
+                        modestbranding: 1,
+                        rel: 0
+                      }
+                    }
+                  }}
+                  className="absolute top-0 left-0"
                 />
               </div>
             ) : (
