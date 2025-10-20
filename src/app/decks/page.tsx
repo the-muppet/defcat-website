@@ -6,14 +6,12 @@ import { useDecks } from "@/lib/hooks/useDecks"
 import { cn } from "@/lib/utils"
 import type { Deck } from "@/types/core"
 
-// Memoized deck row component for better performance
+// Memoized deck row component
 const DeckRow = memo(function DeckRow({ deck }: { deck: Deck }) {
   return (
-    <tr
-      className="border-b border-border hover:bg-accent/50 transition-colors"
-    >
+    <tr className="border-b border-tinted hover:bg-accent-tinted transition-all">
       <td className="py-4 px-4">
-        <a href={`/decks/${deck.id}`} className="block hover:text-purple-400 transition-colors">
+        <a href={`/decks/${deck.id}`} className="block hover:text-[var(--mana-color)] transition-colors">
           <div className="font-medium">{deck.name}</div>
           <div className="text-xs text-muted-foreground line-clamp-1 mt-1">
             {deck.description}
@@ -25,7 +23,7 @@ const DeckRow = memo(function DeckRow({ deck }: { deck: Deck }) {
           {deck.commanders?.map((cmd, idx) => (
             <span
               key={idx}
-              className="text-xs px-2 py-1 rounded bg-accent"
+              className="text-xs px-2 py-1 rounded bg-accent-tinted border border-tinted"
             >
               {cmd}
             </span>
@@ -49,7 +47,7 @@ const DeckRow = memo(function DeckRow({ deck }: { deck: Deck }) {
         <a href={deck.moxfield_url || '#'}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-purple-400 hover:text-purple-300"
+          className="inline-flex items-center gap-1 text-[var(--mana-color)] hover:brightness-110 transition-all"
         >
           <ExternalLink className="h-4 w-4" />
         </a>
@@ -135,10 +133,10 @@ export default function TableLayout() {
 
   return (
     <div className="flex h-screen">
-      {/* Sidebar */}
+      {/* Sidebar with tinted styling */}
       <aside
         className={cn(
-          "border-r border-border bg-card/50 backdrop-blur-sm transition-all duration-300",
+          "border-r border-tinted bg-card-tinted backdrop-blur-sm transition-all duration-300",
           showFilters ? "w-72" : "w-0 overflow-hidden"
         )}
       >
@@ -147,13 +145,13 @@ export default function TableLayout() {
             <h2 className="text-lg font-bold">Filters</h2>
             <button
               onClick={() => setShowFilters(false)}
-              className="text-muted-foreground hover:text-foreground"
+              className="text-muted-foreground hover:text-foreground p-1 rounded hover:bg-accent-tinted transition-colors"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
 
-          {/* Search */}
+          {/* Search with tinted input */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-muted-foreground mb-2">
               Search
@@ -163,11 +161,11 @@ export default function TableLayout() {
               placeholder="Deck or commander..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-background border border-input text-foreground placeholder-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2 rounded-lg bg-accent-tinted border border-tinted text-foreground placeholder-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-[var(--mana-color)] focus:border-[var(--mana-color)] transition-all"
             />
           </div>
 
-          {/* Color Identity */}
+          {/* Color Identity with tinted hover */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-muted-foreground mb-3">
               Color Identity
@@ -176,13 +174,13 @@ export default function TableLayout() {
               {colorOptions.map((color) => (
                 <label
                   key={color.code}
-                  className="flex wsws-items-center gap-3 cursor-pointer hover:bg-accent p-2 rounded-lg transition-colors"
+                  className="flex items-center gap-3 cursor-pointer hover:bg-accent-tinted p-2 rounded-lg transition-all"
                 >
                   <input
                     type="checkbox"
                     checked={selectedColors.includes(color.code)}
                     onChange={() => toggleColor(color.code)}
-                    className="w-4 h-4 rounded border-input bg-background text-purple-500 focus:ring-purple-500"
+                    className="w-4 h-4 rounded border-tinted bg-background text-[var(--mana-color)] focus:ring-[var(--mana-color)]"
                   />
                   <span className="text-sm">{color.name}</span>
                 </label>
@@ -192,13 +190,13 @@ export default function TableLayout() {
 
           {/* Active Filters */}
           {(searchQuery || selectedColors.length > 0) && (
-            <div className="pt-4 border-t border-border">
+            <div className="pt-4 border-t border-tinted">
               <button
                 onClick={() => {
                   setSearchQuery("")
                   setSelectedColors([])
                 }}
-                className="text-sm text-purple-400 hover:text-purple-300"
+                className="text-sm text-[var(--mana-color)] hover:brightness-110 transition-all"
               >
                 Clear all filters
               </button>
@@ -207,16 +205,16 @@ export default function TableLayout() {
         </div>
       </aside>
 
-      {/* Main Content */}
+      {/* Main Content with tinted elements */}
       <main className="flex-1 overflow-auto">
         {/* Header */}
-        <header className="sticky top-0 bg-card/80 backdrop-blur-md border-b border-border px-6 py-4">
+        <header className="sticky top-0 bg-card-tinted/80 backdrop-blur-md border-b border-tinted px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               {!showFilters && (
                 <button
                   onClick={() => setShowFilters(true)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-accent hover:bg-accent/80 transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-accent-tinted hover:bg-[var(--accent-tinted)] border border-tinted transition-all"
                 >
                   <Filter className="h-4 w-4" />
                   Show Filters
@@ -232,17 +230,17 @@ export default function TableLayout() {
           </div>
         </header>
 
-        {/* Table */}
+        {/* Table with tinted styling */}
         <div className="p-6">
           {loading ? (
             <div className="text-center text-muted-foreground py-20">Loading decks...</div>
           ) : error ? (
-            <div className="text-center text-destructive py-20">Error</div>
+            <div className="text-center text-destructive py-20">Error loading decks</div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-border">
+                  <tr className="border-b border-tinted">
                     <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
                       <button
                         onClick={() => handleSort("name")}

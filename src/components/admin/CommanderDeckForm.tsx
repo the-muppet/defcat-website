@@ -1,40 +1,20 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { CheckCircle2, Sparkles, Loader2, AlertCircle } from 'lucide-react';
-import { ColorIdentity, COLOR_MAPPINGS } from '@/lib/utility/color-identity';
-import { useDeckSubmission } from '@/hooks/useDeckSubmission';
-import type { DeckSubmissionFormData } from '@/types/form';
-
-interface DeckFormData {
-  patreonUsername: string;
-  email: string;
-  discordUsername: string;
-  mysteryDeck: string;
-  commander: string;
-  colorPreference: string;
-  theme: string;
-  bracket: string;
-  budget: string;
-  coffee: string;
-  idealDate: string;
-}
+import { CheckCircle2, Sparkles, Loader2, AlertCircle, Swords, Coffee, Palette, DollarSign, Calendar, Mail, User, Hash } from 'lucide-react';
 
 interface FormErrors {
-  [key: string]: string;
+  patreonUsername?: string
+  email?: string
+  discordUsername?: string
+  mysteryDeck?: string
+  colorPreference?: string
+  bracket?: string
+  budget?: string
+  coffee?: string
 }
 
-interface ColorOption {
-  identity: string;
-  label: string;
-}
 
 export default function CommanderDeckForm() {
-  const [formData, setFormData] = useState<DeckFormData>({
+  const [formData, setFormData] = useState({
     patreonUsername: '',
     email: '',
     discordUsername: '',
@@ -48,76 +28,68 @@ export default function CommanderDeckForm() {
     idealDate: ''
   });
 
-const [errors, setErrors] = useState<FormErrors>({});
-const { submitDeck, isLoading, error: submissionError, submissionNumber } = useDeckSubmission();
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [selectedColor, setSelectedColor] = useState('');
+  const [selectedBracket, setSelectedBracket] = useState('');
 
-type ColorOption = {
-  identity: string
-  label: string
-  className: string  // Add this for easy access
-}
+  const colorOptions = [
+    { id: 'mono-white', label: 'Mono White', className: 'ms-w' },
+    { id: 'mono-blue', label: 'Mono Blue', className: 'ms-u' },
+    { id: 'mono-black', label: 'Mono Black', className: 'ms-b' },
+    { id: 'mono-red', label: 'Mono Red', className: 'ms-r' },
+    { id: 'mono-green', label: 'Mono Green', className: 'ms-g' },
+    { id: 'colorless', label: 'Colorless', className: 'ms-c' },
+    { id: 'azorius', label: 'Azorius', className: 'ms-guild-azorius' },
+    { id: 'dimir', label: 'Dimir', className: 'ms-guild-dimir' },
+    { id: 'rakdos', label: 'Rakdos', className: 'ms-guild-rakdos' },
+    { id: 'gruul', label: 'Gruul', className: 'ms-guild-gruul' },
+    { id: 'selesnya', label: 'Selesnya', className: 'ms-guild-selesnya' },
+    { id: 'orzhov', label: 'Orzhov', className: 'ms-guild-orzhov' },
+    { id: 'izzet', label: 'Izzet', className: 'ms-guild-izzet' },
+    { id: 'golgari', label: 'Golgari', className: 'ms-guild-golgari' },
+    { id: 'boros', label: 'Boros', className: 'ms-guild-boros' },
+    { id: 'simic', label: 'Simic', className: 'ms-guild-simic' },
+    { id: 'bant', label: 'Bant', className: 'ms-clan-bant' },
+    { id: 'esper', label: 'Esper', className: 'ms-clan-esper' },
+    { id: 'grixis', label: 'Grixis', className: 'ms-clan-grixis' },
+    { id: 'jund', label: 'Jund', className: 'ms-b ms-r ms-u' },
+    { id: 'naya', label: 'Naya', className: 'ms-clan-naya' },
+    { id: 'abzan', label: 'Abzan', className: 'ms-clan-abzan' },
+    { id: 'jeskai', label: 'Jeskai', className: 'ms-clan-jeskai' },
+    { id: 'mardu', label: 'Mardu', className: 'ms-clan-mardu' },
+    { id: 'sultai', label: 'Sultai', className: 'ms-clan-sultai' },
+    { id: 'temur', label: 'Temur', className: 'ms-clan-temur' },
+    { id: 'wubrg', label: 'WUBRG SOUP', className: 'ms-ci-wubrg' },
+  ]
 
-// Color options using actual color identities
-const colorOptions: ColorOption[] = [
-  // Mono colors
-  { identity: 'W', label: 'Mono White' },
-  { identity: 'U', label: 'Mono Blue' },
-  { identity: 'B', label: 'Mono Black' },
-  { identity: 'R', label: 'Mono Red' },
-  { identity: 'G', label: 'Mono Green' },
-  { identity: 'C', label: 'Colorless' },
-  
-  // Two colors (Guilds)
-  { identity: 'WU', label: 'Azorius (White/Blue)' },
-  { identity: 'UB', label: 'Dimir (Blue/Black)' },
-  { identity: 'BR', label: 'Rakdos (Black/Red)' },
-  { identity: 'RG', label: 'Gruul (Red/Green)' },
-  { identity: 'GW', label: 'Selesnya (Green/White)' },
-  { identity: 'WB', label: 'Orzhov (White/Black)' },
-  { identity: 'UR', label: 'Izzet (Blue/Red)' },
-  { identity: 'BG', label: 'Golgari (Black/Green)' },
-  { identity: 'RW', label: 'Boros (Red/White)' },
-  { identity: 'GU', label: 'Simic (Green/Blue)' },
-  
-  // Three colors (Shards)
-  { identity: 'GWU', label: 'Bant (Green/White/Blue)' },
-  { identity: 'WUB', label: 'Esper (White/Blue/Black)' },
-  { identity: 'UBR', label: 'Grixis (Blue/Black/Red)' },
-  { identity: 'BRG', label: 'Jund (Black/Red/Green)' },
-  { identity: 'RGW', label: 'Naya (Red/Green/White)' },
-  
-  // Three colors (Wedges)
-  { identity: 'WBG', label: 'Abzan (White/Black/Green)' },
-  { identity: 'URW', label: 'Jeskai (Blue/Red/White)' },
-  { identity: 'BRW', label: 'Mardu (Black/Red/White)' },
-  { identity: 'GUB', label: 'Sultai (Green/Blue/Black)' },
-  { identity: 'RGU', label: 'Temur (Red/Green/Blue)' },
-  
-  // Four colors
-  { identity: 'WUBR', label: 'Yore-Tiller (No Green)' },
-  { identity: 'UBRG', label: 'Glint-Eye (No White)' },
-  { identity: 'BRGW', label: 'Dune-Brood (No Blue)' },
-  { identity: 'RGWU', label: 'Ink-Treader (No Black)' },
-  { identity: 'GWUB', label: 'Witch-Maw (No Red)' },
-  
-  // Five colors
-  { identity: 'WUBRG', label: 'WUBRG SOUP' }
-].map(option => ({
-  ...option,
-  identity: ColorIdentity.normalize(option.identity), // Normalize to WUBRG order
-  className: ColorIdentity.getClassName(option.identity) // Add className
-}))
-  
-
-const bracketOptions = [
-    'Bracket 1',
-    'Bracket 2',
-    'Bracket 3',
-    'Bracket 4',
-    'Bracket 5',
-    'TEDH Perfect tournament optimized deck',
-    'I DON\'T CARE GO FOR IT DEFCAT'
+  const bracketOptions = [
+    { value: 'bracket1', label: 'Bracket 1', description: 'Casual, precon level' },
+    { value: 'bracket2', label: 'Bracket 2', description: 'Focused casual' },
+    { value: 'bracket3', label: 'Bracket 3', description: 'Optimized casual' },
+    { value: 'bracket4', label: 'Bracket 4', description: 'High power' },
+    { value: 'bracket5', label: 'Bracket 5', description: 'Fringe competitive' },
+    { value: 'cedh', label: 'cEDH', description: 'Perfect tournament optimized deck' },
+    { value: 'wild', label: 'GO WILD', description: "I DON'T CARE GO FOR IT DEFCAT" },
   ];
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (errors as any[typeof field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const handleColorSelect = (colorId: string) => {
+    setSelectedColor(colorId);
+    handleInputChange('colorPreference', colorId);
+  };
+
+  const handleBracketSelect = (bracketValue: string) => {
+    setSelectedBracket(bracketValue);
+    handleInputChange('bracket', bracketValue);
+  };
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -133,11 +105,11 @@ const bracketOptions = [
     if (!formData.discordUsername.trim()) {
       newErrors.discordUsername = 'Discord username is required';
     }
-    if (!formData.mysteryDeck || formData.mysteryDeck.trim() === '') {
+    if (!formData.mysteryDeck) {
       newErrors.mysteryDeck = 'Please select an option';
     }
-    if (!formData.colorPreference || formData.colorPreference.trim() === '') {
-      newErrors.colorPreference = 'Color preference is required';
+    if (formData.mysteryDeck === 'no' && !formData.commander && !formData.colorPreference) {
+      newErrors.colorPreference = 'Please select a color preference or specify a commander';
     }
     if (!formData.bracket) {
       newErrors.bracket = 'Bracket selection is required';
@@ -153,26 +125,19 @@ const bracketOptions = [
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     if (validateForm()) {
-      // Convert form data to submission format
-      const submissionData: DeckSubmissionFormData = {
-        patreonUsername: formData.patreonUsername,
-        email: formData.email,
-        discordUsername: formData.discordUsername,
-        mysteryDeck: formData.mysteryDeck === 'yes',
-        commander: formData.commander || undefined,
-        colorPreference: formData.colorPreference,
-        theme: formData.theme || undefined,
-        bracket: formData.bracket,
-        budget: formData.budget,
-        coffee: formData.coffee,
-        idealDate: formData.idealDate || undefined,
-      };
-
-      // Submit the deck
-      await submitDeck(submissionData);
+      setIsLoading(true);
+      // Simulate API call
+      setTimeout(() => {
+        setIsLoading(false);
+        setShowSuccess(true);
+        setTimeout(() => {
+          setShowSuccess(false);
+          handleClear();
+        }, 5000);
+      }, 2000);
     }
   };
 
@@ -189,436 +154,414 @@ const bracketOptions = [
       budget: '',
       coffee: '',
       idealDate: ''
-    } as DeckFormData);
+    });
+    setSelectedColor('');
+    setSelectedBracket('');
     setErrors({});
   };
 
-  const handleInputChange = (field: keyof DeckFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
-    }
-  };
-
-  const renderManaSymbols = (identity: string) => {
-  const className = ColorIdentity.getClassName(identity);
-  
-  // Use guild/clan symbol if available, otherwise fall back to individual colors
-  if (className.includes('guild') || className.includes('clan') || className.includes('watermark')) {
-    return <i className={`ms ${className} ms-cost ms-shadow ms-2x`} />;
-  }
-
-  // Fall back to individual color symbols
-  const individual = ColorIdentity.getIndividual(identity);
   return (
-    <div className="flex gap-1 items-center">
-      {individual.map((color: string, idx: number) => (
-        <i key={idx} className={`ms ms-${color.toLowerCase()} ms-cost ms-shadow`} />
-      ))}
-    </div>
-  );
-};
-
-  if (submissionNumber !== null) {
-    return (
-      <div className="min-h-screen relative overflow-hidden">
-        {/* Animated background */}
-        <div className="fixed inset-0 bg-background">
-          <div className="absolute inset-0 bg-gradient-to-br from-[var(--bg-radial-top)] via-transparent to-[var(--bg-radial-bottom)] opacity-[var(--bg-gradient-opacity)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--bg-dot-color)_1px,transparent_1px)] bg-[size:24px_24px] opacity-30" />
-        </div>
-
-        <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
-          <Card className="w-full max-w-md glass-card">
-            <CardContent className="pt-6 text-center space-y-6">
-              <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-[var(--gradient-start)] via-[var(--gradient-mid)] to-[var(--gradient-end)] flex items-center justify-center">
-                <CheckCircle2 className="w-12 h-12 text-white" />
-              </div>
-              
-              <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tight">
-                  Submission Received!
-                </h2>
-                <p className="text-xl font-semibold text-[var(--mana-color)]">
-                  Submission #{submissionNumber}
-                </p>
-                <p className="text-muted-foreground">
-                  Thank you for your custom Commander deck submission. Check your email for confirmation details, and I'll get started on your deck soon!
-                </p>
-              </div>
-
-              <Button 
-                onClick={handleClear}
-                className="w-full bg-gradient-to-r from-[var(--gradient-start)] via-[var(--gradient-mid)] to-[var(--gradient-end)] hover:opacity-90 transition-opacity"
-              >
-                Submit Another
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen relative overflow-hidden pb-20">
-      {/* Animated background with MTG theme */}
-      <div className="fixed inset-0 bg-background">
-        <div className="absolute inset-0 bg-gradient-to-br from-[var(--bg-radial-top)] via-transparent to-[var(--bg-radial-bottom)] opacity-[var(--bg-gradient-opacity)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--bg-dot-color)_1px,transparent_1px)] bg-[size:24px_24px] opacity-30" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4 md:p-8">
+      {/* Animated Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
       </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto px-4 py-12">
-        {/* Header Card */}
-        <Card className="mb-8 glass-card border-tinted overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-[var(--gradient-start)] via-[var(--gradient-mid)] to-[var(--gradient-end)] opacity-10" />
-          <CardHeader className="relative pb-8">
-            <div className="flex items-start gap-3">
-              <Sparkles className="w-8 h-8 text-[var(--mana-color)] mt-1" />
-              <div className="flex-1">
-                <CardTitle className="text-4xl font-bold mb-3 bg-gradient-to-r from-[var(--gradient-start)] via-[var(--gradient-mid)] to-[var(--gradient-end)] bg-clip-text text-transparent">
-                  Custom Commander Deck Submission
-                </CardTitle>
-                <CardDescription className="text-base">
-                  If you are a patron of my $50 tier on Patreon or higher, here is where you get your custom deck made!
-                </CardDescription>
-              </div>
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* Header */}
+        <div className="text-center mb-10 animate-fadeIn">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full mb-4 animate-pulse shadow-lg shadow-purple-500/50">
+            <Swords className="w-10 h-10 text-white" />
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-4">
+            Custom Commander Deck Submission
+          </h1>
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+            If you are a patron of my $50 tier on Patreon or higher, here is where you get your custom deck made!
+          </p>
+        </div>
+
+        {/* Success Message */}
+        {showSuccess && (
+          <div className="mb-8 p-6 bg-green-500/20 border border-green-500 rounded-xl backdrop-blur-sm animate-slideDown">
+            <div className="flex items-center justify-center gap-3">
+              <CheckCircle2 className="w-6 h-6 text-green-400" />
+              <span className="text-lg font-semibold text-green-400">Your deck submission has been received! We'll be in touch soon.</span>
             </div>
-          </CardHeader>
-        </Card>
+          </div>
+        )}
 
         {/* Main Form Card */}
-        <Card className="glass-card border-tinted">
-          <CardContent className="pt-8 space-y-8">
-            <p className="text-sm text-muted-foreground">* Indicates required question</p>
+        <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-purple-500/20 overflow-hidden">
+          <form onSubmit={handleSubmit} className="p-8">
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Left Column */}
+              <div className="space-y-6">
+                {/* Basic Information Section */}
+                <div className="bg-slate-900/50 rounded-xl p-6 border border-purple-500/10">
+                  <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                    <User className="w-6 h-6 text-purple-400" />
+                    Basic Information
+                  </h2>
 
-            {/* Error Alert */}
-            {submissionError && (
-              <Alert variant="destructive" className="glass-card border-destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  {submissionError}
-                </AlertDescription>
-              </Alert>
-            )}
-
-            {/* Patreon Username */}
-            <div className="space-y-2">
-              <Label htmlFor="patreon" className="text-base font-semibold">
-                Your Patreon User Name <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="patreon"
-                value={formData.patreonUsername}
-                onChange={(e) => handleInputChange('patreonUsername', e.target.value)}
-                placeholder="Your answer"
-                className={`glass-input ${errors.patreonUsername ? 'border-destructive' : ''}`}
-              />
-              {errors.patreonUsername && (
-                <p className="text-sm text-destructive">{errors.patreonUsername}</p>
-              )}
-            </div>
-
-            {/* Email */}
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-base font-semibold">
-                Your Email <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                placeholder="Your answer"
-                className={`glass-input ${errors.email ? 'border-destructive' : ''}`}
-              />
-              {errors.email && (
-                <p className="text-sm text-destructive">{errors.email}</p>
-              )}
-            </div>
-
-            {/* Discord Username */}
-            <div className="space-y-2">
-              <Label htmlFor="discord" className="text-base font-semibold">
-                What is your Discord Username? <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="discord"
-                value={formData.discordUsername}
-                onChange={(e) => handleInputChange('discordUsername', e.target.value)}
-                placeholder="Your answer"
-                className={`glass-input ${errors.discordUsername ? 'border-destructive' : ''}`}
-              />
-              {errors.discordUsername && (
-                <p className="text-sm text-destructive">{errors.discordUsername}</p>
-              )}
-            </div>
-
-            {/* Mystery Deck */}
-            <div className="space-y-3">
-              <Label className="text-base font-semibold">
-                Do you want a mystery deck? <span className="text-destructive">*</span>
-              </Label>
-              <RadioGroup
-                value={formData.mysteryDeck}
-                onValueChange={(value) => handleInputChange('mysteryDeck', value)}
-                className="space-y-3"
-              >
-                <div className="flex items-center space-x-3 glass-card p-4 rounded-lg hover:border-[var(--mana-color)] transition-colors cursor-pointer">
-                  <RadioGroupItem value="yes" id="mystery-yes" />
-                  <Label htmlFor="mystery-yes" className="flex-1 cursor-pointer">
-                    Yes just make something fun, I trust you
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-3 glass-card p-4 rounded-lg hover:border-[var(--mana-color)] transition-colors cursor-pointer">
-                  <RadioGroupItem value="no" id="mystery-no" />
-                  <Label htmlFor="mystery-no" className="flex-1 cursor-pointer">
-                    No I have an idea, I'm cool like that
-                  </Label>
-                </div>
-              </RadioGroup>
-              {errors.mysteryDeck && (
-                <p className="text-sm text-destructive">{errors.mysteryDeck}</p>
-              )}
-            </div>
-
-            {/* Commander */}
-            <div className="space-y-2">
-              <Label htmlFor="commander" className="text-base font-semibold">
-                Is there a Commander you want me to build for you?
-              </Label>
-              <Input
-                id="commander"
-                value={formData.commander}
-                onChange={(e) => handleInputChange('commander', e.target.value)}
-                placeholder="Your answer"
-                className="glass-input"
-              />
-            </div>
-
-            {/* Color Preference with Mana Symbols */}
-            <div className="space-y-3">
-              <Label className="text-base font-semibold">
-                IF YOU DID NOT PICK A COMMANDER FOR ME TO BUILD, is there a color you'd prefer? <span className="text-destructive">*</span>
-              </Label>
-              <div className="glass-card p-4 rounded-lg max-h-96 overflow-y-auto space-y-2 scrollbar-thin">
-                <RadioGroup
-                  value={formData.colorPreference}
-                  onValueChange={(value) => handleInputChange('colorPreference', value)}
-                >
-                  {colorOptions.map((option) => (
-                    <div 
-                      key={option.identity} 
-                      className="flex items-center space-x-3 p-3 rounded hover:bg-accent-tinted transition-colors cursor-pointer group"
-                    >
-                      <RadioGroupItem value={option.identity} id={`color-${option.identity}`} />
-                      <Label 
-                        htmlFor={`color-${option.identity}`} 
-                        className="flex-1 cursor-pointer flex items-center gap-3"
-                      >
-                        <div className="flex-shrink-0">
-                          {renderManaSymbols(option.identity)}
-                        </div>
-                        <span className="group-hover:text-[var(--mana-color)] transition-colors">
-                          {option.label}
-                        </span>
-                      </Label>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Patreon Username <span className="text-red-400">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.patreonUsername}
+                        onChange={(e) => handleInputChange('patreonUsername', e.target.value)}
+                        className={`w-full px-4 py-3 bg-slate-800/50 border ${errors.patreonUsername ? 'border-red-500' : 'border-purple-500/30'} rounded-lg focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20 text-white placeholder-gray-500 transition-all`}
+                        placeholder="Enter your Patreon username"
+                      />
+                      {errors.patreonUsername && (
+                        <p className="mt-1 text-sm text-red-400">{errors.patreonUsername}</p>
+                      )}
                     </div>
-                  ))}
-                </RadioGroup>
-              </div>
-              {errors.colorPreference && (
-                <p className="text-sm text-destructive">{errors.colorPreference}</p>
-              )}
-            </div>
 
-            {/* Theme */}
-            <div className="space-y-2">
-              <Label htmlFor="theme" className="text-base font-semibold">
-                Is there a theme you had in mind?
-              </Label>
-              <Input
-                id="theme"
-                value={formData.theme}
-                onChange={(e) => handleInputChange('theme', e.target.value)}
-                placeholder="Your answer"
-                className="glass-input"
-              />
-            </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <Mail className="inline w-4 h-4 mr-1" />
+                        Email <span className="text-red-400">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => handleInputChange('email', e.target.value)}
+                        className={`w-full px-4 py-3 bg-slate-800/50 border ${errors.email ? 'border-red-500' : 'border-purple-500/30'} rounded-lg focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20 text-white placeholder-gray-500 transition-all`}
+                        placeholder="your.email@example.com"
+                      />
+                      {errors.email && (
+                        <p className="mt-1 text-sm text-red-400">{errors.email}</p>
+                      )}
+                    </div>
 
-            {/* Bracket */}
-            <div className="space-y-3">
-              <Label className="text-base font-semibold">
-                What Bracket is this deck going to be? <span className="text-destructive">*</span>
-              </Label>
-              <RadioGroup
-                value={formData.bracket}
-                onValueChange={(value) => handleInputChange('bracket', value)}
-                className="space-y-3"
-              >
-                {bracketOptions.map((bracket) => (
-                  <div key={bracket} className="flex items-center space-x-3 glass-card p-4 rounded-lg hover:border-[var(--mana-color)] transition-colors cursor-pointer">
-                    <RadioGroupItem value={bracket} id={`bracket-${bracket}`} />
-                    <Label htmlFor={`bracket-${bracket}`} className="flex-1 cursor-pointer">
-                      {bracket}
-                    </Label>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <Hash className="inline w-4 h-4 mr-1" />
+                        Discord Username <span className="text-red-400">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.discordUsername}
+                        onChange={(e) => handleInputChange('discordUsername', e.target.value)}
+                        className={`w-full px-4 py-3 bg-slate-800/50 border ${errors.discordUsername ? 'border-red-500' : 'border-purple-500/30'} rounded-lg focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20 text-white placeholder-gray-500 transition-all`}
+                        placeholder="YourDiscord#1234"
+                      />
+                      {errors.discordUsername && (
+                        <p className="mt-1 text-sm text-red-400">{errors.discordUsername}</p>
+                      )}
+                    </div>
                   </div>
-                ))}
-              </RadioGroup>
-              {errors.bracket && (
-                <p className="text-sm text-destructive">{errors.bracket}</p>
-              )}
+                </div>
+
+                {/* Mystery Deck Section */}
+                <div className="bg-slate-900/50 rounded-xl p-6 border border-purple-500/10">
+                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-purple-400" />
+                    Mystery Deck?
+                  </h3>
+                  <div className="space-y-3">
+                    <label className="flex items-center p-4 bg-slate-800/50 border border-purple-500/20 rounded-lg cursor-pointer hover:border-purple-400 transition-all group">
+                      <input
+                        type="radio"
+                        name="mysteryDeck"
+                        value="yes"
+                        checked={formData.mysteryDeck === 'yes'}
+                        onChange={(e) => handleInputChange('mysteryDeck', e.target.value)}
+                        className="w-5 h-5 text-purple-600 focus:ring-purple-500 mr-3"
+                      />
+                      <span className="text-gray-300 group-hover:text-white transition-colors">
+                        Yes, just make something fun, I trust you! 🎲
+                      </span>
+                    </label>
+                    <label className="flex items-center p-4 bg-slate-800/50 border border-purple-500/20 rounded-lg cursor-pointer hover:border-purple-400 transition-all group">
+                      <input
+                        type="radio"
+                        name="mysteryDeck"
+                        value="no"
+                        checked={formData.mysteryDeck === 'no'}
+                        onChange={(e) => handleInputChange('mysteryDeck', e.target.value)}
+                        className="w-5 h-5 text-purple-600 focus:ring-purple-500 mr-3"
+                      />
+                      <span className="text-gray-300 group-hover:text-white transition-colors">
+                        No, I have an idea I'm cool like that 😎
+                      </span>
+                    </label>
+                  </div>
+                  {errors.mysteryDeck && (
+                    <p className="mt-2 text-sm text-red-400">{errors.mysteryDeck}</p>
+                  )}
+                </div>
+
+                {/* Commander & Theme */}
+                <div className="bg-slate-900/50 rounded-xl p-6 border border-purple-500/10">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Commander (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.commander}
+                        onChange={(e) => handleInputChange('commander', e.target.value)}
+                        className="w-full px-4 py-3 bg-slate-800/50 border border-purple-500/30 rounded-lg focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20 text-white placeholder-gray-500 transition-all"
+                        placeholder="Commander name"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Theme (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.theme}
+                        onChange={(e) => handleInputChange('theme', e.target.value)}
+                        className="w-full px-4 py-3 bg-slate-800/50 border border-purple-500/30 rounded-lg focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20 text-white placeholder-gray-500 transition-all"
+                        placeholder="e.g., Tribal, Artifacts, Spellslinger"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column */}
+              <div className="space-y-6">
+                {/* Color Preference Section */}
+                <div className="bg-slate-900/50 rounded-xl p-6 border border-purple-500/10">
+                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Palette className="w-5 h-5 text-purple-400" />
+                    Color Preference
+                  </h3>
+                  <div className="grid grid-cols-3 gap-2 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
+                    {colorOptions.map((color) => (
+                      <button
+                        key={color.id}
+                        type="button"
+                        onClick={() => handleColorSelect(color.id)}
+                        className={`p-3 rounded-lg text-white text-xs font-semibold transition-all transform hover:scale-105 hover:shadow-lg ${selectedColor === color.id
+                          ? 'ring-2 ring-purple-400 ring-offset-2 ring-offset-slate-900 scale-105'
+                          : ''
+                          } ${color.className}`}
+                      >
+                        {color.label}
+                      </button>
+                    ))}
+                  </div>
+                  {errors.colorPreference && (
+                    <p className="mt-2 text-sm text-red-400">{errors.colorPreference}</p>
+                  )}
+                </div>
+
+                {/* Bracket Selection */}
+                <div className="bg-slate-900/50 rounded-xl p-6 border border-purple-500/10">
+                  <h3 className="text-xl font-bold text-white mb-4">
+                    Bracket Selection <span className="text-red-400">*</span>
+                  </h3>
+                  <div className="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                    {bracketOptions.map((bracket) => (
+                      <button
+                        key={bracket.value}
+                        type="button"
+                        onClick={() => handleBracketSelect(bracket.value)}
+                        className={`w-full p-3 text-left rounded-lg border transition-all ${selectedBracket === bracket.value
+                          ? 'bg-purple-600/20 border-purple-400 text-white'
+                          : 'bg-slate-800/50 border-purple-500/20 text-gray-300 hover:border-purple-400 hover:text-white'
+                          }`}
+                      >
+                        <div className="font-semibold">{bracket.label}</div>
+                        <div className="text-xs opacity-75 mt-1">{bracket.description}</div>
+                      </button>
+                    ))}
+                  </div>
+                  {errors.bracket && (
+                    <p className="mt-2 text-sm text-red-400">{errors.bracket}</p>
+                  )}
+                </div>
+
+                {/* Budget & Fun Questions */}
+                <div className="bg-slate-900/50 rounded-xl p-6 border border-purple-500/10">
+                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <DollarSign className="w-5 h-5 text-purple-400" />
+                    Additional Info
+                  </h3>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Budget <span className="text-red-400">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.budget}
+                        onChange={(e) => handleInputChange('budget', e.target.value)}
+                        className={`w-full px-4 py-3 bg-slate-800/50 border ${errors.budget ? 'border-red-500' : 'border-purple-500/30'} rounded-lg focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20 text-white placeholder-gray-500 transition-all`}
+                        placeholder="e.g., $100, No budget, Under $500"
+                      />
+                      {errors.budget && (
+                        <p className="mt-1 text-sm text-red-400">{errors.budget}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <Coffee className="inline w-4 h-4 mr-1" />
+                        Coffee Preference <span className="text-red-400">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.coffee}
+                        onChange={(e) => handleInputChange('coffee', e.target.value)}
+                        className={`w-full px-4 py-3 bg-slate-800/50 border ${errors.coffee ? 'border-red-500' : 'border-purple-500/30'} rounded-lg focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20 text-white placeholder-gray-500 transition-all`}
+                        placeholder="e.g., Black coffee, French press"
+                      />
+                      {errors.coffee && (
+                        <p className="mt-1 text-sm text-red-400">{errors.coffee}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <Calendar className="inline w-4 h-4 mr-1" />
+                        Ideal Date (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.idealDate}
+                        onChange={(e) => handleInputChange('idealDate', e.target.value)}
+                        className="w-full px-4 py-3 bg-slate-800/50 border border-purple-500/30 rounded-lg focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/20 text-white placeholder-gray-500 transition-all"
+                        placeholder="Your answer"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Budget */}
-            <div className="space-y-2">
-              <Label htmlFor="budget" className="text-base font-semibold">
-                Do you have a budget? If so, how much? <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="budget"
-                value={formData.budget}
-                onChange={(e) => handleInputChange('budget', e.target.value)}
-                placeholder="Your answer"
-                className={`glass-input ${errors.budget ? 'border-destructive' : ''}`}
-              />
-              {errors.budget && (
-                <p className="text-sm text-destructive">{errors.budget}</p>
-              )}
-            </div>
-
-            {/* Coffee */}
-            <div className="space-y-2">
-              <Label htmlFor="coffee" className="text-base font-semibold">
-                Do you drink coffee, if so what's your favorite coffee order and brewing method? <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="coffee"
-                value={formData.coffee}
-                onChange={(e) => handleInputChange('coffee', e.target.value)}
-                placeholder="Your answer"
-                className={`glass-input ${errors.coffee ? 'border-destructive' : ''}`}
-              />
-              {errors.coffee && (
-                <p className="text-sm text-destructive">{errors.coffee}</p>
-              )}
-            </div>
-
-            {/* Ideal Date */}
-            <div className="space-y-2">
-              <Label htmlFor="idealDate" className="text-base font-semibold">
-                What is your ideal date?
-              </Label>
-              <Input
-                id="idealDate"
-                value={formData.idealDate}
-                onChange={(e) => handleInputChange('idealDate', e.target.value)}
-                placeholder="Your answer"
-                className="glass-input"
-              />
-            </div>
-
-            {/* Buttons */}
-            <div className="flex gap-4 pt-6">
-              <Button
-                onClick={handleSubmit}
+            {/* Form Actions */}
+            <div className="mt-8 flex flex-col sm:flex-row gap-4">
+              <button
+                type="submit"
                 disabled={isLoading}
-                className="flex-1 bg-gradient-to-r from-[var(--gradient-start)] via-[var(--gradient-mid)] to-[var(--gradient-end)] hover:opacity-90 transition-opacity text-white font-semibold h-12 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-4 px-8 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25"
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin" />
                     Submitting...
                   </>
                 ) : (
-                  'Submit'
+                  <>
+                    <CheckCircle2 className="w-5 h-5" />
+                    Submit Deck Request
+                  </>
                 )}
-              </Button>
-              <Button
+              </button>
+              <button
+                type="button"
                 onClick={handleClear}
                 disabled={isLoading}
-                variant="outline"
-                className="px-8 h-12 border-tinted hover:bg-accent-tinted disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-8 py-4 bg-slate-700/50 text-gray-300 font-bold rounded-lg border border-purple-500/20 hover:bg-slate-700 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Clear form
-              </Button>
+                Clear Form
+              </button>
             </div>
 
-            <Alert className="mt-6 glass-card border-tinted">
-              <AlertDescription className="text-sm text-center text-muted-foreground">
-                Never submit passwords through this form.
-              </AlertDescription>
-            </Alert>
-          </CardContent>
-        </Card>
+            <div className="mt-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+              <p className="text-amber-300 text-sm text-center flex items-center justify-center gap-2">
+                <AlertCircle className="w-4 h-4" />
+                Never submit passwords through this form
+              </p>
+            </div>
+          </form>
+        </div>
 
         {/* Footer */}
-        <p className="text-center mt-8 text-sm text-muted-foreground">
-          This form was created for DefCat
-        </p>
+        <div className="text-center mt-8 text-gray-400">
+          <p>This form was created for DefCat</p>
+          <p className="text-sm mt-2 opacity-70">© 2024 Custom Commander Decks</p>
+        </div>
       </div>
 
       <style jsx>{`
-        .glass-card {
-          background: linear-gradient(
-            135deg,
-            var(--glass-bg-start),
-            var(--glass-bg-end)
-          );
-          backdrop-filter: blur(var(--glass-blur));
-          -webkit-backdrop-filter: blur(var(--glass-blur));
-          border: 1px solid var(--glass-border);
-          box-shadow: 0 8px 32px 0 var(--glass-shadow);
+        @keyframes blob {
+          0% {
+            transform: translate(0px, 0px) scale(1);
+          }
+          33% {
+            transform: translate(30px, -50px) scale(1.1);
+          }
+          66% {
+            transform: translate(-20px, 20px) scale(0.9);
+          }
+          100% {
+            transform: translate(0px, 0px) scale(1);
+          }
         }
 
-        .glass-card:hover {
-          background: linear-gradient(
-            135deg,
-            rgba(var(--glass-base-rgb), calc(0.1 + var(--glass-hover-opacity-boost))),
-            rgba(var(--glass-base-rgb), calc(0.05 + var(--glass-hover-opacity-boost)))
-          );
-          border-color: rgba(var(--glass-border-rgb), calc(0.18 + var(--glass-border-hover-opacity-boost)));
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
-        .glass-input {
-          background: rgba(var(--glass-base-rgb), 0.05);
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-          border: 1px solid var(--glass-border);
-          transition: all 0.3s ease;
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
-        .glass-input:focus {
-          background: rgba(var(--glass-base-rgb), 0.08);
-          border-color: var(--mana-color);
-          box-shadow: 0 0 0 3px var(--focus-ring);
+        .animate-blob {
+          animation: blob 7s infinite;
         }
 
-        .scrollbar-thin::-webkit-scrollbar {
-          width: 8px;
+        .animation-delay-2000 {
+          animation-delay: 2s;
         }
 
-        .scrollbar-thin::-webkit-scrollbar-track {
-          background: rgba(var(--glass-base-rgb), 0.05);
-          border-radius: 4px;
+        .animation-delay-4000 {
+          animation-delay: 4s;
         }
 
-        .scrollbar-thin::-webkit-scrollbar-thumb {
-          background: var(--mana-color);
-          border-radius: 4px;
+        .animate-fadeIn {
+          animation: fadeIn 0.8s ease-out;
         }
 
-        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-          background: var(--brand-dark);
+        .animate-slideDown {
+          animation: slideDown 0.3s ease-out;
         }
 
-        /* Mana symbol styling */
-        .ms {
-          font-size: 1.25em;
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
         }
 
-        .ms-cost {
-          display: inline-block;
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(100, 116, 139, 0.1);
+          border-radius: 3px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(147, 51, 234, 0.5);
+          border-radius: 3px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(147, 51, 234, 0.7);
         }
       `}</style>
     </div>

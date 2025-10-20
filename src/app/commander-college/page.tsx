@@ -1,0 +1,114 @@
+"use client"
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { GraduationCap, BookOpen, Target, Zap } from "lucide-react"
+
+export default function CommanderCollegePage() {
+  return (
+    <div className="min-h-screen relative overflow-hidden bg-background">
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(farthest-corner at 50% 0%, var(--bg-tinted) 0%, var(--background) 100%)'
+        }}
+      />
+
+      <div className="relative">
+        <section className="pt-24 pb-12 px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <GraduationCap className="h-12 w-12" style={{ color: 'var(--mana-color)' }} />
+                <h1
+                  className="text-5xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r"
+                  style={{
+                    backgroundImage: `linear-gradient(to right, var(--gradient-start), var(--gradient-end))`
+                  }}
+                >
+                  DefCat's Commander College
+                </h1>
+              </div>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                Learn to build a deck that plays exactly the way you want it to.
+              </p>
+            </div>
+
+            {/* Sales Video */}
+            <div className="mb-16">
+              <Card className="glass border-white/10 bg-card-tinted overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="aspect-video bg-muted/30 flex items-center justify-center">
+                    <div className="text-center">
+                      <BookOpen className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                      <p className="text-lg text-muted-foreground">Sales Video Coming Soon</p>
+                      <p className="text-sm text-muted-foreground/70 mt-2">
+                        Your promotional video will be embedded here
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Course Benefits */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+              <Card className="glass border-white/10 bg-card-tinted">
+                <CardHeader>
+                  <Target className="h-8 w-8 mb-2" style={{ color: 'var(--mana-color)' }} />
+                  <CardTitle>Master Deck Building</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Learn the fundamentals of crafting powerful Commander decks with focused strategies and synergies.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="glass border-white/10 bg-card-tinted">
+                <CardHeader>
+                  <Zap className="h-8 w-8 mb-2" style={{ color: 'var(--mana-color)' }} />
+                  <CardTitle>Optimize Your Play</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Discover advanced techniques for improving your gameplay and making optimal decisions.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="glass border-white/10 bg-card-tinted">
+                <CardHeader>
+                  <BookOpen className="h-8 w-8 mb-2" style={{ color: 'var(--mana-color)' }} />
+                  <CardTitle>Comprehensive Lessons</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Follow a structured curriculum designed to take you from beginner to expert deck builder.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Lesson Plan Visual */}
+            <div>
+              <h2 className="text-3xl font-bold mb-6 text-center">Course Curriculum</h2>
+              <Card className="glass border-white/10 bg-card-tinted">
+                <CardContent className="p-8">
+                  <div className="aspect-[16/10] bg-muted/30 rounded-lg flex items-center justify-center">
+                    <div className="text-center">
+                      <BookOpen className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                      <p className="text-lg text-muted-foreground">Lesson Plan Visual</p>
+                      <p className="text-sm text-muted-foreground/70 mt-2">
+                        Your lesson plan PNG will be displayed here
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  )
+}

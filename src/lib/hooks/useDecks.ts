@@ -32,8 +32,8 @@ export function useDecks() {
         color_identity: deck.color_identity || []
       }));
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 10, // 10 minutes (formerly cacheTime)
+    staleTime: Infinity, // Never refetch - data updates weekly
+    gcTime: 1000 * 60 * 60 * 24 * 7, // 7 days
   });
 }
 
@@ -58,7 +58,8 @@ export function useDeckInfo(id: string) {
       return data;
     },
     enabled: !!id,
-    staleTime: 1000 * 60 * 5,
+    staleTime: Infinity,
+    gcTime: 1000 * 60 * 60 * 24 * 7,
   });
 }
 
@@ -105,7 +106,8 @@ export function useDecklist(id: string) {
       return (data as DeckCard[]) || [];
     },
     enabled: !!id,
-    staleTime: 1000 * 60 * 5,
+    staleTime: Infinity,
+    gcTime: 1000 * 60 * 60 * 24 * 7,
   });
 }
 

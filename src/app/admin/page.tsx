@@ -1,5 +1,7 @@
+// app/admin/page.tsx
 /**
  * Admin Dashboard - Main Overview Page
+ * Updated with accessible tinted styling
  */
 
 import { requireAdmin } from '@/lib/auth-guards';
@@ -7,15 +9,13 @@ import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Database, Users, Package, Settings } from 'lucide-react';
+import { Database, Users, Package, Settings, TrendingUp, BarChart3 } from 'lucide-react';
 
 export default async function AdminDashboard() {
-  // Require admin role - will redirect if not admin
   await requireAdmin();
 
   const supabase = await createClient();
 
-  // Get stats
   const [
     { count: deckCount },
     { count: userCount }
@@ -29,114 +29,124 @@ export default async function AdminDashboard() {
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold text-gradient">Admin Dashboard</h1>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-[var(--gradient-start)] via-[var(--gradient-mid)] to-[var(--gradient-end)] bg-clip-text text-transparent">
+              Admin Dashboard
+            </h1>
             <p className="text-muted-foreground mt-2">
               Manage decks, users, and site content
             </p>
           </div>
         </div>
 
-        {/* Stats Grid */}
+        {/* Stats Grid with tinted cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="glass-card">
+          <Card className="glass-tinted border-tinted hover:shadow-tinted-lg transition-all">
             <CardHeader>
-              <CardTitle className="text-sm font-medium">Total Decks</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Decks</CardTitle>
+              <Database className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{deckCount || 0}</div>
+              <div className="text-3xl font-bold text-foreground">{deckCount || 0}</div>
+              <div className="text-xs text-muted-foreground mt-1">Active listings</div>
             </CardContent>
           </Card>
 
-          <Card className="glass-card">
+          <Card className="glass-tinted border-tinted hover:shadow-tinted-lg transition-all">
             <CardHeader>
-              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Users</CardTitle>
+              <Users className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{userCount || 0}</div>
+              <div className="text-3xl font-bold text-foreground">{userCount || 0}</div>
+              <div className="text-xs text-muted-foreground mt-1">Registered accounts</div>
             </CardContent>
           </Card>
 
-          <Card className="glass-card">
+          <Card className="glass-tinted border-tinted hover:shadow-tinted-lg transition-all">
             <CardHeader>
-              <CardTitle className="text-sm font-medium">Active Patrons</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Active Patrons</CardTitle>
+              <TrendingUp className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">-</div>
+              <div className="text-3xl font-bold text-foreground">-</div>
+              <div className="text-xs text-muted-foreground mt-1">With benefits</div>
             </CardContent>
           </Card>
 
-          <Card className="glass-card">
+          <Card className="glass-tinted border-tinted hover:shadow-tinted-lg transition-all">
             <CardHeader>
-              <CardTitle className="text-sm font-medium">Premium Decks</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Premium Decks</CardTitle>
+              <BarChart3 className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">-</div>
+              <div className="text-3xl font-bold text-foreground">-</div>
+              <div className="text-xs text-muted-foreground mt-1">Tier exclusive</div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Quick Actions */}
+        {/* Quick Actions with tinted cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="glass-panel">
+          <Card className="card-tinted border-tinted hover:shadow-tinted-lg transition-all">
             <CardHeader>
-              <Database className="h-8 w-8 mb-2 text-defcat-purple" />
-              <CardTitle>Deck Management</CardTitle>
-              <CardDescription>
+              <Database className="h-8 w-8 mb-2" style={{ color: 'var(--mana-color)' }} />
+              <CardTitle className="text-foreground">Deck Management</CardTitle>
+              <CardDescription className="text-muted-foreground">
                 Import, edit, and manage deck listings
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <Button asChild className="w-full">
+                <Button asChild className="w-full btn-tinted-primary">
                   <Link href="/admin/decks">Manage Decks</Link>
                 </Button>
-                <Button asChild variant="outline" className="w-full">
+                <Button asChild variant="outline" className="w-full border-tinted hover:bg-accent-tinted">
                   <Link href="/admin/decks/import">Import from Moxfield</Link>
                 </Button>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="glass-panel">
+          <Card className="card-tinted border-tinted hover:shadow-tinted-lg transition-all">
             <CardHeader>
-              <Users className="h-8 w-8 mb-2 text-defcat-pink" />
-              <CardTitle>User Management</CardTitle>
-              <CardDescription>
+              <Users className="h-8 w-8 mb-2" style={{ color: 'var(--mana-color)' }} />
+              <CardTitle className="text-foreground">User Management</CardTitle>
+              <CardDescription className="text-muted-foreground">
                 View and manage user accounts and tiers
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild className="w-full">
+              <Button asChild className="w-full btn-tinted-primary">
                 <Link href="/admin/users">Manage Users</Link>
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="glass-panel">
+          <Card className="card-tinted border-tinted hover:shadow-tinted-lg transition-all">
             <CardHeader>
-              <Package className="h-8 w-8 mb-2 text-defcat-blue" />
-              <CardTitle>Tier Configuration</CardTitle>
-              <CardDescription>
+              <Package className="h-8 w-8 mb-2" style={{ color: 'var(--mana-color)' }} />
+              <CardTitle className="text-foreground">Tier Configuration</CardTitle>
+              <CardDescription className="text-muted-foreground">
                 Configure Patreon tier settings and benefits
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild className="w-full">
+              <Button asChild className="w-full btn-tinted-primary">
                 <Link href="/admin/tiers">Manage Tiers</Link>
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="glass-panel">
+          <Card className="card-tinted border-tinted hover:shadow-tinted-lg transition-all">
             <CardHeader>
-              <Settings className="h-8 w-8 mb-2 text-purple-500" />
-              <CardTitle>Site Settings</CardTitle>
-              <CardDescription>
+              <Settings className="h-8 w-8 mb-2" style={{ color: 'var(--mana-color)' }} />
+              <CardTitle className="text-foreground">Site Settings</CardTitle>
+              <CardDescription className="text-muted-foreground">
                 Configure site-wide settings and integrations
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild className="w-full">
+              <Button asChild className="w-full btn-tinted-primary">
                 <Link href="/admin/settings">Site Settings</Link>
               </Button>
             </CardContent>

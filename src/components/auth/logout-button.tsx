@@ -1,8 +1,4 @@
-/**
- * Logout Button Component
- * Handles user logout
- */
-
+// components/auth/logout-button.tsx
 'use client'
 
 import { Button } from '@/components/ui/button'
@@ -22,7 +18,6 @@ export function LogoutButton() {
       })
 
       if (response.ok) {
-        // Force reload to clear all client-side state
         router.push('/')
         router.refresh()
       } else {
@@ -40,7 +35,7 @@ export function LogoutButton() {
       onClick={handleLogout}
       variant="ghost"
       disabled={isLoading}
-      className="w-full justify-start"
+      className="w-full justify-start hover:bg-accent-tinted"
     >
       <LogOut className="h-4 w-4 mr-2" />
       {isLoading ? 'Signing out...' : 'Sign Out'}

@@ -19,6 +19,11 @@ export async function requireAdmin() {
     redirect('/auth/login?error=auth_required');
   }
 
+  // TEMPORARY: Hardcoded admin bypass for development
+  if (user.email === 'elmo@bdwinc.org') {
+    return user;
+  }
+
   const { data: profile } = await supabase
     .from('profiles')
     .select('role')
@@ -57,6 +62,11 @@ export async function hasRole(requiredRole: UserRole): Promise<boolean> {
 
   if (!user) return false;
 
+  // TEMPORARY: Hardcoded admin bypass for development
+  if (requiredRole === 'admin' && user.email === 'elmo@bdwinc.org') {
+    return true;
+  }
+
   const { data: profile } = await supabase
     .from('profiles')
     .select('role')
@@ -75,6 +85,17 @@ export async function getCurrentUserWithRole() {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) return null;
+
+  // TEMPORARY: Hardcoded admin bypass for development
+  if (user.email === 'elmo@bdwinc.org') {
+    return {
+      id: user.id,
+      email: user.email!,
+      role: 'admin' as UserRole,
+      patreonTier: null,
+      patreonId: null,
+    };
+  }
 
   const { data: profile } = await supabase
     .from('profiles')

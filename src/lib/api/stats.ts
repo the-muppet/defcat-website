@@ -179,26 +179,26 @@ export async function getLatestDeck(): Promise<Deck | null> {
 
 /**
  * React Query hook for deck statistics
- * Caches results to prevent infinite fetching
+ * Caches results to prevent infinite fetching - data updates weekly
  */
 export function useDeckStats() {
   return useQuery({
     queryKey: ['deckStats'],
     queryFn: getDeckStats,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 10, // 10 minutes
+    staleTime: Infinity, // Never refetch automatically - data updates weekly
+    gcTime: 1000 * 60 * 60 * 24 * 7, // 7 days
   })
 }
 
 /**
  * React Query hook for latest featured deck
- * Caches results to prevent infinite fetching
+ * Caches results to prevent infinite fetching - data updates weekly
  */
 export function useLatestDeck() {
   return useQuery({
     queryKey: ['latestDeck'],
     queryFn: getLatestDeck,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 10, // 10 minutes
+    staleTime: Infinity, // Never refetch automatically - data updates weekly
+    gcTime: 1000 * 60 * 60 * 24 * 7, // 7 days
   })
 }

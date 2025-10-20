@@ -61,7 +61,7 @@ export function DeckImportForm() {
         },
         body: JSON.stringify({
           moxfieldId,
-          requiredTier: selectedTier,
+          tier: selectedTier,
         }),
       });
 

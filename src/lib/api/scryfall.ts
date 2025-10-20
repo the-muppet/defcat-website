@@ -2,6 +2,7 @@
 interface ScryfallCard {
   id: string
   name: string
+  color_identity: string[]
   image_uris?: {
     small: string
     normal: string
