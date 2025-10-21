@@ -234,8 +234,8 @@ export function Header() {
                 <UserMenu user={{
                   id: user.id,
                   email: user.email || '',
-                  patreonTier: user.user_metadata?.patreon_tier as PatreonTier || 'Citizen',
-                  role: user.user_metadata?.role || 'user'
+                  patreonTier: userTier,
+                  role: userRole as any
                 }} />
               </div>
             ) : (

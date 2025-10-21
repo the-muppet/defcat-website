@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Loader2, Save, Youtube, Twitter, Users, DollarSign, Globe, AlertCircle } from 'lucide-react'
+import { Loader2, Save, Youtube, Users, Globe, AlertCircle } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 interface ConfigItem {
@@ -43,7 +43,15 @@ export function SiteConfigForm() {
       }
 
       console.log('Loaded config:', data)
-      setConfig(data)
+      // Map data to ensure non-null values
+      const mappedData: ConfigItem[] = (data || []).map(item => ({
+        key: item.key || '',
+        value: item.value || '',
+        category: item.category || 'general',
+        description: item.description || '',
+        is_sensitive: item.is_sensitive || false
+      }))
+      setConfig(mappedData)
     } catch (err) {
       console.error('Failed to load config:', err)
       setError(`Failed to load configuration: ${err instanceof Error ? err.message : 'Unknown error'}`)
@@ -72,38 +80,42 @@ export function SiteConfigForm() {
     try {
       console.log('Starting save...', config)
 
-      // Update all config items
+      // Get auth token
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        throw new Error('Not authenticated')
+      }
+
+      // Update all config items via API route
       const updates = config.map(item => ({
         key: item.key,
-        value: item.value,
-        updated_at: new Date().toISOString()
+        value: item.value
       }))
 
-      console.log('Updates to apply:', updates)
+      console.log('Sending updates to API:', updates)
 
-      for (const update of updates) {
-        console.log(`Updating ${update.key}...`)
-        const { data, error, count } = await supabase
-          .from('site_config')
-          .update({ value: update.value, updated_at: update.updated_at })
-          .eq('key', update.key)
-          .select()
+      const response = await fetch('/api/admin/site-config', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify(updates)
+      })
 
-        console.log(`Result for ${update.key}:`, { data, error, count })
+      const result = await response.json()
+      console.log('API response:', result)
 
-        if (error) {
-          console.error(`Failed to update ${update.key}:`, error)
-          throw error
-        }
-
-        if (!data || data.length === 0) {
-          console.warn(`Warning: Update for ${update.key} returned no data (RLS policy might be blocking)`)
-        }
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Failed to save configuration')
       }
 
       console.log('All updates successful!')
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
+
+      // Reload config to ensure we have latest data
+      await loadConfig()
     } catch (err) {
       console.error('Failed to save config:', err)
       setError(`Failed to save configuration: ${err instanceof Error ? err.message : 'Unknown error'}`)
@@ -175,7 +187,7 @@ export function SiteConfigForm() {
       )}
 
       <Tabs defaultValue="videos" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="videos">
             <Youtube className="h-4 w-4 mr-2" />
             Videos
@@ -183,10 +195,6 @@ export function SiteConfigForm() {
           <TabsTrigger value="social">
             <Users className="h-4 w-4 mr-2" />
             Social
-          </TabsTrigger>
-          <TabsTrigger value="products">
-            <DollarSign className="h-4 w-4 mr-2" />
-            Products
           </TabsTrigger>
           <TabsTrigger value="general">
             <Globe className="h-4 w-4 mr-2" />
@@ -228,27 +236,6 @@ export function SiteConfigForm() {
               {renderConfigInput('twitter_url', 'Twitter/X Profile', 'https://twitter.com/defcat')}
               {renderConfigInput('discord_url', 'Discord Server', 'https://discord.gg/defcat')}
               {renderConfigInput('patreon_url', 'Patreon Page', 'https://patreon.com/defcat')}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="products" className="space-y-6">
-          <Card className="glass-panel">
-            <CardHeader>
-              <CardTitle>Product Affiliate Links</CardTitle>
-              <CardDescription>
-                Configure affiliate links for the discount store
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {renderConfigInput('playmat_link', 'Playmat Bundle')}
-              {renderConfigInput('deckbox_link', 'Deck Box')}
-              {renderConfigInput('sleeves_link', 'Card Sleeves')}
-              {renderConfigInput('dice_link', 'Dice Set')}
-              {renderConfigInput('chair_link', 'Gaming Chair')}
-              {renderConfigInput('mousepad_link', 'Mousepad')}
-              {renderConfigInput('storage_link', 'Card Storage')}
-              {renderConfigInput('apparel_link', 'Apparel')}
             </CardContent>
           </Card>
         </TabsContent>

@@ -16,6 +16,16 @@ export default async function AdminDashboard() {
 
   const supabase = await createClient();
 
+  // Get current user's profile to check role
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user?.id)
+    .single();
+
+  const isDeveloper = profile?.role === 'developer';
+
   const [
     { count: deckCount },
     { count: userCount }
@@ -151,6 +161,26 @@ export default async function AdminDashboard() {
               </Button>
             </CardContent>
           </Card>
+
+          {isDeveloper && (
+            <Card className="card-tinted border-purple-500/20 hover:shadow-tinted-lg transition-all bg-purple-500/5">
+              <CardHeader>
+                <Database className="h-8 w-8 mb-2 text-purple-500" />
+                <CardTitle className="text-foreground flex items-center gap-2">
+                  Database Panel
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400">Developer</span>
+                </CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Execute SQL queries and inspect database tables
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button asChild className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                  <Link href="/admin/database">Open Database Panel</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

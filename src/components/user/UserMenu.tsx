@@ -47,9 +47,14 @@ export function UserMenu({ user }: UserMenuProps) {
         <DropdownMenuItem asChild>
           <a href="/decks">Browse Decks</a>
         </DropdownMenuItem>
-        {(user.role === 'admin' || user.email === 'elmo@bdwinc.org') && (
+        {(user.role === 'admin' || user.role === 'moderator' || user.role === 'developer') && (
           <DropdownMenuItem asChild>
             <a href="/admin">Admin Dashboard</a>
+          </DropdownMenuItem>
+        )}
+        {user.role === 'developer' && (
+          <DropdownMenuItem asChild>
+            <a href="/admin/database">Database Panel</a>
           </DropdownMenuItem>
         )}
         <DropdownMenuItem asChild>

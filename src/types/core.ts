@@ -29,7 +29,7 @@ export interface Profile {
 
 export type PatreonTier = 'Citizen' | 'Knight' | 'Emissary' | 'Duke' | 'Wizard' | 'ArchMage'
 
-export type UserRole = 'anon' | 'user' | 'admin' | 'moderator'
+export type UserRole = 'anon' | 'user' | 'admin' | 'moderator' | 'developer'
 
 export interface Session {
   user: User

@@ -224,6 +224,11 @@ const config: Config = {
             boxShadow: '0 4px 12px rgba(var(--mana-rgb), 0.25)',
           }
         },
+        // Dark text for white mana buttons
+        '[data-mana="W"] .btn-tinted-primary': {
+          color: 'hsl(var(--foreground))',
+          textShadow: 'none',
+        },
         // Input utilities
         '.input-tinted': {
           background: 'rgba(var(--mana-rgb), 0.03)',

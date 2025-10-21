@@ -1,24 +1,54 @@
 "use client"
 
-import { useState, useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { useState, useEffect } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ShoppingBag, Tag, ExternalLink } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { products, type ProductCategory } from "@/data/products"
+import { ShoppingBag, Tag, ExternalLink, Loader2 } from "lucide-react"
+import { createClient } from "@/lib/supabase/client"
 
-const categories = ["All", "Apparel", "MTG Accessories", "Gaming Accessories", "Luxury Items"] as const
-type Category = typeof categories[number]
+interface Product {
+  id: string
+  name: string
+  description: string
+  link: string
+}
 
 export default function DiscountStorePage() {
-  const [selectedCategory, setSelectedCategory] = useState<Category>("All")
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+  const supabase = createClient()
 
-  const filteredProducts = useMemo(() => {
-    const activeProducts = products.filter(p => p.isActive !== false)
-    return selectedCategory === "All"
-      ? activeProducts
-      : activeProducts.filter(p => p.category === selectedCategory)
-  }, [selectedCategory])
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('id, key, name, description, link, image_url, is_active')
+          .eq('is_active', true)
+          .order('sort_order', { ascending: true })
+
+        if (error) {
+          console.error('Failed to load products:', error)
+          return
+        }
+
+        const productItems: Product[] = (data || []).map(item => ({
+          id: item.id,
+          name: item.name,
+          description: item.description || '',
+          link: item.link
+        }))
+
+        setProducts(productItems)
+      } catch (err) {
+        console.error('Error loading products:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadProducts()
+  }, [])
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
@@ -49,67 +79,47 @@ export default function DiscountStorePage() {
               </p>
             </div>
 
-            {/* Category Filter */}
-            <div className="flex flex-wrap justify-center gap-3 mb-12">
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  variant={selectedCategory === category ? "default" : "outline"}
-                  onClick={() => setSelectedCategory(category)}
-                  className={cn(
-                    selectedCategory === category && "btn-tinted-primary shadow-tinted-glow"
-                  )}
-                >
-                  {category}
-                </Button>
-              ))}
-            </div>
-
-            {/* Products Grid - 4 per row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {filteredProducts.map((product) => (
-                <Card key={product.id} className="glass border-white/10 bg-card-tinted flex flex-col">
-                  <CardHeader>
-                    <div className="aspect-square bg-muted/30 rounded-lg mb-4 flex items-center justify-center">
-                      <Tag className="h-12 w-12 text-muted-foreground" />
-                    </div>
-                    <CardTitle className="text-lg">{product.name}</CardTitle>
-                    <CardDescription className="text-xs uppercase tracking-wider">
-                      {product.category}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex-1 flex flex-col">
-                    <p className="text-sm text-muted-foreground mb-4 flex-1">
-                      {product.description}
-                    </p>
-
-                    {product.discountCode && (
-                      <div className="mb-4 p-3 rounded-lg border border-white/10 bg-muted/20">
-                        <p className="text-xs text-muted-foreground mb-1">Discount Code:</p>
-                        <code className="text-sm font-bold" style={{ color: 'var(--mana-color)' }}>
-                          {product.discountCode}
-                        </code>
-                      </div>
-                    )}
-
-                    <Button
-                      asChild
-                      className="w-full btn-tinted-primary"
-                    >
-                      <a href={product.link} target="_blank" rel="noopener noreferrer">
-                        View Deal
-                        <ExternalLink className="ml-2 h-4 w-4" />
-                      </a>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {filteredProducts.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">No products found in this category.</p>
+            {loading ? (
+              <div className="flex justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
               </div>
+            ) : (
+              <>
+                {/* Products Grid - 4 per row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {products.map((product) => (
+                    <Card key={product.id} className="glass border-white/10 bg-card-tinted flex flex-col">
+                      <CardHeader>
+                        <div className="aspect-square bg-muted/30 rounded-lg mb-4 flex items-center justify-center">
+                          <Tag className="h-12 w-12 text-muted-foreground" />
+                        </div>
+                        <CardTitle className="text-lg">{product.name}</CardTitle>
+                      </CardHeader>
+                      <CardContent className="flex-1 flex flex-col">
+                        <p className="text-sm text-muted-foreground mb-4 flex-1">
+                          {product.description}
+                        </p>
+
+                        <Button
+                          asChild
+                          className="w-full btn-tinted-primary"
+                        >
+                          <a href={product.link} target="_blank" rel="noopener noreferrer">
+                            View Deal
+                            <ExternalLink className="ml-2 h-4 w-4" />
+                          </a>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {products.length === 0 && (
+                  <div className="text-center py-12">
+                    <p className="text-muted-foreground">No products available yet.</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </section>
