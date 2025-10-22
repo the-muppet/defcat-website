@@ -44,10 +44,12 @@ export class ColorIdentity {
   }
 
   /**
-   * Get individual color symbols for fallback rendering
+   * Get individual color symbols for fallback rendering (sorted in WUBRG order)
    */
   static getIndividual(colorIdentity: string | string[]): string[] {
     const normalized = this.normalize(colorIdentity)
-    return COLOR_MAPPINGS[normalized]?.individual || []
+    // Return the normalized string split into individual characters
+    // This ensures consistent WUBRG ordering
+    return normalized.split('')
   }
 }

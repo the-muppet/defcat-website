@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { LogIn, LogOut, Sparkles } from 'lucide-react';
+import { LogIn, LogOut, Sparkles, ClipboardList } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { TierBadge } from '@/components/tier/TierBadge';
@@ -32,6 +32,8 @@ export function Header() {
   const [loading, setLoading] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [pendingCount, setPendingCount] = useState<number>(0);
+  const [showBadge, setShowBadge] = useState(true);
   const pathname = usePathname();
   const supabase = createClient();
 
@@ -58,6 +60,22 @@ export function Header() {
             if (profile) {
               setUserTier(profile.patreon_tier as PatreonTier || 'Citizen');
               setUserRole(profile.role || 'user');
+
+              // Fetch pending submissions count for admins and developers only
+              if (['admin', 'developer'].includes(profile.role || 'user')) {
+                const { count } = await supabase
+                  .from('deck_submissions')
+                  .select('*', { count: 'exact', head: true })
+                  .in('status', ['pending', 'queued']);
+
+                setPendingCount(count || 0);
+
+                // For developers, check localStorage preference
+                if (profile.role === 'developer') {
+                  const stored = localStorage.getItem('show-submission-badge');
+                  setShowBadge(stored === null || stored === 'true');
+                }
+              }
             }
           }
         }
@@ -78,6 +96,19 @@ export function Header() {
 
     return () => subscription.unsubscribe();
   }, [supabase.auth]);
+
+  // Listen for notification badge toggle events (developer only)
+  useEffect(() => {
+    const handleToggle = () => {
+      if (userRole === 'developer') {
+        const stored = localStorage.getItem('show-submission-badge');
+        setShowBadge(stored === null || stored === 'true');
+      }
+    };
+
+    window.addEventListener('submission-badge-toggle', handleToggle);
+    return () => window.removeEventListener('submission-badge-toggle', handleToggle);
+  }, [userRole]);
 
   const handleLogin = useCallback(() => {
     setShowLoginModal(true);
@@ -201,8 +232,8 @@ export function Header() {
                 </NavigationMenuLink>
               </NavigationMenuItem>
 
-              {/* Show Submit Deck only for Duke+ tier or admins */}
-              {(userRole === 'admin' || userRole === 'moderator' || ['Duke', 'Wizard', 'ArchMage'].includes(userTier)) && (
+              {/* Show Submit Deck for Duke+ tier or admins/mods */}
+              {(['Duke', 'Wizard', 'ArchMage'].includes(userTier) || ['admin', 'moderator', 'developer'].includes(userRole)) && (
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
                     <Link
@@ -235,13 +266,30 @@ export function Header() {
             {loading ? (
               <div className="h-10 w-10 rounded-full tinted-accent shimmer-tinted" />
             ) : user ? (
-              <div className="hover-tinted rounded-full">
-                <UserMenu user={{
-                  id: user.id,
-                  email: user.email || '',
-                  patreonTier: userTier,
-                  role: userRole as any
-                }} />
+              <div className="flex items-center gap-2">
+                {/* Admin/Developer notification badge */}
+                {pendingCount > 0 && (
+                  (userRole === 'admin') || (userRole === 'developer' && showBadge)
+                ) && (
+                  <Link
+                    href="/admin/submissions"
+                    className="relative hover-tinted rounded-lg p-2 transition-all"
+                    title={`${pendingCount} pending submission${pendingCount !== 1 ? 's' : ''}`}
+                  >
+                    <ClipboardList className="h-5 w-5" style={{ color: 'var(--mana-color)' }} />
+                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                      {pendingCount}
+                    </span>
+                  </Link>
+                )}
+                <div className="hover-tinted rounded-full">
+                  <UserMenu user={{
+                    id: user.id,
+                    email: user.email || '',
+                    patreonTier: userTier,
+                    role: userRole as any
+                  }} />
+                </div>
               </div>
             ) : (
               <Button

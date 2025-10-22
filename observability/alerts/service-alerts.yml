@@ -1,0 +1,98 @@
+# Prometheus alerting rules for DefCat DeckVault
+
+groups:
+  - name: defcat-deckvault-alerts
+    interval: 30s
+    rules:
+      # Service availability
+      - alert: ServiceDown
+        expr: up{job="defcat-deckvault"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: defcat-deckvault
+        annotations:
+          summary: "DeckVault service is down"
+          description: "The DefCat DeckVault service has been down for more than 1 minute"
+
+      # High error rate
+      - alert: HighErrorRate
+        expr: |
+          (
+            sum(rate(http_request_errors_total{job="defcat-deckvault"}[5m])) /
+            sum(rate(http_requests_total{job="defcat-deckvault"}[5m]))
+          ) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+          service: defcat-deckvault
+        annotations:
+          summary: "High HTTP error rate detected"
+          description: "Error rate is above 5% for the last 2 minutes (current: {{ $value | humanizePercentage }})"
+
+      # High latency
+      - alert: HighLatency
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(http_request_duration_seconds_bucket{job="defcat-deckvault"}[5m])) by (le)
+          ) > 1.0
+        for: 3m
+        labels:
+          severity: warning
+          service: defcat-deckvault
+        annotations:
+          summary: "High request latency detected"
+          description: "95th percentile latency is above 1 second (current: {{ $value | humanizeDuration }})"
+
+      # Database connection issues
+      - alert: DatabaseUnhealthy
+        expr: up{job="defcat-deckvault",component="database"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: defcat-deckvault
+          component: database
+        annotations:
+          summary: "Database health check failing"
+          description: "Database connectivity has been failing for more than 1 minute"
+
+      # Memory usage
+      - alert: HighMemoryUsage
+        expr: |
+          (
+            nodejs_memory_usage_bytes{type="heapUsed"} /
+            nodejs_memory_usage_bytes{type="heapTotal"}
+          ) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: defcat-deckvault
+        annotations:
+          summary: "High memory usage detected"
+          description: "Heap memory usage is above 90% (current: {{ $value | humanizePercentage }})"
+
+      # Deck submission failures
+      - alert: DeckSubmissionFailures
+        expr: |
+          rate(deck_submission_errors_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          service: defcat-deckvault
+          feature: deck-submissions
+        annotations:
+          summary: "High deck submission failure rate"
+          description: "Deck submissions are failing at a high rate: {{ $value | humanize }} failures/sec"
+
+      # Patreon sync failures
+      - alert: PatreonSyncFailures
+        expr: |
+          rate(patreon_sync_errors_total[10m]) > 0
+        for: 5m
+        labels:
+          severity: warning
+          service: defcat-deckvault
+          feature: patreon-integration
+        annotations:
+          summary: "Patreon synchronization failures detected"
+          description: "Patreon tier synchronization is failing"

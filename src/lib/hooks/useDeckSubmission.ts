@@ -13,7 +13,7 @@ interface UseSubmissionState {
 }
 
 interface UseSubmissionReturn extends UseSubmissionState {
-  submitDeck: (data: DeckSubmissionFormData) => Promise<boolean>;
+  submitDeck: (data: DeckSubmissionFormData, isDraft?: boolean) => Promise<boolean>;
   reset: () => void;
 }
 
@@ -28,7 +28,7 @@ export function useDeckSubmission(): UseSubmissionReturn {
 
   const supabase = createClient();
 
-  const submitDeck = async (data: DeckSubmissionFormData): Promise<boolean> => {
+  const submitDeck = async (data: DeckSubmissionFormData, isDraft = false): Promise<boolean> => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
@@ -45,7 +45,7 @@ export function useDeckSubmission(): UseSubmissionReturn {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, isDraft }),
       });
 
       const result: SubmissionResponse = await response.json();

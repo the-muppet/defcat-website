@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Trash2, Save, Package, AlertCircle } from 'lucide-react'
 
@@ -211,37 +212,51 @@ export function ProductsPanel() {
         </Card>
       )}
 
-      <div className="grid gap-4">
+      <Accordion type="multiple" className="space-y-4">
         {products.map((product) => (
-          <Card key={product.id} className="glass-panel">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Package className="h-5 w-5" />
-                  {product.name || 'New Product'}
-                </CardTitle>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    onClick={() => handleSaveProduct(product)}
-                    disabled={saving || !product.name || !product.link}
-                    className="btn-tinted-primary"
-                  >
-                    <Save className="h-4 w-4 mr-2" />
-                    Save
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => handleDeleteProduct(product.id)}
-                    disabled={saving}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+          <AccordionItem key={product.id} value={product.id} className="border-none">
+            <Card className="glass-panel">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <AccordionTrigger className="hover:no-underline flex-1">
+                    <div className="flex items-center gap-2">
+                      <Package className="h-5 w-5" />
+                      <span className="text-lg font-semibold">{product.name || 'New Product'}</span>
+                      {product.category && (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400">
+                          {product.category}
+                        </span>
+                      )}
+                      {!product.is_active && (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-gray-500/20 text-gray-400">
+                          Inactive
+                        </span>
+                      )}
+                    </div>
+                  </AccordionTrigger>
+                  <div className="flex gap-2 ml-4">
+                    <Button
+                      size="sm"
+                      onClick={() => handleSaveProduct(product)}
+                      disabled={saving || !product.name || !product.link}
+                      className="btn-tinted-primary"
+                    >
+                      <Save className="h-4 w-4 mr-2" />
+                      Save
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => handleDeleteProduct(product.id)}
+                      disabled={saving}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
+              </CardHeader>
+              <AccordionContent>
+                <CardContent className="space-y-4 pt-0">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor={`name-${product.id}`}>Product Name *</Label>
@@ -333,21 +348,23 @@ export function ProductsPanel() {
                 />
                 <Label htmlFor={`active-${product.id}`}>Active (visible on store page)</Label>
               </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </AccordionContent>
+            </Card>
+          </AccordionItem>
         ))}
+      </Accordion>
 
-        {products.length === 0 && (
-          <Card className="glass-panel">
-            <CardContent className="py-12">
-              <div className="text-center text-muted-foreground">
-                <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No products yet. Click "Add Product" to get started.</p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+      {products.length === 0 && (
+        <Card className="glass-panel">
+          <CardContent className="py-12">
+            <div className="text-center text-muted-foreground">
+              <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>No products yet. Click "Add Product" to get started.</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }

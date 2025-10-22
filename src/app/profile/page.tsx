@@ -3,7 +3,9 @@ import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { ManaSymbolSelector } from '@/components/settings/ManaSymbolSelector'
+import { NotificationBadgeToggle } from '@/components/settings/NotificationBadgeToggle'
 import { TierBadge } from '@/components/tier/TierBadge'
+import { MyDrafts } from '@/components/profile/MyDrafts'
 import { User, Mail, Shield, Award, Palette } from 'lucide-react'
 
 export default async function ProfilePage() {
@@ -38,6 +40,8 @@ export default async function ProfilePage() {
         </div>
 
         <div className="grid gap-6">
+          <MyDrafts />
+
           <Card className="glass-panel">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -101,7 +105,7 @@ export default async function ProfilePage() {
                 </CardTitle>
                 <CardDescription>Your site access level</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <div className="flex items-center gap-2">
                   <span className="capitalize font-medium">{userRole}</span>
                   {userRole === 'developer' && (
@@ -109,12 +113,24 @@ export default async function ProfilePage() {
                       Full Access
                     </span>
                   )}
-                  {(userRole === 'admin' || userRole === 'moderator') && (
+                  {userRole === 'admin' && (
                     <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400">
                       Admin Access
                     </span>
                   )}
+                  {userRole === 'moderator' && (
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400">
+                      Moderator Access
+                    </span>
+                  )}
                 </div>
+
+                {userRole === 'developer' && (
+                  <>
+                    <Separator />
+                    <NotificationBadgeToggle />
+                  </>
+                )}
               </CardContent>
             </Card>
           )}

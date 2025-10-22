@@ -17,8 +17,12 @@ import {
   Calendar,
   MessageSquare,
   User,
+  Hourglass,
 } from "lucide-react";
 import { bracketOptions, COLOR_MAPPINGS } from "@/types/core";
+import { ColorIdentity } from "@/lib/utility/color-identity";
+import { ManaSymbols } from "@/components/decks/ManaSymbols";
+import { toast } from "sonner";
 
 export default function PagedDeckForm() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -38,7 +42,7 @@ export default function PagedDeckForm() {
     discordUsername: "",
     mysteryDeck: "",
     commander: "",
-    colorPreference: "",
+    colorPreference: [] as string[],
     theme: "",
     bracket: "",
     budget: "",
@@ -203,10 +207,10 @@ export default function PagedDeckForm() {
         if (
           formData.mysteryDeck === "no" &&
           !formData.commander &&
-          !formData.colorPreference
+          formData.colorPreference.length === 0
         ) {
           stepErrors.colorPreference =
-            "Please select a color or specify a commander";
+            "Please select at least one color or specify a commander";
         }
         break;
       case 4:
@@ -248,7 +252,28 @@ export default function PagedDeckForm() {
   };
 
   const handleInputChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (field === "colorPreference") {
+      setFormData((prev) => {
+        const currentColors = prev.colorPreference as string[];
+        let newColors: string[];
+
+        if (currentColors.includes(value)) {
+          // Remove if already selected
+          newColors = currentColors.filter(c => c !== value);
+        } else if (currentColors.length < 3) {
+          // Add if less than 3 selected
+          newColors = [...currentColors, value];
+        } else {
+          // Already at max, don't add
+          return prev;
+        }
+
+        return { ...prev, colorPreference: newColors };
+      });
+    } else {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+    }
+
     if (errors[field]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -258,8 +283,9 @@ export default function PagedDeckForm() {
     }
   };
 
-  const handleSubmit = async () => {
-    const stepErrors = validateStep(currentStep);
+  const handleSubmit = async (isDraft = false) => {
+    // Skip validation for drafts
+    const stepErrors = isDraft ? {} : validateStep(currentStep);
     if (Object.keys(stepErrors).length === 0) {
       setIsLoading(true);
 
@@ -293,33 +319,34 @@ export default function PagedDeckForm() {
           return;
         }
 
-        if (!profile.patreon_id || !profile.patreon_tier) {
+        // Only check Patreon requirement for non-draft submissions
+        if (!isDraft && (!profile.patreon_id || !profile.patreon_tier)) {
           setErrors({ submit: "Your account must be linked to Patreon to submit a deck request." });
           setIsLoading(false);
           return;
         }
 
-        // Determine submission status based on slots
-        const submissionStatus = willBeQueued ? "queued" : "pending";
+        // Determine submission status
+        const submissionStatus = isDraft ? "draft" : (willBeQueued ? "queued" : "pending");
 
         // Submit deck request to database
         const { data, error } = await supabase
           .from("deck_submissions")
           .insert({
             user_id: user.id,
-            patreon_id: profile.patreon_id,
-            patreon_tier: profile.patreon_tier,
+            patreon_id: profile.patreon_id || '',
+            patreon_tier: profile.patreon_tier || '',
             patreon_username: profile.email.split('@')[0], // Use email prefix as fallback patreon username
-            email: formData.email,
-            moxfield_username: formData.moxfieldUsername,
+            email: formData.email || '',
+            moxfield_username: formData.moxfieldUsername || '',
             discord_username: formData.discordUsername || '',
             mystery_deck: formData.mysteryDeck === "yes",
             commander: formData.commander || null,
-            color_preference: formData.colorPreference,
+            color_preference: formData.colorPreference.join(',') || null,
             theme: formData.theme || null,
-            bracket: formData.bracket,
-            budget: formData.budget,
-            coffee_preference: formData.coffee,
+            bracket: formData.bracket || null,
+            budget: formData.budget || null,
+            coffee_preference: formData.coffee || null,
             ideal_date: formData.idealDate || null,
             status: submissionStatus,
           })
@@ -328,15 +355,33 @@ export default function PagedDeckForm() {
 
         if (error) {
           console.error("Submission error:", error);
+
+          // Check for specific error messages
+          let errorMessage = "Failed to submit deck request. Please try again.";
+
+          if (error.message?.includes('Draft limit reached')) {
+            errorMessage = error.message;
+          } else if (error.message?.includes('Monthly submission limit')) {
+            errorMessage = error.message;
+          }
+
           setErrors({
-            submit: "Failed to submit deck request. Please try again.",
+            submit: errorMessage,
           });
           setIsLoading(false);
           return;
         }
 
         setIsLoading(false);
-        setShowSuccess(true);
+
+        if (isDraft) {
+          toast.success("Draft saved successfully!", {
+            description: "You can continue editing later from your profile.",
+            duration: 5000,
+          });
+        } else {
+          setShowSuccess(true);
+        }
       } catch (err) {
         console.error("Unexpected error:", err);
         setErrors({
@@ -526,26 +571,69 @@ export default function PagedDeckForm() {
 
             <div className="form-group">
               <label>
-                Color Preference{" "}
+                Color Preference (select up to 3){" "}
                 {formData.mysteryDeck === "no" && !formData.commander && (
                   <span className="required">*</span>
                 )}
               </label>
-              <div className="color-grid">
-                {Object.entries(COLOR_MAPPINGS).map(([colorId, colorData]) => (
-                  <button
-                    key={colorId}
-                    type="button"
-                    className={`color-option ${formData.colorPreference === colorId ? "selected" : ""}`}
-                    onClick={() =>
-                      handleInputChange("colorPreference", colorId)
-                    }
-                    title={colorData.name}
-                    aria-label={colorData.name}
-                  >
-                    <i className={colorData.className}></i>
-                  </button>
-                ))}
+              <div className="grid grid-cols-5 gap-x-6 gap-y-2 justify-items-center">
+                {Object.entries(COLOR_MAPPINGS)
+                  .filter(([colorId]) => colorId !== 'C' && colorId !== 'WUBRG')
+                  .map(([colorId, colorData]) => (
+                    <label
+                      key={colorId}
+                      className="cursor-pointer flex flex-col items-center gap-2"
+                      title={colorData.name}
+                    >
+                      <input
+                        type="checkbox"
+                        name="colorPreference"
+                        checked={formData.colorPreference.includes(colorId)}
+                        onChange={() => handleInputChange("colorPreference", colorId)}
+                        className="sr-only"
+                      />
+                      <div className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.colorPreference.includes(colorId) ? 'bg-accent-tinted ring-2 ring-[var(--mana-color)]' : ''}`}>
+                        {colorData.individual.map((symbol, idx) => (
+                          <i
+                            key={idx}
+                            className={`ms ms-${symbol.toLowerCase()} ms-3x transition-all duration-200 hover:scale-110`}
+                            aria-label={`${symbol} mana`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-xs text-center">{colorData.name}</span>
+                    </label>
+                  ))}
+                <div className="col-span-5 flex justify-center gap-6">
+                  {['C', 'WUBRG'].map((colorId) => {
+                    const colorData = COLOR_MAPPINGS[colorId];
+                    return (
+                      <label
+                        key={colorId}
+                        className="cursor-pointer flex flex-col items-center gap-2"
+                        title={colorData.name}
+                      >
+                        <input
+                          type="checkbox"
+                          name="colorPreference"
+                          checked={formData.colorPreference.includes(colorId)}
+                          onChange={() => handleInputChange("colorPreference", colorId)}
+                          className="sr-only"
+                        />
+                        <div className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.colorPreference.includes(colorId) ? 'bg-accent-tinted ring-2 ring-[var(--mana-color)]' : ''}`}>
+                          {colorData.individual.map((symbol, idx) => (
+                            <i
+                              key={idx}
+                              className={`ms ms-${symbol.toLowerCase()} ms-3x transition-all duration-200 hover:scale-110`}
+                              aria-label={`${symbol} mana`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-xs text-center">{colorData.name}</span>
+                      </label>
+                    );
+                  })}
+                </div>
               </div>
               {errors.colorPreference && (
                 <span className="error-message">{errors.colorPreference}</span>
@@ -685,17 +773,19 @@ export default function PagedDeckForm() {
               <h3>Review Your Submission</h3>
               <div className="review-grid">
                 <div className="review-item">
-                  <span className="review-label">Patreon:</span>
-                  <span className="review-value">
-                    {formData.patreonUsername}
-                  </span>
+                  <span className="review-label">Email:</span>
+                  <span className="review-value">{formData.email}</span>
                 </div>
                 <div className="review-item">
-                  <span className="review-label">Discord:</span>
-                  <span className="review-value">
-                    {formData.discordUsername}
-                  </span>
+                  <span className="review-label">Moxfield:</span>
+                  <span className="review-value">{formData.moxfieldUsername}</span>
                 </div>
+                {formData.discordUsername && (
+                  <div className="review-item">
+                    <span className="review-label">Discord:</span>
+                    <span className="review-value">{formData.discordUsername}</span>
+                  </div>
+                )}
                 <div className="review-item">
                   <span className="review-label">Type:</span>
                   <span className="review-value">
@@ -704,6 +794,46 @@ export default function PagedDeckForm() {
                       : "Custom Build"}
                   </span>
                 </div>
+                {formData.commander && (
+                  <div className="review-item">
+                    <span className="review-label">Commander:</span>
+                    <span className="review-value">{formData.commander}</span>
+                  </div>
+                )}
+                {formData.colorPreference.length > 0 && (
+                  <div className="review-item">
+                    <span className="review-label">Color Preferences:</span>
+                    <span className="review-value">
+                      <div className="flex gap-4 flex-wrap">
+                        {formData.colorPreference.map((colorId) => {
+                          const colorData = COLOR_MAPPINGS[colorId];
+                          return (
+                            <div key={colorId} className="flex items-center gap-2">
+                              <div className="inline-flex gap-0.5 items-center">
+                                {colorData.individual.map((symbol, idx) => (
+                                  <i
+                                    key={idx}
+                                    className={`ms ms-${symbol.toLowerCase()} text-base`}
+                                    aria-label={`${symbol} mana`}
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-xs text-muted-foreground">
+                                {colorData.name}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </span>
+                  </div>
+                )}
+                {formData.theme && (
+                  <div className="review-item">
+                    <span className="review-label">Theme:</span>
+                    <span className="review-value">{formData.theme}</span>
+                  </div>
+                )}
                 <div className="review-item">
                   <span className="review-label">Bracket:</span>
                   <span className="review-value">
@@ -715,6 +845,16 @@ export default function PagedDeckForm() {
                   <span className="review-label">Budget:</span>
                   <span className="review-value">{formData.budget}</span>
                 </div>
+                <div className="review-item">
+                  <span className="review-label">Coffee:</span>
+                  <span className="review-value">{formData.coffee}</span>
+                </div>
+                {formData.idealDate && (
+                  <div className="review-item">
+                    <span className="review-label">Ideal Date:</span>
+                    <span className="review-value">{formData.idealDate}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -807,12 +947,12 @@ export default function PagedDeckForm() {
               setShowSuccess(false);
               setCurrentStep(1);
               setFormData({
-                patreonUsername: "",
                 email: "",
+                moxfieldUsername: "",
                 discordUsername: "",
                 mysteryDeck: "",
                 commander: "",
-                colorPreference: "",
+                colorPreference: [],
                 theme: "",
                 bracket: "",
                 budget: "",
@@ -909,10 +1049,14 @@ export default function PagedDeckForm() {
 
           <div className="form-actions">
             <button
-              className="btn btn-secondary"
+              className="btn btn-primary"
+              style={{
+                background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)',
+                borderColor: '#eab308',
+                visibility: currentStep === 1 ? "hidden" : "visible"
+              }}
               onClick={handlePrevious}
               disabled={currentStep === 1}
-              style={{ visibility: currentStep === 1 ? "hidden" : "visible" }}
             >
               <ChevronLeft style={{ width: 20, height: 20 }} />
               Previous
@@ -924,26 +1068,52 @@ export default function PagedDeckForm() {
                 <ChevronRight style={{ width: 20, height: 20 }} />
               </button>
             ) : (
-              <button
-                className="btn btn-primary"
-                onClick={handleSubmit}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2
-                      className="animate-spin"
-                      style={{ width: 20, height: 20 }}
-                    />
-                    Submitting...
-                  </>
-                ) : (
-                  <>
-                    Submit Deck Request
-                    <CheckCircle style={{ width: 20, height: 20 }} />
-                  </>
-                )}
-              </button>
+              <div className="flex gap-3">
+                <button
+                  className="btn btn-primary"
+                  style={{
+                    background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                    borderColor: '#3b82f6',
+                  }}
+                  onClick={() => handleSubmit(true)}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2
+                        className="animate-spin"
+                        style={{ width: 20, height: 20 }}
+                      />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      Save for Later
+                      <Hourglass style={{ width: 20, height: 20 }} />
+                    </>
+                  )}
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => handleSubmit(false)}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2
+                        className="animate-spin"
+                        style={{ width: 20, height: 20 }}
+                      />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      Submit Deck Request
+                      <CheckCircle style={{ width: 20, height: 20 }} />
+                    </>
+                  )}
+                </button>
+              </div>
             )}
           </div>
         </div>

@@ -7,11 +7,16 @@ import { DeckSubmissionEmail } from '@/emails';
 import type { DeckSubmissionFormData, SubmissionResponse } from '@/types/form';
 import { ColorIdentity } from '@/lib/utility/color-identity';
 
-// Initialize Supabase client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY! // Use service role key for server-side operations
-);
+// Force dynamic rendering to avoid build-time errors
+export const dynamic = 'force-dynamic';
+
+// Helper to create Supabase client at runtime
+function getSupabaseClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY! // Use service role key for server-side operations
+  );
+}
 
 // Lazy-initialize Resend client (only when needed, avoids build-time errors)
 function getResendClient() {
@@ -58,6 +63,8 @@ function validateSubmission(data: any): data is DeckSubmissionFormData {
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabaseClient();
+
     // Check authentication
     const authHeader = request.headers.get('authorization');
     if (!authHeader) {
@@ -91,10 +98,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get user's profile to check tier
+    // Get user's profile to check tier and role
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('patreon_tier, patreon_id')
+      .select('patreon_tier, patreon_id, role')
       .eq('id', user.id)
       .single();
 
@@ -111,50 +118,57 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user has Duke tier or above
-    const eligibleTiers = ['Duke', 'Wizard', 'ArchMage'];
-    if (!eligibleTiers.includes(profile.patreon_tier)) {
-      return NextResponse.json<SubmissionResponse>(
-        {
-          success: false,
-          error: {
-            message: `Deck submissions require Duke tier ($50/month) or higher. Your current tier: ${profile.patreon_tier}`,
-            code: 'INSUFFICIENT_TIER',
-          },
-        },
-        { status: 403 }
-      );
-    }
-
-    // Check monthly submission limit
-    const maxSubmissions = profile.patreon_tier === 'ArchMage' ? 2 : 1;
-    
-    const { count: submissionCount, error: countError } = await supabase
-      .from('deck_submissions')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString());
-
-    if (countError) {
-      console.error('Error checking submission count:', countError);
-    } else if (submissionCount !== null && submissionCount >= maxSubmissions) {
-      return NextResponse.json<SubmissionResponse>(
-        {
-          success: false,
-          error: {
-            message: `You've reached your monthly limit of ${maxSubmissions} submission(s) for ${profile.patreon_tier} tier. Limit resets next month.`,
-            code: 'MONTHLY_LIMIT_REACHED',
-          },
-        },
-        { status: 429 }
-      );
-    }
-
     // Parse request body
     const body = await request.json();
+    const isDraft = body.isDraft === true;
 
-    // Validate data
-    if (!validateSubmission(body)) {
+    // Check if user is admin/moderator/developer (they bypass tier requirements)
+    const isPrivileged = ['admin', 'moderator', 'developer'].includes(profile.role);
+
+    // Check tier requirements (skip for drafts and privileged users)
+    if (!isDraft && !isPrivileged) {
+      const eligibleTiers = ['Duke', 'Wizard', 'ArchMage'];
+      if (!eligibleTiers.includes(profile.patreon_tier)) {
+        return NextResponse.json<SubmissionResponse>(
+          {
+            success: false,
+            error: {
+              message: `Deck submissions require Duke tier ($50/month) or higher. Your current tier: ${profile.patreon_tier}`,
+              code: 'INSUFFICIENT_TIER',
+            },
+          },
+          { status: 403 }
+        );
+      }
+
+      // Check monthly submission limit (exclude drafts from count)
+      const maxSubmissions = profile.patreon_tier === 'ArchMage' ? 2 : 1;
+
+      const { count: submissionCount, error: countError } = await supabase
+        .from('deck_submissions')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .neq('status', 'draft') // Exclude drafts from monthly limit
+        .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString());
+
+      if (countError) {
+        console.error('Error checking submission count:', countError);
+      } else if (submissionCount !== null && submissionCount >= maxSubmissions) {
+        return NextResponse.json<SubmissionResponse>(
+          {
+            success: false,
+            error: {
+              message: `You've reached your monthly limit of ${maxSubmissions} submission(s) for ${profile.patreon_tier} tier. Limit resets next month.`,
+              code: 'MONTHLY_LIMIT_REACHED',
+            },
+          },
+          { status: 429 }
+        );
+      }
+    }
+
+    // Skip validation for drafts
+    if (!isDraft && !validateSubmission(body)) {
       return NextResponse.json<SubmissionResponse>(
         {
           success: false,
@@ -175,18 +189,18 @@ export async function POST(request: NextRequest) {
       user_id: user.id,
       patreon_id: profile.patreon_id,
       patreon_tier: profile.patreon_tier,
-      patreon_username: body.patreonUsername.trim(),
-      email: body.email.trim().toLowerCase(),
-      discord_username: body.discordUsername.trim(),
+      patreon_username: body.patreonUsername?.trim() || null,
+      email: body.email?.trim()?.toLowerCase() || null,
+      discord_username: body.discordUsername?.trim() || null,
       mystery_deck: mysteryDeck,
       commander: body.commander?.trim() || null,
-      color_preference: body.colorPreference,
+      color_preference: body.colorPreference || null,
       theme: body.theme?.trim() || null,
-      bracket: body.bracket,
-      budget: body.budget.trim(),
-      coffee_preference: body.coffee.trim(),
+      bracket: body.bracket || null,
+      budget: body.budget?.trim() || null,
+      coffee_preference: body.coffee?.trim() || null,
       ideal_date: body.idealDate?.trim() || null,
-      status: 'pending' as const,
+      status: (isDraft ? 'draft' : 'pending') as 'draft' | 'pending',
     };
 
     // Insert into Supabase
@@ -225,66 +239,77 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get submission number (count of all submissions up to this one)
-    const { count } = await supabase
-      .from('deck_submissions')
-      .select('*', { count: 'exact', head: true });
+    // Skip emails for drafts
+    if (!isDraft) {
+      // Get submission number (count of all submissions up to this one)
+      const { count } = await supabase
+        .from('deck_submissions')
+        .select('*', { count: 'exact', head: true });
 
-    const submissionNumber = count || 1;
+      const submissionNumber = count || 1;
 
-    // Send confirmation email
-    try {
-      const resend = getResendClient();
-      await resend.emails.send({
-        from: 'DefCat Custom Decks <decks@defcat.com>',
-        to: body.email,
-        subject: `Deck Submission Confirmed - #${submissionNumber}`,
-        react: DeckSubmissionEmail({
-          patreonUsername: body.patreonUsername,
-          submissionNumber,
-          colorPreference: ColorIdentity.getName(body.colorPreference),
-          commander: body.commander || undefined,
-          bracket: body.bracket,
-          mysteryDeck,
-        }),
-      });
-    } catch (emailError) {
-      console.error('Email error:', emailError);
-      // Don't fail the request if email fails
-      // The submission is already saved
-    }
+      // Send confirmation email
+      try {
+        const resend = getResendClient();
+        await resend.emails.send({
+          from: 'DefCat Custom Decks <decks@defcat.com>',
+          to: body.email,
+          subject: `Deck Submission Confirmed - #${submissionNumber}`,
+          react: DeckSubmissionEmail({
+            patreonUsername: body.patreonUsername,
+            submissionNumber,
+            colorPreference: ColorIdentity.getName(body.colorPreference),
+            commander: body.commander || undefined,
+            bracket: body.bracket,
+            mysteryDeck,
+          }),
+        });
+      } catch (emailError) {
+        console.error('Email error:', emailError);
+        // Don't fail the request if email fails
+        // The submission is already saved
+      }
 
-    // Also notify admin (optional)
-    try {
-      const resend = getResendClient();
-      await resend.emails.send({
-        from: 'DefCat Submissions <notifications@defcat.com>', // Update with your domain
-        to: process.env.ADMIN_EMAIL || 'admin@defcat.com', // Update with your admin email
-        subject: `New ${profile.patreon_tier} Deck Submission #${submissionNumber} from ${body.patreonUsername}`,
-        html: `
-          <h2>New Deck Submission Received</h2>
-          <p><strong>Submission #:</strong> ${submissionNumber}</p>
-          <p><strong>Patreon Tier:</strong> ${profile.patreon_tier}</p>
-          <p><strong>Remaining this month:</strong> ${maxSubmissions - (submissionCount || 0) - 1}</p>
-          <hr>
-          <p><strong>Patreon User:</strong> ${body.patreonUsername}</p>
-          <p><strong>Discord:</strong> ${body.discordUsername}</p>
-          <p><strong>Email:</strong> ${body.email}</p>
-          <p><strong>Mystery Deck:</strong> ${mysteryDeck ? 'Yes' : 'No'}</p>
-          ${body.commander ? `<p><strong>Commander:</strong> ${body.commander}</p>` : ''}
-          <p><strong>Color Preference:</strong> ${ColorIdentity.getName(body.colorPreference)}</p>
-          ${body.theme ? `<p><strong>Theme:</strong> ${body.theme}</p>` : ''}
-          <p><strong>Bracket:</strong> ${body.bracket}</p>
-          <p><strong>Budget:</strong> ${body.budget}</p>
-          <p><strong>Coffee:</strong> ${body.coffee}</p>
-          ${body.idealDate ? `<p><strong>Ideal Date:</strong> ${body.idealDate}</p>` : ''}
-          <br>
-          <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/submissions/${submission.id}">View in Dashboard</a></p>
-        `,
-      });
-    } catch (adminEmailError) {
-      console.error('Admin notification error:', adminEmailError);
-      // Don't fail the request
+      // Also notify admin (optional)
+      try {
+        const resend = getResendClient();
+        const maxSubmissions = profile.patreon_tier === 'ArchMage' ? 2 : 1;
+        const { count: submissionCount } = await supabase
+          .from('deck_submissions')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .neq('status', 'draft')
+          .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString());
+
+        await resend.emails.send({
+          from: 'DefCat Submissions <notifications@defcat.com>', // Update with your domain
+          to: process.env.ADMIN_EMAIL || 'admin@defcat.com', // Update with your admin email
+          subject: `New ${profile.patreon_tier} Deck Submission #${submissionNumber} from ${body.patreonUsername}`,
+          html: `
+            <h2>New Deck Submission Received</h2>
+            <p><strong>Submission #:</strong> ${submissionNumber}</p>
+            <p><strong>Patreon Tier:</strong> ${profile.patreon_tier}</p>
+            <p><strong>Remaining this month:</strong> ${maxSubmissions - (submissionCount || 0) - 1}</p>
+            <hr>
+            <p><strong>Patreon User:</strong> ${body.patreonUsername}</p>
+            <p><strong>Discord:</strong> ${body.discordUsername}</p>
+            <p><strong>Email:</strong> ${body.email}</p>
+            <p><strong>Mystery Deck:</strong> ${mysteryDeck ? 'Yes' : 'No'}</p>
+            ${body.commander ? `<p><strong>Commander:</strong> ${body.commander}</p>` : ''}
+            <p><strong>Color Preference:</strong> ${ColorIdentity.getName(body.colorPreference)}</p>
+            ${body.theme ? `<p><strong>Theme:</strong> ${body.theme}</p>` : ''}
+            <p><strong>Bracket:</strong> ${body.bracket}</p>
+            <p><strong>Budget:</strong> ${body.budget}</p>
+            <p><strong>Coffee:</strong> ${body.coffee}</p>
+            ${body.idealDate ? `<p><strong>Ideal Date:</strong> ${body.idealDate}</p>` : ''}
+            <br>
+            <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/submissions/${submission.id}">View in Dashboard</a></p>
+          `,
+        });
+      } catch (adminEmailError) {
+        console.error('Admin notification error:', adminEmailError);
+        // Don't fail the request
+      }
     }
 
     // Return success response

@@ -7,8 +7,12 @@ import { requireAdmin } from '@/lib/auth-guards';
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Edit, Trash2, ExternalLink } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Plus } from 'lucide-react';
+import { ImportAllDecksButton } from '@/components/admin/ImportAllDecksButton';
+import { UpdateAllDecksButton } from '@/components/admin/UpdateAllDecksButton';
+import { DecksList } from '@/components/admin/DecksList';
 
 export default async function AdminDecksPage() {
   // Require admin role - will redirect if not admin
@@ -43,92 +47,28 @@ export default async function AdminDecksPage() {
                 Back to Dashboard
               </Link>
             </Button>
-            <Button asChild>
-              <Link href="/admin/decks/import">
-                <Plus className="h-4 w-4 mr-2" />
-                Import Deck
-              </Link>
-            </Button>
+            <ImportAllDecksButton />
+            <UpdateAllDecksButton />
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button asChild variant="outline" className="border-purple-500/20 hover:bg-purple-500/10 text-purple-500">
+                    <Link href="/admin/decks/import">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Import Deck
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Manually import a single deck by Moxfield URL</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
 
         {/* Decks List */}
-        <div className="space-y-4">
-          {!decks || decks.length === 0 ? (
-            <Card className="glass-panel p-8">
-              <div className="text-center">
-                <p className="text-muted-foreground mb-4">No decks found</p>
-                <Button asChild>
-                  <Link href="/admin/decks/import">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Import Your First Deck
-                  </Link>
-                </Button>
-              </div>
-            </Card>
-          ) : (
-            decks.map((deck) => (
-              <Card key={deck.id} className="glass-card hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-xl font-bold truncate">
-                          {deck.name}
-                        </h3>
-                      </div>
-
-                      <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                        {/* Commanders */}
-                        {deck.commanders && deck.commanders.length > 0 && (
-                          <div className="flex items-center gap-1">
-                            <span className="font-medium">Commanders:</span>
-                            <span>{deck.commanders.join(', ')}</span>
-                          </div>
-                        )}
-
-                        {/* Color Identity */}
-                        {deck.color_identity && deck.color_identity.length > 0 && (
-                          <div className="flex items-center gap-1">
-                            <span className="font-medium">Colors:</span>
-                            <span>{deck.color_identity.join('')}</span>
-                          </div>
-                        )}
-
-                        {/* Stats */}
-                        <div className="flex items-center gap-1">
-                          <span className="font-medium">Views:</span>
-                          <span>{deck.view_count || 0}</span>
-                        </div>
-                      </div>
-
-                      <div className="text-xs text-muted-foreground mt-2">
-                        Moxfield ID: {deck.moxfield_id}
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-2 shrink-0">
-                      <Button asChild variant="outline" size="sm">
-                        <Link href={`/decks/${deck.id}`} target="_blank">
-                          <ExternalLink className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                      <Button asChild variant="outline" size="sm">
-                        <Link href={`/admin/decks/${deck.id}`}>
-                          <Edit className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                      <Button variant="destructive" size="sm">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </div>
+        <DecksList decks={decks || []} />
       </div>
     </div>
   );

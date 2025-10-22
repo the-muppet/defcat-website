@@ -1,0 +1,49 @@
+# Prometheus configuration for DefCat DeckVault monitoring
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'defcat-production'
+    environment: 'production'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+# Load alerting rules
+rule_files:
+  - 'alerts/*.yml'
+
+# Scrape configurations
+scrape_configs:
+  # DefCat DeckVault application
+  - job_name: 'defcat-deckvault'
+    static_configs:
+      - targets:
+          - 'app:3000'
+    metrics_path: '/api/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # Node.js application metrics
+  - job_name: 'nodejs'
+    static_configs:
+      - targets:
+          - 'app:3000'
+    metrics_path: '/api/metrics'
+
+  # Supabase PostgreSQL (if exposed)
+  - job_name: 'postgres'
+    static_configs:
+      - targets:
+          - 'postgres-exporter:9187'
+
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets:
+          - 'localhost:9090'

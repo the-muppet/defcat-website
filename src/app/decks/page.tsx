@@ -231,7 +231,7 @@ export default function TableLayout() {
                 </button>
               )}
               <h1 className="text-2xl font-bold">
-                cEDH Decklist Database
+                Decklist Database
               </h1>
             </div>
             <div className="text-sm text-muted-foreground">

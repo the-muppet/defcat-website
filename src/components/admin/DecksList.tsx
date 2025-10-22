@@ -1,0 +1,148 @@
+'use client';
+
+import { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import Link from 'next/link';
+import { Edit, Trash2, ExternalLink, Search } from 'lucide-react';
+
+interface Deck {
+  id: string;
+  moxfield_id: string;
+  name: string;
+  commanders: string[] | null;
+  color_identity: string[] | null;
+  created_at: string;
+  view_count: number | null;
+}
+
+interface DecksListProps {
+  decks: Deck[];
+}
+
+export function DecksList({ decks }: DecksListProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredDecks = decks.filter((deck) => {
+    const query = searchQuery.toLowerCase();
+
+    // Search by name
+    if (deck.name?.toLowerCase().includes(query)) return true;
+
+    // Search by moxfield ID
+    if (deck.moxfield_id?.toLowerCase().includes(query)) return true;
+
+    // Search by commanders
+    if (deck.commanders?.some(cmd => cmd?.toLowerCase().includes(query))) return true;
+
+    // Search by color identity
+    if (deck.color_identity?.join('').toLowerCase().includes(query)) return true;
+
+    return false;
+  });
+
+  return (
+    <div className="space-y-4">
+      {/* Search Bar */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          type="text"
+          placeholder="Search decks by name, commander, or Moxfield ID..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-10 input-tinted"
+        />
+      </div>
+
+      {/* Results Count */}
+      {searchQuery && (
+        <p className="text-sm text-muted-foreground">
+          Found {filteredDecks.length} of {decks.length} decks
+        </p>
+      )}
+
+      {/* Decks List */}
+      {filteredDecks.length === 0 ? (
+        <Card className="glass-panel p-8">
+          <div className="text-center text-muted-foreground">
+            <p className="mb-2">
+              {searchQuery ? 'No decks found matching your search' : 'No decks found'}
+            </p>
+            {searchQuery && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSearchQuery('')}
+              >
+                Clear search
+              </Button>
+            )}
+          </div>
+        </Card>
+      ) : (
+        filteredDecks.map((deck) => (
+          <Card key={deck.id} className="glass-card hover:shadow-lg transition-shadow">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="text-xl font-bold truncate">
+                      {deck.name}
+                    </h3>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+                    {/* Commanders */}
+                    {deck.commanders && deck.commanders.length > 0 && (
+                      <div className="flex items-center gap-1">
+                        <span className="font-medium">Commanders:</span>
+                        <span>{deck.commanders.join(', ')}</span>
+                      </div>
+                    )}
+
+                    {/* Color Identity */}
+                    {deck.color_identity && deck.color_identity.length > 0 && (
+                      <div className="flex items-center gap-1">
+                        <span className="font-medium">Colors:</span>
+                        <span>{deck.color_identity.join('')}</span>
+                      </div>
+                    )}
+
+                    {/* Stats */}
+                    <div className="flex items-center gap-1">
+                      <span className="font-medium">Views:</span>
+                      <span>{deck.view_count || 0}</span>
+                    </div>
+                  </div>
+
+                  <div className="text-xs text-muted-foreground mt-2">
+                    Moxfield ID: {deck.moxfield_id}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 shrink-0">
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={`/decks/${deck.id}`} target="_blank">
+                      <ExternalLink className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={`/admin/decks/${deck.id}`}>
+                      <Edit className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button variant="destructive" size="sm">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))
+      )}
+    </div>
+  );
+}

@@ -780,31 +780,6 @@
 }
 
 /* ===========================
-   White Mana Button Text Override
-   =========================== */
-html[data-mana="white"] .btn-tinted-primary,
-html[data-mana="white"] a.btn-tinted-primary,
-html[data-mana="white"] button.btn-tinted-primary {
-  color: #1a1a1a !important;
-  text-shadow: none !important;
-}
-
-html[data-mana="white"] .text-primary-foreground {
-  color: #1a1a1a !important;
-}
-
-.dark html[data-mana="white"] .btn-tinted-primary,
-.dark html[data-mana="white"] a.btn-tinted-primary,
-.dark html[data-mana="white"] button.btn-tinted-primary {
-  color: #0a0a0a !important;
-  text-shadow: none !important;
-}
-
-.dark html[data-mana="white"] .text-primary-foreground {
-  color: #0a0a0a !important;
-}
-
-/* ===========================
    Mana Symbol Selector Glow
    =========================== */
 button[style*="--glow-color"]::before {

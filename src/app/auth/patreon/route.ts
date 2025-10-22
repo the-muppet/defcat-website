@@ -5,7 +5,7 @@
 
 import { NextResponse } from 'next/server'
 
-export async function POST(request: Request) {
+function initiateOAuthFlow(request: Request) {
   const origin = new URL(request.url).origin
 
   const clientId = process.env.PATREON_CLIENT_ID
@@ -28,4 +28,12 @@ export async function POST(request: Request) {
 
   // Use 303 redirect to change POST to GET
   return NextResponse.redirect(patreonAuthUrl, 303)
+}
+
+export async function GET(request: Request) {
+  return initiateOAuthFlow(request)
+}
+
+export async function POST(request: Request) {
+  return initiateOAuthFlow(request)
 }

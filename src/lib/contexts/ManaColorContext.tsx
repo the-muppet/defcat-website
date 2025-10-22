@@ -12,7 +12,7 @@ interface ManaColorContextType {
 const ManaColorContext = createContext<ManaColorContextType | undefined>(undefined)
 
 export function ManaColorProvider({ children }: { children: ReactNode }) {
-  const [selectedMana, setSelectedManaState] = useState<ManaSymbol>(ManaSymbol.RED)
+  const [selectedMana, setSelectedManaState] = useState<ManaSymbol>(ManaSymbol.GREEN)
 
   useEffect(() => {
     const saved = localStorage.getItem('mana-color')
@@ -21,7 +21,7 @@ export function ManaColorProvider({ children }: { children: ReactNode }) {
       applyManaColor(saved as ManaSymbol)
     } else {
       // Apply default color on mount
-      applyManaColor(ManaSymbol.WHITE)
+      applyManaColor(ManaSymbol.GREEN)
     }
   }, [])
 

@@ -1,0 +1,200 @@
+{
+  "dashboard": {
+    "title": "DefCat DeckVault - Service Overview",
+    "tags": ["defcat", "overview"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Request Rate",
+        "type": "stat",
+        "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total{job=\"defcat-deckvault\"}[5m]))",
+            "legendFormat": "Requests/sec"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "decimals": 2,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": 0, "color": "green" },
+                { "value": 100, "color": "yellow" },
+                { "value": 500, "color": "red" }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Error Rate",
+        "type": "stat",
+        "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
+        "targets": [
+          {
+            "expr": "sum(rate(http_request_errors_total{job=\"defcat-deckvault\"}[5m])) / sum(rate(http_requests_total{job=\"defcat-deckvault\"}[5m])) * 100",
+            "legendFormat": "Error %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "decimals": 2,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": 0, "color": "green" },
+                { "value": 1, "color": "yellow" },
+                { "value": 5, "color": "red" }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Response Time (p95)",
+        "type": "stat",
+        "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"defcat-deckvault\"}[5m])) by (le)) * 1000",
+            "legendFormat": "p95 latency"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms",
+            "decimals": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": 0, "color": "green" },
+                { "value": 500, "color": "yellow" },
+                { "value": 1000, "color": "red" }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "Service Health",
+        "type": "stat",
+        "gridPos": { "x": 18, "y": 0, "w": 6, "h": 4 },
+        "targets": [
+          {
+            "expr": "up{job=\"defcat-deckvault\"}",
+            "legendFormat": "Status"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              { "value": 0, "text": "DOWN", "color": "red" },
+              { "value": 1, "text": "UP", "color": "green" }
+            ]
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Request Rate by Endpoint",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total{job=\"defcat-deckvault\"}[5m])) by (path)",
+            "legendFormat": "{{path}}"
+          }
+        ],
+        "yaxes": [
+          { "format": "reqps", "label": "Requests/sec" },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Response Time Percentiles",
+        "type": "graph",
+        "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{job=\"defcat-deckvault\"}[5m])) by (le)) * 1000",
+            "legendFormat": "p50"
+          },
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"defcat-deckvault\"}[5m])) by (le)) * 1000",
+            "legendFormat": "p95"
+          },
+          {
+            "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job=\"defcat-deckvault\"}[5m])) by (le)) * 1000",
+            "legendFormat": "p99"
+          }
+        ],
+        "yaxes": [
+          { "format": "ms", "label": "Latency" },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Business Metrics",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 12, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(deck_submissions_total[5m])",
+            "legendFormat": "Deck Submissions/sec"
+          },
+          {
+            "expr": "rate(deck_imports_total[5m])",
+            "legendFormat": "Deck Imports/sec"
+          },
+          {
+            "expr": "rate(user_logins_total[5m])",
+            "legendFormat": "User Logins/sec"
+          }
+        ],
+        "yaxes": [
+          { "format": "ops", "label": "Operations/sec" },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Memory Usage",
+        "type": "graph",
+        "gridPos": { "x": 12, "y": 12, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "nodejs_memory_usage_bytes{type=\"heapUsed\"} / 1024 / 1024",
+            "legendFormat": "Heap Used (MB)"
+          },
+          {
+            "expr": "nodejs_memory_usage_bytes{type=\"heapTotal\"} / 1024 / 1024",
+            "legendFormat": "Heap Total (MB)"
+          },
+          {
+            "expr": "nodejs_memory_usage_bytes{type=\"rss\"} / 1024 / 1024",
+            "legendFormat": "RSS (MB)"
+          }
+        ],
+        "yaxes": [
+          { "format": "decmbytes", "label": "Memory" },
+          { "format": "short" }
+        ]
+      }
+    ]
+  }
+}

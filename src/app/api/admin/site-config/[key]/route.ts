@@ -1,16 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY! // Use service role to bypass RLS
-)
+// Force dynamic rendering to avoid build-time errors
+export const dynamic = 'force-dynamic'
+
+// Helper to create Supabase client at runtime
+function getSupabaseClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY! // Use service role to bypass RLS
+  )
+}
 
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ key: string }> }
 ) {
   try {
+    const supabase = getSupabaseClient()
     const { key } = await params
 
     // Verify user is admin

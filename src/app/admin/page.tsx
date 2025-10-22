@@ -9,7 +9,7 @@ import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Database, Users, Package, Settings, TrendingUp, BarChart3 } from 'lucide-react';
+import { Database, Users, Package, Settings, TrendingUp, BarChart3, ClipboardList } from 'lucide-react';
 
 export default async function AdminDashboard() {
   await requireAdmin();
@@ -28,10 +28,12 @@ export default async function AdminDashboard() {
 
   const [
     { count: deckCount },
-    { count: userCount }
+    { count: userCount },
+    { count: pendingCount }
   ] = await Promise.all([
     supabase.from('decks').select('*', { count: 'exact', head: true }),
-    supabase.from('profiles').select('*', { count: 'exact', head: true })
+    supabase.from('profiles').select('*', { count: 'exact', head: true }),
+    supabase.from('deck_submissions').select('*', { count: 'exact', head: true }).in('status', ['pending', 'queued'])
   ]);
 
   return (
@@ -114,6 +116,23 @@ export default async function AdminDashboard() {
                   <Link href="/admin/decks/import">Import from Moxfield</Link>
                 </Button>
               </div>
+            </CardContent>
+          </Card>
+
+          <Card className="card-tinted border-tinted hover:shadow-tinted-lg transition-all">
+            <CardHeader>
+              <ClipboardList className="h-8 w-8 mb-2" style={{ color: 'var(--mana-color)' }} />
+              <CardTitle className="text-foreground">Pending Submissions</CardTitle>
+              <CardDescription className="text-muted-foreground">
+                Review and manage deck submission requests
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild className="w-full btn-tinted-primary">
+                <Link href="/admin/submissions">
+                  View Submissions {pendingCount ? `(${pendingCount})` : ''}
+                </Link>
+              </Button>
             </CardContent>
           </Card>
 
