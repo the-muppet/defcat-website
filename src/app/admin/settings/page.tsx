@@ -6,6 +6,8 @@ import { requireAdmin } from '@/lib/auth-guards';
 import { Settings } from 'lucide-react';
 import { SiteConfigForm } from '@/components/admin/SiteConfigForm';
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminSettingsPage() {
   await requireAdmin();
 

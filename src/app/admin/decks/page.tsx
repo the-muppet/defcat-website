@@ -14,6 +14,8 @@ import { ImportAllDecksButton } from '@/components/admin/ImportAllDecksButton';
 import { UpdateAllDecksButton } from '@/components/admin/UpdateAllDecksButton';
 import { DecksList } from '@/components/admin/DecksList';
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminDecksPage() {
   // Require admin role - will redirect if not admin
   await requireAdmin();

@@ -5,6 +5,9 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { ShineBorder } from '@/components/ui/shine-border';
 
+// Force dynamic rendering - don't prerender at build time
+export const dynamic = 'force-dynamic'
+
 /**
  * Auth Verification Page
  * Handles client-side OTP verification after Patreon OAuth callback

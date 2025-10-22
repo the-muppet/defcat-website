@@ -14,6 +14,9 @@ import { createClient } from '@/lib/supabase/client'
 import { Sparkles, Mail, AlertCircle } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
+// Force dynamic rendering - don't prerender at build time
+export const dynamic = 'force-dynamic'
+
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

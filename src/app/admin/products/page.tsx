@@ -2,6 +2,8 @@ import { requireAdmin } from '@/lib/auth/require-admin'
 import { ProductsPanel } from '@/components/admin/ProductsPanel'
 import { Package } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminProductsPage() {
   await requireAdmin()
 

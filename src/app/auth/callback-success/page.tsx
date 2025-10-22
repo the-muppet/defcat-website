@@ -4,6 +4,9 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
+// Force dynamic rendering - don't prerender at build time
+export const dynamic = 'force-dynamic'
+
 /**
  * Auth Callback Success Page
  * Handles setting the session from URL hash parameters

@@ -4,6 +4,9 @@ import { UserRoleManager } from '@/components/admin/UserRoleManager'
 import { DeveloperTools } from '@/components/admin/DeveloperTools'
 import { Users } from 'lucide-react'
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 export default async function AdminUsersPage() {
   await requireAdmin()
 

@@ -12,6 +12,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ArrowLeft } from 'lucide-react';
 import { DeckEditForm } from '@/components/admin/DeckEditForm';
 
+export const dynamic = 'force-dynamic'
+
 interface PageProps {
   params: {
     id: string;

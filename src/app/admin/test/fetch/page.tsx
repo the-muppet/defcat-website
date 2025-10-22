@@ -4,6 +4,9 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 
+// Force dynamic rendering to prevent build-time prerender
+export const dynamic = 'force-dynamic'
+
 export default function TestFetchPage() {
   const [result, setResult] = useState<any>(null)
   const [loading, setLoading] = useState(false)
