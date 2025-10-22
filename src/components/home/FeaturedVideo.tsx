@@ -1,17 +1,7 @@
 "use client"
 
-import dynamic from 'next/dynamic'
 import { Card, CardContent } from "@/components/ui/card"
-import { Youtube, Loader2 } from "lucide-react"
-
-const ReactPlayer = dynamic(() => import('react-player'), {
-  ssr: false,
-  loading: () => (
-    <div className="aspect-video bg-muted/30 flex items-center justify-center">
-      <Loader2 className="h-12 w-12 animate-spin text-muted-foreground" />
-    </div>
-  )
-})
+import { Youtube } from "lucide-react"
 
 interface FeaturedVideoProps {
   videoId?: string
@@ -32,7 +22,9 @@ export function FeaturedVideo({
   light = true,
   muted = false
 }: FeaturedVideoProps) {
+  console.log('FeaturedVideo props:', { videoId, url, title })
   const videoUrl = url || (videoId ? `https://www.youtube.com/watch?v=${videoId}` : null)
+  console.log('FeaturedVideo videoUrl:', videoUrl)
 
   return (
     <section className="py-12 px-6">
@@ -44,25 +36,14 @@ export function FeaturedVideo({
 
         <Card className="glass border-white/10 bg-card-tinted overflow-hidden">
           <CardContent className="p-0">
-            {videoUrl ? (
+            {videoId ? (
               <div className="aspect-video relative">
-                <ReactPlayer
-                  url={videoUrl}
-                  width="100%"
-                  height="100%"
-                  playing={playing}
-                  controls={controls}
-                  light={light}
-                  muted={muted}
-                  config={{
-                    youtube: {
-                      playerVars: {
-                        modestbranding: 1,
-                        rel: 0
-                      }
-                    }
-                  }}
-                  className="absolute top-0 left-0"
+                <iframe
+                  src={`https://www.youtube.com/embed/${videoId}`}
+                  title={title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full"
                 />
               </div>
             ) : (

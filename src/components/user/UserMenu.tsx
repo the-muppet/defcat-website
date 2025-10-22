@@ -43,14 +43,15 @@ export function UserMenu({ user }: UserMenuProps) {
             <TierBadge tier={user.patreonTier || 'Citizen'} showTooltip={false} />
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <a href="/decks">Browse Decks</a>
-        </DropdownMenuItem>
         {(user.role === 'admin' || user.role === 'moderator' || user.role === 'developer') && (
-          <DropdownMenuItem asChild>
-            <a href="/admin">Admin Dashboard</a>
-          </DropdownMenuItem>
+          <>
+            <DropdownMenuItem asChild>
+              <a href="/admin">Admin Dashboard</a>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <a href="/admin/products">Manage Products</a>
+            </DropdownMenuItem>
+          </>
         )}
         {user.role === 'developer' && (
           <DropdownMenuItem asChild>

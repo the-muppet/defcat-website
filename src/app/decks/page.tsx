@@ -5,6 +5,7 @@ import { ExternalLink, Filter, X, ChevronUp, ChevronDown } from "lucide-react"
 import { useDecks } from "@/lib/hooks/useDecks"
 import { cn } from "@/lib/utils"
 import type { Deck } from "@/types/core"
+import { ManaSymbols } from "@/components/decks/ManaSymbols"
 
 // Memoized deck row component
 const DeckRow = memo(function DeckRow({ deck }: { deck: Deck }) {
@@ -32,6 +33,9 @@ const DeckRow = memo(function DeckRow({ deck }: { deck: Deck }) {
       </td>
       <td className="py-4 px-4">
         <div className="flex justify-center">
+          {deck.color_identity && (
+            <ManaSymbols mana={deck.color_identity} size="sm" />
+          )}
         </div>
       </td>
       <td className="py-4 px-4 text-right">
@@ -86,9 +90,15 @@ export default function TableLayout() {
       )
     }
     if (selectedColors.length > 0) {
-      filtered = filtered.filter((deck) =>
-        selectedColors.every((color) => deck.color_identity?.includes(color))
-      )
+      filtered = filtered.filter((deck) => {
+        return selectedColors.every((color) => {
+          // Special handling for WUBRG - check if deck has all 5 colors
+          if (color === "WUBRG") {
+            return ['W', 'U', 'B', 'R', 'G'].every(c => deck.color_identity?.includes(c))
+          }
+          return deck.color_identity?.includes(color)
+        })
+      })
     }
 
     filtered.sort((a, b) => {

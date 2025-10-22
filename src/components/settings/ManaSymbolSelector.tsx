@@ -44,14 +44,14 @@ export function ManaSymbolSelector() {
                 "flex items-center justify-center p-2",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                 isSelected
-                  ? "scale-105 shadow-lg"
-                  : "border-border hover:shadow-md"
+                  ? "scale-105 before:absolute before:inset-0 before:-z-10 before:rounded-xl before:opacity-60 before:blur-xl"
+                  : "border-tinted hover:shadow-md"
               )}
               style={{
                 color: isSelected ? mana.cssColor : 'var(--muted-foreground)',
                 borderColor: isSelected ? mana.cssColor : undefined,
                 ...(isSelected && {
-                  boxShadow: `0 0 0 4px var(--background), 0 0 0 6px ${mana.cssColor}`
+                  ['--glow-color' as string]: mana.cssColor
                 })
               }}
               aria-label={`Select ${mana.label} mana`}
@@ -60,12 +60,12 @@ export function ManaSymbolSelector() {
               <ManaSymbolIcon
                 symbol={mana.symbol}
                 size="lg"
-                fillColor={isSelected ? mana.cssColor : undefined}
+                fillColor={mana.cssColor}
                 className={cn(
                   "transition-all duration-300",
                   isSelected
                     ? "opacity-100 scale-100"
-                    : "opacity-40 hover:opacity-70 scale-90 hover:scale-95"
+                    : "opacity-60 hover:opacity-80 scale-90 hover:scale-95"
                 )}
                 style={{
                   filter: isSelected ? 'brightness(1.3) saturate(1.5)' : undefined
@@ -95,18 +95,6 @@ export function ManaSymbolSelector() {
                   </svg>
                 </div>
               )}
-
-              {/* Subtle glow on hover */}
-              <div 
-                className={cn(
-                  "absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300",
-                  "pointer-events-none",
-                  !isSelected && "hover:opacity-20"
-                )}
-                style={{
-                  background: `radial-gradient(circle at center, ${mana.cssColor}, transparent 70%)`
-                }}
-              />
             </button>
           )
         })}

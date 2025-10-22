@@ -91,13 +91,16 @@ export function Header() {
     setShowLogoutModal(true);
     try {
       await supabase.auth.signOut();
-      // Redirect to home after logout
+      // Redirect to home after logout - shorter delay for better UX
       setTimeout(() => {
+        setShowLogoutModal(false);
         window.location.href = '/';
-      }, 800);
+      }, 300);
     } catch (error) {
       console.error('Logout error:', error);
       setShowLogoutModal(false);
+      // Still redirect even if there's an error
+      window.location.href = '/';
     }
   }, [supabase.auth]);
 
@@ -107,11 +110,11 @@ export function Header() {
       <AuthLoadingModal isOpen={showLogoutModal} type="logout" />
 
       <header className="sticky top-0 w-full glass-tinted-strong shadow-tinted-lg z-50">
-        <div className="container flex h-16 items-center justify-between">
+        <div className="px-8 md:px-16 lg:px-24 flex h-16 items-center justify-between">
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center space-x-2 group hover-tinted rounded-lg px-3 py-2 -ml-3"
+            className="flex items-center space-x-2 group hover-tinted rounded-lg px-3 py-2 -ml-3 flex-shrink-0"
           >
             <Sparkles className="h-5 w-5 text-tinted transition-transform group-hover:rotate-12 group-hover:scale-110" />
             <span className="font-bold text-xl gradient-tinted-text">
@@ -119,9 +122,10 @@ export function Header() {
             </span>
           </Link>
 
-          {/* Navigation Menu */}
-          <NavigationMenu className="hidden md:flex">
-            <NavigationMenuList>
+          {/* Navigation Menu - centered with equal spacing */}
+          <div className="absolute left-1/2 -translate-x-1/2">
+            <NavigationMenu className="hidden md:flex">
+              <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
                   <Link
@@ -132,7 +136,7 @@ export function Header() {
                       pathname === '/decks' && "tinted-accent border border-tinted"
                     )}
                   >
-                    Decks
+                    The Vault
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
@@ -216,6 +220,7 @@ export function Header() {
               )}
             </NavigationMenuList>
           </NavigationMenu>
+          </div>
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-3">

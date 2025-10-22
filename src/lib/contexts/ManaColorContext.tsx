@@ -19,6 +19,9 @@ export function ManaColorProvider({ children }: { children: ReactNode }) {
     if (saved && Object.values(ManaSymbol).includes(saved as ManaSymbol)) {
       setSelectedManaState(saved as ManaSymbol)
       applyManaColor(saved as ManaSymbol)
+    } else {
+      // Apply default color on mount
+      applyManaColor(ManaSymbol.WHITE)
     }
   }, [])
 
@@ -47,11 +50,11 @@ export function useManaColor() {
 function applyManaColor(mana: ManaSymbol) {
   // Use OKLCH for consistent color space
   const colors = {
-    [ManaSymbol.RED]: 'oklch(0.30 0.40 50)',
-    [ManaSymbol.BLUE]: 'oklch(0.30 0.40 250)',    
-    [ManaSymbol.GREEN]: 'oklch(0.30 0.35 150)',  
-    [ManaSymbol.WHITE]: 'oklch(0.95 0.20 115)',
-    [ManaSymbol.BLACK]: 'oklch(0.20 0.35 335)',
+    [ManaSymbol.RED]: 'oklch(0.35 0.40 50)',
+    [ManaSymbol.BLUE]: 'oklch(0.35 0.40 270)',
+    [ManaSymbol.GREEN]: 'oklch(0.40 0.40 150)',
+    [ManaSymbol.WHITE]: 'oklch(0.90 0.40 100)',
+    [ManaSymbol.BLACK]: 'oklch(0.25 0.40 335)',
   }
 
   const root = document.documentElement
@@ -63,4 +66,7 @@ function applyManaColor(mana: ManaSymbol) {
 
   // Update the color
   root.style.setProperty('--mana-color', colors[mana])
+
+  // Set data attribute for CSS targeting
+  root.setAttribute('data-mana', mana)
 }

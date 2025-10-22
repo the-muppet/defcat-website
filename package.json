@@ -6,6 +6,7 @@
     "dev": "next dev --port 8888 --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
+    "db:push": "bash scripts/db-push.sh",
     "lint": "biome check",
     "format": "biome format --write",
     "test": "vitest",

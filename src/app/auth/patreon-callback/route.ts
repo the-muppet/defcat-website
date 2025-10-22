@@ -41,6 +41,9 @@ export async function GET(request: Request) {
       return NextResponse.redirect(`${origin}/auth/login?error=no_email`)
     }
 
+    // TEMPORARY: Auto-accept site owner
+    const isSiteOwner = email.toLowerCase() === 'jaynatale@defcat.net'
+
     // Use admin client to create/update user
     const adminClient = createAdminClient()
 
@@ -83,15 +86,29 @@ export async function GET(request: Request) {
       return NextResponse.redirect(`${origin}/auth/login?error=user_creation_failed`)
     }
 
-    // Update/create profile with default role
+    // Check if profile already exists
+    const { data: existingProfile } = await adminClient
+      .from('profiles')
+      .select('role')
+      .eq('id', userId)
+      .single()
+
+    // Determine role - site owner gets admin role automatically
+    let userRole = existingProfile?.role || 'user'
+    if (isSiteOwner && userRole === 'user') {
+      userRole = 'admin'
+      console.log('🔑 Site owner detected - granting admin access')
+    }
+
+    // Update/create profile, preserving existing role if present
     const { error: profileError } = await adminClient
       .from('profiles')
       .upsert({
         id: userId,
         email,
-        patreon_id: patreonId,
-        patreon_tier: tier,
-        role: 'user',
+        patreon_id: isSiteOwner ? null : patreonId, // Don't link site owner to Patreon
+        patreon_tier: isSiteOwner ? 'ArchMage' : tier, // Give site owner highest tier
+        role: userRole,
         updated_at: new Date().toISOString(),
       })
 

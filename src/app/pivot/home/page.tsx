@@ -1,20 +1,57 @@
 'use client'
 
-import { useState, useMemo } from "react"
-import { Search, Loader2 } from "lucide-react"
+import { useState, useMemo, useRef, useEffect } from "react"
+import { Search, Loader2, ChevronDown } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { FeaturedVideo } from "@/components/home/FeaturedVideo"
 import { SocialMediaLinks } from "@/components/home/SocialMediaLinks"
 import { RotatingAds } from "@/components/home/RotatingAds"
-import { FeaturedDeckCard } from "@/components/home/FeaturedDeckCard"
 import { DeckCard } from "@/components/decks/DeckCard"
 import { useDecks } from "@/lib/hooks/useDecks"
+import { createClient } from "@/lib/supabase/client"
 
 export default function ExampleHomePage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [bracketLevel, setBracketLevel] = useState("")
   const [selectedColors, setSelectedColors] = useState<string[]>([])
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [showTagsDropdown, setShowTagsDropdown] = useState(false)
+  const [featuredVideoId, setFeaturedVideoId] = useState<string>("")
+
+  const tagsDropdownRef = useRef<HTMLDivElement>(null)
+
+  // Fetch featured video ID from site_config
+  useEffect(() => {
+    async function fetchFeaturedVideo() {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('site_config')
+        .select('value')
+        .eq('key', 'featured_video_id')
+        .single()
+
+      console.log('Featured video fetch:', { data, error })
+
+      if (data && !error) {
+        const videoId = data.value || ''
+        console.log('Setting featured video ID to:', videoId)
+        setFeaturedVideoId(videoId)
+      }
+    }
+    fetchFeaturedVideo()
+  }, [])
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (tagsDropdownRef.current && !tagsDropdownRef.current.contains(event.target as Node)) {
+        setShowTagsDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   // Fetch all decks
   const { data: allDecks, isLoading: searchLoading } = useDecks()
@@ -30,7 +67,14 @@ export default function ExampleHomePage() {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(deck =>
         deck.name?.toLowerCase().includes(query) ||
-        deck.commanders?.some(cmd => cmd.toLowerCase().includes(query))
+        deck.commanders?.some(cmd => cmd?.toLowerCase().includes(query))
+      )
+    }
+
+    // Filter by bracket level
+    if (bracketLevel) {
+      filtered = filtered.filter(deck =>
+        deck.bracket === bracketLevel
       )
     }
 
@@ -41,10 +85,17 @@ export default function ExampleHomePage() {
       )
     }
 
-    return filtered.slice(0, 12) // Limit to 12 results
-  }, [allDecks, searchQuery, selectedColors])
+    // Filter by tags
+    if (selectedTags.length > 0) {
+      filtered = filtered.filter(deck =>
+        selectedTags.some(tag => deck.description?.toLowerCase().includes(tag.toLowerCase()))
+      )
+    }
 
-  const hasSearchQuery = searchQuery.trim() || bracketLevel || selectedColors.length > 0
+    return filtered.slice(0, 12) // Limit to 12 results
+  }, [allDecks, searchQuery, selectedColors, bracketLevel, selectedTags])
+
+  const hasSearchQuery = searchQuery.trim() || bracketLevel || selectedColors.length > 0 || selectedTags.length > 0
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
@@ -92,14 +143,46 @@ export default function ExampleHomePage() {
                 />
               </div>
 
+              {/* Color Filter Symbols */}
+              <div className="flex justify-center gap-3 mb-6">
+                {[
+                  { symbol: 'W', color: '#fffbd5' },
+                  { symbol: 'U', color: '#0e68ab' },
+                  { symbol: 'B', color: '#a855f7' },
+                  { symbol: 'R', color: '#d3202a' },
+                  { symbol: 'G', color: '#00733e' },
+                  { symbol: 'C', color: '#888' }
+                ].map(({ symbol, color }) => (
+                  <button
+                    key={symbol}
+                    type="button"
+                    onClick={() => {
+                      if (selectedColors.includes(symbol)) {
+                        setSelectedColors(selectedColors.filter(c => c !== symbol))
+                      } else {
+                        setSelectedColors([...selectedColors, symbol])
+                      }
+                    }}
+                    className={`transition-all duration-300 rounded-full p-2 ${
+                      selectedColors.includes(symbol)
+                        ? 'scale-100 opacity-100 ring-2 bg-accent-tinted'
+                        : 'scale-90 opacity-50 hover:opacity-80 hover:scale-95'
+                    }`}
+                    style={selectedColors.includes(symbol) ? { '--tw-ring-color': color } as React.CSSProperties : undefined}
+                  >
+                    <i className={`ms ms-${symbol.toLowerCase()}`} style={{ fontSize: '28px' }} />
+                  </button>
+                ))}
+              </div>
+
               {/* Filters */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm text-muted-foreground mb-2 block">Bracket Level</label>
                   <select
                     value={bracketLevel}
                     onChange={(e) => setBracketLevel(e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg glass border border-white/10 text-foreground focus:outline-none focus:ring-2"
+                    className="w-full px-4 py-3 rounded-lg glass border border-white/10 text-foreground bg-background focus:outline-none focus:ring-2 [&>option]:bg-background [&>option]:text-foreground"
                     style={{
                       '--tw-ring-color': 'var(--mana-color)',
                     } as React.CSSProperties}
@@ -112,37 +195,42 @@ export default function ExampleHomePage() {
                   </select>
                 </div>
 
-                <div>
-                  <label className="text-sm text-muted-foreground mb-2 block">Color Filter</label>
-                  <select
-                    className="w-full px-4 py-3 rounded-lg glass border border-white/10 text-foreground focus:outline-none focus:ring-2"
-                    style={{
-                      '--tw-ring-color': 'var(--mana-color)',
-                    } as React.CSSProperties}
-                  >
-                    <option value="">All Colors</option>
-                    <option value="W">White</option>
-                    <option value="U">Blue</option>
-                    <option value="B">Black</option>
-                    <option value="R">Red</option>
-                    <option value="G">Green</option>
-                  </select>
-                </div>
-
-                <div>
+                <div className="relative" ref={tagsDropdownRef}>
                   <label className="text-sm text-muted-foreground mb-2 block">Tags</label>
-                  <select
-                    className="w-full px-4 py-3 rounded-lg glass border border-white/10 text-foreground focus:outline-none focus:ring-2"
+                  <button
+                    type="button"
+                    onClick={() => setShowTagsDropdown(!showTagsDropdown)}
+                    className="w-full px-4 py-3 rounded-lg glass border border-white/10 text-foreground bg-background focus:outline-none focus:ring-2 flex items-center justify-between"
                     style={{
                       '--tw-ring-color': 'var(--mana-color)',
                     } as React.CSSProperties}
                   >
-                    <option value="">All Tags</option>
-                    <option value="combo">Combo</option>
-                    <option value="aggro">Aggro</option>
-                    <option value="control">Control</option>
-                    <option value="tribal">Tribal</option>
-                  </select>
+                    <span className="text-sm">
+                      {selectedTags.length === 0 ? 'All Tags' : `${selectedTags.length} selected`}
+                    </span>
+                    <ChevronDown className={`h-4 w-4 transition-transform ${showTagsDropdown ? 'rotate-180' : ''}`} />
+                  </button>
+                  {showTagsDropdown && (
+                    <div className="absolute z-50 w-full mt-2 p-2 rounded-lg glass border border-white/10 bg-card shadow-lg space-y-1">
+                      {['combo', 'aggro', 'control', 'tribal'].map((tag) => (
+                        <label key={tag} className="flex items-center gap-2 cursor-pointer hover:bg-accent-tinted p-2 rounded transition-colors">
+                          <input
+                            type="checkbox"
+                            checked={selectedTags.includes(tag)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedTags([...selectedTags, tag])
+                              } else {
+                                setSelectedTags(selectedTags.filter(t => t !== tag))
+                              }
+                            }}
+                            className="w-4 h-4 rounded border-border bg-background text-[var(--mana-color)] focus:ring-[var(--mana-color)]"
+                          />
+                          <span className="text-sm capitalize">{tag}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -179,6 +267,7 @@ export default function ExampleHomePage() {
                           setSearchQuery("")
                           setBracketLevel("")
                           setSelectedColors([])
+                          setSelectedTags([])
                         }}
                         className="btn-tinted-primary shadow-tinted-glow"
                       >
@@ -189,24 +278,6 @@ export default function ExampleHomePage() {
                 )}
               </div>
             )}
-
-            {/* New User Graphic Placeholder */}
-            {!hasSearchQuery && (
-              <Card className="glass border-white/10 bg-card-tinted mb-12">
-                <CardContent className="p-12 text-center">
-                  <h3 className="text-2xl font-bold mb-4">Welcome to DeckVault!</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Browse thousands of curated Commander decks or search above to get started
-                  </p>
-                  <Button
-                    className="btn-tinted-primary shadow-tinted-glow"
-                    onClick={() => setSearchQuery("commander")}
-                  >
-                    Explore Decks
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
           </div>
         </section>
 
@@ -216,16 +287,8 @@ export default function ExampleHomePage() {
         {/* Featured YouTube Video */}
         <FeaturedVideo
           title="Today's Featured Video"
-          // videoId="YOUR_YOUTUBE_VIDEO_ID" // Uncomment and add your video ID
+          videoId={featuredVideoId}
         />
-
-        {/* Featured Deck Section */}
-        <section className="py-12 px-6">
-          <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl font-bold mb-6">Today's Featured Deck</h2>
-            <FeaturedDeckCard />
-          </div>
-        </section>
 
         {/* Premium Stats */}
         <section className="py-12 px-6">
@@ -235,7 +298,7 @@ export default function ExampleHomePage() {
               <Card className="glass border-white/10 bg-card-tinted">
                 <CardContent className="p-6 text-center">
                   <div className="text-4xl font-bold mb-2" style={{ color: 'var(--mana-color)' }}>
-                    500+
+                    175+
                   </div>
                   <p className="text-muted-foreground">Exclusive Decks</p>
                 </CardContent>

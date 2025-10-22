@@ -10,7 +10,7 @@ export default async function AdminSettingsPage() {
   await requireAdmin();
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="px-4 py-8">
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex items-center gap-4">
           <Settings className="h-10 w-10 text-purple-500" />
@@ -21,7 +21,6 @@ export default async function AdminSettingsPage() {
             </p>
           </div>
         </div>
-
         <SiteConfigForm />
       </div>
     </div>

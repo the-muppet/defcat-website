@@ -20,7 +20,7 @@
 }
 
 .form-wrapper {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
   position: relative;
   z-index: 1;
@@ -298,36 +298,42 @@
 
 .color-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
   gap: 0.5rem;
+  margin-top: 0.75rem;
 }
 
 .color-option {
-  padding: 0.5rem;
-  border: 2px solid transparent;
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  border: 2px solid var(--border);
   border-radius: 0.5rem;
-  background: var(--accent-tinted);
+  background: rgba(var(--glass-base-rgb), 0.05);
   color: var(--foreground);
-  font-size: 0.75rem;
-  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .color-option:hover {
   transform: translateY(-2px);
+  background: var(--accent-tinted);
+  border-color: var(--border-tinted);
   box-shadow: 0 4px 12px var(--glass-shadow);
 }
 
 .color-option.selected {
   border-color: var(--mana-color);
-  background: linear-gradient(
-    135deg,
-    var(--gradient-start),
-    var(--gradient-end)
-  );
-  color: white;
+  background: var(--accent-tinted);
+  box-shadow: 0 0 20px var(--focus-ring);
+}
+
+.color-option i {
+  font-size: 36px;
+  line-height: 1;
 }
 
 .bracket-grid {
@@ -545,9 +551,5 @@
 
   .radio-cards {
     grid-template-columns: 1fr;
-  }
-
-  .color-grid {
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   }
 }

@@ -5,8 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
-import { Users, Shield, CheckCircle2, AlertCircle, Search } from 'lucide-react'
+import { Users, Shield, CheckCircle2, AlertCircle, Search, UserPlus, X } from 'lucide-react'
+import { PATREON_TIERS, type PatreonTier } from '@/types/core'
 
 interface User {
   id: string
@@ -26,6 +28,11 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
   const [updating, setUpdating] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
+  const [showAddUser, setShowAddUser] = useState(false)
+  const [newUserEmail, setNewUserEmail] = useState('')
+  const [newUserRole, setNewUserRole] = useState('user')
+  const [newUserTier, setNewUserTier] = useState('')
+  const [adding, setAdding] = useState(false)
   const supabase = createClient()
 
   const isDeveloper = currentUserRole === 'developer'
@@ -92,6 +99,61 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
     }
   }
 
+  const handleAddUser = async () => {
+    if (!newUserEmail.trim()) {
+      setMessage({ type: 'error', text: 'Email is required' })
+      return
+    }
+
+    setAdding(true)
+    setMessage(null)
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        throw new Error('Not authenticated')
+      }
+
+      const response = await fetch('/api/admin/users/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          email: newUserEmail.trim(),
+          role: newUserRole,
+          patreonTier: newUserTier.trim() || null
+        })
+      })
+
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Failed to add user')
+      }
+
+      const successMessage = result.data.passwordResetSent
+        ? 'User added successfully! Password reset email sent.'
+        : 'User added successfully! Note: Password reset email may have failed.'
+
+      setMessage({ type: 'success', text: successMessage })
+      setNewUserEmail('')
+      setNewUserRole('user')
+      setNewUserTier('')
+      setShowAddUser(false)
+      await loadUsers()
+    } catch (err) {
+      console.error('Failed to add user:', err)
+      setMessage({
+        type: 'error',
+        text: err instanceof Error ? err.message : 'Failed to add user'
+      })
+    } finally {
+      setAdding(false)
+    }
+  }
+
   const filteredUsers = users.filter(user =>
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   )
@@ -137,7 +199,96 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="flex-1"
           />
+          <Button
+            onClick={() => {
+              if (!showAddUser && searchTerm.trim()) {
+                setNewUserEmail(searchTerm.trim())
+              }
+              setShowAddUser(!showAddUser)
+            }}
+            className="btn-tinted-primary"
+          >
+            {showAddUser ? (
+              <>
+                <X className="h-4 w-4 mr-2" />
+                Cancel
+              </>
+            ) : (
+              <>
+                <UserPlus className="h-4 w-4 mr-2" />
+                Add User
+              </>
+            )}
+          </Button>
         </div>
+
+        {showAddUser && (
+          <Card className="border-tinted bg-card-tinted">
+            <CardContent className="pt-6 space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="new-user-email">Email</Label>
+                <Input
+                  id="new-user-email"
+                  type="email"
+                  placeholder="user@example.com"
+                  value={newUserEmail}
+                  onChange={(e) => setNewUserEmail(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="new-user-role">Role</Label>
+                <Select value={newUserRole} onValueChange={setNewUserRole}>
+                  <SelectTrigger id="new-user-role">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableRoles.map((role) => (
+                      <SelectItem key={role} value={role}>
+                        {role.charAt(0).toUpperCase() + role.slice(1)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="new-user-tier">Patreon Tier (Optional)</Label>
+                <Select value={newUserTier || "none"} onValueChange={(val) => setNewUserTier(val === "none" ? "" : val)}>
+                  <SelectTrigger id="new-user-tier">
+                    <SelectValue placeholder="None" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    {PATREON_TIERS.map((tier) => (
+                      <SelectItem key={tier} value={tier}>
+                        {tier}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <Button
+                onClick={handleAddUser}
+                disabled={adding || !newUserEmail.trim()}
+                className="w-full btn-tinted-primary"
+              >
+                {adding ? (
+                  <>
+                    <div className="h-4 w-4 mr-2 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    Adding User...
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Add User
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         {loading ? (
           <div className="text-center py-8 text-muted-foreground">Loading users...</div>

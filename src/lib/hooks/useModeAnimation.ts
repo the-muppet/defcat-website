@@ -291,12 +291,13 @@ export const useModeAnimation = (
       animationType === ThemeAnimationType.MANA
     ) {
       transition.finished.then(() => {
+        // Small delay to ensure transition is fully complete
         setTimeout(() => {
           const styleElement = document.getElementById(styleId);
           if (styleElement) {
             styleElement.remove();
           }
-        }, 10);
+        }, 50);
       }).catch(() => {
         setTimeout(() => {
           const styleElement = document.getElementById(styleId);

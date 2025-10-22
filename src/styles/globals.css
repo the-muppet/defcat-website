@@ -4,113 +4,146 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    /* Base slate-gray color system */
+    --background: 0 0% 98%;
+    --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
 
-    /* Base colors in RGB */
-    --glass-base-rgb: 168, 85, 247;
-    --glass-border-rgb: 168, 85, 247;
+    /* Slate-gray base RGB values */
+    --slate-rgb: 100, 116, 139;
+    --slate-light: 148, 163, 184;
+    --slate-dark: 51, 65, 85;
+
+    /* Glass effects with slate base */
+    --glass-base-rgb: 148, 163, 184;
+    --glass-border-rgb: 148, 163, 184;
     --glass-shadow-rgb: 0, 0, 0;
+    --glass-bg: linear-gradient(135deg,
+        rgba(var(--slate-light), 0.08),
+        rgba(var(--slate-rgb), 0.04));
+    --glass-border: rgba(var(--slate-light), 0.18);
+    --glass-blur: 12px;
+    --glass-saturation: 1.1;
+    --glass-brightness: 1.02;
 
-    /* Glass effects */
-    --glass-bg-start: rgba(168, 85, 247, 0.1);
-    --glass-bg-end: rgba(168, 85, 247, 0.05);
-    --glass-border: rgba(168, 85, 247, 0.18);
-    --glass-shadow: rgba(0, 0, 0, 0.1);
-    --glass-blur: 10px;
-    --glass-hover-opacity-boost: 0.02;
-    --glass-border-hover-opacity-boost: 0.05;
+    /* Mana tint overlay system */
+    --mana-color: #fffbd5;
+    --mana-rgb: 255, 251, 213;
+    --mana-tint-subtle: rgba(var(--mana-rgb), 0.3);
+    --mana-tint-light: rgba(var(--mana-rgb), 0.06);
+    --mana-tint-medium: rgba(var(--mana-rgb), 0.12);
+    --mana-tint-strong: rgba(var(--mana-rgb), 0.20);
+    --mana-tint-intense: rgba(var(--mana-rgb), 0.30);
 
-    /* Mana color defaults */
-    --mana-color: oklch(59.987% 0.0002 271.152 / 0.45);
-    --mana-rgb: rgba(128, 128, 128, 0.45);;
-    
     /* Mana-tinted backgrounds */
-    --bg-tinted: rgba(251, 191, 36, 0.02);
-    --card-tinted: rgba(251, 191, 36, 0.03);
-    --accent-tinted: rgba(251, 191, 36, 0.08);
-    --border-tinted: rgba(251, 191, 36, 0.15);
-    
+    --bg-tinted: rgba(var(--mana-rgb), 0.02);
+    --card-tinted: rgba(var(--mana-rgb), 0.03);
+    --accent-tinted: rgba(var(--mana-rgb), 0.08);
+    --border-tinted: rgba(var(--mana-rgb), 0.15);
+
     /* Dynamic gradients based on mana color */
     --gradient-start: color-mix(in srgb, var(--mana-color) 80%, white 20%);
     --gradient-mid: var(--mana-color);
     --gradient-end: color-mix(in srgb, var(--mana-color) 80%, black 20%);
-    
-    /* Background gradients */
-    --bg-radial-top: rgba(251, 191, 36, 0.05);
-    --bg-radial-bottom: rgba(251, 191, 36, 0.02);
-    --bg-gradient-opacity: 0.5;
-    --bg-dot-color: rgba(251, 191, 36, 0.1);
 
-    /* Focus ring */
-    --focus-ring: rgba(251, 191, 36, 0.2);
+    /* Background gradients */
+    --bg-radial-top: rgba(var(--mana-rgb), 0.05);
+    --bg-radial-bottom: rgba(var(--mana-rgb), 0.02);
+    --bg-gradient-opacity: 0.5;
+    --bg-dot-color: rgba(var(--mana-rgb), 0.1);
+
+    /* Interaction states */
+    --hover-overlay: rgba(var(--mana-rgb), 0.04);
+    --active-overlay: rgba(var(--mana-rgb), 0.08);
+    --focus-ring: rgba(var(--mana-rgb), 0.25);
+    --focus-ring-offset: 2px;
+
+    /* Text contrast ensuring WCAG AA compliance */
+    --text-primary: rgba(15, 23, 42, 0.95);
+    --text-secondary: rgba(51, 65, 85, 0.9);
+    --text-tertiary: rgba(100, 116, 139, 0.8);
+    --text-disabled: rgba(148, 163, 184, 0.6);
   }
 
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
 
-    /* Glass effects for dark mode */
+    /* Glass effects with slate base for dark mode */
     --glass-base-rgb: 255, 255, 255;
     --glass-border-rgb: 255, 255, 255;
     --glass-shadow-rgb: 0, 0, 0;
-    --glass-bg-start: rgba(255, 255, 255, 0.08);
-    --glass-bg-end: rgba(255, 255, 255, 0.03);
-    --glass-border: rgba(255, 255, 255, 0.12);
-    --glass-shadow: rgba(0, 0, 0, 0.3);
+    --glass-bg: linear-gradient(135deg,
+        rgba(var(--slate-dark), 0.12),
+        rgba(var(--slate-rgb), 0.06));
+    --glass-border: rgba(var(--slate-light), 0.12);
     --glass-blur: 16px;
-    --glass-hover-opacity-boost: 0.03;
-    --glass-border-hover-opacity-boost: 0.08;
+    --glass-saturation: 1.2;
+    --glass-brightness: 1.05;
+
+    /* Adjusted mana tints for dark mode */
+    --mana-tint-subtle: rgba(var(--mana-rgb), 0.04);
+    --mana-tint-light: rgba(var(--mana-rgb), 0.08);
+    --mana-tint-medium: rgba(var(--mana-rgb), 0.15);
+    --mana-tint-strong: rgba(var(--mana-rgb), 0.25);
+    --mana-tint-intense: rgba(var(--mana-rgb), 0.35);
 
     /* Darker tinted backgrounds for dark mode */
-    --bg-tinted: rgba(251, 191, 36, 0.03);
-    --card-tinted: rgba(251, 191, 36, 0.05);
-    --accent-tinted: rgba(251, 191, 36, 0.1);
-    --border-tinted: rgba(251, 191, 36, 0.2);
-    
+    --bg-tinted: rgba(var(--mana-rgb), 0.03);
+    --card-tinted: rgba(var(--mana-rgb), 0.05);
+    --accent-tinted: rgba(var(--mana-rgb), 0.1);
+    --border-tinted: rgba(var(--mana-rgb), 0.2);
+
     /* Enhanced gradients for dark mode */
-    --bg-radial-top: rgba(251, 191, 36, 0.08);
-    --bg-radial-bottom: rgba(251, 191, 36, 0.03);
+    --bg-radial-top: rgba(var(--mana-rgb), 0.08);
+    --bg-radial-bottom: rgba(var(--mana-rgb), 0.03);
     --bg-gradient-opacity: 0.7;
-    --bg-dot-color: rgba(251, 191, 36, 0.15);
-    
-    /* Stronger focus ring in dark mode */
-    --focus-ring: rgba(251, 191, 36, 0.3);
+    --bg-dot-color: rgba(var(--mana-rgb), 0.15);
+
+    /* Stronger interaction states */
+    --hover-overlay: rgba(var(--mana-rgb), 0.06);
+    --active-overlay: rgba(var(--mana-rgb), 0.12);
+    --focus-ring: rgba(var(--mana-rgb), 0.35);
+
+    /* Text contrast for dark mode */
+    --text-primary: rgba(248, 250, 252, 0.95);
+    --text-secondary: rgba(203, 213, 225, 0.9);
+    --text-tertiary: rgba(148, 163, 184, 0.8);
+    --text-disabled: rgba(100, 116, 139, 0.5);
   }
 
   /* White mana color theme */
@@ -579,19 +612,36 @@
 }
 
 .btn-tinted-primary {
-  background: linear-gradient(
-    135deg,
-    var(--gradient-start),
-    var(--gradient-end)
-  );
+  background: hsl(217.2 32.6% 17.5%);
   color: white;
   border: none;
   transition: all 0.3s ease;
 }
 
 .btn-tinted-primary:hover {
-  filter: brightness(1.1);
-  box-shadow: 0 8px 24px rgba(var(--mana-rgb), 0.25);
+  background: linear-gradient(
+    135deg,
+    var(--gradient-start),
+    var(--gradient-end)
+  ) !important;
+  transform: translateY(-1px) !important;
+}
+
+.btn-tinted-outline {
+  background: hsl(217.2 32.6% 17.5%);
+  color: white;
+  border: 2px solid hsl(217.2 32.6% 17.5%);
+  transition: all 0.3s ease;
+}
+
+.btn-tinted-outline:hover {
+  background: linear-gradient(
+    135deg,
+    var(--gradient-start),
+    var(--gradient-end)
+  ) !important;
+  border-color: var(--mana-color) !important;
+  transform: translateY(-1px) !important;
 }
 
 /* Inputs */
@@ -729,154 +779,88 @@
   border-color: rgba(var(--glass-border-rgb), 0.15);
 }
 
-
-:root {
-    /* Base slate-gray color system */
-    --background: 0 0% 98%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
-
-    /* Slate-gray base RGB values */
-    --slate-rgb: 100, 116, 139;
-    --slate-light: 148, 163, 184;
-    --slate-dark: 51, 65, 85;
-    
-    /* Visual Hierarchy - Z-index layers */
-    --layer-base: 0;
-    --layer-content: 1;
-    --layer-card: 10;
-    --layer-overlay: 100;
-    --layer-modal: 1000;
-    --layer-tooltip: 10000;
-    
-    /* Shadow System - Progressive elevation */
-    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    
-    /* Colored shadows based on mana */
-    --shadow-colored-sm: 0 2px 4px -1px rgba(var(--mana-rgb), 0.15);
-    --shadow-colored-md: 0 4px 8px -2px rgba(var(--mana-rgb), 0.2);
-    --shadow-colored-lg: 0 8px 16px -4px rgba(var(--mana-rgb), 0.25);
-    
-    /* Text contrast ensuring WCAG AA compliance */
-    --text-primary: rgba(15, 23, 42, 0.95);    /* High contrast */
-    --text-secondary: rgba(51, 65, 85, 0.9);   /* Medium contrast */
-    --text-tertiary: rgba(100, 116, 139, 0.8); /* Low contrast */
-    --text-disabled: rgba(148, 163, 184, 0.6);
-    
-    /* Glass effects with slate base */
-    --glass-bg: linear-gradient(135deg, 
-        rgba(var(--slate-light), 0.08),
-        rgba(var(--slate-rgb), 0.04));
-    --glass-border: rgba(var(--slate-light), 0.18);
-    --glass-blur: 12px;
-    --glass-saturation: 1.1;
-    --glass-brightness: 1.02;
-    
-    /* Mana tint overlay system */
-    --mana-tint-subtle: rgba(var(--mana-rgb), 0.03);
-    --mana-tint-light: rgba(var(--mana-rgb), 0.06);
-    --mana-tint-medium: rgba(var(--mana-rgb), 0.12);
-    --mana-tint-strong: rgba(var(--mana-rgb), 0.20);
-    --mana-tint-intense: rgba(var(--mana-rgb), 0.30);
-    
-    /* Accent colors that complement mana tints */
-    --accent-complement: color-mix(in srgb, var(--mana-color) 20%, #64748b 80%);
-    --accent-analogous-1: color-mix(in srgb, var(--mana-color) 30%, #475569 70%);
-    --accent-analogous-2: color-mix(in srgb, var(--mana-color) 30%, #94a3b8 70%);
-    --accent-triadic: color-mix(in srgb, var(--mana-color) 25%, #6b7280 75%);
-    
-    /* Default to white mana */
-    --mana-color: #fffbd5;
-    --mana-rgb: 255, 251, 213;
-    
-    /* Interaction states */
-    --hover-overlay: rgba(var(--mana-rgb), 0.04);
-    --active-overlay: rgba(var(--mana-rgb), 0.08);
-    --focus-ring: rgba(var(--mana-rgb), 0.25);
-    --focus-ring-offset: 2px;
+/* ===========================
+   White Mana Button Text Override
+   =========================== */
+html[data-mana="white"] .btn-tinted-primary,
+html[data-mana="white"] a.btn-tinted-primary,
+html[data-mana="white"] button.btn-tinted-primary {
+  color: #1a1a1a !important;
+  text-shadow: none !important;
 }
 
-.dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    
-    /* Dark mode shadows - more pronounced */
-    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
-    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 2px -1px rgba(0, 0, 0, 0.2);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
-    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-    
-    /* Enhanced colored shadows in dark mode */
-    --shadow-colored-sm: 0 2px 8px -1px rgba(var(--mana-rgb), 0.25);
-    --shadow-colored-md: 0 4px 16px -2px rgba(var(--mana-rgb), 0.3);
-    --shadow-colored-lg: 0 8px 32px -4px rgba(var(--mana-rgb), 0.35);
-    
-    /* Text contrast for dark mode - ensuring readability */
-    --text-primary: rgba(248, 250, 252, 0.95);
-    --text-secondary: rgba(203, 213, 225, 0.9);
-    --text-tertiary: rgba(148, 163, 184, 0.8);
-    --text-disabled: rgba(100, 116, 139, 0.5);
-    
-    /* Stronger glass effects in dark */
-    --glass-bg: linear-gradient(135deg, 
-        rgba(var(--slate-dark), 0.12),
-        rgba(var(--slate-rgb), 0.06));
-    --glass-border: rgba(var(--slate-light), 0.12);
-    --glass-blur: 16px;
-    --glass-saturation: 1.2;
-    --glass-brightness: 1.05;
-    
-    /* Adjusted mana tints for dark mode */
-    --mana-tint-subtle: rgba(var(--mana-rgb), 0.04);
-    --mana-tint-light: rgba(var(--mana-rgb), 0.08);
-    --mana-tint-medium: rgba(var(--mana-rgb), 0.15);
-    --mana-tint-strong: rgba(var(--mana-rgb), 0.25);
-    --mana-tint-intense: rgba(var(--mana-rgb), 0.35);
-    
-    /* Stronger interaction states */
-    --hover-overlay: rgba(var(--mana-rgb), 0.06);
-    --active-overlay: rgba(var(--mana-rgb), 0.12);
-    --focus-ring: rgba(var(--mana-rgb), 0.35);
+html[data-mana="white"] .text-primary-foreground {
+  color: #1a1a1a !important;
 }
 
+.dark html[data-mana="white"] .btn-tinted-primary,
+.dark html[data-mana="white"] a.btn-tinted-primary,
+.dark html[data-mana="white"] button.btn-tinted-primary {
+  color: #0a0a0a !important;
+  text-shadow: none !important;
+}
+
+.dark html[data-mana="white"] .text-primary-foreground {
+  color: #0a0a0a !important;
+}
+
+/* ===========================
+   Mana Symbol Selector Glow
+   =========================== */
+button[style*="--glow-color"]::before {
+  content: "";
+  background: radial-gradient(circle, var(--glow-color), transparent 70%);
+}
+
+/* ===========================
+   Mana Font Symbol Colors
+   =========================== */
+/* Light mode - darker colors for visibility */
+.ms-w {
+  color: #f4b731 !important;
+}
+
+.ms-u {
+  color: #0e68ab !important;
+}
+
+.ms-b {
+  color: #6b21a8 !important;
+}
+
+.ms-r {
+  color: #d3202a !important;
+}
+
+.ms-g {
+  color: #00733e !important;
+}
+
+.ms-c {
+  color: #888 !important;
+}
+
+/* Dark mode - brighter colors for visibility */
+.dark .ms-w {
+  color: #fffbd5 !important;
+}
+
+.dark .ms-u {
+  color: #2e9fd9 !important;
+}
+
+.dark .ms-b {
+  color: #a855f7 !important;
+}
+
+.dark .ms-r {
+  color: #f87171 !important;
+}
+
+.dark .ms-g {
+  color: #22c55e !important;
+}
+
+.dark .ms-c {
+  color: #ccc !important;
+}

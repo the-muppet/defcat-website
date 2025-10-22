@@ -4,7 +4,7 @@ import CommanderDeckForm from '@/components/admin/CommanderDeckForm'
 
 export default function DeckSubmissionPage() {
   return (
-    <div className="container py-10">
+    <div className="py-10">
       <CommanderDeckForm />
     </div>
   )

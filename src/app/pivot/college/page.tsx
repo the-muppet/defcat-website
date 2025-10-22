@@ -1,10 +1,32 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { GraduationCap, BookOpen, Target, Zap } from "lucide-react"
 import { VideoPlayer } from "@/components/video/VideoPlayer"
+import { createClient } from "@/lib/supabase/client"
 
 export default function CommanderCollegePage() {
+  const [collegeVideoId, setCollegeVideoId] = useState<string>("")
+
+  // Fetch college video ID from site_config
+  useEffect(() => {
+    async function fetchCollegeVideo() {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('site_config')
+        .select('value')
+        .eq('key', 'college_video_id')
+        .single()
+
+      if (data && !error) {
+        const videoId = data.value || ''
+        setCollegeVideoId(videoId)
+      }
+    }
+    fetchCollegeVideo()
+  }, [])
+
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
       <div
@@ -38,15 +60,27 @@ export default function CommanderCollegePage() {
             <div className="mb-16">
               <Card className="glass border-white/10 bg-card-tinted overflow-hidden">
                 <CardContent className="p-0">
-                  <div className="aspect-video relative">
-                    <VideoPlayer
-                      videoId={process.env.NEXT_PUBLIC_COLLEGE_VIDEO_ID}
-                      light={true}
-                      controls={true}
-                      fallbackIcon={<BookOpen className="h-16 w-16" />}
-                      fallbackText="Sales Video Coming Soon - Add NEXT_PUBLIC_COLLEGE_VIDEO_ID to .env"
-                    />
-                  </div>
+                  {collegeVideoId ? (
+                    <div className="aspect-video relative">
+                      <iframe
+                        src={`https://www.youtube.com/embed/${collegeVideoId}`}
+                        title="DefCat's Commander College"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        className="absolute inset-0 w-full h-full"
+                      />
+                    </div>
+                  ) : (
+                    <div className="aspect-video bg-muted/30 flex items-center justify-center">
+                      <div className="text-center">
+                        <BookOpen className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                        <p className="text-lg text-muted-foreground">Sales Video Coming Soon</p>
+                        <p className="text-sm text-muted-foreground/70 mt-2">
+                          Set the video ID in the admin panel
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>

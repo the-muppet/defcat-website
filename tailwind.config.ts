@@ -15,29 +15,29 @@ const config: Config = {
         'card-tinted': 'var(--card-tinted)',
         'accent-tinted': 'var(--accent-tinted)',
       },
-      // Add tinted border colors
+      // Add tinted border colors - ENHANCED
       borderColor: {
         'tinted': 'var(--border-tinted)',
-        'tinted-strong': 'rgba(var(--mana-rgb), 0.25)',
-        'tinted-subtle': 'rgba(var(--mana-rgb), 0.08)',
+        'tinted-strong': 'rgba(var(--mana-rgb), 0.35)',
+        'tinted-subtle': 'rgba(var(--mana-rgb), 0.15)',
       },
       // Add tinted text colors
       textColor: {
         'tinted': 'var(--mana-color)',
-        'tinted-subtle': 'rgba(var(--mana-rgb), 0.7)',
+        'tinted-subtle': 'rgba(var(--mana-rgb), 0.75)',
         'tinted-strong': 'var(--mana-color)',
       },
-      // Add custom box shadows with tints
+      // Add custom box shadows with tints - ENHANCED
       boxShadow: {
-        'tinted': '0 2px 8px rgba(var(--glass-shadow-rgb), 0.1)',
-        'tinted-lg': '0 4px 16px rgba(var(--glass-shadow-rgb), 0.15)',
-        'tinted-xl': '0 8px 32px rgba(var(--glass-shadow-rgb), 0.2)',
-        'tinted-glow': '0 0 20px rgba(var(--mana-rgb), 0.15), 0 4px 16px rgba(var(--glass-shadow-rgb), 0.1)',
+        'tinted': '0 2px 8px rgba(var(--glass-shadow-rgb), 0.12)',
+        'tinted-lg': '0 4px 16px rgba(var(--glass-shadow-rgb), 0.18)',
+        'tinted-xl': '0 8px 32px rgba(var(--glass-shadow-rgb), 0.25)',
+        'tinted-glow': '0 0 20px rgba(var(--mana-rgb), 0.25), 0 4px 16px rgba(var(--glass-shadow-rgb), 0.15)',
       },
       // Add gradient utilities
       backgroundImage: {
         'gradient-tinted': 'linear-gradient(135deg, var(--gradient-start), var(--gradient-end))',
-        'gradient-tinted-radial': 'radial-gradient(circle at center, rgba(var(--mana-rgb), 0.15), transparent 70%)',
+        'gradient-tinted-radial': 'radial-gradient(circle at center, rgba(var(--mana-rgb), 0.20), transparent 70%)',
       },
       // Enhanced animations
       keyframes: {
@@ -59,8 +59,8 @@ const config: Config = {
           '100%': { transform: 'translateX(100%) translateY(100%)' }
         },
         'pulse-tinted': {
-          '0%, 100%': { boxShadow: '0 0 0 0 rgba(var(--mana-rgb), 0.4)' },
-          '50%': { boxShadow: '0 0 0 10px rgba(var(--mana-rgb), 0)' }
+          '0%, 100%': { boxShadow: '0 0 0 0 rgba(var(--mana-rgb), 0.5)' },
+          '50%': { boxShadow: '0 0 0 12px rgba(var(--mana-rgb), 0)' }
         },
         'float': {
           '0%, 100%': { transform: 'translateY(0px)' },
@@ -132,16 +132,20 @@ const config: Config = {
         lg: '16px',
         xl: '24px',
       },
-      // Add custom opacity utilities for glass effects
+      // Add custom opacity utilities for glass effects - UPDATED
       opacity: {
         '2': '0.02',
         '3': '0.03',
         '5': '0.05',
+        '6': '0.06',
         '8': '0.08',
+        '10': '0.10',
         '12': '0.12',
         '15': '0.15',
+        '18': '0.18',
+        '20': '0.20',
       },
-      // Add ring utilities for focus states
+      // Add ring utilities for focus states - ENHANCED
       ringColor: {
         'mana': 'var(--mana-color)',
         'tinted': 'rgba(var(--mana-rgb), 0.5)',
@@ -173,84 +177,158 @@ const config: Config = {
   },
   plugins: [
     require("tailwindcss-animate"),
-    // Add custom utility plugin for glass effects
+    // Add custom utility plugin for glass effects - ENHANCED VISIBILITY
     function({ addUtilities }: any) {
       const newUtilities = {
+        // GLASS EFFECTS - Light Mode (more visible)
         '.glass-tinted': {
-          background: 'rgba(255, 255, 255, 0.05)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          border: '1px solid rgba(var(--mana-rgb), 0.1)',
+          background: 'linear-gradient(135deg, rgba(var(--glass-base-rgb), 0.12), rgba(var(--glass-base-rgb), 0.06))',
+          backdropFilter: 'blur(var(--glass-blur)) saturate(var(--glass-saturation)) brightness(var(--glass-brightness))',
+          WebkitBackdropFilter: 'blur(var(--glass-blur)) saturate(var(--glass-saturation)) brightness(var(--glass-brightness))',
+          border: '1px solid rgba(var(--glass-border-rgb), 0.22)',
         },
         '.glass-tinted-subtle': {
-          background: 'rgba(255, 255, 255, 0.03)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-          border: '1px solid rgba(var(--mana-rgb), 0.08)',
+          background: 'linear-gradient(135deg, rgba(var(--glass-base-rgb), 0.08), rgba(var(--glass-base-rgb), 0.04))',
+          backdropFilter: 'blur(10px) saturate(1.1)',
+          WebkitBackdropFilter: 'blur(10px) saturate(1.1)',
+          border: '1px solid rgba(var(--glass-border-rgb), 0.15)',
         },
         '.glass-tinted-strong': {
-          background: 'rgba(255, 255, 255, 0.08)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          border: '1px solid rgba(var(--mana-rgb), 0.15)',
+          background: 'linear-gradient(135deg, rgba(var(--glass-base-rgb), 0.18), rgba(var(--glass-base-rgb), 0.10))',
+          backdropFilter: 'blur(16px) saturate(1.2)',
+          WebkitBackdropFilter: 'blur(16px) saturate(1.2)',
+          border: '1px solid rgba(var(--glass-border-rgb), 0.28)',
         },
+        
+        // GLASS EFFECTS - Dark Mode (enhanced)
         '.dark .glass-tinted': {
-          background: 'rgba(0, 0, 0, 0.3)',
-          border: '1px solid rgba(var(--mana-rgb), 0.15)',
+          background: 'linear-gradient(135deg, rgba(var(--glass-base-rgb), 0.10), rgba(var(--glass-base-rgb), 0.05))',
+          border: '1px solid rgba(var(--glass-border-rgb), 0.18)',
+          backdropFilter: 'blur(16px) saturate(1.25) brightness(1.08)',
+          WebkitBackdropFilter: 'blur(16px) saturate(1.25) brightness(1.08)',
         },
         '.dark .glass-tinted-subtle': {
-          background: 'rgba(0, 0, 0, 0.2)',
-          border: '1px solid rgba(var(--mana-rgb), 0.12)',
+          background: 'linear-gradient(135deg, rgba(var(--glass-base-rgb), 0.06), rgba(var(--glass-base-rgb), 0.03))',
+          border: '1px solid rgba(var(--glass-border-rgb), 0.12)',
+          backdropFilter: 'blur(12px) saturate(1.15)',
+          WebkitBackdropFilter: 'blur(12px) saturate(1.15)',
         },
         '.dark .glass-tinted-strong': {
-          background: 'rgba(0, 0, 0, 0.5)',
-          border: '1px solid rgba(var(--mana-rgb), 0.2)',
+          background: 'linear-gradient(135deg, rgba(var(--glass-base-rgb), 0.15), rgba(var(--glass-base-rgb), 0.08))',
+          border: '1px solid rgba(var(--glass-border-rgb), 0.25)',
+          backdropFilter: 'blur(20px) saturate(1.3)',
+          WebkitBackdropFilter: 'blur(20px) saturate(1.3)',
         },
-        // Button utilities
+        
+        // BUTTON UTILITIES - Enhanced visibility
         '.btn-tinted': {
-          background: 'rgba(var(--mana-rgb), 0.1)',
-          border: '1px solid rgba(var(--mana-rgb), 0.2)',
+          background: 'rgba(var(--mana-rgb), 0.15)',
+          border: '1px solid rgba(var(--mana-rgb), 0.28)',
+          transition: 'all 0.2s ease',
           '&:hover': {
-            background: 'rgba(var(--mana-rgb), 0.15)',
-            border: '1px solid rgba(var(--mana-rgb), 0.3)',
-          }
-        },
-        '.btn-tinted-primary': {
-          background: 'linear-gradient(135deg, var(--gradient-start), var(--gradient-end))',
-          color: 'white',
-          textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
-          '&:hover': {
-            filter: 'brightness(1.1)',
+            background: 'rgba(var(--mana-rgb), 0.22)',
+            border: '1px solid rgba(var(--mana-rgb), 0.40)',
+            transform: 'translateY(-1px)',
             boxShadow: '0 4px 12px rgba(var(--mana-rgb), 0.25)',
           }
         },
-        // Dark text for white mana buttons
-        '[data-mana="W"] .btn-tinted-primary': {
-          color: 'hsl(var(--foreground))',
-          textShadow: 'none',
-        },
-        // Input utilities
-        '.input-tinted': {
-          background: 'rgba(var(--mana-rgb), 0.03)',
-          border: '1px solid rgba(var(--mana-rgb), 0.15)',
-          '&:focus': {
-            background: 'rgba(var(--mana-rgb), 0.05)',
+        '.btn-tinted-primary': {
+          background: 'linear-gradient(135deg, var(--mana-tint-medium), var(--mana-tint-light))',
+          border: '1px solid var(--border-tinted)',
+          color: 'var(--text-primary)',
+          transition: 'all 0.2s ease',
+          '&:hover': {
+            background: 'linear-gradient(135deg, var(--mana-tint-strong), var(--mana-tint-medium))',
             borderColor: 'var(--mana-color)',
-            boxShadow: '0 0 0 3px rgba(var(--mana-rgb), 0.1)',
+            boxShadow: '0 4px 12px rgba(var(--mana-rgb), 0.32)',
+            transform: 'translateY(-1px)',
+          },
+          '&:active': {
+            transform: 'translateY(0)',
+            boxShadow: '0 2px 6px rgba(var(--mana-rgb), 0.25)',
           }
         },
-        // Card utilities
+        
+        // Dark text for white mana buttons (better contrast)
+        '[data-mana="white"] .btn-tinted-primary': {
+          color: '#1a1a1a !important',
+          textShadow: 'none !important',
+        },
+        'html[data-mana="white"] .btn-tinted-primary': {
+          color: '#1a1a1a !important',
+          textShadow: 'none !important',
+        },
+        'html[data-mana="white"] a.btn-tinted-primary': {
+          color: '#1a1a1a !important',
+          textShadow: 'none !important',
+        },
+        'html[data-mana="white"] .text-primary-foreground': {
+          color: '#1a1a1a !important',
+        },
+        'html[data-mana="white"] .btn-tinted-primary.text-primary-foreground': {
+          color: '#1a1a1a !important',
+        },
+        '.dark html[data-mana="white"] .btn-tinted-primary': {
+          color: '#0a0a0a !important',
+          textShadow: 'none !important',
+        },
+        
+        // INPUT UTILITIES - Enhanced visibility
+        '.input-tinted': {
+          background: 'rgba(var(--mana-rgb), 0.06)',
+          border: '1px solid rgba(var(--mana-rgb), 0.25)',
+          transition: 'all 0.2s ease',
+          '&:focus': {
+            background: 'rgba(var(--mana-rgb), 0.10)',
+            borderColor: 'var(--mana-color)',
+            boxShadow: '0 0 0 3px rgba(var(--mana-rgb), 0.15)',
+            outline: 'none',
+          },
+          '&::placeholder': {
+            color: 'var(--text-tertiary)',
+          }
+        },
+        
+        // CARD UTILITIES - Enhanced depth
         '.card-tinted': {
-          background: 'hsl(var(--card))',
-          border: '1px solid rgba(var(--mana-rgb), 0.1)',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+          background: 'var(--card-tinted)',
+          border: '1px solid var(--border-tinted)',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(var(--mana-rgb), 0.15)',
+          transition: 'all 0.2s ease',
         },
         '.card-tinted-glass': {
-          background: 'rgba(255, 255, 255, 0.05)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          border: '1px solid rgba(var(--mana-rgb), 0.12)',
+          background: 'var(--glass-bg)',
+          backdropFilter: 'blur(var(--glass-blur)) saturate(var(--glass-saturation))',
+          WebkitBackdropFilter: 'blur(var(--glass-blur)) saturate(var(--glass-saturation))',
+          border: '1px solid var(--glass-border)',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.10)',
+          transition: 'all 0.2s ease',
+          '&:hover': {
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(var(--mana-rgb), 0.20)',
+            borderColor: 'rgba(var(--glass-border-rgb), 0.28)',
+          }
         },
+        
+        // HOVER STATES - More pronounced
+        '.hover-tinted': {
+          transition: 'all 0.2s ease',
+          '&:hover': {
+            background: 'var(--hover-overlay)',
+            borderColor: 'rgba(var(--mana-rgb), 0.35)',
+          }
+        },
+        
+        // FOCUS RINGS - More visible
+        '.focus-ring-tinted': {
+          '&:focus': {
+            outline: 'none',
+            boxShadow: '0 0 0 3px var(--focus-ring)',
+          },
+          '&:focus-visible': {
+            outline: 'none',
+            boxShadow: '0 0 0 3px var(--focus-ring)',
+          }
+        }
       }
       addUtilities(newUtilities)
     }

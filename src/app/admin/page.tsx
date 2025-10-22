@@ -135,14 +135,14 @@ export default async function AdminDashboard() {
           <Card className="card-tinted border-tinted hover:shadow-tinted-lg transition-all">
             <CardHeader>
               <Package className="h-8 w-8 mb-2" style={{ color: 'var(--mana-color)' }} />
-              <CardTitle className="text-foreground">Tier Configuration</CardTitle>
+              <CardTitle className="text-foreground">Products Configuration</CardTitle>
               <CardDescription className="text-muted-foreground">
-                Configure Patreon tier settings and benefits
+                Manage Fourthwall product links for the store
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button asChild className="w-full btn-tinted-primary">
-                <Link href="/admin/tiers">Manage Tiers</Link>
+                <Link href="/admin/products">Manage Products</Link>
               </Button>
             </CardContent>
           </Card>

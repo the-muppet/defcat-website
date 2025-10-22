@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import React, { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 import {
   ChevronRight,
   ChevronLeft,
@@ -16,10 +16,9 @@ import {
   DollarSign,
   Calendar,
   MessageSquare,
-  User
-} from 'lucide-react';
-import { bracketOptions, COLOR_MAPPINGS } from '@/types/core';
-
+  User,
+} from "lucide-react";
+import { bracketOptions, COLOR_MAPPINGS } from "@/types/core";
 
 export default function PagedDeckForm() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -27,22 +26,24 @@ export default function PagedDeckForm() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [tierError, setTierError] = useState<string | null>(null);
   const [userTier, setUserTier] = useState<string | null>(null);
-  const [submissionsRemaining, setSubmissionsRemaining] = useState<number | null>(null);
+  const [submissionsRemaining, setSubmissionsRemaining] = useState<
+    number | null
+  >(null);
   const [willBeQueued, setWillBeQueued] = useState(false);
   const [totalSubmissions, setTotalSubmissions] = useState(0);
   const MAX_QUEUED = 3;
   const [formData, setFormData] = useState({
-    patreonUsername: '',
-    email: '',
-    discordUsername: '',
-    mysteryDeck: '',
-    commander: '',
-    colorPreference: '',
-    theme: '',
-    bracket: '',
-    budget: '',
-    coffee: '',
-    idealDate: ''
+    email: "",
+    moxfieldUsername: "",
+    discordUsername: "",
+    mysteryDeck: "",
+    commander: "",
+    colorPreference: "",
+    theme: "",
+    bracket: "",
+    budget: "",
+    coffee: "",
+    idealDate: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -55,23 +56,28 @@ export default function PagedDeckForm() {
     const checkEligibility = async () => {
       try {
         const supabase = createClient();
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
 
         if (userError || !user) {
-          setTierError('Please log in to submit a deck request.');
+          setTierError("Please log in to submit a deck request.");
           setIsLoading(false);
           return;
         }
 
         // Get user's profile with tier info
         const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('patreon_tier, email, role')
-          .eq('id', user.id)
+          .from("profiles")
+          .select("patreon_tier, email, role")
+          .eq("id", user.id)
           .single();
 
         if (profileError || !profile) {
-          setTierError('Unable to verify your Patreon tier. Please ensure your account is linked.');
+          setTierError(
+            "Unable to verify your Patreon tier. Please ensure your account is linked."
+          );
           setIsLoading(false);
           return;
         }
@@ -81,13 +87,15 @@ export default function PagedDeckForm() {
         setUserTier(tier);
 
         // Admins and moderators bypass tier checks
-        const isAdmin = role === 'admin' || role === 'moderator';
+        const isAdmin = role === "admin" || role === "moderator";
 
         // Check if user has eligible tier (skip for admins)
         if (!isAdmin) {
-          const eligibleTiers = ['Duke', 'Wizard', 'ArchMage'];
+          const eligibleTiers = ["Duke", "Wizard", "ArchMage"];
           if (!eligibleTiers.includes(tier)) {
-            setTierError(`Deck submissions require Duke tier ($50/month) or higher. Your current tier: ${tier || 'None'}`);
+            setTierError(
+              `Deck submissions require Duke tier ($50/month) or higher. Your current tier: ${tier || "None"}`
+            );
             setIsLoading(false);
             return;
           }
@@ -95,24 +103,36 @@ export default function PagedDeckForm() {
 
         // Check monthly submission limit (skip for admins)
         if (!isAdmin) {
-          const maxSubmissions = tier === 'ArchMage' ? 2 : 1;
+          const maxSubmissions = tier === "ArchMage" ? 2 : 1;
 
           // Get all submissions this month (pending, queued, completed)
           const { data: submissions, error: countError } = await supabase
-            .from('deck_submissions')
-            .select('status')
-            .eq('user_id', user.id)
-            .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString());
+            .from("deck_submissions")
+            .select("status")
+            .eq("user_id", user.id)
+            .gte(
+              "created_at",
+              new Date(
+                new Date().getFullYear(),
+                new Date().getMonth(),
+                1
+              ).toISOString()
+            );
 
           if (countError) {
-            console.error('Error checking submissions:', countError);
+            console.error("Error checking submissions:", countError);
           }
 
-          const activeSubmissions = submissions?.filter(s =>
-            s.status === 'pending' || s.status === 'in_progress' || s.status === 'completed'
-          ).length || 0;
+          const activeSubmissions =
+            submissions?.filter(
+              (s) =>
+                s.status === "pending" ||
+                s.status === "in_progress" ||
+                s.status === "completed"
+            ).length || 0;
 
-          const queuedSubmissions = submissions?.filter(s => s.status === 'queued').length || 0;
+          const queuedSubmissions =
+            submissions?.filter((s) => s.status === "queued").length || 0;
           const totalSubmissionsCount = activeSubmissions + queuedSubmissions;
 
           setTotalSubmissions(totalSubmissionsCount);
@@ -121,7 +141,9 @@ export default function PagedDeckForm() {
           setSubmissionsRemaining(remaining);
 
           if (queuedSubmissions >= MAX_QUEUED) {
-            setTierError(`You have ${MAX_QUEUED} deck requests already queued. Please wait for them to be processed before submitting more.`);
+            setTierError(
+              `You have ${MAX_QUEUED} deck requests already queued. Please wait for them to be processed before submitting more.`
+            );
             setIsLoading(false);
             return;
           }
@@ -135,13 +157,13 @@ export default function PagedDeckForm() {
         }
 
         if (profile.email) {
-          setFormData(prev => ({ ...prev, email: profile.email }));
+          setFormData((prev) => ({ ...prev, email: profile.email }));
         }
 
         setIsLoading(false);
       } catch (err) {
-        console.error('Eligibility check error:', err);
-        setTierError('An error occurred while checking your eligibility.');
+        console.error("Eligibility check error:", err);
+        setTierError("An error occurred while checking your eligibility.");
         setIsLoading(false);
       }
     };
@@ -150,57 +172,60 @@ export default function PagedDeckForm() {
   }, []);
 
   const steps = [
-    { id: 1, name: 'Basic Info', icon: User },
-    { id: 2, name: 'Deck Type', icon: Sparkles },
-    { id: 3, name: 'Colors & Theme', icon: Palette },
-    { id: 4, name: 'Power Level', icon: Trophy },
-    { id: 5, name: 'Final Details', icon: Coffee }
+    { id: 1, name: "Basic Info", icon: User },
+    { id: 2, name: "Deck Type", icon: Sparkles },
+    { id: 3, name: "Colors & Theme", icon: Palette },
+    { id: 4, name: "Power Level", icon: Trophy },
+    { id: 5, name: "Final Details", icon: Coffee },
   ];
 
   const validateStep = (step) => {
     const stepErrors = {};
-    
+
     switch (step) {
       case 1:
-        if (!formData.patreonUsername.trim()) {
-          stepErrors.patreonUsername = 'Patreon username is required';
-        }
         if (!formData.email.trim()) {
-          stepErrors.email = 'Email is required';
+          stepErrors.email = "Email is required";
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-          stepErrors.email = 'Email is invalid';
+          stepErrors.email = "Email is invalid";
         }
-        if (!formData.discordUsername.trim()) {
-          stepErrors.discordUsername = 'Discord username is required';
+        if (!formData.moxfieldUsername.trim()) {
+          stepErrors.moxfieldUsername = "Moxfield username is required";
         }
+        // Discord username is optional
         break;
       case 2:
         if (!formData.mysteryDeck) {
-          stepErrors.mysteryDeck = 'Please select an option';
+          stepErrors.mysteryDeck = "Please select an option";
         }
         break;
       case 3:
-        if (formData.mysteryDeck === 'no' && !formData.commander && !formData.colorPreference) {
-          stepErrors.colorPreference = 'Please select a color or specify a commander';
+        if (
+          formData.mysteryDeck === "no" &&
+          !formData.commander &&
+          !formData.colorPreference
+        ) {
+          stepErrors.colorPreference =
+            "Please select a color or specify a commander";
         }
         break;
       case 4:
         if (!formData.bracket) {
-          stepErrors.bracket = 'Bracket selection is required';
+          stepErrors.bracket = "Bracket selection is required";
         }
         if (!formData.budget.trim()) {
-          stepErrors.budget = 'Budget information is required';
+          stepErrors.budget = "Budget information is required";
         }
         break;
       case 5:
         if (!formData.coffee.trim()) {
-          stepErrors.coffee = 'Coffee preference is required';
+          stepErrors.coffee = "Coffee preference is required";
         }
         break;
       default:
         break;
     }
-    
+
     return stepErrors;
   };
 
@@ -223,9 +248,9 @@ export default function PagedDeckForm() {
   };
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors(prev => {
+      setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors[field];
         return newErrors;
@@ -242,27 +267,53 @@ export default function PagedDeckForm() {
         const supabase = createClient();
 
         // Get current user
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
 
         if (userError || !user) {
-          console.error('User not authenticated:', userError);
-          setErrors({ submit: 'Please log in to submit a deck request' });
+          console.error("User not authenticated:", userError);
+          setErrors({ submit: "Please log in to submit a deck request" });
+          setIsLoading(false);
+          return;
+        }
+
+        // Get user profile to fetch patreon_id, patreon_tier, and email
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("patreon_id, patreon_tier, email")
+          .eq("id", user.id)
+          .single();
+
+        if (profileError || !profile) {
+          console.error("Failed to fetch user profile:", profileError);
+          setErrors({ submit: "Failed to fetch user profile. Please try again." });
+          setIsLoading(false);
+          return;
+        }
+
+        if (!profile.patreon_id || !profile.patreon_tier) {
+          setErrors({ submit: "Your account must be linked to Patreon to submit a deck request." });
           setIsLoading(false);
           return;
         }
 
         // Determine submission status based on slots
-        const submissionStatus = willBeQueued ? 'queued' : 'pending';
+        const submissionStatus = willBeQueued ? "queued" : "pending";
 
         // Submit deck request to database
         const { data, error } = await supabase
-          .from('deck_submissions')
+          .from("deck_submissions")
           .insert({
             user_id: user.id,
-            patreon_username: formData.patreonUsername,
+            patreon_id: profile.patreon_id,
+            patreon_tier: profile.patreon_tier,
+            patreon_username: profile.email.split('@')[0], // Use email prefix as fallback patreon username
             email: formData.email,
-            discord_username: formData.discordUsername,
-            mystery_deck: formData.mysteryDeck === 'yes',
+            moxfield_username: formData.moxfieldUsername,
+            discord_username: formData.discordUsername || '',
+            mystery_deck: formData.mysteryDeck === "yes",
             commander: formData.commander || null,
             color_preference: formData.colorPreference,
             theme: formData.theme || null,
@@ -270,14 +321,16 @@ export default function PagedDeckForm() {
             budget: formData.budget,
             coffee_preference: formData.coffee,
             ideal_date: formData.idealDate || null,
-            status: submissionStatus
+            status: submissionStatus,
           })
           .select()
           .single();
 
         if (error) {
-          console.error('Submission error:', error);
-          setErrors({ submit: 'Failed to submit deck request. Please try again.' });
+          console.error("Submission error:", error);
+          setErrors({
+            submit: "Failed to submit deck request. Please try again.",
+          });
           setIsLoading(false);
           return;
         }
@@ -285,8 +338,10 @@ export default function PagedDeckForm() {
         setIsLoading(false);
         setShowSuccess(true);
       } catch (err) {
-        console.error('Unexpected error:', err);
-        setErrors({ submit: 'An unexpected error occurred. Please try again.' });
+        console.error("Unexpected error:", err);
+        setErrors({
+          submit: "An unexpected error occurred. Please try again.",
+        });
         setIsLoading(false);
       }
     } else {
@@ -303,26 +358,12 @@ export default function PagedDeckForm() {
               <User className="step-icon" />
               Let's start with the basics
             </h2>
-            <p className="step-description">We need some information to get in touch with you about your custom deck.</p>
-            
-            <div className="form-fields">
-              <div className="form-group">
-                <label htmlFor="patreonUsername">
-                  Patreon Username <span className="required">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="patreonUsername"
-                  value={formData.patreonUsername}
-                  onChange={(e) => handleInputChange('patreonUsername', e.target.value)}
-                  className={`form-input ${errors.patreonUsername ? 'error' : ''}`}
-                  placeholder="Enter your Patreon username"
-                />
-                {errors.patreonUsername && (
-                  <span className="error-message">{errors.patreonUsername}</span>
-                )}
-              </div>
+            <p className="step-description">
+              We need some information to get in touch with you about your
+              custom deck.
+            </p>
 
+            <div className="form-fields">
               <div className="form-group">
                 <label htmlFor="email">
                   <Mail className="inline-icon" />
@@ -332,8 +373,8 @@ export default function PagedDeckForm() {
                   type="email"
                   id="email"
                   value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  className={`form-input ${errors.email ? 'error' : ''}`}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  className={`form-input ${errors.email ? "error" : ""}`}
                   placeholder="your.email@example.com"
                 />
                 {errors.email && (
@@ -342,20 +383,45 @@ export default function PagedDeckForm() {
               </div>
 
               <div className="form-group">
+                <label htmlFor="moxfieldUsername">
+                  Moxfield Username <span className="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="moxfieldUsername"
+                  value={formData.moxfieldUsername}
+                  onChange={(e) =>
+                    handleInputChange("moxfieldUsername", e.target.value)
+                  }
+                  className={`form-input ${errors.moxfieldUsername ? "error" : ""}`}
+                  placeholder="Enter your Moxfield username"
+                />
+                {errors.moxfieldUsername && (
+                  <span className="error-message">
+                    {errors.moxfieldUsername}
+                  </span>
+                )}
+              </div>
+
+              <div className="form-group">
                 <label htmlFor="discordUsername">
                   <Hash className="inline-icon" />
-                  Discord Username <span className="required">*</span>
+                  Discord Username <span className="text-muted-foreground text-xs">(optional)</span>
                 </label>
                 <input
                   type="text"
                   id="discordUsername"
                   value={formData.discordUsername}
-                  onChange={(e) => handleInputChange('discordUsername', e.target.value)}
-                  className={`form-input ${errors.discordUsername ? 'error' : ''}`}
+                  onChange={(e) =>
+                    handleInputChange("discordUsername", e.target.value)
+                  }
+                  className={`form-input ${errors.discordUsername ? "error" : ""}`}
                   placeholder="YourDiscord#1234"
                 />
                 {errors.discordUsername && (
-                  <span className="error-message">{errors.discordUsername}</span>
+                  <span className="error-message">
+                    {errors.discordUsername}
+                  </span>
                 )}
               </div>
             </div>
@@ -369,40 +435,57 @@ export default function PagedDeckForm() {
               <Sparkles className="step-icon" />
               Mystery Deck or Custom Build?
             </h2>
-            <p className="step-description">Would you like me to surprise you or do you have something specific in mind?</p>
-            
+            <p className="step-description">
+              Would you like me to surprise you or do you have something
+              specific in mind?
+            </p>
+
             <div className="radio-cards">
-              <label className={`radio-card ${formData.mysteryDeck === 'yes' ? 'selected' : ''}`}>
+              <label
+                className={`radio-card ${formData.mysteryDeck === "yes" ? "selected" : ""}`}
+              >
                 <input
                   type="radio"
                   name="mysteryDeck"
                   value="yes"
-                  checked={formData.mysteryDeck === 'yes'}
-                  onChange={(e) => handleInputChange('mysteryDeck', e.target.value)}
+                  checked={formData.mysteryDeck === "yes"}
+                  onChange={(e) =>
+                    handleInputChange("mysteryDeck", e.target.value)
+                  }
                 />
                 <div className="radio-content">
                   <div className="radio-header">
                     <Sparkles className="radio-icon" />
                     <span className="radio-title">Mystery Deck</span>
                   </div>
-                  <p className="radio-description">Yes, just make something fun, I trust you! Let the creativity flow.</p>
+                  <p className="radio-description">
+                    Yes, just make something fun, I trust you! Let the
+                    creativity flow.
+                  </p>
                 </div>
               </label>
 
-              <label className={`radio-card ${formData.mysteryDeck === 'no' ? 'selected' : ''}`}>
+              <label
+                className={`radio-card ${formData.mysteryDeck === "no" ? "selected" : ""}`}
+              >
                 <input
                   type="radio"
                   name="mysteryDeck"
                   value="no"
-                  checked={formData.mysteryDeck === 'no'}
-                  onChange={(e) => handleInputChange('mysteryDeck', e.target.value)}
+                  checked={formData.mysteryDeck === "no"}
+                  onChange={(e) =>
+                    handleInputChange("mysteryDeck", e.target.value)
+                  }
                 />
                 <div className="radio-content">
                   <div className="radio-header">
                     <Swords className="radio-icon" />
                     <span className="radio-title">Custom Build</span>
                   </div>
-                  <p className="radio-description">No, I have an idea I'm cool like that. I'll specify what I want.</p>
+                  <p className="radio-description">
+                    No, I have an idea I'm cool like that. I'll specify what I
+                    want.
+                  </p>
                 </div>
               </label>
             </div>
@@ -410,16 +493,16 @@ export default function PagedDeckForm() {
               <span className="error-message center">{errors.mysteryDeck}</span>
             )}
 
-            {formData.mysteryDeck === 'no' && (
+            {formData.mysteryDeck === "no" && (
               <div className="form-group mt-4">
-                <label htmlFor="commander">
-                  Commander (Optional)
-                </label>
+                <label htmlFor="commander">Commander (Optional)</label>
                 <input
                   type="text"
                   id="commander"
                   value={formData.commander}
-                  onChange={(e) => handleInputChange('commander', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("commander", e.target.value)
+                  }
                   className="form-input"
                   placeholder="e.g., Atraxa, Praetors' Voice"
                 />
@@ -436,22 +519,31 @@ export default function PagedDeckForm() {
               Colors & Theme
             </h2>
             <p className="step-description">
-              {formData.mysteryDeck === 'yes' 
-                ? "Even for a mystery deck, any color preferences?" 
+              {formData.mysteryDeck === "yes"
+                ? "Even for a mystery deck, any color preferences?"
                 : "Select your preferred color combination and theme."}
             </p>
-            
+
             <div className="form-group">
-              <label>Color Preference {formData.mysteryDeck === 'no' && !formData.commander && <span className="required">*</span>}</label>
+              <label>
+                Color Preference{" "}
+                {formData.mysteryDeck === "no" && !formData.commander && (
+                  <span className="required">*</span>
+                )}
+              </label>
               <div className="color-grid">
                 {Object.entries(COLOR_MAPPINGS).map(([colorId, colorData]) => (
                   <button
                     key={colorId}
                     type="button"
-                    className={`color-option ${colorData.className} ${formData.colorPreference === colorId ? 'selected' : ''}`}
-                    onClick={() => handleInputChange('colorPreference', colorId)}
+                    className={`color-option ${formData.colorPreference === colorId ? "selected" : ""}`}
+                    onClick={() =>
+                      handleInputChange("colorPreference", colorId)
+                    }
+                    title={colorData.name}
+                    aria-label={colorData.name}
                   >
-                    {colorData.name}
+                    <i className={colorData.className}></i>
                   </button>
                 ))}
               </div>
@@ -469,7 +561,7 @@ export default function PagedDeckForm() {
                 type="text"
                 id="theme"
                 value={formData.theme}
-                onChange={(e) => handleInputChange('theme', e.target.value)}
+                onChange={(e) => handleInputChange("theme", e.target.value)}
                 className="form-input"
                 placeholder="e.g., Tribal, Artifacts, Spellslinger, Voltron"
               />
@@ -484,26 +576,34 @@ export default function PagedDeckForm() {
               <Trophy className="step-icon" />
               Power Level & Budget
             </h2>
-            <p className="step-description">Let's determine the competitive level and budget for your deck.</p>
-            
+            <p className="step-description">
+              Let's determine the competitive level and budget for your deck.
+            </p>
+
             <div className="form-group">
-              <label>Bracket Selection <span className="required">*</span></label>
+              <label>
+                Bracket Selection <span className="required">*</span>
+              </label>
               <div className="bracket-grid">
                 {bracketOptions.map((bracket) => (
                   <label
                     key={bracket.value}
-                    className={`bracket-option ${formData.bracket === bracket.value ? 'selected' : ''}`}
+                    className={`bracket-option ${formData.bracket === bracket.value ? "selected" : ""}`}
                   >
                     <input
                       type="radio"
                       name="bracket"
                       value={bracket.value}
                       checked={formData.bracket === bracket.value}
-                      onChange={(e) => handleInputChange('bracket', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("bracket", e.target.value)
+                      }
                     />
                     <div className="bracket-content">
                       <span className="bracket-label">{bracket.label}</span>
-                      <span className="bracket-description">{bracket.description}</span>
+                      <span className="bracket-description">
+                        {bracket.description}
+                      </span>
                     </div>
                   </label>
                 ))}
@@ -522,8 +622,8 @@ export default function PagedDeckForm() {
                 type="text"
                 id="budget"
                 value={formData.budget}
-                onChange={(e) => handleInputChange('budget', e.target.value)}
-                className={`form-input ${errors.budget ? 'error' : ''}`}
+                onChange={(e) => handleInputChange("budget", e.target.value)}
+                className={`form-input ${errors.budget ? "error" : ""}`}
                 placeholder="e.g., $100, No budget, Under $500"
               />
               {errors.budget && (
@@ -540,8 +640,10 @@ export default function PagedDeckForm() {
               <Coffee className="step-icon" />
               Final Details
             </h2>
-            <p className="step-description">Almost done! Just a couple more fun questions.</p>
-            
+            <p className="step-description">
+              Almost done! Just a couple more fun questions.
+            </p>
+
             <div className="form-fields">
               <div className="form-group">
                 <label htmlFor="coffee">
@@ -552,8 +654,8 @@ export default function PagedDeckForm() {
                   type="text"
                   id="coffee"
                   value={formData.coffee}
-                  onChange={(e) => handleInputChange('coffee', e.target.value)}
-                  className={`form-input ${errors.coffee ? 'error' : ''}`}
+                  onChange={(e) => handleInputChange("coffee", e.target.value)}
+                  className={`form-input ${errors.coffee ? "error" : ""}`}
                   placeholder="e.g., Black coffee, French press / Latte with oat milk"
                 />
                 {errors.coffee && (
@@ -570,7 +672,9 @@ export default function PagedDeckForm() {
                   type="text"
                   id="idealDate"
                   value={formData.idealDate}
-                  onChange={(e) => handleInputChange('idealDate', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("idealDate", e.target.value)
+                  }
                   className="form-input"
                   placeholder="Your answer"
                 />
@@ -582,20 +686,29 @@ export default function PagedDeckForm() {
               <div className="review-grid">
                 <div className="review-item">
                   <span className="review-label">Patreon:</span>
-                  <span className="review-value">{formData.patreonUsername}</span>
+                  <span className="review-value">
+                    {formData.patreonUsername}
+                  </span>
                 </div>
                 <div className="review-item">
                   <span className="review-label">Discord:</span>
-                  <span className="review-value">{formData.discordUsername}</span>
+                  <span className="review-value">
+                    {formData.discordUsername}
+                  </span>
                 </div>
                 <div className="review-item">
                   <span className="review-label">Type:</span>
-                  <span className="review-value">{formData.mysteryDeck === 'yes' ? 'Mystery Deck' : 'Custom Build'}</span>
+                  <span className="review-value">
+                    {formData.mysteryDeck === "yes"
+                      ? "Mystery Deck"
+                      : "Custom Build"}
+                  </span>
                 </div>
                 <div className="review-item">
                   <span className="review-label">Bracket:</span>
                   <span className="review-value">
-                    {bracketOptions.find(b => b.value === formData.bracket)?.label || 'Not selected'}
+                    {bracketOptions.find((b) => b.value === formData.bracket)
+                      ?.label || "Not selected"}
                   </span>
                 </div>
                 <div className="review-item">
@@ -636,7 +749,10 @@ export default function PagedDeckForm() {
         <div className="form-wrapper">
           <div className="success-container">
             <div className="success-card">
-              <AlertCircle className="success-icon" style={{ color: '#ef4444' }} />
+              <AlertCircle
+                className="success-icon"
+                style={{ color: "#ef4444" }}
+              />
               <h2>Unable to Submit</h2>
               <p>{tierError}</p>
               <div className="mt-4">
@@ -656,42 +772,59 @@ export default function PagedDeckForm() {
       <div className="success-container">
         <div className="success-card">
           <CheckCircle className="success-icon" />
-          <h2>{willBeQueued ? 'Deck Request Queued!' : 'Deck Request Submitted!'}</h2>
+          <h2>
+            {willBeQueued ? "Deck Request Queued!" : "Deck Request Submitted!"}
+          </h2>
           <p>
             {willBeQueued ? (
-              <>Your deck request has been queued and will be automatically processed when a slot opens up next month. You'll receive an email notification when work begins!</>
+              <>
+                Your deck request has been queued and will be automatically
+                processed when a slot opens up next month. You'll receive an
+                email notification when work begins!
+              </>
             ) : (
-              <>Your custom Commander deck request has been received. We'll be in touch soon!</>
+              <>
+                Your custom Commander deck request has been received. We'll be
+                in touch soon!
+              </>
             )}
           </p>
-          {!willBeQueued && submissionsRemaining !== null && submissionsRemaining > 0 && (
-            <p className="success-meta">You have {submissionsRemaining - 1} slot(s) remaining this month</p>
-          )}
+          {!willBeQueued &&
+            submissionsRemaining !== null &&
+            submissionsRemaining > 0 && (
+              <p className="success-meta">
+                You have {submissionsRemaining - 1} slot(s) remaining this month
+              </p>
+            )}
           {willBeQueued && (
-            <p className="success-meta">Queue position: {totalSubmissions + 1}</p>
+            <p className="success-meta">
+              Queue position: {totalSubmissions + 1}
+            </p>
           )}
-          <button 
+          <button
             className="btn btn-primary"
             onClick={() => {
               setShowSuccess(false);
               setCurrentStep(1);
               setFormData({
-                patreonUsername: '',
-                email: '',
-                discordUsername: '',
-                mysteryDeck: '',
-                commander: '',
-                colorPreference: '',
-                theme: '',
-                bracket: '',
-                budget: '',
-                coffee: '',
-                idealDate: ''
+                patreonUsername: "",
+                email: "",
+                discordUsername: "",
+                mysteryDeck: "",
+                commander: "",
+                colorPreference: "",
+                theme: "",
+                bracket: "",
+                budget: "",
+                coffee: "",
+                idealDate: "",
               });
               setCompletedSteps([]);
             }}
           >
-            {totalSubmissions + 1 < MAX_QUEUED ? 'Submit Another Deck' : 'View My Submissions'}
+            {totalSubmissions + 1 < MAX_QUEUED
+              ? "Submit Another Deck"
+              : "View My Submissions"}
           </button>
         </div>
       </div>
@@ -703,23 +836,39 @@ export default function PagedDeckForm() {
       <div className="form-wrapper">
         <div className="form-header">
           <div className="header-logo">
-            <Swords style={{ width: 32, height: 32, color: 'white' }} />
+            <Swords style={{ width: 32, height: 32, color: "white" }} />
           </div>
           <h1 className="header-title">Custom Commander Deck Submission</h1>
-          <p className="header-subtitle">Premium deck building for $50+ tier patrons</p>
+          <p className="header-subtitle">
+            Premium deck building for $50+ tier patrons
+          </p>
           {userTier && submissionsRemaining !== null && (
-            <div className="tier-info" style={{
-              marginTop: '1rem',
-              padding: '0.75rem',
-              background: willBeQueued ? 'rgba(234, 179, 8, 0.1)' : 'rgba(34, 197, 94, 0.1)',
-              border: willBeQueued ? '1px solid rgba(234, 179, 8, 0.3)' : '1px solid rgba(34, 197, 94, 0.3)',
-              borderRadius: '0.5rem'
-            }}>
-              <p style={{ margin: 0, fontSize: '0.875rem' }}>
-                <strong>{userTier} Tier:</strong> {submissionsRemaining > 0 ? (
-                  <>{submissionsRemaining} slot{submissionsRemaining !== 1 ? 's' : ''} available this month</>
+            <div
+              className="tier-info"
+              style={{
+                marginTop: "1rem",
+                padding: "0.75rem",
+                background: willBeQueued
+                  ? "rgba(234, 179, 8, 0.1)"
+                  : "rgba(34, 197, 94, 0.1)",
+                border: willBeQueued
+                  ? "1px solid rgba(234, 179, 8, 0.3)"
+                  : "1px solid rgba(34, 197, 94, 0.3)",
+                borderRadius: "0.5rem",
+              }}
+            >
+              <p style={{ margin: 0, fontSize: "0.875rem" }}>
+                <strong>{userTier} Tier:</strong>{" "}
+                {submissionsRemaining > 0 ? (
+                  <>
+                    {submissionsRemaining} slot
+                    {submissionsRemaining !== 1 ? "s" : ""} available this month
+                  </>
                 ) : (
-                  <>All slots filled - submissions will be queued ({MAX_QUEUED - totalSubmissions} queue slots left)</>
+                  <>
+                    All slots filled - submissions will be queued (
+                    {MAX_QUEUED - totalSubmissions} queue slots left)
+                  </>
                 )}
               </p>
             </div>
@@ -731,11 +880,11 @@ export default function PagedDeckForm() {
             const Icon = step.icon;
             const isActive = currentStep === step.id;
             const isCompleted = completedSteps.includes(step.id);
-            
+
             return (
-              <div 
+              <div
                 key={step.id}
-                className={`progress-step ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}`}
+                className={`progress-step ${isActive ? "active" : ""} ${isCompleted ? "completed" : ""}`}
                 onClick={() => {
                   if (isCompleted || step.id < currentStep) {
                     setCurrentStep(step.id);
@@ -757,23 +906,20 @@ export default function PagedDeckForm() {
 
         <div className="form-card">
           {renderStepContent()}
-          
+
           <div className="form-actions">
             <button
               className="btn btn-secondary"
               onClick={handlePrevious}
               disabled={currentStep === 1}
-              style={{ visibility: currentStep === 1 ? 'hidden' : 'visible' }}
+              style={{ visibility: currentStep === 1 ? "hidden" : "visible" }}
             >
               <ChevronLeft style={{ width: 20, height: 20 }} />
               Previous
             </button>
-            
+
             {currentStep < totalSteps ? (
-              <button
-                className="btn btn-primary"
-                onClick={handleNext}
-              >
+              <button className="btn btn-primary" onClick={handleNext}>
                 Next
                 <ChevronRight style={{ width: 20, height: 20 }} />
               </button>
@@ -785,7 +931,10 @@ export default function PagedDeckForm() {
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="animate-spin" style={{ width: 20, height: 20 }} />
+                    <Loader2
+                      className="animate-spin"
+                      style={{ width: 20, height: 20 }}
+                    />
                     Submitting...
                   </>
                 ) : (

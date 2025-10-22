@@ -2,6 +2,7 @@
 "use client"
 
 import { memo } from "react"
+import Link from "next/link"
 import type { Database } from "@/types/supabase"
 import { ManaSymbols } from "@/components/decks/ManaSymbols"
 import { CommanderImage } from "@/components/decks/Commander"
@@ -25,52 +26,49 @@ export const DeckCard = memo(function DeckCard({
   
   if (variant === 'compact') {
     return (
-      <div className={cn(
-        "group card-tinted-glass hover-tinted rounded-xl p-4 transition-all duration-300",
-        "hover:shadow-tinted-glow hover:scale-[1.01]",
-        className
-      )}>
-        <div className="flex items-start justify-between mb-3">
-          <h3 className="font-semibold text-lg line-clamp-1 group-hover:text-tinted transition-colors">
-            {deck.name}
-          </h3>
-          {deck.format && (
-            <span className="badge-tinted-primary text-xs px-2 py-1 rounded-full">
-              {deck.format}
-            </span>
-          )}
-        </div>
-        
-        {deck.commanders && deck.commanders.length > 0 && (
-          <div className="flex items-center gap-2 mb-3">
+      <Link href={`/decks/${deck.id}`}>
+        <div className={cn(
+          "group card-tinted-glass hover-tinted rounded-xl p-4 transition-all duration-300",
+          "hover:shadow-tinted-glow hover:scale-[1.01] cursor-pointer",
+          className
+        )}>
+          <div className="flex items-start justify-between mb-3">
+            <h3 className="font-semibold text-lg line-clamp-1 group-hover:text-tinted transition-colors">
+              {deck.name}
+            </h3>
             {deck.color_identity && (
-              <ManaSymbols 
-                mana={deck.color_identity} 
+              <ManaSymbols
+                mana={deck.color_identity}
                 size="sm"
                 shadow
-                className="opacity-80 group-hover:opacity-100 transition-opacity"
+                className="opacity-80 group-hover:opacity-100 transition-opacity flex-shrink-0"
               />
             )}
-            <span className="text-sm text-muted-foreground line-clamp-1">
-              {deck.commanders.join(' & ')}
-            </span>
           </div>
-        )}
-        
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <div className="flex gap-3">
-            <span className="flex items-center gap-1">
-              <Eye className="h-3 w-3" />
-              {deck.view_count?.toLocaleString() || 0}
-            </span>
-            <span className="flex items-center gap-1">
-              <Heart className="h-3 w-3" />
-              {deck.like_count?.toLocaleString() || 0}
-            </span>
+
+          {deck.commanders && deck.commanders.length > 0 && (
+            <div className="mb-3">
+              <span className="text-sm text-muted-foreground line-clamp-1">
+                {deck.commanders.join(' & ')}
+              </span>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <div className="flex gap-3">
+              <span className="flex items-center gap-1">
+                <Eye className="h-3 w-3" />
+                {deck.view_count?.toLocaleString() || 0}
+              </span>
+              <span className="flex items-center gap-1">
+                <Heart className="h-3 w-3" />
+                {deck.like_count?.toLocaleString() || 0}
+              </span>
+            </div>
+            <span>{formattedDate}</span>
           </div>
-          <span>{formattedDate}</span>
         </div>
-      </div>
+      </Link>
     )
   }
   

@@ -28,7 +28,7 @@ export function ManaSymbolIcon({
   const sizeClasses = {
     sm: 'w-6 h-6',
     md: 'w-10 h-10',
-    lg: 'w-full h-full'
+    lg: 'w-24 h-24'
   }
 
   // Load the SVG only once when the symbol changes

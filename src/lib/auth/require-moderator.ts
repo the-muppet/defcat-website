@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 
-export async function requireDeveloper() {
+export async function requireModerator() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -13,7 +13,7 @@ export async function requireDeveloper() {
     .eq('id', user.id)
     .single()
 
-  if (!profile || profile.role !== 'developer') {
+  if (!profile || profile.role !== 'moderator') {
     redirect('/')
   }
 }

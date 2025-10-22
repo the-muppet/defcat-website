@@ -23,31 +23,31 @@ export const MANA_SVG_MAP: Record<ManaSymbol, ManaSVGData> = {
     symbol: ManaSymbol.WHITE,
     path: getSupabaseSVGUrl('w.svg'),
     label: 'White',
-    cssColor: 'var(--mana-white)'
+    cssColor: '#fffbd5'
   },
   [ManaSymbol.BLUE]: {
     symbol: ManaSymbol.BLUE,
     path: getSupabaseSVGUrl('u.svg'),
     label: 'Blue',
-    cssColor: 'var(--mana-blue)'
+    cssColor: '#0e68ab'
   },
   [ManaSymbol.BLACK]: {
     symbol: ManaSymbol.BLACK,
     path: getSupabaseSVGUrl('b.svg'),
     label: 'Black',
-    cssColor: 'var(--mana-black)'
+    cssColor: '#a855f7'
   },
   [ManaSymbol.RED]: {
     symbol: ManaSymbol.RED,
     path: getSupabaseSVGUrl('r.svg'),
     label: 'Red',
-    cssColor: 'var(--mana-red)'
+    cssColor: '#d3202a'
   },
   [ManaSymbol.GREEN]: {
     symbol: ManaSymbol.GREEN,
     path: getSupabaseSVGUrl('g.svg'),
     label: 'Green',
-    cssColor: 'var(--mana-green)'
+    cssColor: '#00733e'
   },
 }
 
