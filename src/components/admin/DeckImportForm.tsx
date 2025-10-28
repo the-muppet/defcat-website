@@ -1,57 +1,57 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
-import type { PatreonTier } from '@/types/core';
+} from '@/components/ui/select'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Loader2, CheckCircle, AlertCircle } from 'lucide-react'
+import type { PatreonTier } from '@/types/core'
 
 export function DeckImportForm() {
-  const router = useRouter();
-  const [moxfieldInput, setMoxfieldInput] = useState('');
-  const [selectedTier, setSelectedTier] = useState<PatreonTier>('Citizen');
-  const [isImporting, setIsImporting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const router = useRouter()
+  const [moxfieldInput, setMoxfieldInput] = useState('')
+  const [selectedTier, setSelectedTier] = useState<PatreonTier>('Citizen')
+  const [isImporting, setIsImporting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
 
   const extractMoxfieldId = (input: string): string | null => {
     // Handle full URL: https://www.moxfield.com/decks/abc123xyz
-    const urlMatch = input.match(/moxfield\.com\/decks\/([a-zA-Z0-9_-]+)/);
+    const urlMatch = input.match(/moxfield\.com\/decks\/([a-zA-Z0-9_-]+)/)
     if (urlMatch) {
-      return urlMatch[1];
+      return urlMatch[1]
     }
 
     // Handle direct ID
     if (/^[a-zA-Z0-9_-]+$/.test(input.trim())) {
-      return input.trim();
+      return input.trim()
     }
 
-    return null;
-  };
+    return null
+  }
 
   const handleImport = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setSuccess(false);
+    e.preventDefault()
+    setError(null)
+    setSuccess(false)
 
-    const moxfieldId = extractMoxfieldId(moxfieldInput);
+    const moxfieldId = extractMoxfieldId(moxfieldInput)
 
     if (!moxfieldId) {
-      setError('Invalid Moxfield URL or ID. Please enter a valid deck link or ID.');
-      return;
+      setError('Invalid Moxfield URL or ID. Please enter a valid deck link or ID.')
+      return
     }
 
-    setIsImporting(true);
+    setIsImporting(true)
 
     try {
       const response = await fetch('/api/admin/decks/import', {
@@ -63,27 +63,27 @@ export function DeckImportForm() {
           moxfieldId,
           tier: selectedTier,
         }),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to import deck');
+        throw new Error(data.error || 'Failed to import deck')
       }
 
-      setSuccess(true);
-      setMoxfieldInput('');
+      setSuccess(true)
+      setMoxfieldInput('')
 
       // Redirect to deck management after 2 seconds
       setTimeout(() => {
-        router.push('/admin/decks');
-      }, 2000);
+        router.push('/admin/decks')
+      }, 2000)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      setError(err instanceof Error ? err.message : 'An unknown error occurred')
     } finally {
-      setIsImporting(false);
+      setIsImporting(false)
     }
-  };
+  }
 
   return (
     <form onSubmit={handleImport} className="space-y-6">
@@ -148,11 +148,7 @@ export function DeckImportForm() {
       )}
 
       {/* Submit Button */}
-      <Button
-        type="submit"
-        disabled={isImporting || !moxfieldInput.trim()}
-        className="w-full"
-      >
+      <Button type="submit" disabled={isImporting || !moxfieldInput.trim()} className="w-full">
         {isImporting ? (
           <>
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -163,5 +159,5 @@ export function DeckImportForm() {
         )}
       </Button>
     </form>
-  );
+  )
 }

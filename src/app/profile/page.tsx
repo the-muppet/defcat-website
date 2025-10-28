@@ -1,69 +1,117 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { ManaSymbolSelector } from '@/components/settings/ManaSymbolSelector'
 import { NotificationBadgeToggle } from '@/components/settings/NotificationBadgeToggle'
 import { TierBadge } from '@/components/tier/TierBadge'
 import { MyDrafts } from '@/components/profile/MyDrafts'
-import { User, Mail, Shield, Award, Palette } from 'lucide-react'
+import { User, Mail, Shield, Award, Palette, Loader2 } from 'lucide-react'
+import { GlowingEffect } from '@/components/ui/glowEffect'
+import type { Database } from '@/types/supabase'
 
-export default async function ProfilePage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+type Profile = Database['public']['Tables']['profiles']['Row']
 
-  if (!user) {
-    redirect('/auth/login')
+export default function ProfilePage() {
+  const router = useRouter()
+  const [user, setUser] = useState<any>(null)
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [loading, setLoading] = useState(true)
+  const supabase = createClient()
+
+  useEffect(() => {
+    async function loadProfile() {
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser()
+
+      if (!authUser) {
+        router.push('/auth/login')
+        return
+      }
+
+      setUser(authUser)
+
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('patreon_tier, role, created_at')
+        .eq('id', authUser.id)
+        .single()
+
+      setProfile(profileData)
+      setLoading(false)
+    }
+
+    loadProfile()
+  }, [router, supabase])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    )
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('patreon_tier, role, created_at')
-    .eq('id', user.id)
-    .single()
+  if (!user) {
+    return null
+  }
 
   const userTier = profile?.patreon_tier || 'Citizen'
   const userRole = profile?.role || 'user'
-  const joinedDate = profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : 'Unknown'
+  const joinedDate = profile?.created_at
+    ? new Date(profile.created_at).toLocaleDateString()
+    : 'Unknown'
 
   return (
-    <div className="px-4 py-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="flex items-center gap-4">
-          <User className="h-10 w-10 text-purple-500" />
-          <div>
-            <h1 className="text-4xl font-bold">Profile</h1>
-            <p className="text-muted-foreground mt-1">
-              View your account information and preferences
-            </p>
-          </div>
-        </div>
-
-        <div className="grid gap-6">
-          <MyDrafts />
-
-          <Card className="glass-panel">
+    <ul className="grid grid-cols-1 gap-4 md:grid-cols-12 lg:gap-6 [&>li]:min-w-0">
+      {/* Appearance - Full width */}
+      <li className="list-none md:col-span-12">
+        <div className="relative  rounded-2xl border p-2 md:rounded-3xl md:p-3">
+          <GlowingEffect
+            blur={0}
+            borderWidth={3}
+            spread={80}
+            glow={true}
+            disabled={false}
+            proximity={64}
+            inactiveZone={0.01}
+          />
+          <Card className="glass-panel border-0 relative ">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Palette className="h-5 w-5" />
                 Appearance
               </CardTitle>
-              <CardDescription>
-                Customize the look and feel of your DeckVault
-              </CardDescription>
+              <CardDescription>Customize the look and feel of your DeckVault</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <ManaSymbolSelector />
-
               <Separator />
-
               <div className="text-sm text-muted-foreground">
                 <p>Your preferences are saved locally</p>
               </div>
             </CardContent>
           </Card>
+        </div>
+      </li>
 
-          <Card className="glass-panel">
+      {/* Account Information - Left */}
+      <li className="list-none md:col-span-6 md:row-span-1">
+        <div className="relative  rounded-2xl border p-2 md:rounded-3xl md:p-3">
+          <GlowingEffect
+            blur={0}
+            borderWidth={3}
+            spread={80}
+            glow={true}
+            disabled={false}
+            proximity={64}
+            inactiveZone={0.01}
+          />
+          <Card className="glass-panel border-0 relative ">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Mail className="h-5 w-5" />
@@ -82,8 +130,22 @@ export default async function ProfilePage() {
               </div>
             </CardContent>
           </Card>
+        </div>
+      </li>
 
-          <Card className="glass-panel">
+      {/* Patreon Tier - Right */}
+      <li className="list-none md:col-span-6 md:row-span-1">
+        <div className="relative  rounded-2xl border p-2 md:rounded-3xl md:p-3">
+          <GlowingEffect
+            blur={0}
+            borderWidth={3}
+            spread={80}
+            glow={true}
+            disabled={false}
+            proximity={64}
+            inactiveZone={0.01}
+          />
+          <Card className="glass-panel border-0 relative ">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Award className="h-5 w-5" />
@@ -95,9 +157,39 @@ export default async function ProfilePage() {
               <TierBadge tier={userTier as any} showTooltip={true} />
             </CardContent>
           </Card>
+        </div>
+      </li>
 
-          {(userRole === 'admin' || userRole === 'moderator' || userRole === 'developer') && (
-            <Card className="glass-panel">
+      {/* My Drafts - Spans 2 rows on right */}
+      <li className="list-none md:col-span-6 md:row-span-2 md:row-start-3">
+        <div className="relative  rounded-2xl border p-2 md:rounded-3xl md:p-3">
+          <GlowingEffect
+            blur={0}
+            borderWidth={3}
+            spread={80}
+            glow={true}
+            disabled={false}
+            proximity={64}
+            inactiveZone={0.01}
+          />
+            <MyDrafts />
+          </div>
+      </li>
+
+      {/* Role & Permissions - Bottom left (if applicable) */}
+      {(userRole === 'admin' || userRole === 'moderator' || userRole === 'developer') && (
+        <li className="list-none md:col-span-6 md:row-span-2 md:row-start-3">
+          <div className="relative  rounded-2xl border p-2 md:rounded-3xl md:p-3">
+            <GlowingEffect
+              blur={0}
+              borderWidth={3}
+              spread={80}
+              glow={true}
+              disabled={false}
+              proximity={64}
+              inactiveZone={0.01}
+            />
+            <Card className="glass-panel border-0 relative ">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="h-5 w-5" />
@@ -133,9 +225,34 @@ export default async function ProfilePage() {
                 )}
               </CardContent>
             </Card>
-          )}
-        </div>
-      </div>
-    </div>
+          </div>
+        </li>
+      )}
+    </ul>
+  )
+}
+interface GridItemProps {
+  area: string
+  children: React.ReactNode
+}
+
+const GridItem = ({ area, children }: GridItemProps) => {
+  return (
+  <li className="list-none md:col-span-12 md:row-span-1">
+    <div className="relative  rounded-2xl border p-2 md:rounded-3xl md:p-3">
+      <GlowingEffect
+        blur={0}
+        borderWidth={3}
+        spread={80}
+        glow={true}
+        disabled={false}
+        proximity={64}
+        inactiveZone={0.01}
+      />
+      <Card className="glass-panel border-0 relative ">
+      {/* content */}
+    </Card>
+  </div>
+</li>
   )
 }

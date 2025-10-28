@@ -1,17 +1,21 @@
-'use client';
+'use client'
 
-import { createClient } from '@/lib/supabase/client';
-import { useQuery } from '@tanstack/react-query';
-import type { User } from '@/types/core';
+import { createClient } from '@/lib/supabase/client'
+import { useQuery } from '@tanstack/react-query'
+import type { User } from '@/types/core'
 
 /**
  * Client-side auth hook using React Query
  * Provides current user state with automatic refetching
  */
 export function useAuth() {
-  const supabase = createClient();
+  const supabase = createClient()
 
-  const { data: user, isLoading, error } = useQuery({
+  const {
+    data: user,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['auth-user'],
     queryFn: async (): Promise<User | null> => {
       // Get user - suppress OAuth validation errors since we use custom Patreon OAuth
@@ -19,7 +23,7 @@ export function useAuth() {
       try {
         const {
           data: { user: u },
-        } = await supabase.auth.getUser();
+        } = await supabase.auth.getUser()
         authUser = u
       } catch (err: any) {
         // Suppress "missing destination name oauth_client_id" errors
@@ -36,7 +40,7 @@ export function useAuth() {
         }
       }
 
-      if (!authUser) return null;
+      if (!authUser) return null
 
       // Fetch profile with tier and role info
       const { data: profile } = await supabase
@@ -44,10 +48,10 @@ export function useAuth() {
         .select('patreon_id, patreon_tier, role')
         .eq('id', authUser.id)
         .single<{
-          patreon_id: string | null;
-          patreon_tier: string | null;
-          role: string | null;
-        }>();
+          patreon_id: string | null
+          patreon_tier: string | null
+          role: string | null
+        }>()
 
       return {
         id: authUser.id,
@@ -55,11 +59,11 @@ export function useAuth() {
         patreonId: profile?.patreon_id || null,
         patreonTier: (profile?.patreon_tier as User['patreonTier']) || 'Citizen',
         role: (profile?.role as User['role']) || 'user',
-      };
+      }
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 10, // 10 minutes
-  });
+  })
 
   return {
     user,
@@ -69,5 +73,5 @@ export function useAuth() {
     isAuthenticated: !!user,
     isAdmin: user?.role === 'admin',
     error,
-  };
+  }
 }

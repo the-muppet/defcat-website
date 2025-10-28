@@ -27,7 +27,9 @@ export function MyDrafts() {
 
   async function loadDrafts() {
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
     if (!user) return
 
@@ -50,13 +52,10 @@ export function MyDrafts() {
     setDeleting(id)
     const supabase = createClient()
 
-    const { error } = await supabase
-      .from('deck_submissions')
-      .delete()
-      .eq('id', id)
+    const { error } = await supabase.from('deck_submissions').delete().eq('id', id)
 
     if (!error) {
-      setDrafts(drafts.filter(d => d.id !== id))
+      setDrafts(drafts.filter((d) => d.id !== id))
     }
     setDeleting(null)
   }
@@ -89,9 +88,7 @@ export function MyDrafts() {
         </CardTitle>
         <CardDescription>
           Your saved deck submission drafts ({drafts.length}/5)
-          {drafts.length >= 5 && (
-            <span className="text-yellow-500 ml-2">• Limit reached</span>
-          )}
+          {drafts.length >= 5 && <span className="text-yellow-500 ml-2">• Limit reached</span>}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -110,7 +107,7 @@ export function MyDrafts() {
               >
                 <div className="flex-1">
                   <div className="font-medium">
-                    {draft.mystery_deck ? 'Mystery Deck' : (draft.commander || 'Custom Build')}
+                    {draft.mystery_deck ? 'Mystery Deck' : draft.commander || 'Custom Build'}
                   </div>
                   <div className="text-sm text-muted-foreground mt-1">
                     {draft.color_preference && `Colors: ${draft.color_preference}`}

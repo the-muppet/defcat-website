@@ -1,10 +1,10 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { ShoppingBag, Tag, ExternalLink, Loader2 } from "lucide-react"
-import { createClient } from "@/lib/supabase/client"
+import { useState, useEffect } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { ShoppingBag, Tag, ExternalLink, Loader2 } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
 interface Product {
   id: string
@@ -32,11 +32,11 @@ export default function DiscountStorePage() {
           return
         }
 
-        const productItems: Product[] = (data || []).map(item => ({
+        const productItems: Product[] = (data || []).map((item) => ({
           id: item.id,
           name: item.name,
           description: item.description || '',
-          link: item.link
+          link: item.link,
         }))
 
         setProducts(productItems)
@@ -55,7 +55,8 @@ export default function DiscountStorePage() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(farthest-corner at 50% 0%, var(--bg-tinted) 0%, var(--background) 100%)'
+          background:
+            'radial-gradient(farthest-corner at 50% 0%, var(--bg-tinted) 0%, var(--background) 100%)',
         }}
       />
 
@@ -68,7 +69,7 @@ export default function DiscountStorePage() {
                 <h1
                   className="text-5xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r"
                   style={{
-                    backgroundImage: `linear-gradient(to right, var(--gradient-start), var(--gradient-end))`
+                    backgroundImage: `linear-gradient(to right, var(--gradient-start), var(--gradient-end))`,
                   }}
                 >
                   DefCat's Discount Store
@@ -88,7 +89,10 @@ export default function DiscountStorePage() {
                 {/* Products Grid - 4 per row */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   {products.map((product) => (
-                    <Card key={product.id} className="glass border-white/10 bg-card-tinted flex flex-col">
+                    <Card
+                      key={product.id}
+                      className="glass border-white/10 bg-card-tinted flex flex-col"
+                    >
                       <CardHeader>
                         <div className="aspect-square bg-muted/30 rounded-lg mb-4 flex items-center justify-center">
                           <Tag className="h-12 w-12 text-muted-foreground" />
@@ -100,10 +104,7 @@ export default function DiscountStorePage() {
                           {product.description}
                         </p>
 
-                        <Button
-                          asChild
-                          className="w-full btn-tinted-primary"
-                        >
+                        <Button asChild className="w-full btn-tinted-primary">
                           <a href={product.link} target="_blank" rel="noopener noreferrer">
                             View Deal
                             <ExternalLink className="ml-2 h-4 w-4" />

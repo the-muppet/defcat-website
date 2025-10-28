@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
-import { useLatestDeck } from "@/lib/api/stats"
-import { DeckCard } from "@/components/decks/DeckCard"
-import { Card, CardContent } from "@/components/ui/card"
-import { Sparkles, Loader2 } from "lucide-react"
+import { useLatestDeck } from '@/lib/api/stats'
+import { DeckCard } from '@/components/decks/DeckCard'
+import { Card, CardContent } from '@/components/ui/card'
+import { Sparkles, Loader2 } from 'lucide-react'
 
 export function FeaturedDeckCard() {
   const { data: featuredDeck, isLoading, error } = useLatestDeck()
@@ -35,9 +35,7 @@ export function FeaturedDeckCard() {
       <Card className="glass border-white/10 bg-card-tinted">
         <CardContent className="p-12 text-center">
           <Sparkles className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-          <p className="text-lg text-muted-foreground">
-            No featured deck available at this time.
-          </p>
+          <p className="text-lg text-muted-foreground">No featured deck available at this time.</p>
         </CardContent>
       </Card>
     )

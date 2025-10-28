@@ -3,7 +3,13 @@
 import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
 import { Code, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react'
 import { PATREON_TIERS } from '@/types/core'
@@ -11,7 +17,10 @@ import { PATREON_TIERS } from '@/types/core'
 export function DeveloperTools() {
   const [spoofedTier, setSpoofedTier] = useState<string>('')
   const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
+  const [message, setMessage] = useState<{
+    type: 'success' | 'error'
+    text: string
+  } | null>(null)
   const supabase = createClient()
 
   const handleSpoofTier = async () => {
@@ -24,7 +33,9 @@ export function DeveloperTools() {
     setMessage(null)
 
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
       if (!session) {
         throw new Error('Not authenticated')
       }
@@ -33,9 +44,9 @@ export function DeveloperTools() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
+          Authorization: `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({ tier: spoofedTier })
+        body: JSON.stringify({ tier: spoofedTier }),
       })
 
       const result = await response.json()
@@ -46,13 +57,13 @@ export function DeveloperTools() {
 
       setMessage({
         type: 'success',
-        text: `Tier spoofed to ${spoofedTier}. Refresh the page to see changes.`
+        text: `Tier spoofed to ${spoofedTier}. Refresh the page to see changes.`,
       })
     } catch (err) {
       console.error('Failed to spoof tier:', err)
       setMessage({
         type: 'error',
-        text: err instanceof Error ? err.message : 'Failed to spoof tier'
+        text: err instanceof Error ? err.message : 'Failed to spoof tier',
       })
     } finally {
       setLoading(false)
@@ -64,7 +75,9 @@ export function DeveloperTools() {
     setMessage(null)
 
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
       if (!session) {
         throw new Error('Not authenticated')
       }
@@ -72,8 +85,8 @@ export function DeveloperTools() {
       const response = await fetch('/api/admin/developer/reset-tier', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${session.access_token}`
-        }
+          Authorization: `Bearer ${session.access_token}`,
+        },
       })
 
       const result = await response.json()
@@ -84,14 +97,14 @@ export function DeveloperTools() {
 
       setMessage({
         type: 'success',
-        text: 'Tier reset to actual Patreon tier. Refresh the page to see changes.'
+        text: 'Tier reset to actual Patreon tier. Refresh the page to see changes.',
       })
       setSpoofedTier('')
     } catch (err) {
       console.error('Failed to reset tier:', err)
       setMessage({
         type: 'error',
-        text: err instanceof Error ? err.message : 'Failed to reset tier'
+        text: err instanceof Error ? err.message : 'Failed to reset tier',
       })
     } finally {
       setLoading(false)
@@ -104,11 +117,11 @@ export function DeveloperTools() {
         <CardTitle className="flex items-center gap-2">
           <Code className="h-5 w-5 text-purple-500" />
           Developer Tools
-          <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400">Developer Only</span>
+          <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400">
+            Developer Only
+          </span>
         </CardTitle>
-        <CardDescription>
-          Testing utilities for spoofing Patreon tier levels
-        </CardDescription>
+        <CardDescription>Testing utilities for spoofing Patreon tier levels</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
@@ -147,19 +160,21 @@ export function DeveloperTools() {
         </div>
 
         {message && (
-          <div className={`p-3 rounded-lg flex items-start gap-2 ${
-            message.type === 'success'
-              ? 'bg-green-500/10 border border-green-500/20'
-              : 'bg-destructive/10 border border-destructive/20'
-          }`}>
+          <div
+            className={`p-3 rounded-lg flex items-start gap-2 ${
+              message.type === 'success'
+                ? 'bg-green-500/10 border border-green-500/20'
+                : 'bg-destructive/10 border border-destructive/20'
+            }`}
+          >
             {message.type === 'success' ? (
               <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
             ) : (
               <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
             )}
-            <p className={`text-sm ${
-              message.type === 'success' ? 'text-green-500' : 'text-destructive'
-            }`}>
+            <p
+              className={`text-sm ${message.type === 'success' ? 'text-green-500' : 'text-destructive'}`}
+            >
               {message.text}
             </p>
           </div>
@@ -167,9 +182,9 @@ export function DeveloperTools() {
 
         <div className="p-3 bg-muted/30 rounded-lg">
           <p className="text-xs text-muted-foreground">
-            <strong>Note:</strong> Spoofed tiers persist until reset. This allows you to test tier-gated features
-            without changing your actual Patreon subscription. The spoofed tier is stored in your profile and
-            will override the real Patreon tier until reset.
+            <strong>Note:</strong> Spoofed tiers persist until reset. This allows you to test
+            tier-gated features without changing your actual Patreon subscription. The spoofed tier
+            is stored in your profile and will override the real Patreon tier until reset.
           </p>
         </div>
       </CardContent>

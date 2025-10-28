@@ -1,29 +1,29 @@
 // app/api/submit-deck/route.ts
 
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { Resend } from 'resend';
-import { DeckSubmissionEmail } from '@/emails';
-import type { DeckSubmissionFormData, SubmissionResponse } from '@/types/form';
-import { ColorIdentity } from '@/lib/utility/color-identity';
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
+import { Resend } from 'resend'
+import { DeckSubmissionEmail } from '@/emails'
+import type { DeckSubmissionFormData, SubmissionResponse } from '@/types/form'
+import { ColorIdentity } from '@/lib/utility/color-identity'
 
 // Force dynamic rendering to avoid build-time errors
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
 // Helper to create Supabase client at runtime
 function getSupabaseClient() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY! // Use service role key for server-side operations
-  );
+  )
 }
 
 // Lazy-initialize Resend client (only when needed, avoids build-time errors)
 function getResendClient() {
   if (!process.env.RESEND_API_KEY) {
-    throw new Error('RESEND_API_KEY is not configured');
+    throw new Error('RESEND_API_KEY is not configured')
   }
-  return new Resend(process.env.RESEND_API_KEY);
+  return new Resend(process.env.RESEND_API_KEY)
 }
 
 // Validation helper
@@ -35,38 +35,37 @@ function validateSubmission(data: any): data is DeckSubmissionFormData {
     'colorPreference',
     'bracket',
     'budget',
-    'coffee'
-  ];
+    'coffee',
+  ]
 
   for (const field of required) {
     if (!data[field] || typeof data[field] !== 'string' || data[field].trim() === '') {
-      return false;
+      return false
     }
   }
 
   // Validate email format
-  const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+  const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
   if (!emailRegex.test(data.email)) {
-    return false;
+    return false
   }
 
   // Validate mysteryDeck is a string ('yes' or 'no')
   if (typeof data.mysteryDeck !== 'string' || !['yes', 'no'].includes(data.mysteryDeck)) {
-    return false;
+    return false
   }
 
-  return true;
+  return true
 }
 
 // Get color identity name for email
 
-
 export async function POST(request: NextRequest) {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getSupabaseClient()
 
     // Check authentication
-    const authHeader = request.headers.get('authorization');
+    const authHeader = request.headers.get('authorization')
     if (!authHeader) {
       return NextResponse.json<SubmissionResponse>(
         {
@@ -77,13 +76,14 @@ export async function POST(request: NextRequest) {
           },
         },
         { status: 401 }
-      );
+      )
     }
 
     // Get authenticated user
-    const { data: { user }, error: authError } = await supabase.auth.getUser(
-      authHeader.replace('Bearer ', '')
-    );
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''))
 
     if (authError || !user) {
       return NextResponse.json<SubmissionResponse>(
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
           },
         },
         { status: 401 }
-      );
+      )
     }
 
     // Get user's profile to check tier and role
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
       .from('profiles')
       .select('patreon_tier, patreon_id, role')
       .eq('id', user.id)
-      .single();
+      .single()
 
     if (profileError || !profile) {
       return NextResponse.json<SubmissionResponse>(
@@ -115,19 +115,19 @@ export async function POST(request: NextRequest) {
           },
         },
         { status: 403 }
-      );
+      )
     }
 
     // Parse request body
-    const body = await request.json();
-    const isDraft = body.isDraft === true;
+    const body = await request.json()
+    const isDraft = body.isDraft === true
 
     // Check if user is admin/moderator/developer (they bypass tier requirements)
-    const isPrivileged = ['admin', 'moderator', 'developer'].includes(profile.role);
+    const isPrivileged = ['admin', 'moderator', 'developer'].includes(profile.role)
 
     // Check tier requirements (skip for drafts and privileged users)
     if (!isDraft && !isPrivileged) {
-      const eligibleTiers = ['Duke', 'Wizard', 'ArchMage'];
+      const eligibleTiers = ['Duke', 'Wizard', 'ArchMage']
       if (!eligibleTiers.includes(profile.patreon_tier)) {
         return NextResponse.json<SubmissionResponse>(
           {
@@ -138,32 +138,73 @@ export async function POST(request: NextRequest) {
             },
           },
           { status: 403 }
-        );
+        )
       }
 
-      // Check monthly submission limit (exclude drafts from count)
-      const maxSubmissions = profile.patreon_tier === 'ArchMage' ? 2 : 1;
+      // Check deck credits for current month
+      const currentMonth = new Date()
+      currentMonth.setDate(1)
+      currentMonth.setHours(0, 0, 0, 0)
+      const monthString = currentMonth.toISOString().split('T')[0]
 
-      const { count: submissionCount, error: countError } = await supabase
-        .from('deck_submissions')
-        .select('*', { count: 'exact', head: true })
+      const { data: credits, error: creditsError } = await supabase
+        .from('user_credits')
+        .select('deck_credits')
         .eq('user_id', user.id)
-        .neq('status', 'draft') // Exclude drafts from monthly limit
-        .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString());
+        .eq('credits_month', monthString)
+        .single()
 
-      if (countError) {
-        console.error('Error checking submission count:', countError);
-      } else if (submissionCount !== null && submissionCount >= maxSubmissions) {
+      if (creditsError && creditsError.code !== 'PGRST116') {
+        console.error('Error checking credits:', creditsError)
         return NextResponse.json<SubmissionResponse>(
           {
             success: false,
             error: {
-              message: `You've reached your monthly limit of ${maxSubmissions} submission(s) for ${profile.patreon_tier} tier. Limit resets next month.`,
-              code: 'MONTHLY_LIMIT_REACHED',
+              message: 'Unable to check deck credits. Please try again.',
+              code: 'CREDITS_ERROR',
+            },
+          },
+          { status: 500 }
+        )
+      }
+
+      const deckCredits = credits?.deck_credits ?? 0
+
+      if (deckCredits <= 0) {
+        return NextResponse.json<SubmissionResponse>(
+          {
+            success: false,
+            error: {
+              message: `You've used all your deck credits for this month. Credits refresh on the 1st of next month.`,
+              code: 'NO_CREDITS',
             },
           },
           { status: 429 }
-        );
+        )
+      }
+
+      // Deduct a deck credit
+      const { error: deductError } = await supabase
+        .from('user_credits')
+        .update({
+          deck_credits: deckCredits - 1,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', user.id)
+        .eq('credits_month', monthString)
+
+      if (deductError) {
+        console.error('Error deducting credit:', deductError)
+        return NextResponse.json<SubmissionResponse>(
+          {
+            success: false,
+            error: {
+              message: 'Failed to process credit. Please try again.',
+              code: 'CREDIT_DEDUCTION_ERROR',
+            },
+          },
+          { status: 500 }
+        )
       }
     }
 
@@ -178,11 +219,11 @@ export async function POST(request: NextRequest) {
           },
         },
         { status: 400 }
-      );
+      )
     }
 
     // Convert mysteryDeck string to boolean
-    const mysteryDeck = body.mysteryDeck === true;
+    const mysteryDeck = body.mysteryDeck === true
 
     // Prepare data for Supabase
     const submissionData = {
@@ -192,6 +233,7 @@ export async function POST(request: NextRequest) {
       patreon_username: body.patreonUsername?.trim() || null,
       email: body.email?.trim()?.toLowerCase() || null,
       discord_username: body.discordUsername?.trim() || null,
+      submission_type: 'deck' as const,
       mystery_deck: mysteryDeck,
       commander: body.commander?.trim() || null,
       color_preference: body.colorPreference || null,
@@ -201,18 +243,32 @@ export async function POST(request: NextRequest) {
       coffee_preference: body.coffee?.trim() || null,
       ideal_date: body.idealDate?.trim() || null,
       status: (isDraft ? 'draft' : 'pending') as 'draft' | 'pending',
-    };
+    }
 
     // Insert into Supabase
     const { data: submission, error: dbError } = await supabase
       .from('deck_submissions')
       .insert(submissionData)
       .select('id, created_at')
-      .single();
+      .single()
 
     if (dbError) {
-      console.error('Supabase error:', dbError);
-      
+      console.error('Supabase error:', dbError)
+
+      // If credit was deducted, try to refund it
+      if (!isDraft && !isPrivileged) {
+        const currentMonth = new Date()
+        currentMonth.setDate(1)
+        currentMonth.setHours(0, 0, 0, 0)
+        const monthString = currentMonth.toISOString().split('T')[0]
+
+        await supabase.rpc('refund_credit', {
+          p_user_id: user.id,
+          p_submission_type: 'deck',
+          p_submission_month: monthString,
+        })
+      }
+
       // Check if it's a submission limit error from the trigger
       if (dbError.message?.includes('Monthly submission limit reached')) {
         return NextResponse.json<SubmissionResponse>(
@@ -224,9 +280,9 @@ export async function POST(request: NextRequest) {
             },
           },
           { status: 429 }
-        );
+        )
       }
-      
+
       return NextResponse.json<SubmissionResponse>(
         {
           success: false,
@@ -236,7 +292,7 @@ export async function POST(request: NextRequest) {
           },
         },
         { status: 500 }
-      );
+      )
     }
 
     // Skip emails for drafts
@@ -244,13 +300,13 @@ export async function POST(request: NextRequest) {
       // Get submission number (count of all submissions up to this one)
       const { count } = await supabase
         .from('deck_submissions')
-        .select('*', { count: 'exact', head: true });
+        .select('*', { count: 'exact', head: true })
 
-      const submissionNumber = count || 1;
+      const submissionNumber = count || 1
 
       // Send confirmation email
       try {
-        const resend = getResendClient();
+        const resend = getResendClient()
         await resend.emails.send({
           from: 'DefCat Custom Decks <decks@defcat.com>',
           to: body.email,
@@ -263,23 +319,26 @@ export async function POST(request: NextRequest) {
             bracket: body.bracket,
             mysteryDeck,
           }),
-        });
+        })
       } catch (emailError) {
-        console.error('Email error:', emailError);
+        console.error('Email error:', emailError)
         // Don't fail the request if email fails
         // The submission is already saved
       }
 
       // Also notify admin (optional)
       try {
-        const resend = getResendClient();
-        const maxSubmissions = profile.patreon_tier === 'ArchMage' ? 2 : 1;
+        const resend = getResendClient()
+        const maxSubmissions = profile.patreon_tier === 'ArchMage' ? 2 : 1
         const { count: submissionCount } = await supabase
           .from('deck_submissions')
           .select('*', { count: 'exact', head: true })
           .eq('user_id', user.id)
           .neq('status', 'draft')
-          .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString());
+          .gte(
+            'created_at',
+            new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
+          )
 
         await resend.emails.send({
           from: 'DefCat Submissions <notifications@defcat.com>', // Update with your domain
@@ -305,9 +364,9 @@ export async function POST(request: NextRequest) {
             <br>
             <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/submissions/${submission.id}">View in Dashboard</a></p>
           `,
-        });
+        })
       } catch (adminEmailError) {
-        console.error('Admin notification error:', adminEmailError);
+        console.error('Admin notification error:', adminEmailError)
         // Don't fail the request
       }
     }
@@ -322,9 +381,9 @@ export async function POST(request: NextRequest) {
         },
       },
       { status: 201 }
-    );
+    )
   } catch (error) {
-    console.error('Unexpected error:', error);
+    console.error('Unexpected error:', error)
     return NextResponse.json<SubmissionResponse>(
       {
         success: false,
@@ -334,7 +393,7 @@ export async function POST(request: NextRequest) {
         },
       },
       { status: 500 }
-    );
+    )
   }
 }
 
@@ -347,5 +406,5 @@ export async function OPTIONS() {
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     },
-  });
+  })
 }

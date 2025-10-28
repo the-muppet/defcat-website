@@ -1,13 +1,13 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { GraduationCap, BookOpen, Target, Zap } from "lucide-react"
-import { VideoPlayer } from "@/components/video/VideoPlayer"
-import { createClient } from "@/lib/supabase/client"
+import { useState, useEffect } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { GraduationCap, BookOpen, Target, Zap } from 'lucide-react'
+import { VideoPlayer } from '@/components/video/VideoPlayer'
+import { createClient } from '@/lib/supabase/client'
 
 export default function CommanderCollegePage() {
-  const [collegeVideoId, setCollegeVideoId] = useState<string>("")
+  const [collegeVideoId, setCollegeVideoId] = useState<string>('')
 
   // Fetch college video ID from site_config
   useEffect(() => {
@@ -32,7 +32,8 @@ export default function CommanderCollegePage() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(farthest-corner at 50% 0%, var(--bg-tinted) 0%, var(--background) 100%)'
+          background:
+            'radial-gradient(farthest-corner at 50% 0%, var(--bg-tinted) 0%, var(--background) 100%)',
         }}
       />
 
@@ -45,7 +46,7 @@ export default function CommanderCollegePage() {
                 <h1
                   className="text-5xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r"
                   style={{
-                    backgroundImage: `linear-gradient(to right, var(--gradient-start), var(--gradient-end))`
+                    backgroundImage: `linear-gradient(to right, var(--gradient-start), var(--gradient-end))`,
                   }}
                 >
                   DefCat's Commander College
@@ -94,7 +95,8 @@ export default function CommanderCollegePage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Learn the fundamentals of crafting powerful Commander decks with focused strategies and synergies.
+                    Learn the fundamentals of crafting powerful Commander decks with focused
+                    strategies and synergies.
                   </p>
                 </CardContent>
               </Card>
@@ -106,7 +108,8 @@ export default function CommanderCollegePage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Discover advanced techniques for improving your gameplay and making optimal decisions.
+                    Discover advanced techniques for improving your gameplay and making optimal
+                    decisions.
                   </p>
                 </CardContent>
               </Card>
@@ -118,7 +121,8 @@ export default function CommanderCollegePage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Follow a structured curriculum designed to take you from beginner to expert deck builder.
+                    Follow a structured curriculum designed to take you from beginner to expert deck
+                    builder.
                   </p>
                 </CardContent>
               </Card>

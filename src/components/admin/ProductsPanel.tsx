@@ -6,7 +6,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Trash2, Save, Package, AlertCircle } from 'lucide-react'
 
@@ -66,15 +71,13 @@ export function ProductsPanel() {
       category: null,
       is_active: true,
       sort_order: products.length,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     }
     setProducts([...products, newProduct])
   }
 
   const handleUpdateProduct = (id: string, field: keyof Product, value: any) => {
-    setProducts(products.map(p =>
-      p.id === id ? { ...p, [field]: value } : p
-    ))
+    setProducts(products.map((p) => (p.id === id ? { ...p, [field]: value } : p)))
   }
 
   const handleSaveProduct = async (product: Product) => {
@@ -82,7 +85,9 @@ export function ProductsPanel() {
     setError(null)
 
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
       if (!session) throw new Error('Not authenticated')
 
       const isNew = product.id.startsWith('temp-')
@@ -93,7 +98,7 @@ export function ProductsPanel() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`
+            Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
             key: product.key,
@@ -103,8 +108,8 @@ export function ProductsPanel() {
             image_url: product.image_url,
             category: product.category,
             is_active: product.is_active,
-            sort_order: product.sort_order
-          })
+            sort_order: product.sort_order,
+          }),
         })
 
         const data = await response.json()
@@ -120,7 +125,7 @@ export function ProductsPanel() {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`
+            Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
             id: product.id,
@@ -131,8 +136,8 @@ export function ProductsPanel() {
             image_url: product.image_url,
             category: product.category,
             is_active: product.is_active,
-            sort_order: product.sort_order
-          })
+            sort_order: product.sort_order,
+          }),
         })
 
         const data = await response.json()
@@ -154,14 +159,16 @@ export function ProductsPanel() {
     setError(null)
 
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
       if (!session) throw new Error('Not authenticated')
 
       const response = await fetch(`/api/admin/products/${id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${session.access_token}`
-        }
+          Authorization: `Bearer ${session.access_token}`,
+        },
       })
 
       const data = await response.json()
@@ -169,7 +176,7 @@ export function ProductsPanel() {
         throw new Error(data.error || 'Failed to delete product')
       }
 
-      setProducts(products.filter(p => p.id !== id))
+      setProducts(products.filter((p) => p.id !== id))
     } catch (err) {
       console.error('Delete error:', err)
       setError(err instanceof Error ? err.message : 'Failed to delete product')
@@ -257,97 +264,107 @@ export function ProductsPanel() {
               </CardHeader>
               <AccordionContent>
                 <CardContent className="space-y-4 pt-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor={`name-${product.id}`}>Product Name *</Label>
-                  <Input
-                    id={`name-${product.id}`}
-                    value={product.name}
-                    onChange={(e) => handleUpdateProduct(product.id, 'name', e.target.value)}
-                    placeholder="e.g., DefCat Playmat"
-                    className="input-tinted"
-                  />
-                </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor={`name-${product.id}`}>Product Name *</Label>
+                      <Input
+                        id={`name-${product.id}`}
+                        value={product.name}
+                        onChange={(e) => handleUpdateProduct(product.id, 'name', e.target.value)}
+                        placeholder="e.g., DefCat Playmat"
+                        className="input-tinted"
+                      />
+                    </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor={`key-${product.id}`}>Product Key</Label>
-                  <Input
-                    id={`key-${product.id}`}
-                    value={product.key}
-                    onChange={(e) => handleUpdateProduct(product.id, 'key', e.target.value)}
-                    placeholder="e.g., defcat-playmat"
-                    className="input-tinted"
-                  />
-                </div>
-              </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`key-${product.id}`}>Product Key</Label>
+                      <Input
+                        id={`key-${product.id}`}
+                        value={product.key}
+                        onChange={(e) => handleUpdateProduct(product.id, 'key', e.target.value)}
+                        placeholder="e.g., defcat-playmat"
+                        className="input-tinted"
+                      />
+                    </div>
+                  </div>
 
-              <div className="space-y-2">
-                <Label htmlFor={`link-${product.id}`}>Product Link *</Label>
-                <Input
-                  id={`link-${product.id}`}
-                  value={product.link}
-                  onChange={(e) => handleUpdateProduct(product.id, 'link', e.target.value)}
-                  placeholder="https://defcat-mtg-dzo-shop.fourthwall.com/products/..."
-                  className="input-tinted"
-                />
-              </div>
+                  <div className="space-y-2">
+                    <Label htmlFor={`link-${product.id}`}>Product Link *</Label>
+                    <Input
+                      id={`link-${product.id}`}
+                      value={product.link}
+                      onChange={(e) => handleUpdateProduct(product.id, 'link', e.target.value)}
+                      placeholder="https://defcat-mtg-dzo-shop.fourthwall.com/products/..."
+                      className="input-tinted"
+                    />
+                  </div>
 
-              <div className="space-y-2">
-                <Label htmlFor={`description-${product.id}`}>Description</Label>
-                <Textarea
-                  id={`description-${product.id}`}
-                  value={product.description || ''}
-                  onChange={(e) => handleUpdateProduct(product.id, 'description', e.target.value)}
-                  placeholder="Product description..."
-                  className="input-tinted min-h-[80px]"
-                />
-              </div>
+                  <div className="space-y-2">
+                    <Label htmlFor={`description-${product.id}`}>Description</Label>
+                    <Textarea
+                      id={`description-${product.id}`}
+                      value={product.description || ''}
+                      onChange={(e) =>
+                        handleUpdateProduct(product.id, 'description', e.target.value)
+                      }
+                      placeholder="Product description..."
+                      className="input-tinted min-h-[80px]"
+                    />
+                  </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor={`image-${product.id}`}>Image URL</Label>
-                  <Input
-                    id={`image-${product.id}`}
-                    value={product.image_url || ''}
-                    onChange={(e) => handleUpdateProduct(product.id, 'image_url', e.target.value)}
-                    placeholder="https://..."
-                    className="input-tinted"
-                  />
-                </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor={`image-${product.id}`}>Image URL</Label>
+                      <Input
+                        id={`image-${product.id}`}
+                        value={product.image_url || ''}
+                        onChange={(e) =>
+                          handleUpdateProduct(product.id, 'image_url', e.target.value)
+                        }
+                        placeholder="https://..."
+                        className="input-tinted"
+                      />
+                    </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor={`category-${product.id}`}>Category</Label>
-                  <Input
-                    id={`category-${product.id}`}
-                    value={product.category || ''}
-                    onChange={(e) => handleUpdateProduct(product.id, 'category', e.target.value)}
-                    placeholder="e.g., merchandise"
-                    className="input-tinted"
-                  />
-                </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`category-${product.id}`}>Category</Label>
+                      <Input
+                        id={`category-${product.id}`}
+                        value={product.category || ''}
+                        onChange={(e) =>
+                          handleUpdateProduct(product.id, 'category', e.target.value)
+                        }
+                        placeholder="e.g., merchandise"
+                        className="input-tinted"
+                      />
+                    </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor={`sort-${product.id}`}>Sort Order</Label>
-                  <Input
-                    id={`sort-${product.id}`}
-                    type="number"
-                    value={product.sort_order}
-                    onChange={(e) => handleUpdateProduct(product.id, 'sort_order', parseInt(e.target.value))}
-                    className="input-tinted"
-                  />
-                </div>
-              </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`sort-${product.id}`}>Sort Order</Label>
+                      <Input
+                        id={`sort-${product.id}`}
+                        type="number"
+                        value={product.sort_order}
+                        onChange={(e) =>
+                          handleUpdateProduct(product.id, 'sort_order', parseInt(e.target.value))
+                        }
+                        className="input-tinted"
+                      />
+                    </div>
+                  </div>
 
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id={`active-${product.id}`}
-                  checked={product.is_active}
-                  onChange={(e) => handleUpdateProduct(product.id, 'is_active', e.target.checked)}
-                  className="h-4 w-4"
-                />
-                <Label htmlFor={`active-${product.id}`}>Active (visible on store page)</Label>
-              </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id={`active-${product.id}`}
+                      checked={product.is_active}
+                      onChange={(e) =>
+                        handleUpdateProduct(product.id, 'is_active', e.target.checked)
+                      }
+                      className="h-4 w-4"
+                    />
+                    <Label htmlFor={`active-${product.id}`}>Active (visible on store page)</Label>
+                  </div>
                 </CardContent>
               </AccordionContent>
             </Card>

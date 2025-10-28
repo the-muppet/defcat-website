@@ -1,8 +1,8 @@
-'use client';
+'use client'
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 
 // Force dynamic rendering - don't prerender at build time
 export const dynamic = 'force-dynamic'
@@ -12,45 +12,45 @@ export const dynamic = 'force-dynamic'
  * Handles setting the session from URL hash parameters
  */
 export default function CallbackSuccessPage() {
-  const router = useRouter();
+  const router = useRouter()
 
   useEffect(() => {
     const setSession = async () => {
       // Get session data from URL hash
-      const hash = window.location.hash.substring(1);
-      const params = new URLSearchParams(hash);
+      const hash = window.location.hash.substring(1)
+      const params = new URLSearchParams(hash)
 
-      const accessToken = params.get('access_token');
-      const refreshToken = params.get('refresh_token');
+      const accessToken = params.get('access_token')
+      const refreshToken = params.get('refresh_token')
 
       if (!accessToken || !refreshToken) {
-        console.error('Missing session tokens in URL');
-        router.push('/auth/login?error=session_missing');
-        return;
+        console.error('Missing session tokens in URL')
+        router.push('/auth/login?error=session_missing')
+        return
       }
 
-      const supabase = createClient();
+      const supabase = createClient()
 
       // Set the session
       const { error } = await supabase.auth.setSession({
         access_token: accessToken,
         refresh_token: refreshToken,
-      });
+      })
 
       if (error) {
-        console.error('Failed to set session:', error);
-        router.push('/auth/login?error=session_failed');
-        return;
+        console.error('Failed to set session:', error)
+        router.push('/auth/login?error=session_failed')
+        return
       }
 
-      console.log('✓ Session set successfully');
+      console.log('✓ Session set successfully')
 
       // Redirect to decks
-      router.push('/decks');
-    };
+      router.push('/decks')
+    }
 
-    setSession();
-  }, [router]);
+    setSession()
+  }, [router])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-muted/20">
@@ -60,5 +60,5 @@ export default function CallbackSuccessPage() {
         <p className="text-muted-foreground">Please wait</p>
       </div>
     </div>
-  );
+  )
 }

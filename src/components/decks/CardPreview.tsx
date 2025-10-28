@@ -1,13 +1,49 @@
-import { useState } from "react";
-import { ManaCost } from "@/components/decks/ManaSymbols"
-import { DeckCard } from "@/types/core";
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
+/** biome-ignore-all lint/performance/noImgElement: <explanation> */
+/** biome-ignore-all lint/style/useImportType: <explanation> */
+// biome-ignore assist/source/organizeImports: <explanation>
+import { useState } from 'react'
+import { ManaCost } from '@/components/decks/ManaSymbols'
+import { DeckCard, ScryfallImageSize, cardFace } from '@/types/core'
 
+/**
+ * Construct Scryfall image URL from scryfall_id
+ * Format: https://cards.scryfall.io/{size}/{side}/{first_char}/{second_char}/{scryfall_id}.jpg
+ * Example: 373a4e3e-6244-43e8-80ac-f5508db9ce57 -> /3/7/373a4e3e-6244-43e8-80ac-f5508db9ce57.jpg
+ */
+function getScryfallImageUrl(
+  scryfallId: string,
+  size: ScryfallImageSize = 'png',
+  side: cardFace = 'front'
+): string {
+  const imgExt = size !== 'png' ? 'jpg' : 'png';
+  return `https://cards.scryfall.io/${size}/${side}/${scryfallId[0]}/${scryfallId[1]}/${scryfallId}.${imgExt}`;
+}
 
-export function CardPreview({ card, quantity }: { card: DeckCard['cards'], quantity: number }) {
-  const [isHovered, setIsHovered] = useState(false);
+/**
+ * Get card image URL - prefers cached version, falls back to Scryfall
+ */
+function getCardImageUrl(card: DeckCard['cards']): string | null {
+  // Prefer cached image
+  if (card?.cached_image_url) {
+    return card.cached_image_url
+  }
+  // Fallback to Scryfall
+  if (card?.scryfall_id) {
+    return getScryfallImageUrl(card.scryfall_id)
+  }
+
+  return null
+}
+
+export function CardPreview({ card, quantity }: { card: DeckCard['cards']; quantity: number }) {
+  const [isHovered, setIsHovered] = useState(false)
+
+  // Get the proper image URL - cached first, then Scryfall
+  const imageUrl = getCardImageUrl(card)
 
   return (
-    <div 
+    <div
       className="relative"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -27,17 +63,17 @@ export function CardPreview({ card, quantity }: { card: DeckCard['cards'], quant
       </div>
 
       {/* Card Image Preview on Hover */}
-      {isHovered && card?.image_url && (
-        <div className="absolute left-full top-0 ml-4 pointer-events-none">
+      {isHovered && imageUrl && (
+        <div className="fixed left-2 top-1/2 -translate-y-1/2 pointer-events-none z-[9999]">
           <div className="bg-card border-2 border-primary rounded-xl overflow-hidden shadow-2xl">
-            <img 
-              src={card.image_url} 
-              alt={card.name}
-              className="w-64 h-auto"
+            <img
+              src={imageUrl}
+              alt={card?.name}
+              className=""
             />
           </div>
         </div>
       )}
     </div>
-  );
+  )
 }

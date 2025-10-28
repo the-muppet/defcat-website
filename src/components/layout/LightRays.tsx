@@ -1,14 +1,14 @@
 // components/ui/LightRays.tsx
-"use client"
+'use client'
 
-import { useMemo } from "react"
+import { useMemo } from 'react'
 
 interface LightRaysProps {
   count?: number
   color?: string
 }
 
-export function LightRays({ count = 32, color = "" }: LightRaysProps) {
+export function LightRays({ count = 32, color = '' }: LightRaysProps) {
   // Generate random properties for each ray (memoized to prevent recalculation)
   const rays = useMemo(() => {
     return Array.from({ length: count }, () => ({
@@ -28,15 +28,17 @@ export function LightRays({ count = 32, color = "" }: LightRaysProps) {
           <div
             key={index}
             className="ocean-light-ray"
-            style={{
-              '--deg': ray.deg,
-              '--thickness': `${ray.thickness}px`,
-              '--length': `${ray.length}px`,
-              '--duration': `${ray.duration}s`,
-              '--delay': `${ray.delay}s`,
-              '--rotate': `${ray.rotate}deg`,
-              '--ray-color': color,
-            } as React.CSSProperties}
+            style={
+              {
+                '--deg': ray.deg,
+                '--thickness': `${ray.thickness}px`,
+                '--length': `${ray.length}px`,
+                '--duration': `${ray.duration}s`,
+                '--delay': `${ray.delay}s`,
+                '--rotate': `${ray.rotate}deg`,
+                '--ray-color': color,
+              } as React.CSSProperties
+            }
           />
         ))}
       </div>

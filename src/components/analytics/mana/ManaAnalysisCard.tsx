@@ -8,10 +8,10 @@ import type { DeckManaAnalysis } from '@/types/analysis'
 
 const colorNames: Record<string, string> = {
   W: 'White',
-  U: 'Blue', 
+  U: 'Blue',
   B: 'Black',
   R: 'Red',
-  G: 'Green'
+  G: 'Green',
 }
 
 const colorClasses: Record<string, string> = {
@@ -19,7 +19,7 @@ const colorClasses: Record<string, string> = {
   U: 'bg-blue-100 text-blue-900 dark:bg-blue-900 dark:text-blue-100',
   B: 'bg-gray-800 text-gray-100 dark:bg-gray-200 dark:text-gray-800',
   R: 'bg-red-100 text-red-900 dark:bg-red-900 dark:text-red-100',
-  G: 'bg-green-100 text-green-900 dark:bg-green-900 dark:text-green-100'
+  G: 'bg-green-100 text-green-900 dark:bg-green-900 dark:text-green-100',
 }
 
 interface ManaAnalysisCardProps {
@@ -28,24 +28,25 @@ interface ManaAnalysisCardProps {
 
 export function ManaAnalysisCard({ analysis }: ManaAnalysisCardProps) {
   const { health_score, mana_analysis } = analysis
-  
-  const gradeColor = 
-    health_score.grade.startsWith('A') ? 'bg-green-500' :
-    health_score.grade.startsWith('B') ? 'bg-blue-500' :
-    health_score.grade.startsWith('C') ? 'bg-yellow-500' :
-    'bg-red-500'
+
+  const gradeColor = health_score.grade.startsWith('A')
+    ? 'bg-green-500'
+    : health_score.grade.startsWith('B')
+      ? 'bg-blue-500'
+      : health_score.grade.startsWith('C')
+        ? 'bg-yellow-500'
+        : 'bg-red-500'
 
   return (
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Mana Base Analysis</CardTitle>
-          <Badge className={gradeColor}>
-            {health_score.grade}
-          </Badge>
+          <Badge className={gradeColor}>{health_score.grade}</Badge>
         </div>
         <div className="text-sm text-muted-foreground">
-          {health_score.total_lands} lands • {health_score.unique_mana_sources} sources • {health_score.fixing_lands} fixing
+          {health_score.total_lands} lands • {health_score.unique_mana_sources} sources •{' '}
+          {health_score.fixing_lands} fixing
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -72,11 +73,9 @@ export function ManaAnalysisCard({ analysis }: ManaAnalysisCardProps) {
                     {color.pips_required} pips • {color.sources_in_deck} sources
                   </span>
                 </div>
-                <span className="text-sm">
-                  {color.status}
-                </span>
+                <span className="text-sm">{color.status}</span>
               </div>
-              
+
               {/* Probabilities */}
               <div className="grid grid-cols-3 gap-2 text-xs">
                 <div>
@@ -95,9 +94,7 @@ export function ManaAnalysisCard({ analysis }: ManaAnalysisCardProps) {
 
               {/* Recommendation */}
               {color.status !== '✅ Optimal' && (
-                <p className="text-xs text-muted-foreground italic">
-                  {color.recommendation}
-                </p>
+                <p className="text-xs text-muted-foreground italic">{color.recommendation}</p>
               )}
             </div>
           ))}

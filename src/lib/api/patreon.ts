@@ -87,13 +87,13 @@ export async function fetchPatreonMembership(
 /**
  * Exchange OAuth code for access token
  */
-export async function exchangeCodeForToken(code: string): Promise<string> {
+export async function exchangeCodeForToken(code: string, redirectUri: string): Promise<string> {
   const params = new URLSearchParams({
     code,
     grant_type: 'authorization_code',
     client_id: process.env.PATREON_CLIENT_ID!,
     client_secret: process.env.PATREON_CLIENT_SECRET!,
-    redirect_uri: process.env.PATREON_REDIRECT_URI!,
+    redirect_uri: redirectUri,
   })
 
   const response = await fetch('https://www.patreon.com/api/oauth2/token', {

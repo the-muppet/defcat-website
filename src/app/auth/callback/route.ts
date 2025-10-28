@@ -19,8 +19,12 @@ export async function GET(request: Request) {
   }
 
   try {
+    // Determine the redirect URI that was used (must match what was sent to Patreon)
+    const isLocalhost = origin.includes('localhost') || origin.includes('127.0.0.1')
+    const redirectUri = isLocalhost ? `${origin}/auth/callback` : process.env.PATREON_REDIRECT_URI!
+
     // Exchange code for Patreon access token
-    const patreonAccessToken = await exchangeCodeForToken(code)
+    const patreonAccessToken = await exchangeCodeForToken(code, redirectUri)
 
     // Fetch user data from Patreon
     const { tier, patreonId } = await fetchPatreonMembership(patreonAccessToken)
@@ -59,24 +63,22 @@ export async function GET(request: Request) {
     })
 
     if (createError) {
-      // User already exists, fetch them from auth.users
-      console.log('User already exists, fetching from auth...')
-      const { data: existingUsers, error: listError } = await adminClient.auth.admin.listUsers()
+      // User already exists, fetch them directly by email
+      console.log('User already exists, fetching by email:', email)
 
-      if (listError) {
-        console.error('Error listing users:', listError)
-        return NextResponse.redirect(`${origin}/auth/login?error=user_lookup_failed`)
+      const { data: existingUserData, error: getUserError } =
+        await adminClient.auth.admin.getUserByEmail(email)
+
+      if (getUserError || !existingUserData?.user) {
+        console.error('Error fetching user by email:', getUserError)
+        console.error('Create error was:', createError)
+        return NextResponse.redirect(
+          `${origin}/auth/login?error=user_lookup_failed&details=${encodeURIComponent(getUserError?.message || 'User not found')}`
+        )
       }
 
-      const existingUser = existingUsers.users.find(u => u.email === email)
-
-      if (existingUser) {
-        userId = existingUser.id
-        console.log('Found existing user:', userId)
-      } else {
-        console.error('User creation error and user not found in auth:', createError)
-        return NextResponse.redirect(`${origin}/auth/login?error=user_creation_failed`)
-      }
+      userId = existingUserData.user.id
+      console.log('Found existing user:', userId)
     } else if (newUser.user) {
       userId = newUser.user.id
       console.log('Created new user:', userId)
@@ -86,16 +88,14 @@ export async function GET(request: Request) {
     }
 
     // Update/create profile with default role
-    const { error: profileError } = await adminClient
-      .from('profiles')
-      .upsert({
-        id: userId,
-        email,
-        patreon_id: patreonId,
-        patreon_tier: tier,
-        role: 'user', // Default role for new users
-        updated_at: new Date().toISOString(),
-      })
+    const { error: profileError } = await adminClient.from('profiles').upsert({
+      id: userId,
+      email,
+      patreon_id: patreonId,
+      patreon_tier: tier,
+      role: 'user', // Default role for new users
+      updated_at: new Date().toISOString(),
+    })
 
     if (profileError) {
       console.error('Profile update error:', profileError)
@@ -119,10 +119,11 @@ export async function GET(request: Request) {
       }
 
       // Try to sign in again
-      const { data: retrySignInData, error: retrySignInError } = await adminClient.auth.signInWithPassword({
-        email,
-        password: userId,
-      })
+      const { data: retrySignInData, error: retrySignInError } =
+        await adminClient.auth.signInWithPassword({
+          email,
+          password: userId,
+        })
 
       if (retrySignInError || !retrySignInData.session) {
         console.error('Sign-in retry failed:', retrySignInError)

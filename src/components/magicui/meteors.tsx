@@ -1,5 +1,5 @@
-import React, { useEffect, useState, ReactNode } from "react"
-import { cn } from "@/lib/utils"
+import React, { useEffect, useState, ReactNode } from 'react'
+import { cn } from '@/lib/utils'
 
 interface MeteorsProps {
   number?: number
@@ -22,20 +22,16 @@ export const Meteors = ({
   className,
   icons,
 }: MeteorsProps) => {
-  const [meteorStyles, setMeteorStyles] = useState<Array<React.CSSProperties>>(
-    []
-  )
+  const [meteorStyles, setMeteorStyles] = useState<Array<React.CSSProperties>>([])
 
   useEffect(() => {
     const styles = [...new Array(number)].map(() => ({
-      "--angle": -angle + "deg",
-      top: "-5%",
+      '--angle': -angle + 'deg',
+      top: '-5%',
       left: `calc(0% + ${Math.floor(Math.random() * window.innerWidth)}px)`,
-      animationDelay:
-        Math.random() * (maxDelay - minDelay) + minDelay + "s",
+      animationDelay: Math.random() * (maxDelay - minDelay) + minDelay + 's',
       animationDuration:
-        Math.floor(Math.random() * (maxDuration - minDuration) + minDuration) +
-        "s",
+        Math.floor(Math.random() * (maxDuration - minDuration) + minDuration) + 's',
     }))
     setMeteorStyles(styles)
   }, [number, minDelay, maxDelay, minDuration, maxDuration, angle])
@@ -47,7 +43,7 @@ export const Meteors = ({
           key={idx}
           style={{ ...style } as React.CSSProperties}
           className={cn(
-            "animate-meteor pointer-events-none absolute rotate-[var(--angle)]",
+            'animate-meteor pointer-events-none absolute rotate-[var(--angle)]',
             className
           )}
         >
@@ -58,10 +54,10 @@ export const Meteors = ({
               <div
                 className="relative opacity-70"
                 style={{
-                  width: "32px",
-                  height: "32px",
+                  width: '32px',
+                  height: '32px',
                   transform: `rotate(calc(-1 * var(--angle)))`,
-                  filter: "drop-shadow(0 0 8px rgba(147, 51, 234, 0.5))",
+                  filter: 'drop-shadow(0 0 8px rgba(147, 51, 234, 0.5))',
                 }}
               >
                 {icons[idx % icons.length]}
@@ -69,7 +65,7 @@ export const Meteors = ({
               {/* Trail */}
               <div
                 className="pointer-events-none absolute top-1/2 -z-10 h-[2px] w-[60px] -translate-y-1/2 bg-gradient-to-r from-purple-500/70 via-purple-500/50 to-transparent"
-                style={{ filter: "blur(1px)", right: "100%" }}
+                style={{ filter: 'blur(1px)', right: '100%' }}
               />
             </div>
           ) : (

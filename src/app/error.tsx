@@ -3,23 +3,23 @@
  * Next.js will use this to handle errors in the app
  */
 
-'use client';
+'use client'
 
-import { useEffect } from 'react';
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useEffect } from 'react'
+import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function Error({
   error,
   reset,
 }: {
-  error: Error & { digest?: string };
-  reset: () => void;
+  error: Error & { digest?: string }
+  reset: () => void
 }) {
   useEffect(() => {
-    console.error('Application error:', error);
-  }, [error]);
+    console.error('Application error:', error)
+  }, [error])
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
@@ -29,9 +29,7 @@ export default function Error({
             <AlertTriangle className="h-8 w-8 text-destructive" />
             <CardTitle className="text-2xl">Something went wrong</CardTitle>
           </div>
-          <CardDescription>
-            An unexpected error occurred. Please try again.
-          </CardDescription>
+          <CardDescription>An unexpected error occurred. Please try again.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {process.env.NODE_ENV === 'development' && (
@@ -40,9 +38,7 @@ export default function Error({
                 {error.message || error.toString()}
               </p>
               {error.digest && (
-                <p className="text-xs text-muted-foreground mt-2">
-                  Error ID: {error.digest}
-                </p>
+                <p className="text-xs text-muted-foreground mt-2">Error ID: {error.digest}</p>
               )}
             </div>
           )}
@@ -69,5 +65,5 @@ export default function Error({
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

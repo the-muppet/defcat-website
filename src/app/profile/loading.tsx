@@ -16,10 +16,7 @@ export default function ProfileLoading() {
         {/* Content sections skeleton */}
         <div className="space-y-6">
           {[1, 2].map((i) => (
-            <div
-              key={i}
-              className="glass-tinted border-tinted rounded-lg p-6 space-y-4"
-            >
+            <div key={i} className="glass-tinted border-tinted rounded-lg p-6 space-y-4">
               <div className="h-6 w-40 bg-accent-tinted rounded shimmer-tinted" />
               <div className="space-y-2">
                 <div className="h-4 w-full bg-accent-tinted rounded shimmer-tinted" />

@@ -17,7 +17,10 @@ export default function ResetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [verifying, setVerifying] = useState(true)
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
+  const [message, setMessage] = useState<{
+    type: 'success' | 'error'
+    text: string
+  } | null>(null)
   const router = useRouter()
   const supabase = createClient()
 
@@ -38,13 +41,13 @@ export default function ResetPasswordPage() {
           console.error('Token verification error:', error)
           setMessage({
             type: 'error',
-            text: 'Invalid or expired reset link. Please request a new one.'
+            text: 'Invalid or expired reset link. Please request a new one.',
           })
         }
       } else {
         setMessage({
           type: 'error',
-          text: 'No valid reset token found. Please use the link from your email.'
+          text: 'No valid reset token found. Please use the link from your email.',
         })
       }
       setVerifying(false)
@@ -62,7 +65,10 @@ export default function ResetPasswordPage() {
     }
 
     if (password.length < 8) {
-      setMessage({ type: 'error', text: 'Password must be at least 8 characters' })
+      setMessage({
+        type: 'error',
+        text: 'Password must be at least 8 characters',
+      })
       return
     }
 
@@ -71,14 +77,17 @@ export default function ResetPasswordPage() {
 
     try {
       const { error } = await supabase.auth.updateUser({
-        password: password
+        password: password,
       })
 
       if (error) {
         throw error
       }
 
-      setMessage({ type: 'success', text: 'Password updated successfully! Redirecting...' })
+      setMessage({
+        type: 'success',
+        text: 'Password updated successfully! Redirecting...',
+      })
 
       setTimeout(() => {
         router.push('/pivot/home')
@@ -87,7 +96,7 @@ export default function ResetPasswordPage() {
       console.error('Password reset error:', error)
       setMessage({
         type: 'error',
-        text: error instanceof Error ? error.message : 'Failed to reset password'
+        text: error instanceof Error ? error.message : 'Failed to reset password',
       })
     } finally {
       setLoading(false)
@@ -100,12 +109,16 @@ export default function ResetPasswordPage() {
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: 'radial-gradient(farthest-corner at 50% 0%, var(--bg-tinted) 0%, var(--background) 100%)'
+            background:
+              'radial-gradient(farthest-corner at 50% 0%, var(--bg-tinted) 0%, var(--background) 100%)',
           }}
         />
         <Card className="w-full max-w-md glass border-white/10 bg-card-tinted relative">
           <CardContent className="py-12 flex flex-col items-center justify-center">
-            <Loader2 className="h-12 w-12 animate-spin mb-4" style={{ color: 'var(--mana-color)' }} />
+            <Loader2
+              className="h-12 w-12 animate-spin mb-4"
+              style={{ color: 'var(--mana-color)' }}
+            />
             <p className="text-muted-foreground">Verifying your reset link...</p>
           </CardContent>
         </Card>
@@ -118,7 +131,8 @@ export default function ResetPasswordPage() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(farthest-corner at 50% 0%, var(--bg-tinted) 0%, var(--background) 100%)'
+          background:
+            'radial-gradient(farthest-corner at 50% 0%, var(--bg-tinted) 0%, var(--background) 100%)',
         }}
       />
 
@@ -128,25 +142,25 @@ export default function ResetPasswordPage() {
             <Lock className="h-6 w-6" style={{ color: 'var(--mana-color)' }} />
             <CardTitle className="text-2xl">Set Your Password</CardTitle>
           </div>
-          <CardDescription>
-            Choose a new password for your account
-          </CardDescription>
+          <CardDescription>Choose a new password for your account</CardDescription>
         </CardHeader>
         <CardContent>
           {message && (
-            <div className={`mb-4 p-3 rounded-lg flex items-start gap-2 ${
-              message.type === 'success'
-                ? 'bg-green-500/10 border border-green-500/20'
-                : 'bg-destructive/10 border border-destructive/20'
-            }`}>
+            <div
+              className={`mb-4 p-3 rounded-lg flex items-start gap-2 ${
+                message.type === 'success'
+                  ? 'bg-green-500/10 border border-green-500/20'
+                  : 'bg-destructive/10 border border-destructive/20'
+              }`}
+            >
               {message.type === 'success' ? (
                 <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
               ) : (
                 <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
               )}
-              <p className={`text-sm ${
-                message.type === 'success' ? 'text-green-500' : 'text-destructive'
-              }`}>
+              <p
+                className={`text-sm ${message.type === 'success' ? 'text-green-500' : 'text-destructive'}`}
+              >
                 {message.text}
               </p>
             </div>
@@ -164,9 +178,7 @@ export default function ResetPasswordPage() {
                 required
                 minLength={8}
               />
-              <p className="text-xs text-muted-foreground">
-                Must be at least 8 characters
-              </p>
+              <p className="text-xs text-muted-foreground">Must be at least 8 characters</p>
             </div>
 
             <div className="space-y-2">

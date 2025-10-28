@@ -6,10 +6,7 @@ export const dynamic = 'force-dynamic'
 
 // Helper to create Supabase client at runtime
 function getSupabaseClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 }
 
 export async function POST(request: NextRequest) {
@@ -18,10 +15,7 @@ export async function POST(request: NextRequest) {
     // Verify user is developer
     const authHeader = request.headers.get('authorization')
     if (!authHeader) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     const browserSupabase = createClient(
@@ -29,15 +23,13 @@ export async function POST(request: NextRequest) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     )
 
-    const { data: { user }, error: userError } = await browserSupabase.auth.getUser(
-      authHeader.replace('Bearer ', '')
-    )
+    const {
+      data: { user },
+      error: userError,
+    } = await browserSupabase.auth.getUser(authHeader.replace('Bearer ', ''))
 
     if (userError || !user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     // Check if user is developer
@@ -70,14 +62,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `Tier reset to ${defaultTier}`
+      message: `Tier reset to ${defaultTier}`,
     })
   } catch (error) {
     console.error('Failed to reset tier:', error)
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to reset tier'
+        error: error instanceof Error ? error.message : 'Failed to reset tier',
       },
       { status: 500 }
     )

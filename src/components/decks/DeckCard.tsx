@@ -1,13 +1,13 @@
 // components/deck/DeckCard.tsx
-"use client"
+'use client'
 
-import { memo } from "react"
-import Link from "next/link"
-import type { Database } from "@/types/supabase"
-import { ManaSymbols } from "@/components/decks/ManaSymbols"
-import { CommanderImage } from "@/components/decks/Commander"
-import { ExternalLink, Eye, Heart } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { memo } from 'react'
+import Link from 'next/link'
+import type { Database } from '@/types/supabase'
+import { ManaSymbols } from '@/components/decks/ManaSymbols'
+import { CommanderImage } from '@/components/decks/Commander'
+import { ExternalLink, Eye, Heart } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 type Deck = Database['public']['Tables']['decks']['Row']
 
@@ -17,21 +17,23 @@ interface DeckCardProps {
   variant?: 'default' | 'compact' | 'featured'
 }
 
-export const DeckCard = memo(function DeckCard({ 
-  deck, 
+export const DeckCard = memo(function DeckCard({
+  deck,
   className,
-  variant = 'default'
+  variant = 'default',
 }: DeckCardProps) {
-  const formattedDate = new Date(deck?.updated_at || Date.now()).toISOString().split("T")[0]
-  
+  const formattedDate = new Date(deck?.updated_at || Date.now()).toISOString().split('T')[0]
+
   if (variant === 'compact') {
     return (
       <Link href={`/decks/${deck.id}`}>
-        <div className={cn(
-          "group card-tinted-glass hover-tinted rounded-xl p-4 transition-all duration-300",
-          "hover:shadow-tinted-glow hover:scale-[1.01] cursor-pointer",
-          className
-        )}>
+        <div
+          className={cn(
+            'group card-tinted-glass hover-tinted rounded-xl p-4 transition-all duration-300',
+            'hover:shadow-tinted-glow hover:scale-[1.01] cursor-pointer',
+            className
+          )}
+        >
           <div className="flex items-start justify-between mb-3">
             <h3 className="font-semibold text-lg line-clamp-1 group-hover:text-tinted transition-colors">
               {deck.name}
@@ -41,7 +43,7 @@ export const DeckCard = memo(function DeckCard({
                 mana={deck.color_identity}
                 size="sm"
                 shadow
-                className="opacity-80 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                className="group-hover:opacity-100 transition-opacity flex-shrink-0"
               />
             )}
           </div>
@@ -71,41 +73,38 @@ export const DeckCard = memo(function DeckCard({
       </Link>
     )
   }
-  
+
   return (
-    <div className={cn(
-      "group relative overflow-hidden rounded-2xl",
-      "card-tinted-glass shadow-tinted-lg",
-      "p-6 transition-all duration-300",
-      "hover:scale-[1.02] hover:shadow-tinted-xl",
-      variant === 'featured' && "shimmer-tinted",
-      className
-    )}>
+    <div
+      className={cn(
+        'group relative overflow-hidden rounded-2xl',
+        'card-tinted-glass shadow-tinted-lg',
+        'p-6 transition-all duration-300',
+        'hover:scale-[1.02] hover:shadow-tinted-xl',
+        variant === 'featured' && 'shimmer-tinted',
+        className
+      )}
+    >
       <div className="relative flex gap-6">
-        {/* Commander Image with Scryfall Art */}
+        {/* Commander Image */}
         <div className="flex-shrink-0">
-          <div className={cn(
-            "relative h-80 w-56 overflow-hidden rounded-xl",
-            "border-2 border-tinted shadow-tinted-lg",
-            "group-hover:shadow-tinted-glow transition-all duration-300"
-          )}>
-            <CommanderImage 
-              commanders={deck.commanders || []}
-              className="h-full w-full"
-            />
-            
+          <div
+            className={cn(
+              'relative h-80 w-56 overflow-hidden rounded-xl',
+              'border-2 border-tinted shadow-tinted-lg',
+              'group-hover:shadow-tinted-glow transition-all duration-300'
+            )}
+          >
+            <CommanderImage commanders={deck.commanders || []} className="h-full w-full" />
+
             {/* Color Identity Indicators */}
             {deck.color_identity && deck.color_identity.length > 0 && (
               <div className="absolute left-2 top-2 drop-shadow-lg">
-                <ManaSymbols 
-                  mana={deck.color_identity} 
-                  size="2x"
-                  shadow
-                />
+                <ManaSymbols mana={deck.color_identity} size="2x" shadow />
               </div>
             )}
 
-            {/* Commander Name Overlay - using glass-tinted */}
+            {/* Commander Name Overlay */}
             {deck.commanders && deck.commanders.length > 0 && (
               <div className="absolute inset-x-0 bottom-0 p-3 glass-tinted-strong">
                 <div className="text-xs font-medium text-white line-clamp-2">
@@ -121,9 +120,7 @@ export const DeckCard = memo(function DeckCard({
           {/* Header */}
           <div className="mb-4">
             <div className="mb-2 flex items-start justify-between gap-4">
-              <h2 className="text-3xl font-bold gradient-tinted-text">
-                {deck.name}
-              </h2>
+              <h2 className="text-3xl font-bold">{deck.name}</h2>
               {deck.format && (
                 <span className="badge-tinted-primary px-4 py-1 rounded-full text-sm font-semibold uppercase tracking-wider">
                   {deck.format}
@@ -135,10 +132,7 @@ export const DeckCard = memo(function DeckCard({
             {deck.commanders && deck.commanders.length > 0 && (
               <div className="mb-3 flex flex-wrap gap-2">
                 {deck.commanders.map((commander, idx) => (
-                  <span
-                    key={idx}
-                    className="badge-tinted px-3 py-1 rounded-lg text-sm"
-                  >
+                  <span key={idx} className="badge-tinted px-3 py-1 rounded-lg text-sm">
                     {commander}
                   </span>
                 ))}
@@ -171,13 +165,14 @@ export const DeckCard = memo(function DeckCard({
           <div className="flex items-center justify-between border-t border-tinted pt-4">
             <span className="text-sm text-muted-foreground">{formattedDate}</span>
             {deck.moxfield_url && (
-              <a href={deck.moxfield_url}
+              <a
+                href={deck.moxfield_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={cn(
-                  "group/link flex items-center gap-2 rounded-lg px-4 py-2",
-                  "btn-tinted text-sm font-medium",
-                  "transition-all duration-300"
+                  'group/link flex items-center gap-2 rounded-lg px-4 py-2',
+                  'btn-tinted text-sm font-medium',
+                  'transition-all duration-300'
                 )}
               >
                 View on Moxfield
@@ -187,7 +182,7 @@ export const DeckCard = memo(function DeckCard({
           </div>
         </div>
       </div>
-      
+
       {/* Optional featured indicator */}
       {variant === 'featured' && (
         <div className="absolute top-4 right-4">

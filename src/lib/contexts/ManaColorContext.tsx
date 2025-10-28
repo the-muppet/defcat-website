@@ -1,8 +1,7 @@
-// lib/contexts/ManaColorContext.tsx
-"use client"
-
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { ManaSymbol } from '@/lib/utility/svg-mask'
+'use client'
+// biome-ignore assist/source/organizeImports: <explanation>
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { ManaSymbol, ManaColor } from '@/types/colors'
 
 interface ManaColorContextType {
   selectedMana: ManaSymbol
@@ -20,8 +19,7 @@ export function ManaColorProvider({ children }: { children: ReactNode }) {
       setSelectedManaState(saved as ManaSymbol)
       applyManaColor(saved as ManaSymbol)
     } else {
-      // Apply default color on mount
-      applyManaColor(ManaSymbol.GREEN)
+      applyManaColor(ManaSymbol.COLORLESS)
     }
   }, [])
 
@@ -48,13 +46,13 @@ export function useManaColor() {
 
 // Apply mana color to CSS variables with consistent colorization
 function applyManaColor(mana: ManaSymbol) {
-  // Use OKLCH for consistent color space
-  const colors = {
-    [ManaSymbol.RED]: 'oklch(0.35 0.40 50)',
-    [ManaSymbol.BLUE]: 'oklch(0.35 0.40 270)',
-    [ManaSymbol.GREEN]: 'oklch(0.40 0.40 150)',
-    [ManaSymbol.WHITE]: 'oklch(0.90 0.40 100)',
-    [ManaSymbol.BLACK]: 'oklch(0.25 0.40 335)',
+  const colors: Record<ManaSymbol, string> = {
+    [ManaSymbol.WHITE]: ManaColor.WHITE,
+    [ManaSymbol.BLUE]: ManaColor.BLUE,
+    [ManaSymbol.BLACK]: ManaColor.BLACK,
+    [ManaSymbol.RED]: ManaColor.RED,
+    [ManaSymbol.GREEN]: ManaColor.GREEN,
+    [ManaSymbol.COLORLESS]: ManaColor.COLORLESS,
   }
 
   const root = document.documentElement

@@ -22,10 +22,7 @@ interface UserMenuProps {
  * Displays user info and logout option
  */
 export function UserMenu({ user }: UserMenuProps) {
-  const initials = user.email
-    .split('@')[0]
-    .slice(0, 2)
-    .toUpperCase()
+  const initials = user.email.split('@')[0].slice(0, 2).toUpperCase()
 
   return (
     <DropdownMenu>

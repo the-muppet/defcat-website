@@ -1,15 +1,6 @@
-/**
- * Core type definitions for the cEDH Decklist Database
- */
 
 // Database Types
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 // User & Auth Types
 export interface User {
@@ -22,16 +13,34 @@ export interface User {
 }
 
 export interface Profile {
-  patreon_id: string;
-  patreon_tier: string;
+  patreon_id: string
+  patreon_tier: string
   role: UserRole
+}
+
+export interface UserCredits {
+  id: string
+  user_id: string
+  patreon_tier: string
+  deck_credits: number
+  roast_credits: number
+  credits_month: string
+  created_at: string
+  updated_at: string
 }
 
 export type PatreonTier = 'Citizen' | 'Knight' | 'Emissary' | 'Duke' | 'Wizard' | 'ArchMage'
 
-export const PATREON_TIERS: PatreonTier[] = ['Citizen', 'Knight', 'Emissary', 'Duke', 'Wizard', 'ArchMage']
+export const PATREON_TIERS: PatreonTier[] = [
+  'Citizen',
+  'Knight',
+  'Emissary',
+  'Duke',
+  'Wizard',
+  'ArchMage',
+]
 
-export type UserRole = 'anon' | 'user' | 'admin' | 'moderator' | 'developer'
+export type UserRole = 'user' | 'member' | 'admin' | 'moderator' | 'developer'
 
 export interface Session {
   user: User
@@ -57,11 +66,9 @@ export interface Deck {
   updated_at?: string | null
 }
 
-export type ManaColor = 'W' | 'U' | 'B' | 'R' | 'G'
-
 export interface DeckFilters {
   commanders?: string[]
-  colors?: ManaColor[]
+  colors?: string[]
   archetype?: string
   search?: string
 }
@@ -113,76 +120,34 @@ export interface ApiError {
 }
 
 export interface DeckCard {
-  quantity: number;
-  board_type: string;
+  quantity: number
+  board: string
   cards: {
-    name: string;
-    mana_cost: string | null;
-    type_line: string | null;
-    cmc: number | null;
-    image_url: string | null;
-  } | null;
-}
-
-
-export type ColorMapping = {
-  name: string
-  className: string
-  individual: string[] // For fallback rendering
-}
-
-export const COLOR_MAPPINGS: Record<string, ColorMapping> = {
-  // Mono-color
-  'W': { name: 'White', className: 'ms ms-w', individual: ['W'] },
-  'U': { name: 'Blue', className: 'ms ms-u', individual: ['U'] },
-  'B': { name: 'Black', className: 'ms ms-b', individual: ['B'] },
-  'R': { name: 'Red', className: 'ms ms-r', individual: ['R'] },
-  'G': { name: 'Green', className: 'ms ms-g', individual: ['G'] },
-  'C': { name: 'Colorless', className: 'ms ms-c', individual: ['C'] },
-  
-  // 2-color guilds
-  'WU': { name: 'Azorius', className: 'ms ms-guild-azorius', individual: ['W', 'U'] },
-  'WB': { name: 'Orzhov', className: 'ms ms-guild-orzhov', individual: ['W', 'B'] },
-  'UB': { name: 'Dimir', className: 'ms ms-guild-dimir', individual: ['U', 'B'] },
-  'UR': { name: 'Izzet', className: 'ms ms-guild-izzet', individual: ['U', 'R'] },
-  'BR': { name: 'Rakdos', className: 'ms ms-guild-rakdos', individual: ['B', 'R'] },
-  'BG': { name: 'Golgari', className: 'ms ms-guild-golgari', individual: ['B', 'G'] },
-  'RG': { name: 'Gruul', className: 'ms ms-guild-gruul', individual: ['R', 'G'] },
-  'RW': { name: 'Boros', className: 'ms ms-guild-boros', individual: ['R', 'W'] },
-  'GW': { name: 'Selesnya', className: 'ms ms-guild-selesnya', individual: ['G', 'W'] },
-  'GU': { name: 'Simic', className: 'ms ms-guild-simic', individual: ['G', 'U'] },
-  
-  // 3-color shards
-  'WUB': { name: 'Esper', className: 'ms ms-ci-ubw', individual: ['W', 'U', 'B'] },
-  'UBR': { name: 'Grixis', className: 'ms-clan-grixis', individual: ['U', 'B', 'R'] },
-  'BRG': { name: 'Jund', className: 'ms-clan-jund', individual: ['B', 'R', 'G'] },
-  'RGW': { name: 'Naya', className: 'ms-clan-naya', individual: ['R', 'G', 'W'] },
-  'GWU': { name: 'Bant', className: 'ms-clan-bant', individual: ['G', 'W', 'U'] },
-  
-  // 3-color wedges
-  'WBG': { name: 'Abzan', className: 'ms ms-clan-abzan', individual: ['W', 'B', 'G'] },
-  'URW': { name: 'Jeskai', className: 'ms ms-clan-jeskai', individual: ['U', 'R', 'W'] },
-  'BRW': { name: 'Mardu', className: 'ms ms-clan-mardu', individual: ['B', 'R', 'W'] },
-  'GUB': { name: 'Sultai', className: 'ms ms-clan-sultai', individual: ['G', 'U', 'B'] },
-  'RGU': { name: 'Temur', className: 'ms ms-clan-temur', individual: ['R', 'G', 'U'] },
-  
-  // 4-color
-  'UBRG': { name: 'No White', className: 'ms ms-ci-ubrg', individual: ['U', 'B', 'R', 'G'] },
-  'BRGW': { name: 'No Blue', className: 'ms ms-ci-brgw', individual: ['B', 'R', 'G', 'W'] },
-  'RGWU': { name: 'No Black', className: 'ms-ci-rgwu', individual: ['R', 'G', 'W', 'U'] },
-  'GWUB': { name: 'No Red', className: 'ms-ci-gwub', individual: ['G', 'W', 'U', 'B'] },
-  'WUBR': { name: 'No Green', className: 'ms ms-ci-wubr', individual: ['W', 'U', 'B', 'R'] },
-  
-  // 5-color
-  'WUBRG': { name: 'Five Color', className: 'ms ms-watermark-colorpie', individual: ['W', 'U', 'B', 'R', 'G'] },
+    name: string
+    mana_cost: string | null
+    type_line: string | null
+    cmc: number | null
+    image_url: string | null
+    scryfall_id: string | null
+    cached_image_url: string | null
+  } | null
 }
 
 export const bracketOptions = [
-    { value: 'bracket1', label: 'Bracket 1', description: 'Casual, precon level' },
-    { value: 'bracket2', label: 'Bracket 2', description: 'Focused casual' },
-    { value: 'bracket3', label: 'Bracket 3', description: 'Optimized casual' },
-    { value: 'bracket4', label: 'Bracket 4', description: 'High power' },
-    { value: 'bracket5', label: 'Bracket 5', description: 'Fringe competitive' },
-    { value: 'cedh', label: 'cEDH', description: 'Perfect tournament optimized deck' },
-    { value: 'wild', label: 'GO WILD', description: "I DON'T CARE GO FOR IT DEFCAT" },
-];
+  { value: 'bracket1', label: 'Bracket 1', description: 'Casual, precon level' },
+  { value: 'bracket2', label: 'Bracket 2', description: 'Focused casual' },
+  { value: 'bracket3', label: 'Bracket 3', description: 'Optimized casual' },
+  { value: 'bracket4', label: 'Bracket 4', description: 'High power' },
+  { value: 'bracket5', label: 'Bracket 5', description: 'Fringe competitive' },
+  { value: 'cedh', label: 'cEDH', description: 'Perfect tournament optimized deck' },
+  { value: 'wild', label: 'GO WILD', description: "I DON'T CARE GO FOR IT DEFCAT" }
+]
+
+export type ScryfallImageSize =
+    |'png'
+    |'art'
+    |'lg' 
+    |'md' 
+    |'sm' 
+
+export type cardFace = 'front' | 'back'

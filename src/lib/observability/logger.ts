@@ -47,14 +47,16 @@ class Logger {
   }
 
   error(message: string, error?: Error, ctx?: LogContext) {
-    const errorCtx = error ? {
-      error: {
-        name: error.name,
-        message: error.message,
-        stack: error.stack,
-      },
-      ...ctx,
-    } : ctx
+    const errorCtx = error
+      ? {
+          error: {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+          },
+          ...ctx,
+        }
+      : ctx
 
     console.error(this.formatLog('error', message, errorCtx))
   }

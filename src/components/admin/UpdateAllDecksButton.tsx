@@ -1,54 +1,57 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { RefreshCw, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { RefreshCw, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 export function UpdateAllDecksButton() {
-  const [updating, setUpdating] = useState(false);
+  const [updating, setUpdating] = useState(false)
 
   const handleUpdateAll = async () => {
-    setUpdating(true);
+    setUpdating(true)
 
     try {
-      const response = await fetch('https://zrcawujydeevzdhlwpin.supabase.co/functions/v1/sync-bookmark', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          bookmarkId: 'xpGzQ',
-          forceRescrape: true
-        })
-      });
+      const response = await fetch(
+        'https://paerhoqoypdezkqhzimk.supabase.co/functions/v1/sync-bookmark',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            bookmarkId: 'xpGzQ',
+            forceRescrape: true,
+          }),
+        }
+      )
 
       if (!response.ok) {
-        throw new Error('Failed to trigger update');
+        throw new Error('Failed to trigger update')
       }
 
-      const result = await response.json();
+      const result = await response.json()
 
       toast.success('Update started successfully!', {
         description: 'All decks are being rescraped from Moxfield. This may take several minutes.',
         duration: 5000,
-      });
+      })
 
       // Reload the page after a delay to show updated decks
       setTimeout(() => {
-        window.location.reload();
-      }, 5000);
+        window.location.reload()
+      }, 5000)
     } catch (error) {
-      console.error('Update error:', error);
+      console.error('Update error:', error)
       toast.error('Failed to start update', {
         description: error instanceof Error ? error.message : 'An unknown error occurred',
         duration: 5000,
-      });
+      })
     } finally {
-      setUpdating(false);
+      setUpdating(false)
     }
-  };
+  }
 
   return (
     <TooltipProvider>
@@ -78,5 +81,5 @@ export function UpdateAllDecksButton() {
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-  );
+  )
 }

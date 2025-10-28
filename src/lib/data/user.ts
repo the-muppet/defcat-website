@@ -6,7 +6,10 @@ import type { PatreonTier } from '@/types/core'
 export async function getCurrentUser() {
   const supabase = await createClient()
 
-  const { data: { user }, error } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
 
   if (error || !user) {
     return null
@@ -45,6 +48,6 @@ export async function getUserWithProfile() {
     ...user,
     profile,
     tier: (profile?.patreon_tier as PatreonTier) || 'Citizen',
-    role: profile?.role || 'user'
+    role: profile?.role || 'user',
   }
 }

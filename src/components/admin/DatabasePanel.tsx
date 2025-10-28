@@ -20,7 +20,7 @@ export function DatabasePanel() {
     { name: 'Profiles', table: 'profiles' },
     { name: 'Decks', table: 'decks' },
     { name: 'Deck Submissions', table: 'deck_submissions' },
-    { name: 'Cards', table: 'cards' }
+    { name: 'Cards', table: 'cards' },
   ]
 
   const handleExecuteQuery = async () => {
@@ -34,7 +34,9 @@ export function DatabasePanel() {
     setResult(null)
 
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
       if (!session) {
         throw new Error('Not authenticated')
       }
@@ -43,9 +45,9 @@ export function DatabasePanel() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
+          Authorization: `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({ query })
+        body: JSON.stringify({ query }),
       })
 
       const data = await response.json()
@@ -73,9 +75,7 @@ export function DatabasePanel() {
               <Table className="h-4 w-4" />
               Quick Queries
             </CardTitle>
-            <CardDescription className="text-xs">
-              Click to load query
-            </CardDescription>
+            <CardDescription className="text-xs">Click to load query</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
             {quickTables.map((t) => (
@@ -99,9 +99,7 @@ export function DatabasePanel() {
               <Database className="h-4 w-4" />
               Query Editor
             </CardTitle>
-            <CardDescription>
-              Execute SQL queries directly on the database
-            </CardDescription>
+            <CardDescription>Execute SQL queries directly on the database</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -151,9 +149,7 @@ export function DatabasePanel() {
               <div className="p-4 bg-green-500/10 border border-green-500 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
                   <CheckCircle2 className="h-5 w-5 text-green-500" />
-                  <p className="text-sm font-medium text-green-500">
-                    Query executed successfully
-                  </p>
+                  <p className="text-sm font-medium text-green-500">Query executed successfully</p>
                 </div>
                 {result.rowCount !== undefined && (
                   <p className="text-xs text-muted-foreground mb-2">

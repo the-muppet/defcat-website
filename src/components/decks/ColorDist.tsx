@@ -1,161 +1,171 @@
-import { useState } from "react";
+// components/deck/ColorDistribution.tsx
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
+'use client'
 
+// biome-ignore assist/source/organizeImports: <explanation>
+import { useState } from 'react'
+import { ColorIdentity, extractColorsFromManaCost, getColorInfo } from '@/types/colors'
+import { cn } from '@/lib/utils'
 
 interface DeckCard {
-    quantity: number;
-    board_type: string;
-    cards: {
-        name: string;
-        mana_cost: string | null;
-        type_line: string | null;
-        cmc: number | null;
-        image_url: string | null;
-    } | null;
+  quantity: number
+  board: string
+  cards: {
+    name: string
+    mana_cost: string | null | undefined
+    type_line: string | null
+    cmc: number | null
+    image_url: string | null
+    scryfall_id: string | null
+  } | null
 }
 
-export function ColorDistribution({ cards }: { cards: DeckCard[] }) {
-    const [hoveredColor, setHoveredColor] = useState<string | null>(null);
+export function ColorDistribution({ cards, selectedType }: { cards: DeckCard[], selectedType?: string | null }) {
+  const [hoveredColor, setHoveredColor] = useState<string | null>(null)
+  const [hoveredCombo, setHoveredCombo] = useState<string | null>(null)
 
-    // Calculate color distribution based on mana costs
-    const colorCounts = cards.reduce((acc, dc) => {
-        const manaCost = dc.cards?.mana_cost || '';
-        const quantity = dc.quantity;
+  // Filter by selected type if provided
+  const filteredCards = selectedType
+    ? cards.filter((dc) => dc.cards?.type_line?.includes(selectedType))
+    : cards
 
-        // Count each color symbol
-        if (manaCost.includes('{W}')) acc.W = (acc.W || 0) + quantity;
-        if (manaCost.includes('{U}')) acc.U = (acc.U || 0) + quantity;
-        if (manaCost.includes('{B}')) acc.B = (acc.B || 0) + quantity;
-        if (manaCost.includes('{R}')) acc.R = (acc.R || 0) + quantity;
-        if (manaCost.includes('{G}')) acc.G = (acc.G || 0) + quantity;
-        if (!manaCost || manaCost === '' || /^{\d+}$/.test(manaCost)) {
-            acc.C = (acc.C || 0) + quantity; // Colorless
-        }
+  // Calculate color distribution based on mana costs (symbol count)
+  const colorCounts = filteredCards.reduce(
+    (acc, dc) => {
+      const manaCost = dc.cards?.mana_cost || ''
+      const quantity = dc.quantity
 
-        return acc;
-    }, {} as Record<string, number>);
+      // Count each color symbol
+      if (manaCost.includes('{W}')) acc.W = (acc.W || 0) + quantity
+      if (manaCost.includes('{U}')) acc.U = (acc.U || 0) + quantity
+      if (manaCost.includes('{B}')) acc.B = (acc.B || 0) + quantity
+      if (manaCost.includes('{R}')) acc.R = (acc.R || 0) + quantity
+      if (manaCost.includes('{G}')) acc.G = (acc.G || 0) + quantity
+      if (!manaCost || manaCost === '' || /^{\d+}$/.test(manaCost)) {
+        acc.C = (acc.C || 0) + quantity // Colorless
+      }
 
-    const colorInfo: Record<string, { name: string; gradient: string; glow: string; icon: string }> = {
-        W: { name: 'White', gradient: 'url(#gradient-w)', glow: '#fef3c7', icon: 'w' },
-        U: { name: 'Blue', gradient: 'url(#gradient-u)', glow: '#93c5fd', icon: 'u' },
-        B: { name: 'Black', gradient: 'url(#gradient-b)', glow: '#6b7280', icon: 'b' },
-        R: { name: 'Red', gradient: 'url(#gradient-r)', glow: '#fca5a5', icon: 'r' },
-        G: { name: 'Green', gradient: 'url(#gradient-g)', glow: '#86efac', icon: 'g' },
-        C: { name: 'Colorless', gradient: 'url(#gradient-c)', glow: '#d1d5db', icon: 'c' },
-    };
+      return acc
+    },
+    {} as Record<string, number>
+  )
 
-    const totalSymbols = Object.values(colorCounts).reduce((a, b) => a + b, 0);
+  // Calculate color combo distribution
+  const colorCombos = filteredCards.reduce(
+    (acc, dc) => {
+      const colors = extractColorsFromManaCost(dc.cards?.mana_cost)
+      const colorKey = ColorIdentity.normalize(colors)
+      acc[colorKey] = (acc[colorKey] || 0) + dc.quantity
+      return acc
+    },
+    {} as Record<string, number>
+  )
 
-    if (totalSymbols === 0) {
-        return (
-            <div className="text-center py-8 text-muted-foreground">
-                No color data available
-            </div>
-        );
-    }
+  const totalSymbols = Object.values(colorCounts).reduce((a, b) => a + b, 0)
+  const totalCards = filteredCards.reduce((sum, dc) => sum + dc.quantity, 0)
 
-    const sortedColors = Object.entries(colorCounts).sort(([, a], [, b]) => b - a);
+  if (totalSymbols === 0) {
+    return <div className="text-center py-8 text-muted-foreground">No color data available</div>
+  }
 
-    const colorStyles: Record<string, string> = {
-        W: '#fbbf24',
-        U: '#3b82f6',
-        B: '#6b7280',
-        R: '#ef4444',
-        G: '#22c55e',
-        C: '#9ca3af',
-    };
+  const sortedColors = Object.entries(colorCounts).sort(([a], [b]) =>
+    ColorIdentity.ORDER.indexOf(a) - ColorIdentity.ORDER.indexOf(b)
+  )
 
-    return (
-        <div className="space-y-4">
-            {/* Stacked Bar Chart */}
-            <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span>Color Distribution</span>
-                    <span className="font-medium">{totalSymbols} symbols</span>
-                </div>
+  const sortedCombos = Object.entries(colorCombos).sort(([a], [b]) => 
+    ColorIdentity.compare(a, b)
+  )
 
-                <div className="relative h-12 bg-accent/30 rounded-lg overflow-hidden border border-border">
-                    <div className="flex h-full">
-                        {sortedColors.map(([color, count]) => {
-                            const percentage = (count / totalSymbols) * 100;
-                            const isHovered = hoveredColor === color;
-
-                            return (
-                                <div
-                                    key={color}
-                                    className="relative transition-all duration-200 ease-out cursor-pointer"
-                                    style={{
-                                        width: `${percentage}%`,
-                                        backgroundColor: colorStyles[color],
-                                        opacity: hoveredColor && !isHovered ? 0.4 : 1,
-                                        transform: isHovered ? 'scaleY(1.1)' : 'scaleY(1)',
-                                    }}
-                                    onMouseEnter={() => setHoveredColor(color)}
-                                    onMouseLeave={() => setHoveredColor(null)}
-                                >
-                                    {/* Tooltip on hover */}
-                                    {isHovered && (
-                                        <div className="absolute left-1/2 -translate-x-1/2 -top-14 bg-popover text-popover-foreground px-3 py-2 rounded-md text-sm font-medium shadow-lg border whitespace-nowrap">
-                                            <div className="flex items-center gap-2">
-                                                <i className={`ms ms-${colorInfo[color].icon} ms-cost ms-shadow text-lg`} />
-                                                <span>{colorInfo[color].name}: {count} ({percentage.toFixed(1)}%)</span>
-                                            </div>
-                                            <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-popover" />
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            </div>
-
-            {/* Simple Legend */}
-            <div className="space-y-1.5">
-                {sortedColors.map(([color, count]) => {
-                    const percentage = ((count / totalSymbols) * 100).toFixed(1);
-                    const info = colorInfo[color];
-                    const isHovered = hoveredColor === color;
-
-                    return (
-                        <div
-                            key={color}
-                            className="relative group"
-                            onMouseEnter={() => setHoveredColor(color)}
-                            onMouseLeave={() => setHoveredColor(null)}
-                        >
-                            <div className={`
-                                flex items-center justify-between p-3 rounded-lg border cursor-pointer
-                                transition-all duration-150 ease-out
-                                ${isHovered
-                                    ? 'bg-accent border-border shadow-md'
-                                    : 'bg-card border-border/50 hover:bg-accent/50'
-                                }
-                            `}>
-                                <div className="flex items-center gap-3">
-                                    <i className={`ms ms-${info.icon} ms-cost ms-shadow text-2xl`} />
-                                    <span className="font-medium text-sm">{info.name}</span>
-                                </div>
-
-                                <div className="flex items-center gap-3">
-                                    <span className="font-bold tabular-nums">{count}</span>
-                                    <span className="text-sm text-muted-foreground tabular-nums min-w-[3.5rem] text-right">
-                                        {percentage}%
-                                    </span>
-                                </div>
-                            </div>
-
-                            {/* Tooltip on hover */}
-                            {isHovered && (
-                                <div className="absolute left-1/2 -translate-x-1/2 -top-10 bg-popover text-popover-foreground px-3 py-1.5 rounded-md text-sm font-medium shadow-lg border whitespace-nowrap">
-                                    {count} {info.name} symbols ({percentage}%)
-                                    <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-popover" />
-                                </div>
-                            )}
-                        </div>
-                    );
-                })}
-            </div>
-
+  return (
+    <div className="space-y-4">
+      {/* Stacked Bar Chart - Symbol Distribution */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <span>Mana Symbols</span>
+          <span className="font-medium">{totalSymbols}</span>
         </div>
-    );
+
+        <div className="relative h-12 bg-accent/30 rounded-lg overflow-hidden border border-border">
+          <div className="flex h-full">
+            {sortedColors.map(([colorLetter, count]) => {
+              const percentage = (count / totalSymbols) * 100
+              const isHovered = hoveredColor === colorLetter
+              const colorInfo = getColorInfo(colorLetter)
+
+              return (
+                <div
+                  key={colorLetter}
+                  className="relative transition-all duration-200 ease-out cursor-pointer"
+                  style={{
+                    width: `${percentage}%`,
+                    backgroundColor: colorInfo.color,
+                    opacity: hoveredColor && !isHovered ? 0.4 : 1,
+                    transform: isHovered ? 'scaleY(1.1)' : 'scaleY(1)',
+                  }}
+                  onMouseEnter={() => setHoveredColor(colorLetter)}
+                  onMouseLeave={() => setHoveredColor(null)}
+                >
+                  {/* Tooltip on hover */}
+                  {isHovered && (
+                    <div className="absolute left-1/2 -translate-x-1/2 -top-14 bg-popover text-popover-foreground px-3 py-2 rounded-md text-sm font-medium shadow-lg border whitespace-nowrap z-10">
+                      <div className="flex items-center gap-2">
+                        <i className={colorInfo.className} />
+                        <span>: {count} ({percentage.toFixed(1)}%)</span>
+                      </div>
+                      <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-popover" />
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Color Combinations Breakdown */}
+      <div className="space-y-3 pt-2 border-t border-border">
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <span>Cards by Color</span>
+          <span className="font-medium">{totalCards}</span>
+        </div>
+
+        <div className="space-y-1.5">
+          {sortedCombos.map(([combo, count]) => {
+            const percentage = ((count / totalCards) * 100).toFixed(1)
+            const isHovered = hoveredCombo === combo
+
+            return (
+              <div
+                key={combo}
+                className="relative group"
+                onMouseEnter={() => setHoveredCombo(combo)}
+                onMouseLeave={() => setHoveredCombo(null)}
+              >
+                <div
+                  className={cn(
+                    'flex items-center justify-between p-2 rounded-lg border cursor-pointer',
+                    'transition-all duration-150 ease-out',
+                    isHovered
+                      ? 'bg-accent border-border shadow-md'
+                      : 'bg-card border-border/50 hover:bg-accent/50'
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <i className={ColorIdentity.getClassName(combo)} />
+                    <span className="font-large">{ColorIdentity.getLabel(combo)}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-bold tabular-nums text-sm">{count}</span>
+                    <span className="text-xs text-muted-foreground tabular-nums min-w-[3rem] text-right">
+                      {percentage}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
 }

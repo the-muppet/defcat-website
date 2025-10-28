@@ -18,10 +18,7 @@ export async function POST(request: NextRequest) {
     // Verify user is admin
     const authHeader = request.headers.get('authorization')
     if (!authHeader) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get user from browser client to verify role
@@ -30,15 +27,13 @@ export async function POST(request: NextRequest) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     )
 
-    const { data: { user }, error: userError } = await browserSupabase.auth.getUser(
-      authHeader.replace('Bearer ', '')
-    )
+    const {
+      data: { user },
+      error: userError,
+    } = await browserSupabase.auth.getUser(authHeader.replace('Bearer ', ''))
 
     if (userError || !user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     // Check if user is admin
@@ -74,7 +69,7 @@ export async function POST(request: NextRequest) {
         value: value || '',
         category,
         description: description || '',
-        is_sensitive: is_sensitive || false
+        is_sensitive: is_sensitive || false,
       })
       .select()
       .single()
@@ -87,14 +82,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Configuration item added successfully',
-      data
+      data,
     })
   } catch (error) {
     console.error('Failed to add config item:', error)
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to add configuration item'
+        error: error instanceof Error ? error.message : 'Failed to add configuration item',
       },
       { status: 500 }
     )

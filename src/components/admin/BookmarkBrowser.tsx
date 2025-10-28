@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { useMediaQuery } from "@uidotdev/usehooks"
+import * as React from 'react'
+import { useMediaQuery } from '@uidotdev/usehooks'
 import { createClient } from '@/lib/supabase/client'
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button'
 import {
   Command,
   CommandEmpty,
@@ -11,19 +11,11 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command"
-import {
-  Drawer,
-  DrawerContent,
-  DrawerTrigger,
-} from "@/components/ui/drawer"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { Badge } from "@/components/ui/badge"
-import { Loader2 } from "lucide-react"
+} from '@/components/ui/command'
+import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Badge } from '@/components/ui/badge'
+import { Loader2 } from 'lucide-react'
 
 type DeckItem = {
   deckId: string
@@ -34,15 +26,15 @@ type DeckItem = {
   isImported: boolean
 }
 
-export function DeckURLSelector({ 
+export function DeckURLSelector({
   bookmarkId = 'xpGzQ',
-  onSelect 
-}: { 
+  onSelect,
+}: {
   bookmarkId?: string
-  onSelect?: (deck: DeckItem) => void 
+  onSelect?: (deck: DeckItem) => void
 }) {
   const [open, setOpen] = React.useState(false)
-  const isDesktop = useMediaQuery("(min-width: 768px)")
+  const isDesktop = useMediaQuery('(min-width: 768px)')
   const [selectedDeck, setSelectedDeck] = React.useState<DeckItem | null>(null)
   const [decks, setDecks] = React.useState<DeckItem[]>([])
   const [loading, setLoading] = React.useState(false)
@@ -52,17 +44,17 @@ export function DeckURLSelector({
     try {
       setLoading(true)
       setError(null)
-      
+
       const supabase = createClient()
-      
+
       // Fetch bookmark from Moxfield
       const response = await fetch(
         `https://api2.moxfield.com/v1/bookmarks/xpGzQ?decksPageSize=100`,
         {
           headers: {
-            'accept': 'application/json',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-          }
+            accept: 'application/json',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          },
         }
       )
 
@@ -76,9 +68,12 @@ export function DeckURLSelector({
       const { data: existingDecks } = await supabase
         .from('decks')
         .select('moxfield_id')
-        .in('moxfield_id', bookmark.decks.data.map((d: any) => d.deck.publicId))
+        .in(
+          'moxfield_id',
+          bookmark.decks.data.map((d: any) => d.deck.publicId)
+        )
 
-      const existingDeckIds = new Set(existingDecks?.map(d => d.moxfield_id) || [])
+      const existingDeckIds = new Set(existingDecks?.map((d) => d.moxfield_id) || [])
 
       // Transform to DeckItem format
       const transformedDecks: DeckItem[] = bookmark.decks.data.map((item: any) => ({
@@ -87,7 +82,7 @@ export function DeckURLSelector({
         url: `https://moxfield.com/decks/${item.deck.publicId}`,
         format: item.deck.format,
         lastUpdated: item.deck.lastUpdatedAtUtc,
-        isImported: existingDeckIds.has(item.deck.publicId)
+        isImported: existingDeckIds.has(item.deck.publicId),
       }))
 
       setDecks(transformedDecks)
@@ -123,8 +118,8 @@ export function DeckURLSelector({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[500px] p-0" align="start">
-          <DeckList 
-            setOpen={setOpen} 
+          <DeckList
+            setOpen={setOpen}
             setSelectedDeck={handleSelect}
             decks={decks}
             loading={loading}
@@ -149,8 +144,8 @@ export function DeckURLSelector({
       </DrawerTrigger>
       <DrawerContent>
         <div className="mt-4 border-t max-h-[80vh] overflow-y-auto">
-          <DeckList 
-            setOpen={setOpen} 
+          <DeckList
+            setOpen={setOpen}
             setSelectedDeck={handleSelect}
             decks={decks}
             loading={loading}
@@ -182,13 +177,7 @@ function DeckList({
     <Command>
       <div className="flex items-center border-b px-3">
         <CommandInput placeholder="Search decks..." className="flex-1" />
-        <Button 
-          variant="ghost" 
-          size="sm"
-          onClick={onRefresh}
-          disabled={loading}
-          className="ml-2"
-        >
+        <Button variant="ghost" size="sm" onClick={onRefresh} disabled={loading} className="ml-2">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Refresh'}
         </Button>
       </div>
@@ -201,12 +190,7 @@ function DeckList({
         ) : error ? (
           <div className="py-6 text-center text-sm text-destructive">
             {error}
-            <Button 
-              variant="link" 
-              size="sm" 
-              onClick={onRefresh}
-              className="ml-2"
-            >
+            <Button variant="link" size="sm" onClick={onRefresh} className="ml-2">
               Try again
             </Button>
           </div>
@@ -237,9 +221,7 @@ function DeckList({
                       )}
                     </div>
                   </div>
-                  <span className="text-xs text-muted-foreground">
-                    {deck.url}
-                  </span>
+                  <span className="text-xs text-muted-foreground">{deck.url}</span>
                 </CommandItem>
               ))}
             </CommandGroup>

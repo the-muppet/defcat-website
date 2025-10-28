@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   // SVG handling is now done via public directory and Next.js Image component
@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'zrcawujydeevzdhlwpin.supabase.co',
+        hostname: 'paerhoqoypdezkqhzimk.supabase.co',
         port: '',
         pathname: '/storage/v1/object/public/**',
       },
@@ -21,6 +21,6 @@ const nextConfig: NextConfig = {
     // Disable ESLint during build
     ignoreDuringBuilds: true,
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig

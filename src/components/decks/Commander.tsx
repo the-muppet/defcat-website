@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { useState, useEffect } from 'react'
 import { fetchCardArt } from '@/lib/api/scryfall'
@@ -7,16 +7,16 @@ import { cn } from '@/lib/utils'
 import Image from 'next/image'
 
 interface CommanderImageProps {
-  commanders: string[]  // Array of commanders
+  commanders: string[] // Array of commanders
   className?: string
   fallbackIcon?: string
 }
 
 // Single commander image component
-function SingleCommanderImage({ 
-  commanderName, 
+function SingleCommanderImage({
+  commanderName,
   className,
-  fallbackIcon = '🎴'
+  fallbackIcon = '🎴',
 }: {
   commanderName: string
   className?: string
@@ -74,10 +74,12 @@ function SingleCommanderImage({
 
   if (loading) {
     return (
-      <div className={cn(
-        "flex items-center justify-center bg-gradient-to-br from-purple-900/50 to-pink-900/50",
-        className
-      )}>
+      <div
+        className={cn(
+          'flex items-center justify-center bg-gradient-to-br from-purple-900/50 to-pink-900/50',
+          className
+        )}
+      >
         <div className="text-center">
           <Loader2 className="mx-auto mb-2 h-12 w-12 animate-spin text-white/60" />
           <div className="text-sm text-white/60">Loading...</div>
@@ -88,10 +90,12 @@ function SingleCommanderImage({
 
   if (error || !imageUrl) {
     return (
-      <div className={cn(
-        "flex items-center justify-center bg-gradient-to-br from-purple-900/50 to-pink-900/50",
-        className
-      )}>
+      <div
+        className={cn(
+          'flex items-center justify-center bg-gradient-to-br from-purple-900/50 to-pink-900/50',
+          className
+        )}
+      >
         <div className="text-center">
           <div className="mb-2 text-6xl">{fallbackIcon}</div>
           <div className="text-sm text-white/60">Commander Art</div>
@@ -101,7 +105,7 @@ function SingleCommanderImage({
   }
 
   return (
-    <div className={cn("relative overflow-hidden", className)}>
+    <div className={cn('relative overflow-hidden', className)}>
       <Image
         src={imageUrl}
         alt={commanderName}
@@ -117,16 +121,22 @@ function SingleCommanderImage({
 }
 
 // Main component that handles multiple commanders
-export function CommanderImage({ commanders, className, fallbackIcon = '🎴' }: CommanderImageProps) {
+export function CommanderImage({
+  commanders,
+  className,
+  fallbackIcon = '🎴',
+}: CommanderImageProps) {
   // Filter out null/undefined/empty values from commanders array
-  const validCommanders = commanders?.filter(c => c && c.trim() !== '') || []
+  const validCommanders = commanders?.filter((c) => c && c.trim() !== '') || []
 
   if (validCommanders.length === 0) {
     return (
-      <div className={cn(
-        "flex items-center justify-center bg-gradient-to-br from-purple-900/50 to-pink-900/50",
-        className
-      )}>
+      <div
+        className={cn(
+          'flex items-center justify-center bg-gradient-to-br from-purple-900/50 to-pink-900/50',
+          className
+        )}
+      >
         <div className="text-center">
           <div className="mb-2 text-6xl">{fallbackIcon}</div>
           <div className="text-sm text-white/60">No Commander</div>
@@ -146,7 +156,7 @@ export function CommanderImage({ commanders, className, fallbackIcon = '🎴' }:
   }
 
   return (
-    <div className={cn("grid gap-1 h-full", className)}>
+    <div className={cn('grid gap-1 h-full', className)}>
       {validCommanders.length === 2 ? (
         <div className="grid grid-cols-2 gap-1 h-full">
           {validCommanders.map((commander, idx) => (

@@ -13,7 +13,9 @@ export default async function AdminUsersPage() {
   const supabase = await createClient()
 
   // Get current user's role
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   const { data: profile } = await supabase
     .from('profiles')
     .select('role')
@@ -30,18 +32,14 @@ export default async function AdminUsersPage() {
           <Users className="h-10 w-10 text-purple-500" />
           <div>
             <h1 className="text-4xl font-bold">User Management</h1>
-            <p className="text-muted-foreground mt-1">
-              Manage user roles and permissions
-            </p>
+            <p className="text-muted-foreground mt-1">Manage user roles and permissions</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <UserRoleManager currentUserRole={userRole} />
 
-          {isDeveloper && (
-            <DeveloperTools />
-          )}
+          {isDeveloper && <DeveloperTools />}
         </div>
       </div>
     </div>

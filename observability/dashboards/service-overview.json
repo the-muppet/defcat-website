@@ -118,10 +118,7 @@
             "legendFormat": "{{path}}"
           }
         ],
-        "yaxes": [
-          { "format": "reqps", "label": "Requests/sec" },
-          { "format": "short" }
-        ]
+        "yaxes": [{ "format": "reqps", "label": "Requests/sec" }, { "format": "short" }]
       },
       {
         "id": 6,
@@ -142,10 +139,7 @@
             "legendFormat": "p99"
           }
         ],
-        "yaxes": [
-          { "format": "ms", "label": "Latency" },
-          { "format": "short" }
-        ]
+        "yaxes": [{ "format": "ms", "label": "Latency" }, { "format": "short" }]
       },
       {
         "id": 7,
@@ -166,10 +160,7 @@
             "legendFormat": "User Logins/sec"
           }
         ],
-        "yaxes": [
-          { "format": "ops", "label": "Operations/sec" },
-          { "format": "short" }
-        ]
+        "yaxes": [{ "format": "ops", "label": "Operations/sec" }, { "format": "short" }]
       },
       {
         "id": 8,
@@ -190,10 +181,7 @@
             "legendFormat": "RSS (MB)"
           }
         ],
-        "yaxes": [
-          { "format": "decmbytes", "label": "Memory" },
-          { "format": "short" }
-        ]
+        "yaxes": [{ "format": "decmbytes", "label": "Memory" }, { "format": "short" }]
       }
     ]
   }

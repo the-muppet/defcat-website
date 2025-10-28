@@ -22,11 +22,7 @@ export async function getDecks() {
 export async function getDeckById(id: string) {
   const supabase = await createClient()
 
-  const { data: deck, error } = await supabase
-    .from('decks')
-    .select('*')
-    .eq('id', id)
-    .single()
+  const { data: deck, error } = await supabase.from('decks').select('*').eq('id', id).single()
 
   if (error) {
     console.error('Failed to fetch deck:', error)

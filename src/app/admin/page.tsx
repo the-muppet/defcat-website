@@ -4,37 +4,46 @@
  * Updated with accessible tinted styling
  */
 
-import { requireAdmin } from '@/lib/auth-guards';
-import { createClient } from '@/lib/supabase/server';
-import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Database, Users, Package, Settings, TrendingUp, BarChart3, ClipboardList } from 'lucide-react';
+import { requireAdmin } from '@/lib/auth-guards'
+import { createClient } from '@/lib/supabase/server'
+import Link from 'next/link'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import {
+  Database,
+  Users,
+  Package,
+  Settings,
+  TrendingUp,
+  BarChart3,
+  ClipboardList,
+} from 'lucide-react'
 
 export default async function AdminDashboard() {
-  await requireAdmin();
+  await requireAdmin()
 
-  const supabase = await createClient();
+  const supabase = await createClient()
 
   // Get current user's profile to check role
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   const { data: profile } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', user?.id)
-    .single();
+    .single()
 
-  const isDeveloper = profile?.role === 'developer';
+  const isDeveloper = profile?.role === 'developer'
 
-  const [
-    { count: deckCount },
-    { count: userCount },
-    { count: pendingCount }
-  ] = await Promise.all([
+  const [{ count: deckCount }, { count: userCount }, { count: pendingCount }] = await Promise.all([
     supabase.from('decks').select('*', { count: 'exact', head: true }),
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
-    supabase.from('deck_submissions').select('*', { count: 'exact', head: true }).in('status', ['pending', 'queued'])
-  ]);
+    supabase
+      .from('deck_submissions')
+      .select('*', { count: 'exact', head: true })
+      .in('status', ['pending', 'queued']),
+  ])
 
   return (
     <div className="container mx-auto px-4 py-8" data-page="admin-dashboard">
@@ -44,9 +53,7 @@ export default async function AdminDashboard() {
             <h1 className="text-4xl font-bold bg-gradient-to-r from-[var(--gradient-start)] via-[var(--gradient-mid)] to-[var(--gradient-end)] bg-clip-text text-transparent">
               Admin Dashboard
             </h1>
-            <p className="text-muted-foreground mt-2">
-              Manage decks, users, and site content
-            </p>
+            <p className="text-muted-foreground mt-2">Manage decks, users, and site content</p>
           </div>
         </div>
 
@@ -54,7 +61,9 @@ export default async function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="glass-tinted border-tinted hover:shadow-tinted-lg transition-all">
             <CardHeader>
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Decks</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Total Decks
+              </CardTitle>
               <Database className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -65,7 +74,9 @@ export default async function AdminDashboard() {
 
           <Card className="glass-tinted border-tinted hover:shadow-tinted-lg transition-all">
             <CardHeader>
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Users</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Total Users
+              </CardTitle>
               <Users className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -76,7 +87,9 @@ export default async function AdminDashboard() {
 
           <Card className="glass-tinted border-tinted hover:shadow-tinted-lg transition-all">
             <CardHeader>
-              <CardTitle className="text-sm font-medium text-muted-foreground">Active Patrons</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Active Patrons
+              </CardTitle>
               <TrendingUp className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -87,7 +100,9 @@ export default async function AdminDashboard() {
 
           <Card className="glass-tinted border-tinted hover:shadow-tinted-lg transition-all">
             <CardHeader>
-              <CardTitle className="text-sm font-medium text-muted-foreground">Premium Decks</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Premium Decks
+              </CardTitle>
               <BarChart3 className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -112,7 +127,11 @@ export default async function AdminDashboard() {
                 <Button asChild className="w-full btn-tinted-primary">
                   <Link href="/admin/decks">Manage Decks</Link>
                 </Button>
-                <Button asChild variant="outline" className="w-full border-tinted hover:bg-accent-tinted">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full border-tinted hover:bg-accent-tinted"
+                >
                   <Link href="/admin/decks/import">Import from Moxfield</Link>
                 </Button>
               </div>
@@ -187,7 +206,9 @@ export default async function AdminDashboard() {
                 <Database className="h-8 w-8 mb-2 text-purple-500" />
                 <CardTitle className="text-foreground flex items-center gap-2">
                   Database Panel
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400">Developer</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400">
+                    Developer
+                  </span>
                 </CardTitle>
                 <CardDescription className="text-muted-foreground">
                   Execute SQL queries and inspect database tables
@@ -203,5 +224,5 @@ export default async function AdminDashboard() {
         </div>
       </div>
     </div>
-  );
+  )
 }

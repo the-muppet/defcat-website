@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
 import dynamic from 'next/dynamic'
-import { Loader2, Play } from "lucide-react"
+import { Loader2, Play } from 'lucide-react'
 
 const ReactPlayer = dynamic(() => import('react-player'), {
   ssr: false,
@@ -9,7 +9,7 @@ const ReactPlayer = dynamic(() => import('react-player'), {
     <div className="w-full h-full bg-muted/30 flex items-center justify-center">
       <Loader2 className="h-12 w-12 animate-spin text-muted-foreground" />
     </div>
-  )
+  ),
 })
 
 interface VideoPlayerProps {
@@ -47,13 +47,13 @@ export function VideoPlayer({
   pip = false,
   stopOnUnmount = true,
   fallbackIcon = <Play className="h-16 w-16" />,
-  fallbackText = "Video player will load here",
+  fallbackText = 'Video player will load here',
   onReady,
   onStart,
   onPlay,
   onPause,
   onEnded,
-  onError
+  onError,
 }: VideoPlayerProps) {
   const videoUrl = url || (videoId ? `https://www.youtube.com/watch?v=${videoId}` : null)
 
@@ -61,11 +61,7 @@ export function VideoPlayer({
     return (
       <div className="w-full h-full bg-muted/30 flex items-center justify-center">
         <div className="text-center">
-          {fallbackIcon && (
-            <div className="mx-auto mb-4 text-muted-foreground">
-              {fallbackIcon}
-            </div>
-          )}
+          {fallbackIcon && <div className="mx-auto mb-4 text-muted-foreground">{fallbackIcon}</div>}
           <p className="text-lg text-muted-foreground">{fallbackText}</p>
         </div>
       </div>
@@ -87,7 +83,7 @@ export function VideoPlayer({
       pip={pip}
       stopOnUnmount={stopOnUnmount}
       config={{
-        youtube: {}
+        youtube: {},
       }}
       onReady={onReady}
       onStart={onStart}

@@ -1,26 +1,30 @@
 interface DeckCard {
-  quantity: number;
-  board_type: string;
+  quantity: number
+  board: string
   cards: {
-    name: string;
-    mana_cost: string | null;
-    type_line: string | null;
-    cmc: number | null;
-    image_url: string | null;
-  } | null;
+    name: string
+    mana_cost: string | null
+    type_line: string | null
+    cmc: number | null
+    image_url: string | null
+    scryfall_id: string | null
+  } | null
 }
 
 export function ManaCurve({ cards }: { cards: DeckCard[] }) {
-  const curveCounts = cards.reduce((acc, dc) => {
-    const cmc = dc.cards?.cmc || 0;
-    const bucket = cmc >= 7 ? '7+' : cmc.toString();
-    acc[bucket] = (acc[bucket] || 0) + dc.quantity;
-    return acc;
-  }, {} as Record<string, number>);
+  const curveCounts = cards.reduce(
+    (acc, dc) => {
+      const cmc = dc.cards?.cmc || 0
+      const bucket = cmc >= 7 ? '7+' : cmc.toString()
+      acc[bucket] = (acc[bucket] || 0) + dc.quantity
+      return acc
+    },
+    {} as Record<string, number>
+  )
 
-  const buckets = ['0', '1', '2', '3', '4', '5', '6', '7+'];
-  const maxCount = Math.max(...buckets.map(b => curveCounts[b] || 0), 1);
-  
+  const buckets = ['0', '1', '2', '3', '4', '5', '6', '7+']
+  const maxCount = Math.max(...buckets.map((b) => curveCounts[b] || 0), 1)
+
   // Color scheme for mana curve bars
   const getBarColor = (bucket: string) => {
     const colors: Record<string, string> = {
@@ -32,63 +36,73 @@ export function ManaCurve({ cards }: { cards: DeckCard[] }) {
       '5': 'from-orange-400 to-orange-600',
       '6': 'from-red-400 to-red-600',
       '7+': 'from-purple-400 to-purple-600',
-    };
-    return colors[bucket] || 'from-primary to-primary/70';
-  };
+    }
+    return colors[bucket] || 'from-primary to-primary/70'
+  }
 
   return (
     <div className="w-full">
       {/* Chart Area */}
-      <div className="relative h-40 bg-accent/20 rounded-lg border border-border p-4">
+      <div className="relative h-40 bg-background/40 backdrop-blur-sm rounded-lg border border-border/50 p-4 shadow-inner">
         {/* Grid lines */}
         <div className="absolute left-4 right-4 top-4 bottom-10 flex flex-col justify-between pointer-events-none">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="border-t border-border/30" />
           ))}
         </div>
-        
+
         {/* Bars Container */}
         <div className="absolute left-4 right-4 bottom-10 top-4 flex justify-around gap-1">
-          {buckets.map(bucket => {
-            const count = curveCounts[bucket] || 0;
-            const heightPercentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
-            
+          {buckets.map((bucket) => {
+            const count = curveCounts[bucket] || 0
+            const heightPercentage = maxCount > 0 ? (count / maxCount) * 100 : 0
+
             return (
-              <div key={bucket} className="flex-1 flex flex-col items-center justify-end group relative">
+              <div
+                key={bucket}
+                className="flex-1 flex flex-col items-center justify-end group relative"
+              >
                 {/* Bar */}
-                <div 
-                  className={`w-full bg-gradient-to-t ${getBarColor(bucket)} rounded-t-md transition-all duration-500 hover:opacity-80 cursor-pointer`}
-                  style={{ height: `${heightPercentage}%`, minHeight: count > 0 ? '4px' : '0' }}
+                <div
+                  className={`w-full bg-gradient-to-t ${getBarColor(bucket)} rounded-t-md transition-all duration-500 hover:brightness-110 cursor-pointer backdrop-blur-sm`}
+                  style={{
+                    height: `${heightPercentage}%`,
+                    minHeight: count > 0 ? '4px' : '0',
+                    opacity: 0.9
+                  }}
                 >
                   {/* Count label on hover */}
                   {count > 0 && (
                     <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span className="text-xs font-bold text-foreground bg-background/90 px-2 py-1 rounded border border-border whitespace-nowrap">
+                      <span className="text-xs font-bold text-foreground bg-background/90 backdrop-blur-sm px-2 py-1 rounded border border-border whitespace-nowrap shadow-lg">
                         {count}
                       </span>
                     </div>
                   )}
                 </div>
               </div>
-            );
+            )
           })}
         </div>
-        
+
         {/* CMC Labels at bottom */}
         <div className="absolute left-4 right-4 bottom-2 flex justify-around">
-          {buckets.map(bucket => (
-            <div key={bucket} className="flex-1 text-center text-xs font-semibold text-muted-foreground">
+          {buckets.map((bucket) => (
+            <div
+              key={bucket}
+              className="flex-1 text-center text-xs font-semibold text-muted-foreground"
+            >
               {bucket}
             </div>
           ))}
         </div>
       </div>
-      
+
       {/* Summary Stats below chart */}
       <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
         <span>Total: {Object.values(curveCounts).reduce((a, b) => a + b, 0)} cards</span>
         <span>Peak: {maxCount} cards</span>
       </div>
     </div>
-  );
+  )
 }

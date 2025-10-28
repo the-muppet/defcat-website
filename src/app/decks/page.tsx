@@ -1,22 +1,23 @@
 'use client'
 
-import { useState, useMemo, memo } from "react"
-import { ExternalLink, Filter, X, ChevronUp, ChevronDown } from "lucide-react"
-import { useDecks } from "@/lib/hooks/useDecks"
-import { cn } from "@/lib/utils"
-import type { Deck } from "@/types/core"
-import { ManaSymbols } from "@/components/decks/ManaSymbols"
+import { useState, useMemo, memo } from 'react'
+import { ExternalLink, Filter, X, ChevronUp, ChevronDown } from 'lucide-react'
+import { useDecks } from '@/lib/hooks/useDecks'
+import { cn } from '@/lib/utils'
+import type { Deck } from '@/types/core'
+import { ManaSymbols } from '@/components/decks/ManaSymbols'
 
 // Memoized deck row component
 const DeckRow = memo(function DeckRow({ deck }: { deck: Deck }) {
   return (
     <tr className="border-b border-tinted hover:bg-accent-tinted transition-all">
       <td className="py-4 px-4">
-        <a href={`/decks/${deck.id}`} className="block hover:text-[var(--mana-color)] transition-colors">
+        <a
+          href={`/decks/${deck.id}`}
+          className="block hover:text-[var(--mana-color)] transition-colors"
+        >
           <div className="font-medium">{deck.name}</div>
-          <div className="text-xs text-muted-foreground line-clamp-1 mt-1">
-            {deck.description}
-          </div>
+          <div className="text-xs text-muted-foreground line-clamp-1 mt-1">{deck.description}</div>
         </a>
       </td>
       <td className="py-4 px-4">
@@ -33,22 +34,17 @@ const DeckRow = memo(function DeckRow({ deck }: { deck: Deck }) {
       </td>
       <td className="py-4 px-4">
         <div className="flex justify-center">
-          {deck.color_identity && (
-            <ManaSymbols mana={deck.color_identity} size="sm" />
-          )}
+          {deck.color_identity && <ManaSymbols mana={deck.color_identity} size="sm" />}
         </div>
       </td>
-      <td className="py-4 px-4 text-right">
-        {deck.view_count?.toLocaleString()}
-      </td>
-      <td className="py-4 px-4 text-right">
-        {deck.like_count?.toLocaleString()}
-      </td>
+      <td className="py-4 px-4 text-right">{deck.view_count?.toLocaleString()}</td>
+      <td className="py-4 px-4 text-right">{deck.like_count?.toLocaleString()}</td>
       <td className="py-4 px-4 text-right text-sm text-muted-foreground">
         {deck.updated_at ? new Date(deck.updated_at).toLocaleDateString() : '-'}
       </td>
       <td className="py-4 px-4 text-center">
-        <a href={deck.moxfield_url || '#'}
+        <a
+          href={deck.moxfield_url || '#'}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1 text-[var(--mana-color)] hover:brightness-110 transition-all"
@@ -62,20 +58,22 @@ const DeckRow = memo(function DeckRow({ deck }: { deck: Deck }) {
 
 export default function TableLayout() {
   const { data: decks = [], isLoading: loading, error } = useDecks()
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState('')
   const [selectedColors, setSelectedColors] = useState<string[]>([])
-  const [sortBy, setSortBy] = useState<"name" | "view_count" | "like_count" | "updated_at">("view_count")
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc")
+  const [sortBy, setSortBy] = useState<'name' | 'view_count' | 'like_count' | 'updated_at'>(
+    'view_count'
+  )
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const [showFilters, setShowFilters] = useState(true)
 
   const colorOptions = [
-    { code: "W", name: "White" },
-    { code: "U", name: "Blue" },
-    { code: "B", name: "Black" },
-    { code: "R", name: "Red" },
-    { code: "G", name: "Green" },
-    { code: "C", name: "Colorless" },
-    { code: "WUBRG", name: "WUBRG" }
+    { code: 'W', name: 'White' },
+    { code: 'U', name: 'Blue' },
+    { code: 'B', name: 'Black' },
+    { code: 'R', name: 'Red' },
+    { code: 'G', name: 'Green' },
+    { code: 'C', name: 'Colorless' },
+    { code: 'WUBRG', name: 'WUBRG' },
   ]
 
   const filteredDecks = useMemo(() => {
@@ -93,8 +91,8 @@ export default function TableLayout() {
       filtered = filtered.filter((deck) => {
         return selectedColors.every((color) => {
           // Special handling for WUBRG - check if deck has all 5 colors
-          if (color === "WUBRG") {
-            return ['W', 'U', 'B', 'R', 'G'].every(c => deck.color_identity?.includes(c))
+          if (color === 'WUBRG') {
+            return ['W', 'U', 'B', 'R', 'G'].every((c) => deck.color_identity?.includes(c))
           }
           return deck.color_identity?.includes(color)
         })
@@ -105,18 +103,16 @@ export default function TableLayout() {
       let aVal: any = a[sortBy]
       let bVal: any = b[sortBy]
 
-      if (sortBy === "updated_at") {
+      if (sortBy === 'updated_at') {
         aVal = new Date(aVal || 0).getTime()
         bVal = new Date(bVal || 0).getTime()
       }
 
-      if (sortBy === "name") {
-        return sortOrder === "asc"
-          ? aVal.localeCompare(bVal)
-          : bVal.localeCompare(aVal)
+      if (sortBy === 'name') {
+        return sortOrder === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal)
       }
 
-      return sortOrder === "asc" ? (aVal || 0) - (bVal || 0) : (bVal || 0) - (aVal || 0)
+      return sortOrder === 'asc' ? (aVal || 0) - (bVal || 0) : (bVal || 0) - (aVal || 0)
     })
     return filtered
   }, [decks, searchQuery, selectedColors, sortBy, sortOrder])
@@ -129,16 +125,20 @@ export default function TableLayout() {
 
   const handleSort = (column: typeof sortBy) => {
     if (sortBy === column) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
     } else {
       setSortBy(column)
-      setSortOrder("desc")
+      setSortOrder('desc')
     }
   }
 
   const SortIcon = ({ column }: { column: typeof sortBy }) => {
     if (sortBy !== column) return null
-    return sortOrder === "asc" ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
+    return sortOrder === 'asc' ? (
+      <ChevronUp className="h-4 w-4" />
+    ) : (
+      <ChevronDown className="h-4 w-4" />
+    )
   }
 
   return (
@@ -146,8 +146,8 @@ export default function TableLayout() {
       {/* Sidebar with tinted styling */}
       <aside
         className={cn(
-          "border-r border-tinted bg-card-tinted backdrop-blur-sm transition-all duration-300",
-          showFilters ? "w-72" : "w-0 overflow-hidden"
+          'border-r border-tinted bg-card-tinted backdrop-blur-sm transition-all duration-300',
+          showFilters ? 'w-72' : 'w-0 overflow-hidden'
         )}
       >
         <div className="p-6">
@@ -163,9 +163,7 @@ export default function TableLayout() {
 
           {/* Search with tinted input */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-muted-foreground mb-2">
-              Search
-            </label>
+            <label className="block text-sm font-medium text-muted-foreground mb-2">Search</label>
             <input
               type="text"
               placeholder="Deck or commander..."
@@ -203,7 +201,7 @@ export default function TableLayout() {
             <div className="pt-4 border-t border-tinted">
               <button
                 onClick={() => {
-                  setSearchQuery("")
+                  setSearchQuery('')
                   setSelectedColors([])
                 }}
                 className="text-sm text-[var(--mana-color)] hover:brightness-110 transition-all"
@@ -230,9 +228,7 @@ export default function TableLayout() {
                   Show Filters
                 </button>
               )}
-              <h1 className="text-2xl font-bold">
-                Decklist Database
-              </h1>
+              <h1 className="text-2xl font-bold">Decklist Database</h1>
             </div>
             <div className="text-sm text-muted-foreground">
               {filteredDecks.length} / {decks.length} decks
@@ -253,7 +249,7 @@ export default function TableLayout() {
                   <tr className="border-b border-tinted">
                     <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
                       <button
-                        onClick={() => handleSort("name")}
+                        onClick={() => handleSort('name')}
                         className="flex items-center gap-2 hover:text-foreground"
                       >
                         Deck Name
@@ -268,7 +264,7 @@ export default function TableLayout() {
                     </th>
                     <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
                       <button
-                        onClick={() => handleSort("view_count")}
+                        onClick={() => handleSort('view_count')}
                         className="flex items-center gap-2 ml-auto hover:text-foreground"
                       >
                         Views
@@ -277,7 +273,7 @@ export default function TableLayout() {
                     </th>
                     <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
                       <button
-                        onClick={() => handleSort("like_count")}
+                        onClick={() => handleSort('like_count')}
                         className="flex items-center gap-2 ml-auto hover:text-foreground"
                       >
                         Likes
@@ -286,7 +282,7 @@ export default function TableLayout() {
                     </th>
                     <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
                       <button
-                        onClick={() => handleSort("updated_at")}
+                        onClick={() => handleSort('updated_at')}
                         className="flex items-center gap-2 ml-auto hover:text-foreground"
                       >
                         Updated

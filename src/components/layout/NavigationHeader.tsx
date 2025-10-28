@@ -1,14 +1,14 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { HelpCircle } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler"
-import { ThemeAnimationType } from "@/lib/hooks/useModeAnimation"
-import { TutorialModal } from "@/components/tutorial/TutorialModal"
-import { cn } from "@/lib/utils"
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { HelpCircle } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler'
+import { ThemeAnimationType } from '@/lib/hooks/useModeAnimation'
+import { TutorialModal } from '@/components/tutorial/TutorialModal'
+import { cn } from '@/lib/utils'
 
 export function NavigationHeader() {
   const [showTutorial, setShowTutorial] = useState(false)
@@ -36,8 +36,8 @@ export function NavigationHeader() {
             <Link
               href="/decks"
               className={cn(
-                "text-sm font-medium transition-colors hover-tinted px-3 py-2 rounded-lg",
-                pathname === "/decks" && "tinted-accent border border-tinted"
+                'text-sm font-medium transition-colors hover-tinted px-3 py-2 rounded-lg',
+                pathname === '/decks' && 'tinted-accent border border-tinted'
               )}
             >
               Deck Vault
@@ -46,8 +46,8 @@ export function NavigationHeader() {
             <Link
               href="/discount-store"
               className={cn(
-                "text-sm font-medium transition-colors hover-tinted px-3 py-2 rounded-lg",
-                pathname === "/discount-store" && "tinted-accent border border-tinted"
+                'text-sm font-medium transition-colors hover-tinted px-3 py-2 rounded-lg',
+                pathname === '/discount-store' && 'tinted-accent border border-tinted'
               )}
             >
               Defcat's Discount Store
@@ -56,8 +56,8 @@ export function NavigationHeader() {
             <Link
               href="/commander-college"
               className={cn(
-                "text-sm font-medium transition-colors hover-tinted px-3 py-2 rounded-lg",
-                pathname === "/commander-college" && "tinted-accent border border-tinted"
+                'text-sm font-medium transition-colors hover-tinted px-3 py-2 rounded-lg',
+                pathname === '/commander-college' && 'tinted-accent border border-tinted'
               )}
             >
               Commander College
@@ -75,11 +75,7 @@ export function NavigationHeader() {
             />
 
             {/* Login Button */}
-            <Button
-              size="lg"
-              asChild
-              className="btn-tinted-primary shadow-tinted-glow"
-            >
+            <Button size="lg" asChild className="btn-tinted-primary shadow-tinted-glow">
               <Link href="/auth/login">Login</Link>
             </Button>
           </div>

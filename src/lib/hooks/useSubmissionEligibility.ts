@@ -1,16 +1,16 @@
 // hooks/useSubmissionEligibility.ts
 
-import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 interface SubmissionStatus {
-  isEligible: boolean;
-  tier: string | null;
-  maxSubmissions: number;
-  usedSubmissions: number;
-  remainingSubmissions: number;
-  isLoading: boolean;
-  error: string | null;
+  isEligible: boolean
+  tier: string | null
+  maxSubmissions: number
+  usedSubmissions: number
+  remainingSubmissions: number
+  isLoading: boolean
+  error: string | null
 }
 
 export function useSubmissionEligibility(): SubmissionStatus {
@@ -22,15 +22,18 @@ export function useSubmissionEligibility(): SubmissionStatus {
     remainingSubmissions: 0,
     isLoading: true,
     error: null,
-  });
+  })
 
-  const supabase = createClient();
+  const supabase = createClient()
 
   useEffect(() => {
     async function checkEligibility() {
       try {
         // Check if user is logged in
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        const {
+          data: { user },
+          error: authError,
+        } = await supabase.auth.getUser()
 
         if (authError || !user) {
           setStatus({
@@ -41,8 +44,8 @@ export function useSubmissionEligibility(): SubmissionStatus {
             remainingSubmissions: 0,
             isLoading: false,
             error: 'Please sign in to submit a deck',
-          });
-          return;
+          })
+          return
         }
 
         // Get user profile to check tier
@@ -50,7 +53,7 @@ export function useSubmissionEligibility(): SubmissionStatus {
           .from('profiles')
           .select('patreon_tier')
           .eq('id', user.id)
-          .single();
+          .single()
 
         if (profileError || !profile) {
           setStatus({
@@ -61,13 +64,13 @@ export function useSubmissionEligibility(): SubmissionStatus {
             remainingSubmissions: 0,
             isLoading: false,
             error: 'Unable to verify Patreon tier',
-          });
-          return;
+          })
+          return
         }
 
         // Check if tier is eligible (Duke, Wizard, or ArchMage)
-        const eligibleTiers = ['Duke', 'Wizard', 'ArchMage'];
-        const isEligible = eligibleTiers.includes(profile.patreon_tier);
+        const eligibleTiers = ['Duke', 'Wizard', 'ArchMage']
+        const isEligible = eligibleTiers.includes(profile.patreon_tier)
 
         if (!isEligible) {
           setStatus({
@@ -78,20 +81,20 @@ export function useSubmissionEligibility(): SubmissionStatus {
             remainingSubmissions: 0,
             isLoading: false,
             error: `Deck submissions require Duke tier ($50/month) or higher. Your current tier: ${profile.patreon_tier}`,
-          });
-          return;
+          })
+          return
         }
 
         // Get submission status for this month
         const { data: submissionStatus, error: statusError } = await supabase
           .from('user_submission_status')
           .select('*')
-          .single();
+          .single()
 
         if (statusError || !submissionStatus) {
           // Fallback if view query fails
-          const maxSubs = profile.patreon_tier === 'ArchMage' ? 2 : 1;
-          
+          const maxSubs = profile.patreon_tier === 'ArchMage' ? 2 : 1
+
           setStatus({
             isEligible: true,
             tier: profile.patreon_tier,
@@ -100,8 +103,8 @@ export function useSubmissionEligibility(): SubmissionStatus {
             remainingSubmissions: maxSubs,
             isLoading: false,
             error: null,
-          });
-          return;
+          })
+          return
         }
 
         setStatus({
@@ -111,22 +114,23 @@ export function useSubmissionEligibility(): SubmissionStatus {
           usedSubmissions: submissionStatus.used_submissions,
           remainingSubmissions: submissionStatus.remaining_submissions,
           isLoading: false,
-          error: submissionStatus.remaining_submissions === 0 
-            ? `You've used all ${submissionStatus.max_submissions} submission(s) for this month. Limit resets on the 1st.`
-            : null,
-        });
+          error:
+            submissionStatus.remaining_submissions === 0
+              ? `You've used all ${submissionStatus.max_submissions} submission(s) for this month. Limit resets on the 1st.`
+              : null,
+        })
       } catch (error) {
-        console.error('Error checking eligibility:', error);
-        setStatus(prev => ({
+        console.error('Error checking eligibility:', error)
+        setStatus((prev) => ({
           ...prev,
           isLoading: false,
           error: 'Failed to check eligibility',
-        }));
+        }))
       }
     }
 
-    checkEligibility();
-  }, [supabase]);
+    checkEligibility()
+  }, [supabase])
 
-  return status;
+  return status
 }

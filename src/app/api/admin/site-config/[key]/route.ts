@@ -23,10 +23,7 @@ export async function DELETE(
     // Verify user is admin
     const authHeader = request.headers.get('authorization')
     if (!authHeader) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get user from browser client to verify role
@@ -35,15 +32,13 @@ export async function DELETE(
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     )
 
-    const { data: { user }, error: userError } = await browserSupabase.auth.getUser(
-      authHeader.replace('Bearer ', '')
-    )
+    const {
+      data: { user },
+      error: userError,
+    } = await browserSupabase.auth.getUser(authHeader.replace('Bearer ', ''))
 
     if (userError || !user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     // Check if user is admin
@@ -61,10 +56,7 @@ export async function DELETE(
     }
 
     // Delete config item using service role (bypasses RLS)
-    const { error } = await supabase
-      .from('site_config')
-      .delete()
-      .eq('key', key)
+    const { error } = await supabase.from('site_config').delete().eq('key', key)
 
     if (error) {
       console.error('Failed to delete config:', error)
@@ -73,14 +65,14 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: 'Configuration item deleted successfully'
+      message: 'Configuration item deleted successfully',
     })
   } catch (error) {
     console.error('Failed to delete config item:', error)
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to delete configuration item'
+        error: error instanceof Error ? error.message : 'Failed to delete configuration item',
       },
       { status: 500 }
     )

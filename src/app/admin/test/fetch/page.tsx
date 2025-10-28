@@ -1,8 +1,8 @@
 // app/admin/test-fetch/page.tsx
-"use client"
+'use client'
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
 
 // Force dynamic rendering to prevent build-time prerender
 export const dynamic = 'force-dynamic'
@@ -22,9 +22,9 @@ export default function TestFetchPage() {
         'https://api2.moxfield.com/v1/bookmarks/xpGzQ?decksPageSize=100',
         {
           headers: {
-            'accept': 'application/json',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-          }
+            accept: 'application/json',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          },
         }
       )
 
@@ -34,7 +34,7 @@ export default function TestFetchPage() {
 
       const data = await response.json()
       setResult(data)
-      
+
       console.log('✅ Fetch successful!')
       console.log('Total decks:', data.deckCount)
       console.log('First deck:', data.decks.data[0])
@@ -50,7 +50,7 @@ export default function TestFetchPage() {
   return (
     <div className="container mx-auto p-8">
       <h1 className="text-2xl font-bold mb-4">Test Moxfield Fetch</h1>
-      
+
       <Button onClick={testFetch} disabled={loading}>
         {loading ? 'Fetching...' : 'Test Fetch'}
       </Button>

@@ -6,16 +6,10 @@ export const dynamic = 'force-dynamic'
 
 // Helper to create Supabase client at runtime
 function getSupabaseClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const supabase = getSupabaseClient()
     const authHeader = request.headers.get('authorization')
@@ -27,13 +21,13 @@ export async function DELETE(
     }
 
     const token = authHeader.replace('Bearer ', '')
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser(token)
 
     if (authError || !user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     const { data: profile } = await supabase
@@ -49,25 +43,16 @@ export async function DELETE(
       )
     }
 
-    const { error } = await supabase
-      .from('products')
-      .delete()
-      .eq('id', params.id)
+    const { error } = await supabase.from('products').delete().eq('id', params.id)
 
     if (error) {
       console.error('Delete error:', error)
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 500 }
-      )
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     }
 
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Product deletion error:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to delete product' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: 'Failed to delete product' }, { status: 500 })
   }
 }

@@ -2,14 +2,14 @@
  * Admin Site Settings Page
  */
 
-import { requireAdmin } from '@/lib/auth-guards';
-import { Settings } from 'lucide-react';
-import { SiteConfigForm } from '@/components/admin/SiteConfigForm';
+import { requireAdmin } from '@/lib/auth-guards'
+import { Settings } from 'lucide-react'
+import { SiteConfigForm } from '@/components/admin/SiteConfigForm'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminSettingsPage() {
-  await requireAdmin();
+  await requireAdmin()
 
   return (
     <div className="px-4 py-8">
@@ -26,5 +26,5 @@ export default async function AdminSettingsPage() {
         <SiteConfigForm />
       </div>
     </div>
-  );
+  )
 }

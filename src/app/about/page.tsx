@@ -9,15 +9,13 @@ export default function AboutPage() {
     <div className="min-h-screen p-8 relative">
       {/* Subtle tinted background */}
       <div className="absolute inset-0 bg-gradient-to-b from-bg-tinted via-transparent to-transparent opacity-30" />
-      
+
       <div className="max-w-4xl mx-auto relative">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-[var(--gradient-start)] via-[var(--gradient-mid)] to-[var(--gradient-end)] bg-clip-text text-transparent">
             About DefCat's DeckVault
           </h1>
-          <p className="text-xl text-muted-foreground">
-            Your premium cEDH decklist resource
-          </p>
+          <p className="text-xl text-muted-foreground">Your premium cEDH decklist resource</p>
         </div>
 
         <div className="space-y-6">
@@ -28,15 +26,17 @@ export default function AboutPage() {
                 <div className="p-2 rounded-lg bg-accent-tinted border border-tinted">
                   <Sparkles className="h-5 w-5" style={{ color: 'var(--mana-color)' }} />
                 </div>
-                <CardTitle className="text-2xl font-bold text-foreground">What is DeckVault?</CardTitle>
+                <CardTitle className="text-2xl font-bold text-foreground">
+                  What is DeckVault?
+                </CardTitle>
               </div>
             </CardHeader>
             <CardContent>
               <p className="text-foreground leading-relaxed">
-                DeckVault is a curated collection of competitive EDH decklists, maintained by DefCat.
-                Browse powerful strategies, discover new commanders, and level up your cEDH game.
-                Our platform provides tier-based access to premium content, ensuring you get the most
-                value from your support.
+                DeckVault is a curated collection of competitive EDH decklists, maintained by
+                DefCat. Browse powerful strategies, discover new commanders, and level up your cEDH
+                game. Our platform provides tier-based access to premium content, ensuring you get
+                the most value from your support.
               </p>
             </CardContent>
           </Card>
@@ -53,21 +53,30 @@ export default function AboutPage() {
             </CardHeader>
             <CardContent>
               <p className="text-foreground leading-relaxed mb-4">
-                We aim to provide the cEDH community with high-quality, tested decklists that push the 
-                boundaries of competitive play. Every deck in our vault has been carefully crafted and 
-                refined through extensive playtesting.
+                We aim to provide the cEDH community with high-quality, tested decklists that push
+                the boundaries of competitive play. Every deck in our vault has been carefully
+                crafted and refined through extensive playtesting.
               </p>
               <ul className="space-y-2 text-foreground">
                 <li className="flex items-start gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full mt-2" style={{ backgroundColor: 'var(--mana-color)' }} />
+                  <div
+                    className="h-1.5 w-1.5 rounded-full mt-2"
+                    style={{ backgroundColor: 'var(--mana-color)' }}
+                  />
                   <span>Promote competitive EDH gameplay and strategy</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full mt-2" style={{ backgroundColor: 'var(--mana-color)' }} />
+                  <div
+                    className="h-1.5 w-1.5 rounded-full mt-2"
+                    style={{ backgroundColor: 'var(--mana-color)' }}
+                  />
                   <span>Support content creators in the Magic community</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full mt-2" style={{ backgroundColor: 'var(--mana-color)' }} />
+                  <div
+                    className="h-1.5 w-1.5 rounded-full mt-2"
+                    style={{ backgroundColor: 'var(--mana-color)' }}
+                  />
                   <span>Foster innovation in deck building and gameplay</span>
                 </li>
               </ul>
@@ -81,13 +90,15 @@ export default function AboutPage() {
                 <div className="p-2 rounded-lg bg-accent-tinted border border-tinted">
                   <Users className="h-5 w-5" style={{ color: 'var(--mana-color)' }} />
                 </div>
-                <CardTitle className="text-2xl font-bold text-foreground">Join Our Community</CardTitle>
+                <CardTitle className="text-2xl font-bold text-foreground">
+                  Join Our Community
+                </CardTitle>
               </div>
             </CardHeader>
             <CardContent>
               <p className="text-foreground leading-relaxed mb-4">
-                Connect with fellow cEDH enthusiasts, share strategies, and stay updated on the latest 
-                meta developments. Our community spans across multiple platforms.
+                Connect with fellow cEDH enthusiasts, share strategies, and stay updated on the
+                latest meta developments. Our community spans across multiple platforms.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
                 <a
@@ -119,7 +130,9 @@ export default function AboutPage() {
                 <div className="p-2 rounded-lg bg-accent-tinted border border-tinted">
                   <Trophy className="h-5 w-5" style={{ color: 'var(--mana-color)' }} />
                 </div>
-                <CardTitle className="text-2xl font-bold text-foreground">Platform Features</CardTitle>
+                <CardTitle className="text-2xl font-bold text-foreground">
+                  Platform Features
+                </CardTitle>
               </div>
             </CardHeader>
             <CardContent>

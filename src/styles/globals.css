@@ -35,9 +35,11 @@
     --glass-base-rgb: 148, 163, 184;
     --glass-border-rgb: 148, 163, 184;
     --glass-shadow-rgb: 0, 0, 0;
-    --glass-bg: linear-gradient(135deg,
-        rgba(var(--slate-light), 0.08),
-        rgba(var(--slate-rgb), 0.04));
+    --glass-bg: linear-gradient(
+      135deg,
+      rgba(var(--slate-light), 0.08),
+      rgba(var(--slate-rgb), 0.04)
+    );
     --glass-border: rgba(var(--slate-light), 0.18);
     --glass-blur: 12px;
     --glass-saturation: 1.1;
@@ -49,8 +51,8 @@
     --mana-tint-subtle: rgba(var(--mana-rgb), 0.3);
     --mana-tint-light: rgba(var(--mana-rgb), 0.06);
     --mana-tint-medium: rgba(var(--mana-rgb), 0.12);
-    --mana-tint-strong: rgba(var(--mana-rgb), 0.20);
-    --mana-tint-intense: rgba(var(--mana-rgb), 0.30);
+    --mana-tint-strong: rgba(var(--mana-rgb), 0.2);
+    --mana-tint-intense: rgba(var(--mana-rgb), 0.3);
 
     /* Mana-tinted backgrounds */
     --bg-tinted: rgba(var(--mana-rgb), 0.02);
@@ -107,9 +109,7 @@
     --glass-base-rgb: 255, 255, 255;
     --glass-border-rgb: 255, 255, 255;
     --glass-shadow-rgb: 0, 0, 0;
-    --glass-bg: linear-gradient(135deg,
-        rgba(var(--slate-dark), 0.12),
-        rgba(var(--slate-rgb), 0.06));
+    --glass-bg: linear-gradient(135deg, rgba(var(--slate-dark), 0.12), rgba(var(--slate-rgb), 0.06));
     --glass-border: rgba(var(--slate-light), 0.12);
     --glass-blur: 16px;
     --glass-saturation: 1.2;
@@ -146,11 +146,15 @@
     --text-disabled: rgba(100, 116, 139, 0.5);
   }
 
+  .mana-colorless {
+    --mana-color: #80808c
+  }
+
   /* White mana color theme */
   .mana-white {
     --mana-color: #fbbf24;
     --mana-rgb: 251, 191, 36;
-    --bg-tinted: rgba(251, 191, 36, 0.02);
+    --bg-tinted: rgba(251, 182, 7, 0.856);
     --card-tinted: rgba(251, 191, 36, 0.03);
     --accent-tinted: rgba(251, 191, 36, 0.08);
     --border-tinted: rgba(251, 191, 36, 0.15);
@@ -162,7 +166,7 @@
     --bg-dot-color: rgba(251, 191, 36, 0.1);
     --focus-ring: rgba(251, 191, 36, 0.2);
   }
-  
+
   .dark .mana-white {
     --bg-tinted: rgba(251, 191, 36, 0.03);
     --card-tinted: rgba(251, 191, 36, 0.05);
@@ -190,7 +194,7 @@
     --bg-dot-color: rgba(59, 130, 246, 0.1);
     --focus-ring: rgba(59, 130, 246, 0.2);
   }
-  
+
   .dark .mana-blue {
     --bg-tinted: rgba(59, 130, 246, 0.03);
     --card-tinted: rgba(59, 130, 246, 0.05);
@@ -204,7 +208,7 @@
 
   /* Black mana color theme */
   .mana-black {
-    --mana-color: #6b7280;
+    --mana-color: #3c0540;
     --mana-rgb: 107, 114, 128;
     --bg-tinted: rgba(107, 114, 128, 0.02);
     --card-tinted: rgba(107, 114, 128, 0.03);
@@ -218,7 +222,7 @@
     --bg-dot-color: rgba(107, 114, 128, 0.1);
     --focus-ring: rgba(107, 114, 128, 0.2);
   }
-  
+
   .dark .mana-black {
     --bg-tinted: rgba(107, 114, 128, 0.03);
     --card-tinted: rgba(107, 114, 128, 0.05);
@@ -246,7 +250,7 @@
     --bg-dot-color: rgba(239, 68, 68, 0.1);
     --focus-ring: rgba(239, 68, 68, 0.2);
   }
-  
+
   .dark .mana-red {
     --bg-tinted: rgba(239, 68, 68, 0.03);
     --card-tinted: rgba(239, 68, 68, 0.05);
@@ -274,7 +278,7 @@
     --bg-dot-color: rgba(34, 197, 94, 0.1);
     --focus-ring: rgba(34, 197, 94, 0.2);
   }
-  
+
   .dark .mana-green {
     --bg-tinted: rgba(34, 197, 94, 0.03);
     --card-tinted: rgba(34, 197, 94, 0.05);
@@ -298,11 +302,7 @@
 
 /* Glass card styles */
 .glass {
-  background: linear-gradient(
-    135deg,
-    var(--glass-bg-start),
-    var(--glass-bg-end)
-  );
+  background: linear-gradient(135deg, var(--glass-bg-start), var(--glass-bg-end));
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--glass-border);
@@ -380,7 +380,8 @@
 
 /* Custom animations */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -389,7 +390,8 @@
 }
 
 @keyframes glow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 5px rgba(var(--mana-rgb), 0.5);
   }
   50% {
@@ -407,7 +409,11 @@
 
 /* Utility classes for transitions */
 .transition-tinted {
-  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    color 0.3s ease;
 }
 
 /* Tinted Design System - Unified visual language */
@@ -494,7 +500,7 @@
 }
 
 .shadow-tinted-glow {
-  box-shadow: 
+  box-shadow:
     0 0 20px rgba(var(--mana-rgb), 0.15),
     0 8px 32px rgba(var(--glass-shadow-rgb), 0.1);
 }
@@ -519,27 +525,15 @@
    Tinted Gradients
    =========================== */
 .gradient-tinted {
-  background: linear-gradient(
-    135deg,
-    var(--gradient-start),
-    var(--gradient-end)
-  );
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
 }
 
 .gradient-tinted-radial {
-  background: radial-gradient(
-    circle at center,
-    rgba(var(--mana-rgb), 0.15),
-    transparent 70%
-  );
+  background: radial-gradient(circle at center, rgba(var(--mana-rgb), 0.15), transparent 70%);
 }
 
 .gradient-tinted-text {
-  background: linear-gradient(
-    to right,
-    var(--gradient-start),
-    var(--gradient-end)
-  );
+  background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -565,7 +559,7 @@
 .focus-tinted:focus {
   outline: none;
   border-color: var(--mana-color);
-  box-shadow: 
+  box-shadow:
     0 0 0 3px rgba(var(--mana-rgb), 0.1),
     0 0 20px rgba(var(--mana-rgb), 0.05);
 }
@@ -619,11 +613,7 @@
 }
 
 .btn-tinted-primary:hover {
-  background: linear-gradient(
-    135deg,
-    var(--gradient-start),
-    var(--gradient-end)
-  ) !important;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)) !important;
   transform: translateY(-1px) !important;
 }
 
@@ -635,11 +625,7 @@
 }
 
 .btn-tinted-outline:hover {
-  background: linear-gradient(
-    135deg,
-    var(--gradient-start),
-    var(--gradient-end)
-  ) !important;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)) !important;
   border-color: var(--mana-color) !important;
   transform: translateY(-1px) !important;
 }
@@ -681,11 +667,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(var(--mana-rgb), 0.05),
-    transparent
-  );
+  background: linear-gradient(135deg, rgba(var(--mana-rgb), 0.05), transparent);
   pointer-events: none;
 }
 
@@ -697,7 +679,8 @@
 }
 
 @keyframes pulse-tinted {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(var(--mana-rgb), 0.4);
   }
   50% {
@@ -717,12 +700,7 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent,
-    rgba(var(--mana-rgb), 0.1),
-    transparent
-  );
+  background: linear-gradient(45deg, transparent, rgba(var(--mana-rgb), 0.1), transparent);
   transform: translateX(-100%) translateY(-100%);
   animation: shimmer 3s infinite;
 }

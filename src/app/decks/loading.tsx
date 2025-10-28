@@ -11,20 +11,14 @@ export default function DecksLoading() {
         {/* Filters skeleton */}
         <div className="flex gap-4 flex-wrap">
           {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="h-10 w-32 bg-accent-tinted rounded-lg shimmer-tinted"
-            />
+            <div key={i} className="h-10 w-32 bg-accent-tinted rounded-lg shimmer-tinted" />
           ))}
         </div>
 
         {/* Deck grid skeleton */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
-            <div
-              key={i}
-              className="glass-tinted border-tinted rounded-lg overflow-hidden"
-            >
+            <div key={i} className="glass-tinted border-tinted rounded-lg overflow-hidden">
               <div className="aspect-video bg-accent-tinted shimmer-tinted" />
               <div className="p-4 space-y-3">
                 <div className="h-6 w-3/4 bg-accent-tinted rounded shimmer-tinted" />

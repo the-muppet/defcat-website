@@ -19,4 +19,3 @@ export function LoginButton({ variant = 'default' }: { variant?: 'default' | 'ou
     </Button>
   )
 }
-

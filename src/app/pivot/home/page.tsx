@@ -1,23 +1,23 @@
 'use client'
 
-import { useState, useMemo, useRef, useEffect } from "react"
-import { Search, Loader2, ChevronDown } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { FeaturedVideo } from "@/components/home/FeaturedVideo"
-import { SocialMediaLinks } from "@/components/home/SocialMediaLinks"
-import { RotatingAds } from "@/components/home/RotatingAds"
-import { DeckCard } from "@/components/decks/DeckCard"
-import { useDecks } from "@/lib/hooks/useDecks"
-import { createClient } from "@/lib/supabase/client"
+import { useState, useMemo, useRef, useEffect } from 'react'
+import { Search, Loader2, ChevronDown } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { FeaturedVideo } from '@/components/home/FeaturedVideo'
+import { SocialMediaLinks } from '@/components/home/SocialMediaLinks'
+import { RotatingAds } from '@/components/home/RotatingAds'
+import { DeckCard } from '@/components/decks/DeckCard'
+import { useDecks } from '@/lib/hooks/useDecks'
+import { createClient } from '@/lib/supabase/client'
 
 export default function ExampleHomePage() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [bracketLevel, setBracketLevel] = useState("")
+  const [searchQuery, setSearchQuery] = useState('')
+  const [bracketLevel, setBracketLevel] = useState('')
   const [selectedColors, setSelectedColors] = useState<string[]>([])
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [showTagsDropdown, setShowTagsDropdown] = useState(false)
-  const [featuredVideoId, setFeaturedVideoId] = useState<string>("")
+  const [featuredVideoId, setFeaturedVideoId] = useState<string>('')
 
   const tagsDropdownRef = useRef<HTMLDivElement>(null)
 
@@ -65,37 +65,37 @@ export default function ExampleHomePage() {
     // Search by name or commanders
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase()
-      filtered = filtered.filter(deck =>
-        deck.name?.toLowerCase().includes(query) ||
-        deck.commanders?.some(cmd => cmd?.toLowerCase().includes(query))
+      filtered = filtered.filter(
+        (deck) =>
+          deck.name?.toLowerCase().includes(query) ||
+          deck.commanders?.some((cmd) => cmd?.toLowerCase().includes(query))
       )
     }
 
     // Filter by bracket level
     if (bracketLevel) {
-      filtered = filtered.filter(deck =>
-        deck.bracket === bracketLevel
-      )
+      filtered = filtered.filter((deck) => deck.bracket === bracketLevel)
     }
 
     // Filter by colors
     if (selectedColors.length > 0) {
-      filtered = filtered.filter(deck =>
-        selectedColors.every(color => deck.color_identity?.includes(color))
+      filtered = filtered.filter((deck) =>
+        selectedColors.every((color) => deck.color_identity?.includes(color))
       )
     }
 
     // Filter by tags
     if (selectedTags.length > 0) {
-      filtered = filtered.filter(deck =>
-        selectedTags.some(tag => deck.description?.toLowerCase().includes(tag.toLowerCase()))
+      filtered = filtered.filter((deck) =>
+        selectedTags.some((tag) => deck.description?.toLowerCase().includes(tag.toLowerCase()))
       )
     }
 
     return filtered.slice(0, 12) // Limit to 12 results
   }, [allDecks, searchQuery, selectedColors, bracketLevel, selectedTags])
 
-  const hasSearchQuery = searchQuery.trim() || bracketLevel || selectedColors.length > 0 || selectedTags.length > 0
+  const hasSearchQuery =
+    searchQuery.trim() || bracketLevel || selectedColors.length > 0 || selectedTags.length > 0
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
@@ -103,7 +103,8 @@ export default function ExampleHomePage() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(farthest-corner at 50% 0%, var(--bg-tinted) 0%, var(--background) 100%)'
+          background:
+            'radial-gradient(farthest-corner at 50% 0%, var(--bg-tinted) 0%, var(--background) 100%)',
         }}
       />
 
@@ -117,7 +118,7 @@ export default function ExampleHomePage() {
               <h1
                 className="text-5xl md:text-6xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r"
                 style={{
-                  backgroundImage: `linear-gradient(to right, var(--gradient-start), var(--gradient-end))`
+                  backgroundImage: `linear-gradient(to right, var(--gradient-start), var(--gradient-end))`,
                 }}
               >
                 Defcat's Commander Deck Vault
@@ -137,9 +138,11 @@ export default function ExampleHomePage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-14 pr-6 py-5 rounded-2xl glass border border-white/10 text-foreground text-lg placeholder-muted-foreground focus:outline-none focus:ring-2 transition-all"
-                  style={{
-                    '--tw-ring-color': 'var(--mana-color)',
-                  } as React.CSSProperties}
+                  style={
+                    {
+                      '--tw-ring-color': 'var(--mana-color)',
+                    } as React.CSSProperties
+                  }
                 />
               </div>
 
@@ -151,14 +154,14 @@ export default function ExampleHomePage() {
                   { symbol: 'B', color: '#a855f7' },
                   { symbol: 'R', color: '#d3202a' },
                   { symbol: 'G', color: '#00733e' },
-                  { symbol: 'C', color: '#888' }
+                  { symbol: 'C', color: '#888' },
                 ].map(({ symbol, color }) => (
                   <button
                     key={symbol}
                     type="button"
                     onClick={() => {
                       if (selectedColors.includes(symbol)) {
-                        setSelectedColors(selectedColors.filter(c => c !== symbol))
+                        setSelectedColors(selectedColors.filter((c) => c !== symbol))
                       } else {
                         setSelectedColors([...selectedColors, symbol])
                       }
@@ -168,7 +171,11 @@ export default function ExampleHomePage() {
                         ? 'scale-100 opacity-100 ring-2 bg-accent-tinted'
                         : 'scale-90 opacity-50 hover:opacity-80 hover:scale-95'
                     }`}
-                    style={selectedColors.includes(symbol) ? { '--tw-ring-color': color } as React.CSSProperties : undefined}
+                    style={
+                      selectedColors.includes(symbol)
+                        ? ({ '--tw-ring-color': color } as React.CSSProperties)
+                        : undefined
+                    }
                   >
                     <i className={`ms ms-${symbol.toLowerCase()}`} style={{ fontSize: '28px' }} />
                   </button>
@@ -183,9 +190,11 @@ export default function ExampleHomePage() {
                     value={bracketLevel}
                     onChange={(e) => setBracketLevel(e.target.value)}
                     className="w-full px-4 py-3 rounded-lg glass border border-white/10 text-foreground bg-background focus:outline-none focus:ring-2 [&>option]:bg-background [&>option]:text-foreground"
-                    style={{
-                      '--tw-ring-color': 'var(--mana-color)',
-                    } as React.CSSProperties}
+                    style={
+                      {
+                        '--tw-ring-color': 'var(--mana-color)',
+                      } as React.CSSProperties
+                    }
                   >
                     <option value="">All Brackets</option>
                     <option value="1">Bracket 1</option>
@@ -201,19 +210,26 @@ export default function ExampleHomePage() {
                     type="button"
                     onClick={() => setShowTagsDropdown(!showTagsDropdown)}
                     className="w-full px-4 py-3 rounded-lg glass border border-white/10 text-foreground bg-background focus:outline-none focus:ring-2 flex items-center justify-between"
-                    style={{
-                      '--tw-ring-color': 'var(--mana-color)',
-                    } as React.CSSProperties}
+                    style={
+                      {
+                        '--tw-ring-color': 'var(--mana-color)',
+                      } as React.CSSProperties
+                    }
                   >
                     <span className="text-sm">
                       {selectedTags.length === 0 ? 'All Tags' : `${selectedTags.length} selected`}
                     </span>
-                    <ChevronDown className={`h-4 w-4 transition-transform ${showTagsDropdown ? 'rotate-180' : ''}`} />
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform ${showTagsDropdown ? 'rotate-180' : ''}`}
+                    />
                   </button>
                   {showTagsDropdown && (
                     <div className="absolute z-50 w-full mt-2 p-2 rounded-lg glass border border-white/10 bg-card shadow-lg space-y-1">
                       {['combo', 'aggro', 'control', 'tribal'].map((tag) => (
-                        <label key={tag} className="flex items-center gap-2 cursor-pointer hover:bg-accent-tinted p-2 rounded transition-colors">
+                        <label
+                          key={tag}
+                          className="flex items-center gap-2 cursor-pointer hover:bg-accent-tinted p-2 rounded transition-colors"
+                        >
                           <input
                             type="checkbox"
                             checked={selectedTags.includes(tag)}
@@ -221,7 +237,7 @@ export default function ExampleHomePage() {
                               if (e.target.checked) {
                                 setSelectedTags([...selectedTags, tag])
                               } else {
-                                setSelectedTags(selectedTags.filter(t => t !== tag))
+                                setSelectedTags(selectedTags.filter((t) => t !== tag))
                               }
                             }}
                             className="w-4 h-4 rounded border-border bg-background text-[var(--mana-color)] focus:ring-[var(--mana-color)]"
@@ -241,13 +257,17 @@ export default function ExampleHomePage() {
                 {searchLoading ? (
                   <Card className="glass border-white/10 bg-card-tinted">
                     <CardContent className="p-12 flex items-center justify-center">
-                      <Loader2 className="h-12 w-12 animate-spin" style={{ color: 'var(--mana-color)' }} />
+                      <Loader2
+                        className="h-12 w-12 animate-spin"
+                        style={{ color: 'var(--mana-color)' }}
+                      />
                     </CardContent>
                   </Card>
                 ) : searchResults && searchResults.length > 0 ? (
                   <div>
                     <h3 className="text-2xl font-bold mb-6">
-                      Found {searchResults.length} deck{searchResults.length !== 1 ? 's' : ''}
+                      Found {searchResults.length} deck
+                      {searchResults.length !== 1 ? 's' : ''}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {searchResults.map((deck) => (
@@ -264,8 +284,8 @@ export default function ExampleHomePage() {
                       </p>
                       <Button
                         onClick={() => {
-                          setSearchQuery("")
-                          setBracketLevel("")
+                          setSearchQuery('')
+                          setBracketLevel('')
                           setSelectedColors([])
                           setSelectedTags([])
                         }}
@@ -285,10 +305,7 @@ export default function ExampleHomePage() {
         <RotatingAds />
 
         {/* Featured YouTube Video */}
-        <FeaturedVideo
-          title="Today's Featured Video"
-          videoId={featuredVideoId}
-        />
+        <FeaturedVideo title="Today's Featured Video" videoId={featuredVideoId} />
 
         {/* Premium Stats */}
         <section className="py-12 px-6">

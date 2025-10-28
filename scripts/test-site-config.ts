@@ -16,10 +16,7 @@ async function testSiteConfig() {
 
   // Test 1: Check if table exists
   console.log('1. Checking if table exists...')
-  const { data, error } = await supabase
-    .from('site_config')
-    .select('*')
-    .limit(1)
+  const { data, error } = await supabase.from('site_config').select('*').limit(1)
 
   if (error) {
     console.error('❌ Table does not exist or query failed:')
@@ -55,10 +52,7 @@ async function testSiteConfig() {
 
   // Test 4: Check RLS policies
   console.log('\n4. Testing RLS (using anon key)...')
-  const anonSupabase = createClient(
-    supabaseUrl,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  const anonSupabase = createClient(supabaseUrl, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
   const { data: publicData, error: rlsError } = await anonSupabase
     .from('site_config')
@@ -72,10 +66,12 @@ async function testSiteConfig() {
   }
 }
 
-testSiteConfig().then(() => {
-  console.log('\n✨ Test complete')
-  process.exit(0)
-}).catch((err) => {
-  console.error('Test failed:', err)
-  process.exit(1)
-})
+testSiteConfig()
+  .then(() => {
+    console.log('\n✨ Test complete')
+    process.exit(0)
+  })
+  .catch((err) => {
+    console.error('Test failed:', err)
+    process.exit(1)
+  })

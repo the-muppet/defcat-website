@@ -1,17 +1,17 @@
 // app/page.tsx
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import { cn } from "@/lib/utils"
-import { TrendingUp, Sparkles, BarChart3, Crown, Award, Loader2, LogIn } from "lucide-react"
-import { ManaSymbols } from "@/components/decks/ManaSymbols"
-import { LightRays } from "@/components/layout/LightRays"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { DeckCard } from "@/components/decks/DeckCard"
-import { NumberTicker } from "@/components/ui/number-ticker"
-import { useDeckStats, useLatestDeck } from "@/lib/api/stats"
-import Link from "next/link"
+import { useState, useEffect } from 'react'
+import { cn } from '@/lib/utils'
+import { TrendingUp, Sparkles, BarChart3, Crown, Award, Loader2, LogIn } from 'lucide-react'
+import { ManaSymbols } from '@/components/decks/ManaSymbols'
+import { LightRays } from '@/components/layout/LightRays'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { DeckCard } from '@/components/decks/DeckCard'
+import { NumberTicker } from '@/components/ui/number-ticker'
+import { useDeckStats, useLatestDeck } from '@/lib/api/stats'
+import Link from 'next/link'
 
 export default function LandingPage() {
   const [currentStatIndex, setCurrentStatIndex] = useState(0)
@@ -30,8 +30,7 @@ export default function LandingPage() {
     return () => clearInterval(interval)
   }, [])
 
- 
-  const maxCurveCount = deckStats ? Math.max(...deckStats.avgManaCurve.map(c => c.count)) : 1
+  const maxCurveCount = deckStats ? Math.max(...deckStats.avgManaCurve.map((c) => c.count)) : 1
 
   if (loading) {
     return (
@@ -47,7 +46,8 @@ export default function LandingPage() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(farthest-corner at 50% 0%, var(--bg-tinted) 0%, var(--background) 100%)'
+          background:
+            'radial-gradient(farthest-corner at 50% 0%, var(--bg-tinted) 0%, var(--background) 100%)',
         }}
       />
 
@@ -57,7 +57,7 @@ export default function LandingPage() {
         style={{
           backgroundImage: 'url(/defcat_logo.png)',
           backgroundSize: '55%',
-          backgroundPosition: 'center 30%'
+          backgroundPosition: 'center 30%',
         }}
       />
 
@@ -65,10 +65,7 @@ export default function LandingPage() {
       <div className="absolute inset-0 bg-gradient-to-b from-background/10 via-background/20 to-background pointer-events-none" />
 
       {/* Ocean Light Rays - GPU accelerated */}
-      <LightRays
-        count={32}
-        color="var(--mana-color)"
-      />
+      <LightRays count={32} color="var(--mana-color)" />
 
       <div className="relative" style={{ zIndex: 10 }}>
         <section className="min-h-screen flex flex-col px-6">
@@ -77,7 +74,7 @@ export default function LandingPage() {
               <h1
                 className="text-5xl md:text-6xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r"
                 style={{
-                  backgroundImage: `linear-gradient(to right, var(--gradient-start), var(--gradient-end))`
+                  backgroundImage: `linear-gradient(to right, var(--gradient-start), var(--gradient-end))`,
                 }}
               >
                 DefCat's DeckVault
@@ -114,8 +111,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-
-      <style jsx global>{`
+        <style jsx global>{`
         @keyframes jumbo-animate {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }

@@ -6,17 +6,18 @@
     "dev": "next dev --port 8888 --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "db:push": "bash scripts/db-push.sh",
+    "fetch": "tsx scripts/bookmark.ts",
+    "db:new": "bash scripts/migrate.sh new",
+    "db:up": "bash scripts/migrate.sh up",
     "lint": "biome check",
     "format": "biome format --write",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
     "prepare": "husky",
-    "import-decks": "tsx scripts/import-decks.ts",
-    "import-decks:dry-run": "tsx scripts/import-decks.ts --dry-run",
-    "import-scraped": "tsx scripts/import-scraped-decks.ts",
-    "import-scraped:dry-run": "tsx scripts/import-scraped-decks.ts --dry-run"
+    "fetch:decks": "tsx scripts/import-decks.ts",
+    "fetch:images": "tsx scripts/backfill-card-images.ts",
+    "cleanup:phantom-cache": "tsx scripts/cleanup-phantom-cache.ts"
   },
   "dependencies": {
     "@custom-react-hooks/use-media-query": "^1.5.1",
@@ -49,6 +50,7 @@
     "@tailwindcss/typography": "^0.5.19",
     "@tanstack/react-query": "^5.90.3",
     "@uidotdev/usehooks": "^2.4.1",
+    "biome": "^0.3.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -98,5 +100,10 @@
   },
   "optionalDependencies": {
     "lightningcss-win32-x64-msvc": "^1.30.2"
-  }
+  },
+  "trustedDependencies": [
+    "@tailwindcss/oxide",
+    "core-js",
+    "protobufjs"
+  ]
 }

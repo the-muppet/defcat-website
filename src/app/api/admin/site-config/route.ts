@@ -39,10 +39,7 @@ export async function PATCH(request: NextRequest) {
     // Verify user is admin
     const authHeader = request.headers.get('authorization')
     if (!authHeader) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get user from browser client to verify role
@@ -51,15 +48,13 @@ export async function PATCH(request: NextRequest) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     )
 
-    const { data: { user }, error: userError } = await browserSupabase.auth.getUser(
-      authHeader.replace('Bearer ', '')
-    )
+    const {
+      data: { user },
+      error: userError,
+    } = await browserSupabase.auth.getUser(authHeader.replace('Bearer ', ''))
 
     if (userError || !user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     // Check if user is admin
@@ -80,10 +75,7 @@ export async function PATCH(request: NextRequest) {
     const updates = await request.json()
 
     if (!Array.isArray(updates)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid request body' },
-        { status: 400 }
-      )
+      return NextResponse.json({ success: false, error: 'Invalid request body' }, { status: 400 })
     }
 
     // Apply all updates using service role (bypasses RLS)
@@ -93,7 +85,7 @@ export async function PATCH(request: NextRequest) {
         .from('site_config')
         .update({
           value: update.value,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('key', update.key)
         .select()
@@ -109,14 +101,14 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: `Updated ${results.length} configuration items`,
-      data: results
+      data: results,
     })
   } catch (error) {
     console.error('Failed to update site config:', error)
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to update configuration'
+        error: error instanceof Error ? error.message : 'Failed to update configuration',
       },
       { status: 500 }
     )

@@ -10,17 +10,14 @@ const requiredEnvVars = [
   'PATREON_CLIENT_ID',
   'PATREON_CLIENT_SECRET',
   'PATREON_REDIRECT_URI',
-] as const;
+] as const
 
-const optionalEnvVars = [
-  'NEXT_PUBLIC_SITE_URL',
-  'NODE_ENV',
-] as const;
+const optionalEnvVars = ['NEXT_PUBLIC_SITE_URL', 'NODE_ENV'] as const
 
 interface EnvValidationResult {
-  valid: boolean;
-  missing: string[];
-  warnings: string[];
+  valid: boolean
+  missing: string[]
+  warnings: string[]
 }
 
 /**
@@ -28,18 +25,18 @@ interface EnvValidationResult {
  * @returns Validation result with missing variables
  */
 export function validateEnv(): EnvValidationResult {
-  const missing: string[] = [];
-  const warnings: string[] = [];
+  const missing: string[] = []
+  const warnings: string[] = []
 
   for (const key of requiredEnvVars) {
     if (!process.env[key]) {
-      missing.push(key);
+      missing.push(key)
     }
   }
 
   for (const key of optionalEnvVars) {
     if (!process.env[key]) {
-      warnings.push(`Optional environment variable ${key} is not set`);
+      warnings.push(`Optional environment variable ${key} is not set`)
     }
   }
 
@@ -47,7 +44,7 @@ export function validateEnv(): EnvValidationResult {
     valid: missing.length === 0,
     missing,
     warnings,
-  };
+  }
 }
 
 /**
@@ -55,23 +52,23 @@ export function validateEnv(): EnvValidationResult {
  * Call this in your root layout or middleware
  */
 export function requireValidEnv(): void {
-  const result = validateEnv();
+  const result = validateEnv()
 
   if (!result.valid) {
     const errorMessage = [
       '❌ Missing required environment variables:',
-      ...result.missing.map(key => `  - ${key}`),
+      ...result.missing.map((key) => `  - ${key}`),
       '',
       'Please check your .env.local file and ensure all required variables are set.',
       'See .env.example for reference.',
-    ].join('\n');
+    ].join('\n')
 
-    throw new Error(errorMessage);
+    throw new Error(errorMessage)
   }
 
   if (result.warnings.length > 0 && process.env.NODE_ENV === 'development') {
-    console.warn('⚠️  Optional environment variables not set:');
-    result.warnings.forEach(warning => console.warn(`  ${warning}`));
+    console.warn('⚠️  Optional environment variables not set:')
+    result.warnings.forEach((warning) => console.warn(`  ${warning}`))
   }
 }
 
@@ -93,14 +90,14 @@ export const env = {
   // Optional
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
   NODE_ENV: process.env.NODE_ENV || 'development',
-} as const;
+} as const
 
 /**
  * Check if we're in development mode
  */
-export const isDevelopment = env.NODE_ENV === 'development';
+export const isDevelopment = env.NODE_ENV === 'development'
 
 /**
  * Check if we're in production mode
  */
-export const isProduction = env.NODE_ENV === 'production';
+export const isProduction = env.NODE_ENV === 'production'

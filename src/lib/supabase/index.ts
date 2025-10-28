@@ -21,8 +21,8 @@ export { updateSession } from './middleware'
 export { createAdminClient } from './admin'
 
 export interface supabase {
-    updateSession: (session: any) => any
-    createBrowserClient: () => any
-    createServerClient: () => any
-    createAdminClient: () => any
+  updateSession: (session: any) => any
+  createBrowserClient: () => any
+  createServerClient: () => any
+  createAdminClient: () => any
 }

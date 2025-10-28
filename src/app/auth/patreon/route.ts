@@ -9,12 +9,25 @@ function initiateOAuthFlow(request: Request) {
   const origin = new URL(request.url).origin
 
   const clientId = process.env.PATREON_CLIENT_ID
-  const redirectUri = process.env.PATREON_REDIRECT_URI
+
+  // Use dynamic redirect URI based on environment
+  // In development, use localhost; in production, use the configured production URL
+  const isLocalhost = origin.includes('localhost') || origin.includes('127.0.0.1')
+  const redirectUri = isLocalhost
+    ? `${origin}/auth/patreon-callback`
+    : process.env.PATREON_REDIRECT_URI
 
   if (!clientId || !redirectUri) {
     console.error('Missing Patreon OAuth credentials')
+    console.error('Client ID present:', !!clientId)
+    console.error('Redirect URI:', redirectUri)
     return NextResponse.redirect(`${origin}/auth/login?error=config_missing`)
   }
+
+  console.log('🔐 Initiating OAuth flow')
+  console.log('Origin:', origin)
+  console.log('Is localhost:', isLocalhost)
+  console.log('Redirect URI:', redirectUri)
 
   // Build Patreon OAuth URL manually with proper scopes
   const params = new URLSearchParams({

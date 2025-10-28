@@ -1,31 +1,29 @@
-'use client';
+'use client'
 
-import { Crown, Shield, Star, Sparkles, Zap, Users } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import type { PatreonTier } from '@/types/core';
+import { Crown, Shield, Star, Sparkles, Zap, Users } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import type { PatreonTier } from '@/types/core'
 
 interface TierBadgeProps {
-  tier: PatreonTier;
-  showIcon?: boolean;
-  showTooltip?: boolean;
-  className?: string;
+  tier: PatreonTier
+  showIcon?: boolean
+  showTooltip?: boolean
+  className?: string
 }
 
-const TIER_CONFIG: Record<PatreonTier, {
-  label: string;
-  icon: typeof Crown;
-  color: string;
-  bgColor: string;
-  borderColor: string;
-  description: string;
-  price: string;
-}> = {
+const TIER_CONFIG: Record<
+  PatreonTier,
+  {
+    label: string
+    icon: typeof Crown
+    color: string
+    bgColor: string
+    borderColor: string
+    description: string
+    price: string
+  }
+> = {
   Citizen: {
     label: 'Citizen',
     icon: Users,
@@ -80,16 +78,16 @@ const TIER_CONFIG: Record<PatreonTier, {
     description: 'Ultimate tier with all features unlocked',
     price: '$250/month',
   },
-};
+}
 
 export function TierBadge({
   tier,
   showIcon = true,
   showTooltip = true,
-  className = ''
+  className = '',
 }: TierBadgeProps) {
-  const config = TIER_CONFIG[tier];
-  const Icon = config.icon;
+  const config = TIER_CONFIG[tier]
+  const Icon = config.icon
 
   const badgeContent = (
     <Badge
@@ -106,18 +104,16 @@ export function TierBadge({
       {showIcon && <Icon className="h-3.5 w-3.5" />}
       <span>{config.label}</span>
     </Badge>
-  );
+  )
 
   if (!showTooltip) {
-    return badgeContent;
+    return badgeContent
   }
 
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger asChild>
-          {badgeContent}
-        </TooltipTrigger>
+        <TooltipTrigger asChild>{badgeContent}</TooltipTrigger>
         <TooltipContent>
           <div className="space-y-1">
             <p className="font-semibold">{config.label} Tier</p>
@@ -127,34 +123,34 @@ export function TierBadge({
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-  );
+  )
 }
 
 /**
  * Small inline tier badge for compact spaces
  */
 export function TierBadgeCompact({ tier }: { tier: PatreonTier }) {
-  const config = TIER_CONFIG[tier];
-  const Icon = config.icon;
+  const config = TIER_CONFIG[tier]
+  const Icon = config.icon
 
   return (
     <span className={`inline-flex items-center gap-1 ${config.color} text-sm font-medium`}>
       <Icon className="h-3 w-3" />
       {config.label}
     </span>
-  );
+  )
 }
 
 /**
  * Get tier configuration data
  */
 export function getTierConfig(tier: PatreonTier) {
-  return TIER_CONFIG[tier];
+  return TIER_CONFIG[tier]
 }
 
 /**
  * Get all tiers in order
  */
 export function getAllTiers(): PatreonTier[] {
-  return ['Citizen', 'Knight', 'Emissary', 'Duke', 'Wizard', 'ArchMage'];
+  return ['Citizen', 'Knight', 'Emissary', 'Duke', 'Wizard', 'ArchMage']
 }

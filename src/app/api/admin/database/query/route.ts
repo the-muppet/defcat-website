@@ -14,10 +14,7 @@ export async function POST(request: NextRequest) {
     // Verify user is admin
     const authHeader = request.headers.get('authorization')
     if (!authHeader) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     const browserSupabase = createClient(
@@ -25,15 +22,13 @@ export async function POST(request: NextRequest) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     )
 
-    const { data: { user }, error: userError } = await browserSupabase.auth.getUser(
-      authHeader.replace('Bearer ', '')
-    )
+    const {
+      data: { user },
+      error: userError,
+    } = await browserSupabase.auth.getUser(authHeader.replace('Bearer ', ''))
 
     if (userError || !user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     // Check if user is developer
@@ -55,14 +50,12 @@ export async function POST(request: NextRequest) {
     // For safety, only allow SELECT queries and specific tables
     if (table) {
       // Direct table query
-      const { data, error } = await supabase
-        .from(table)
-        .select('*')
+      const { data, error } = await supabase.from(table).select('*')
 
       if (error) {
         return NextResponse.json({
           success: false,
-          error: error.message
+          error: error.message,
         })
       }
 
@@ -70,7 +63,7 @@ export async function POST(request: NextRequest) {
         success: true,
         data,
         rowCount: Array.isArray(data) ? data.length : 0,
-        table
+        table,
       })
     }
 
@@ -79,10 +72,14 @@ export async function POST(request: NextRequest) {
       // Only allow SELECT queries for safety
       const trimmedQuery = query.trim().toUpperCase()
       if (!trimmedQuery.startsWith('SELECT')) {
-        return NextResponse.json({
-          success: false,
-          error: 'Only SELECT queries are allowed. For modifications, use the admin panel specific functions.'
-        }, { status: 400 })
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              'Only SELECT queries are allowed. For modifications, use the admin panel specific functions.',
+          },
+          { status: 400 }
+        )
       }
 
       try {
@@ -93,10 +90,10 @@ export async function POST(request: NextRequest) {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
-              'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`
+              apikey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+              Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`,
             },
-            body: JSON.stringify({ query })
+            body: JSON.stringify({ query }),
           }
         )
 
@@ -106,26 +103,32 @@ export async function POST(request: NextRequest) {
           success: true,
           data,
           rowCount: Array.isArray(data) ? data.length : null,
-          message: 'Query executed successfully'
+          message: 'Query executed successfully',
         })
       } catch (err) {
-        return NextResponse.json({
-          success: false,
-          error: 'Failed to execute query. Please check syntax and try again.'
-        }, { status: 500 })
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Failed to execute query. Please check syntax and try again.',
+          },
+          { status: 500 }
+        )
       }
     }
 
-    return NextResponse.json({
-      success: false,
-      error: 'Invalid request - provide either query or table parameter'
-    }, { status: 400 })
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Invalid request - provide either query or table parameter',
+      },
+      { status: 400 }
+    )
   } catch (error) {
     console.error('Database query error:', error)
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to execute query'
+        error: error instanceof Error ? error.message : 'Failed to execute query',
       },
       { status: 500 }
     )

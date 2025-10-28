@@ -42,7 +42,8 @@ export async function GET() {
 
     checks.components.database.latency_ms = Date.now() - dbStart
 
-    if (dbError && dbError.code !== 'PGRST116') { // PGRST116 = no rows, which is fine
+    if (dbError && dbError.code !== 'PGRST116') {
+      // PGRST116 = no rows, which is fine
       checks.components.database.status = 'unhealthy'
       checks.components.database.error = dbError.message
       checks.status = 'degraded'
@@ -61,7 +62,6 @@ export async function GET() {
         checks.status = 'degraded'
       }
     }
-
   } catch (error) {
     checks.status = 'unhealthy'
     checks.components.database.status = 'unhealthy'

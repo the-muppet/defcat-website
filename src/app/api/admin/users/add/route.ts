@@ -15,13 +15,12 @@ function getResendClient() {
 export async function POST(request: Request) {
   try {
     const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     // Check if user is admin or developer
@@ -51,10 +50,7 @@ export async function POST(request: Request) {
     // Validate role
     const validRoles = ['user', 'admin', 'moderator', 'developer']
     if (!validRoles.includes(role)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid role' },
-        { status: 400 }
-      )
+      return NextResponse.json({ success: false, error: 'Invalid role' }, { status: 400 })
     }
 
     // Only developers can assign developer role
@@ -85,30 +81,28 @@ export async function POST(request: Request) {
     if (createError) {
       console.error('Error creating user:', createError)
       return NextResponse.json(
-        { success: false, error: createError.message || 'Failed to create user' },
+        {
+          success: false,
+          error: createError.message || 'Failed to create user',
+        },
         { status: 500 }
       )
     }
 
     if (!newUser.user) {
-      return NextResponse.json(
-        { success: false, error: 'User creation failed' },
-        { status: 500 }
-      )
+      return NextResponse.json({ success: false, error: 'User creation failed' }, { status: 500 })
     }
 
     // Create profile
-    const { error: profileError } = await adminClient
-      .from('profiles')
-      .insert({
-        id: newUser.user.id,
-        email,
-        role,
-        patreon_tier: patreonTier || null,
-        patreon_id: null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
+    const { error: profileError } = await adminClient.from('profiles').insert({
+      id: newUser.user.id,
+      email,
+      role,
+      patreon_tier: patreonTier || null,
+      patreon_id: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
 
     if (profileError) {
       console.error('Error creating profile:', profileError)
@@ -170,13 +164,10 @@ export async function POST(request: Request) {
         email,
         role,
         passwordResetSent,
-      }
+      },
     })
   } catch (error) {
     console.error('Add user error:', error)
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 })
   }
 }

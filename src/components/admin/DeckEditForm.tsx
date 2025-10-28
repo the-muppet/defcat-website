@@ -1,33 +1,33 @@
 'use client'
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Save, Trash2 } from 'lucide-react';
-import type { Database } from '@/types/supabase';
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Loader2, Save, Trash2 } from 'lucide-react'
+import type { Database } from '@/types/supabase'
 
-type Deck = Database['public']['Tables']['decks']['Row'];
+type Deck = Database['public']['Tables']['decks']['Row']
 
 interface DeckEditFormProps {
-  deck: Deck;
+  deck: Deck
 }
 
 export function DeckEditForm({ deck }: DeckEditFormProps) {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [formData, setFormData] = useState({
     name: deck.name || '',
     description: deck.description || '',
     commanders: deck.commanders?.join(', ') || '',
-  });
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+    e.preventDefault()
+    setLoading(true)
 
     try {
       const response = await fetch(`/api/admin/decks/${deck.id}`, {
@@ -36,50 +36,53 @@ export function DeckEditForm({ deck }: DeckEditFormProps) {
         body: JSON.stringify({
           name: formData.name,
           description: formData.description || null,
-          commanders: formData.commanders.split(',').map(c => c.trim()).filter(Boolean),
+          commanders: formData.commanders
+            .split(',')
+            .map((c) => c.trim())
+            .filter(Boolean),
         }),
-      });
+      })
 
       if (response.ok) {
-        router.refresh();
-        alert('Deck updated successfully!');
+        router.refresh()
+        alert('Deck updated successfully!')
       } else {
-        const error = await response.json();
-        alert(`Error: ${error.error || 'Failed to update deck'}`);
+        const error = await response.json()
+        alert(`Error: ${error.error || 'Failed to update deck'}`)
       }
     } catch (error) {
-      console.error('Error updating deck:', error);
-      alert('Failed to update deck');
+      console.error('Error updating deck:', error)
+      alert('Failed to update deck')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleDelete = async () => {
     if (!confirm(`Are you sure you want to delete "${deck.name}"? This cannot be undone.`)) {
-      return;
+      return
     }
 
-    setDeleting(true);
+    setDeleting(true)
 
     try {
       const response = await fetch(`/api/admin/decks/${deck.id}`, {
         method: 'DELETE',
-      });
+      })
 
       if (response.ok) {
-        router.push('/admin/decks');
+        router.push('/admin/decks')
       } else {
-        const error = await response.json();
-        alert(`Error: ${error.error || 'Failed to delete deck'}`);
+        const error = await response.json()
+        alert(`Error: ${error.error || 'Failed to delete deck'}`)
       }
     } catch (error) {
-      console.error('Error deleting deck:', error);
-      alert('Failed to delete deck');
+      console.error('Error deleting deck:', error)
+      alert('Failed to delete deck')
     } finally {
-      setDeleting(false);
+      setDeleting(false)
     }
-  };
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -151,12 +154,7 @@ export function DeckEditForm({ deck }: DeckEditFormProps) {
           )}
         </Button>
 
-        <Button
-          type="button"
-          variant="destructive"
-          onClick={handleDelete}
-          disabled={deleting}
-        >
+        <Button type="button" variant="destructive" onClick={handleDelete} disabled={deleting}>
           {deleting ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -171,5 +169,5 @@ export function DeckEditForm({ deck }: DeckEditFormProps) {
         </Button>
       </div>
     </form>
-  );
+  )
 }

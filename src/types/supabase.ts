@@ -1,16 +1,10 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
+    PostgrestVersion: '13.0.5'
   }
   graphql_public: {
     Tables: {
@@ -129,32 +123,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "deck_cards_card_id_fkey"
-            columns: ["card_id"]
+            foreignKeyName: 'deck_cards_card_id_fkey'
+            columns: ['card_id']
             isOneToOne: false
-            referencedRelation: "cards"
-            referencedColumns: ["id"]
+            referencedRelation: 'cards'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "deck_cards_card_id_fkey"
-            columns: ["card_id"]
+            foreignKeyName: 'deck_cards_card_id_fkey'
+            columns: ['card_id']
             isOneToOne: false
-            referencedRelation: "staple_cards_mv"
-            referencedColumns: ["card_id"]
+            referencedRelation: 'staple_cards_mv'
+            referencedColumns: ['card_id']
           },
           {
-            foreignKeyName: "deck_cards_deck_id_fkey"
-            columns: ["deck_id"]
+            foreignKeyName: 'deck_cards_deck_id_fkey'
+            columns: ['deck_id']
             isOneToOne: false
-            referencedRelation: "decks"
-            referencedColumns: ["id"]
+            referencedRelation: 'decks'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "deck_cards_deck_id_fkey"
-            columns: ["deck_id"]
+            foreignKeyName: 'deck_cards_deck_id_fkey'
+            columns: ['deck_id']
             isOneToOne: false
-            referencedRelation: "decks_full"
-            referencedColumns: ["id"]
+            referencedRelation: 'decks_full'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -176,27 +170,27 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "deck_mana_analysis_cache_deck_id_fkey"
-            columns: ["deck_id"]
+            foreignKeyName: 'deck_mana_analysis_cache_deck_id_fkey'
+            columns: ['deck_id']
             isOneToOne: true
-            referencedRelation: "decks"
-            referencedColumns: ["id"]
+            referencedRelation: 'decks'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "deck_mana_analysis_cache_deck_id_fkey"
-            columns: ["deck_id"]
+            foreignKeyName: 'deck_mana_analysis_cache_deck_id_fkey'
+            columns: ['deck_id']
             isOneToOne: true
-            referencedRelation: "decks_full"
-            referencedColumns: ["id"]
+            referencedRelation: 'decks_full'
+            referencedColumns: ['id']
           },
         ]
       }
       deck_submissions: {
         Row: {
-          bracket: string
-          budget: string
-          coffee_preference: string
-          color_preference: string
+          bracket: string | null
+          budget: string | null
+          coffee_preference: string | null
+          color_preference: string | null
           commander: string | null
           created_at: string
           deck_list_url: string | null
@@ -204,22 +198,24 @@ export type Database = {
           email: string
           id: string
           ideal_date: string | null
+          moxfield_username: string | null
           mystery_deck: boolean
           notes: string | null
-          patreon_id: string
-          patreon_tier: string
+          patreon_id: string | null
+          patreon_tier: string | null
           patreon_username: string
           status: string | null
           submission_month: string | null
+          submission_type: Database['public']['Enums']['submission_type']
           theme: string | null
           updated_at: string
           user_id: string | null
         }
         Insert: {
-          bracket: string
-          budget: string
-          coffee_preference: string
-          color_preference: string
+          bracket?: string | null
+          budget?: string | null
+          coffee_preference?: string | null
+          color_preference?: string | null
           commander?: string | null
           created_at?: string
           deck_list_url?: string | null
@@ -227,22 +223,24 @@ export type Database = {
           email: string
           id?: string
           ideal_date?: string | null
+          moxfield_username?: string | null
           mystery_deck: boolean
           notes?: string | null
-          patreon_id: string
-          patreon_tier: string
+          patreon_id?: string | null
+          patreon_tier?: string | null
           patreon_username: string
           status?: string | null
           submission_month?: string | null
+          submission_type?: Database['public']['Enums']['submission_type']
           theme?: string | null
           updated_at?: string
           user_id?: string | null
         }
         Update: {
-          bracket?: string
-          budget?: string
-          coffee_preference?: string
-          color_preference?: string
+          bracket?: string | null
+          budget?: string | null
+          coffee_preference?: string | null
+          color_preference?: string | null
           commander?: string | null
           created_at?: string
           deck_list_url?: string | null
@@ -250,13 +248,15 @@ export type Database = {
           email?: string
           id?: string
           ideal_date?: string | null
+          moxfield_username?: string | null
           mystery_deck?: boolean
           notes?: string | null
-          patreon_id?: string
-          patreon_tier?: string
+          patreon_id?: string | null
+          patreon_tier?: string | null
           patreon_username?: string
           status?: string | null
           submission_month?: string | null
+          submission_type?: Database['public']['Enums']['submission_type']
           theme?: string | null
           updated_at?: string
           user_id?: string | null
@@ -330,7 +330,7 @@ export type Database = {
           moxfield_id: string
           moxfield_url: string
           name: string
-          required_tier: Database["public"]["Enums"]["patreon_tier"]
+          required_tier: Database['public']['Enums']['patreon_tier']
           set_codes: string[] | null
           updated_at: string | null
           view_count: number | null
@@ -350,7 +350,7 @@ export type Database = {
           moxfield_id: string
           moxfield_url: string
           name: string
-          required_tier?: Database["public"]["Enums"]["patreon_tier"]
+          required_tier?: Database['public']['Enums']['patreon_tier']
           set_codes?: string[] | null
           updated_at?: string | null
           view_count?: number | null
@@ -370,25 +370,25 @@ export type Database = {
           moxfield_id?: string
           moxfield_url?: string
           name?: string
-          required_tier?: Database["public"]["Enums"]["patreon_tier"]
+          required_tier?: Database['public']['Enums']['patreon_tier']
           set_codes?: string[] | null
           updated_at?: string | null
           view_count?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "decks_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'decks_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "decks_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'decks_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "user_submission_status"
-            referencedColumns: ["user_id"]
+            referencedRelation: 'user_submission_status'
+            referencedColumns: ['user_id']
           },
         ]
       }
@@ -449,13 +449,56 @@ export type Database = {
         }
         Relationships: []
       }
+      products: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          key: string
+          link: string
+          name: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          key: string
+          link: string
+          name: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          key?: string
+          link?: string
+          name?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
           email: string
           id: string
+          moxfield_username: string | null
           patreon_id: string | null
-          patreon_tier: Database["public"]["Enums"]["patreon_tier"] | null
+          patreon_tier: Database['public']['Enums']['patreon_tier'] | null
           role: string | null
           updated_at: string | null
         }
@@ -463,8 +506,9 @@ export type Database = {
           created_at?: string | null
           email: string
           id: string
+          moxfield_username?: string | null
           patreon_id?: string | null
-          patreon_tier?: Database["public"]["Enums"]["patreon_tier"] | null
+          patreon_tier?: Database['public']['Enums']['patreon_tier'] | null
           role?: string | null
           updated_at?: string | null
         }
@@ -472,8 +516,9 @@ export type Database = {
           created_at?: string | null
           email?: string
           id?: string
+          moxfield_username?: string | null
           patreon_id?: string | null
-          patreon_tier?: Database["public"]["Enums"]["patreon_tier"] | null
+          patreon_tier?: Database['public']['Enums']['patreon_tier'] | null
           role?: string | null
           updated_at?: string | null
         }
@@ -548,18 +593,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "sync_deck_logs_sync_log_id_fkey"
-            columns: ["sync_log_id"]
+            foreignKeyName: 'sync_deck_logs_sync_log_id_fkey'
+            columns: ['sync_log_id']
             isOneToOne: false
-            referencedRelation: "recent_syncs"
-            referencedColumns: ["id"]
+            referencedRelation: 'recent_syncs'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "sync_deck_logs_sync_log_id_fkey"
-            columns: ["sync_log_id"]
+            foreignKeyName: 'sync_deck_logs_sync_log_id_fkey'
+            columns: ['sync_log_id']
             isOneToOne: false
-            referencedRelation: "sync_logs"
-            referencedColumns: ["id"]
+            referencedRelation: 'sync_logs'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -644,6 +689,57 @@ export type Database = {
           moxfield_url?: string
           updated_at?: string
           views?: number | null
+        }
+        Relationships: []
+      }
+      user_credits: {
+        Row: {
+          created_at: string | null
+          credits_month: string
+          deck_credits: number
+          id: string
+          patreon_tier: string
+          roast_credits: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          credits_month: string
+          deck_credits?: number
+          id?: string
+          patreon_tier: string
+          roast_credits?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          credits_month?: string
+          deck_credits?: number
+          id?: string
+          patreon_tier?: string
+          roast_credits?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: number
+          role: Database['public']['Enums']['user_role']
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          role?: Database['public']['Enums']['user_role']
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          role?: Database['public']['Enums']['user_role']
         }
         Relationships: []
       }
@@ -793,21 +889,21 @@ export type Database = {
       user_submission_status: {
         Row: {
           max_submissions: number | null
-          patreon_tier: Database["public"]["Enums"]["patreon_tier"] | null
+          patreon_tier: Database['public']['Enums']['patreon_tier'] | null
           remaining_submissions: number | null
           used_submissions: number | null
           user_id: string | null
         }
         Insert: {
           max_submissions?: never
-          patreon_tier?: Database["public"]["Enums"]["patreon_tier"] | null
+          patreon_tier?: Database['public']['Enums']['patreon_tier'] | null
           remaining_submissions?: never
           used_submissions?: never
           user_id?: string | null
         }
         Update: {
           max_submissions?: never
-          patreon_tier?: Database["public"]["Enums"]["patreon_tier"] | null
+          patreon_tier?: Database['public']['Enums']['patreon_tier'] | null
           remaining_submissions?: never
           used_submissions?: never
           user_id?: string | null
@@ -868,6 +964,10 @@ export type Database = {
         Args: { d: number; k: number; n: number; x: number }
         Returns: number
       }
+      exec_sql: {
+        Args: { query: string }
+        Returns: Json
+      }
       extract_deck_text: {
         Args: { moxfield_data: Json }
         Returns: string
@@ -914,6 +1014,25 @@ export type Database = {
           deck_count: number
         }[]
       }
+      get_archetype_synergies: {
+        Args: {
+          color_filter?: string[]
+          exclude_staples?: boolean
+          limit_results?: number
+          min_cooccurrence?: number
+        }
+        Returns: {
+          avg_cmc: number
+          card_a_colors: string[]
+          card_a_id: string
+          card_a_name: string
+          card_b_colors: string[]
+          card_b_id: string
+          card_b_name: string
+          cooccurrence_count: number
+          synergy_score: number
+        }[]
+      }
       get_average_mana_curve: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -924,12 +1043,44 @@ export type Database = {
           unique_cards: number
         }[]
       }
+      get_card_patterns: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       get_card_synergies: {
-        Args: { min_correlation?: number; target_card: string }
+        Args:
+          | { limit_results?: number; min_cooccurrence?: number }
+          | { min_correlation?: number; target_card: string }
         Returns: {
-          correlation_percentage: number
-          synergy_card: string
-          times_together: number
+          card_a_id: string
+          card_a_name: string
+          card_a_total_decks: number
+          card_b_id: string
+          card_b_name: string
+          card_b_total_decks: number
+          cooccurrence_count: number
+          percentage_together: number
+          synergy_score: number
+        }[]
+      }
+      get_card_synergies_filtered: {
+        Args: {
+          exclude_staple_threshold?: number
+          limit_results?: number
+          min_cooccurrence?: number
+        }
+        Returns: {
+          card_a_id: string
+          card_a_inclusion_rate: number
+          card_a_name: string
+          card_a_total_decks: number
+          card_b_id: string
+          card_b_inclusion_rate: number
+          card_b_name: string
+          card_b_total_decks: number
+          cooccurrence_count: number
+          percentage_together: number
+          synergy_score: number
         }[]
       }
       get_card_type_distribution: {
@@ -939,6 +1090,10 @@ export type Database = {
           card_type: string
           total_cards: number
         }[]
+      }
+      get_collection_overview: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       get_deck_mana_analysis: {
         Args: { p_deck_id: string }
@@ -989,6 +1144,17 @@ export type Database = {
           total_copies: number
         }[]
       }
+      get_tier_monthly_credits: {
+        Args: { tier: string }
+        Returns: {
+          deck_credits: number
+          roast_credits: number
+        }[]
+      }
+      get_top_cards_by_color: {
+        Args: { limit_per_color?: number }
+        Returns: Json
+      }
       get_top_commanders: {
         Args: { limit_count?: number }
         Returns: {
@@ -1001,27 +1167,34 @@ export type Database = {
           total_views: number
         }[]
       }
+      get_universal_staples: {
+        Args: { min_inclusion_rate?: number }
+        Returns: {
+          card_id: string
+          card_name: string
+          deck_count: number
+          inclusion_rate: number
+        }[]
+      }
       http: {
-        Args: { request: Database["public"]["CompositeTypes"]["http_request"] }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
+        Args: { request: Database['public']['CompositeTypes']['http_request'] }
+        Returns: Database['public']['CompositeTypes']['http_response']
       }
       http_delete: {
-        Args:
-          | { content: string; content_type: string; uri: string }
-          | { uri: string }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
+        Args: { content: string; content_type: string; uri: string } | { uri: string }
+        Returns: Database['public']['CompositeTypes']['http_response']
       }
       http_get: {
         Args: { data: Json; uri: string } | { uri: string }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
+        Returns: Database['public']['CompositeTypes']['http_response']
       }
       http_head: {
         Args: { uri: string }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
+        Returns: Database['public']['CompositeTypes']['http_response']
       }
       http_header: {
         Args: { field: string; value: string }
-        Returns: Database["public"]["CompositeTypes"]["http_header"]
+        Returns: Database['public']['CompositeTypes']['http_header']
       }
       http_list_curlopt: {
         Args: Record<PropertyKey, never>
@@ -1032,17 +1205,15 @@ export type Database = {
       }
       http_patch: {
         Args: { content: string; content_type: string; uri: string }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
+        Returns: Database['public']['CompositeTypes']['http_response']
       }
       http_post: {
-        Args:
-          | { content: string; content_type: string; uri: string }
-          | { data: Json; uri: string }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
+        Args: { content: string; content_type: string; uri: string } | { data: Json; uri: string }
+        Returns: Database['public']['CompositeTypes']['http_response']
       }
       http_put: {
         Args: { content: string; content_type: string; uri: string }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
+        Returns: Database['public']['CompositeTypes']['http_response']
       }
       http_reset_curlopt: {
         Args: Record<PropertyKey, never>
@@ -1074,6 +1245,18 @@ export type Database = {
           error_count: number
           success_count: number
         }[]
+      }
+      refresh_user_credits: {
+        Args: { p_patreon_tier: string; p_user_id: string }
+        Returns: undefined
+      }
+      refund_credit: {
+        Args: {
+          p_submission_month: string
+          p_submission_type: Database['public']['Enums']['submission_type']
+          p_user_id: string
+        }
+        Returns: boolean
       }
       search_decks_by_card: {
         Args: { card_name: string }
@@ -1124,22 +1307,21 @@ export type Database = {
         Returns: string
       }
       urlencode: {
-        Args:
-          | { "": string }
-          | { data: Json }
-          | { string: string }
-          | { string: string }
+        Args: { '': string } | { data: Json } | { string: string } | { string: string }
         Returns: string
+      }
+      use_credit: {
+        Args: {
+          p_submission_type: Database['public']['Enums']['submission_type']
+          p_user_id: string
+        }
+        Returns: boolean
       }
     }
     Enums: {
-      patreon_tier:
-        | "Citizen"
-        | "Knight"
-        | "Emissary"
-        | "Duke"
-        | "Wizard"
-        | "ArchMage"
+      patreon_tier: 'Citizen' | 'Knight' | 'Emissary' | 'Duke' | 'Wizard' | 'ArchMage'
+      submission_type: 'deck' | 'roast'
+      user_role: 'user' | 'member' | 'moderator' | 'administrator' | 'developer'
     }
     CompositeTypes: {
       http_header: {
@@ -1149,47 +1331,45 @@ export type Database = {
       http_request: {
         method: unknown | null
         uri: string | null
-        headers: Database["public"]["CompositeTypes"]["http_header"][] | null
+        headers: Database['public']['CompositeTypes']['http_header'][] | null
         content_type: string | null
         content: string | null
       }
       http_response: {
         status: number | null
         content_type: string | null
-        headers: Database["public"]["CompositeTypes"]["http_header"][] | null
+        headers: Database['public']['CompositeTypes']['http_header'][] | null
         content: string | null
       }
     }
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -1198,23 +1378,23 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
+    | keyof DefaultSchema['Tables']
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -1223,23 +1403,23 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
+    | keyof DefaultSchema['Tables']
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -1248,36 +1428,36 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
+    | keyof DefaultSchema['Enums']
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
+    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
+    | keyof DefaultSchema['CompositeTypes']
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
+    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
@@ -1286,14 +1466,9 @@ export const Constants = {
   },
   public: {
     Enums: {
-      patreon_tier: [
-        "Citizen",
-        "Knight",
-        "Emissary",
-        "Duke",
-        "Wizard",
-        "ArchMage",
-      ],
+      patreon_tier: ['Citizen', 'Knight', 'Emissary', 'Duke', 'Wizard', 'ArchMage'],
+      submission_type: ['deck', 'roast'],
+      user_role: ['user', 'member', 'moderator', 'administrator', 'developer'],
     },
   },
 } as const

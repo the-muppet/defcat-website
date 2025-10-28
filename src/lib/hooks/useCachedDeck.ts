@@ -47,7 +47,7 @@ export function useCachedDeck(deckId: string | null): UseCachedDeckResult {
         const { data, error: fetchError } = await supabase
           .from('decks')
           .select('*')
-          .eq('id', deckId)
+          .eq('id', deckId!)
           .single()
 
         if (fetchError) throw fetchError

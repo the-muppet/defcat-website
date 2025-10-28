@@ -14,16 +14,13 @@ export function Footer() {
         <div className="flex flex-col items-center gap-6">
           <ul className="flex gap-8 text-sm text-muted-foreground">
             <li>
-              <Link
-                href="/about"
-                className="hover:text-foreground transition-all"
-              >
+              <Link href="/about" className="hover:text-foreground transition-all">
                 About
               </Link>
             </li>
             <li>
               <a
-                href="https://patreon.com"
+                href="https://patreon.com/defcat"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-foreground transition-all"
@@ -33,10 +30,11 @@ export function Footer() {
             </li>
             <li>
               <a
-                href="https://discord.gg"
+                href="https://patreon.com/defcat"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-foreground transition-all"
+                title="Discord access is available to Patreon members. Click to join on Patreon!"
               >
                 Discord
               </a>

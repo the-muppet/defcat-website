@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
-import { Card, CardContent } from "@/components/ui/card"
-import { Youtube } from "lucide-react"
+import { Card, CardContent } from '@/components/ui/card'
+import { Youtube } from 'lucide-react'
 
 interface FeaturedVideoProps {
   videoId?: string
@@ -20,7 +20,7 @@ export function FeaturedVideo({
   playing = false,
   controls = true,
   light = true,
-  muted = false
+  muted = false,
 }: FeaturedVideoProps) {
   console.log('FeaturedVideo props:', { videoId, url, title })
   const videoUrl = url || (videoId ? `https://www.youtube.com/watch?v=${videoId}` : null)

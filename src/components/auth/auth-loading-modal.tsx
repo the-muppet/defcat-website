@@ -1,15 +1,15 @@
 // components/auth/auth-loading-modal.tsx
-'use client';
+'use client'
 
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react'
 
 interface AuthLoadingModalProps {
-  isOpen: boolean;
-  type: 'login' | 'logout';
+  isOpen: boolean
+  type: 'login' | 'logout'
 }
 
 export function AuthLoadingModal({ isOpen, type }: AuthLoadingModalProps) {
-  const message = type === 'login' ? 'Signing you in...' : 'Signing you out...';
+  const message = type === 'login' ? 'Signing you in...' : 'Signing you out...'
 
   return (
     <AnimatePresence>
@@ -25,7 +25,10 @@ export function AuthLoadingModal({ isOpen, type }: AuthLoadingModalProps) {
           />
 
           {/* Modal with tinted glass effect */}
-          <div className="fixed inset-0 flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
+          <div
+            className="fixed inset-0 flex items-center justify-center p-4"
+            style={{ zIndex: 9999 }}
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -38,17 +41,17 @@ export function AuthLoadingModal({ isOpen, type }: AuthLoadingModalProps) {
                 <div className="relative">
                   <motion.div
                     className="w-16 h-16 rounded-full"
-                    style={{ 
-                      border: '4px solid rgba(var(--mana-rgb), 0.2)'
+                    style={{
+                      border: '4px solid rgba(var(--mana-rgb), 0.2)',
                     }}
                   />
                   <motion.div
                     className="absolute inset-0 w-16 h-16 rounded-full"
-                    style={{ 
+                    style={{
                       borderWidth: '4px',
                       borderStyle: 'solid',
                       borderColor: 'transparent',
-                      borderTopColor: 'var(--mana-color)'
+                      borderTopColor: 'var(--mana-color)',
                     }}
                     animate={{ rotate: 360 }}
                     transition={{
@@ -61,12 +64,8 @@ export function AuthLoadingModal({ isOpen, type }: AuthLoadingModalProps) {
 
                 {/* Message */}
                 <div className="text-center space-y-2">
-                  <h3 className="text-lg font-semibold text-foreground">
-                    {message}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Please wait a moment
-                  </p>
+                  <h3 className="text-lg font-semibold text-foreground">{message}</h3>
+                  <p className="text-sm text-muted-foreground">Please wait a moment</p>
                 </div>
 
                 {/* Loading dots animation */}
@@ -93,6 +92,5 @@ export function AuthLoadingModal({ isOpen, type }: AuthLoadingModalProps) {
         </>
       )}
     </AnimatePresence>
-  );
+  )
 }
-

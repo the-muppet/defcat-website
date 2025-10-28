@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import React, {
   createContext,
@@ -7,13 +7,13 @@ import React, {
   useContext,
   useEffect,
   useState,
-} from "react"
-import * as AccordionPrimitive from "@radix-ui/react-accordion"
-import { FileIcon, FolderIcon, FolderOpenIcon } from "lucide-react"
+} from 'react'
+import * as AccordionPrimitive from '@radix-ui/react-accordion'
+import { FileIcon, FolderIcon, FolderOpenIcon } from 'lucide-react'
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 type TreeViewElement = {
   id: string
@@ -31,7 +31,7 @@ type TreeContextProps = {
   setExpandedItems?: React.Dispatch<React.SetStateAction<string[] | undefined>>
   openIcon?: React.ReactNode
   closeIcon?: React.ReactNode
-  direction: "rtl" | "ltr"
+  direction: 'rtl' | 'ltr'
 }
 
 const TreeContext = createContext<TreeContextProps | null>(null)
@@ -39,12 +39,12 @@ const TreeContext = createContext<TreeContextProps | null>(null)
 const useTree = () => {
   const context = useContext(TreeContext)
   if (!context) {
-    throw new Error("useTree must be used within a TreeProvider")
+    throw new Error('useTree must be used within a TreeProvider')
   }
   return context
 }
 
-type Direction = "rtl" | "ltr" | undefined
+type Direction = 'rtl' | 'ltr' | undefined
 
 type TreeViewProps = {
   initialSelectedId?: string
@@ -71,12 +71,8 @@ const Tree = forwardRef<HTMLDivElement, TreeViewProps>(
     },
     ref
   ) => {
-    const [selectedId, setSelectedId] = useState<string | undefined>(
-      initialSelectedId
-    )
-    const [expandedItems, setExpandedItems] = useState<string[] | undefined>(
-      initialExpandedItems
-    )
+    const [selectedId, setSelectedId] = useState<string | undefined>(initialSelectedId)
+    const [expandedItems, setExpandedItems] = useState<string[] | undefined>(initialExpandedItems)
 
     const selectItem = useCallback((id: string) => {
       setSelectedId(id)
@@ -94,10 +90,7 @@ const Tree = forwardRef<HTMLDivElement, TreeViewProps>(
     const expandSpecificTargetedElements = useCallback(
       (elements?: TreeViewElement[], selectId?: string) => {
         if (!elements || !selectId) return
-        const findParent = (
-          currentElement: TreeViewElement,
-          currentPath: string[] = []
-        ) => {
+        const findParent = (currentElement: TreeViewElement, currentPath: string[] = []) => {
           const isSelectable = currentElement.isSelectable ?? true
           const newPath = [...currentPath, currentElement.id]
           if (currentElement.id === selectId) {
@@ -111,11 +104,7 @@ const Tree = forwardRef<HTMLDivElement, TreeViewProps>(
             }
             return
           }
-          if (
-            isSelectable &&
-            currentElement.children &&
-            currentElement.children.length > 0
-          ) {
+          if (isSelectable && currentElement.children && currentElement.children.length > 0) {
             currentElement.children.forEach((child) => {
               findParent(child, newPath)
             })
@@ -134,7 +123,7 @@ const Tree = forwardRef<HTMLDivElement, TreeViewProps>(
       }
     }, [initialSelectedId, elements])
 
-    const direction = dir === "rtl" ? "rtl" : "ltr"
+    const direction = dir === 'rtl' ? 'rtl' : 'ltr'
 
     return (
       <TreeContext.Provider
@@ -150,21 +139,15 @@ const Tree = forwardRef<HTMLDivElement, TreeViewProps>(
           direction,
         }}
       >
-        <div className={cn("size-full", className)}>
-          <ScrollArea
-            ref={ref}
-            className="relative h-full px-2"
-            dir={dir as Direction}
-          >
+        <div className={cn('size-full', className)}>
+          <ScrollArea ref={ref} className="relative h-full px-2" dir={dir as Direction}>
             <AccordionPrimitive.Root
               {...props}
               type="multiple"
               defaultValue={expandedItems}
               value={expandedItems}
               className="flex flex-col gap-1"
-              onValueChange={(value) =>
-                setExpandedItems((prev) => [...(prev ?? []), value[0]])
-              }
+              onValueChange={(value) => setExpandedItems((prev) => [...(prev ?? []), value[0]])}
               dir={dir as Direction}
             >
               {children}
@@ -176,28 +159,27 @@ const Tree = forwardRef<HTMLDivElement, TreeViewProps>(
   }
 )
 
-Tree.displayName = "Tree"
+Tree.displayName = 'Tree'
 
-const TreeIndicator = forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
-  const { direction } = useTree()
+const TreeIndicator = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => {
+    const { direction } = useTree()
 
-  return (
-    <div
-      dir={direction}
-      ref={ref}
-      className={cn(
-        "bg-muted absolute left-1.5 h-full w-px rounded-md py-3 duration-300 ease-in-out hover:bg-slate-300 rtl:right-1.5",
-        className
-      )}
-      {...props}
-    />
-  )
-})
+    return (
+      <div
+        dir={direction}
+        ref={ref}
+        className={cn(
+          'bg-muted absolute left-1.5 h-full w-px rounded-md py-3 duration-300 ease-in-out hover:bg-slate-300 rtl:right-1.5',
+          className
+        )}
+        {...props}
+      />
+    )
+  }
+)
 
-TreeIndicator.displayName = "TreeIndicator"
+TreeIndicator.displayName = 'TreeIndicator'
 
 type FolderProps = {
   expandedItems?: string[]
@@ -206,22 +188,8 @@ type FolderProps = {
   isSelect?: boolean
 } & React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>
 
-const Folder = forwardRef<
-  HTMLDivElement,
-  FolderProps & React.HTMLAttributes<HTMLDivElement>
->(
-  (
-    {
-      className,
-      element,
-      value,
-      isSelectable = true,
-      isSelect,
-      children,
-      ...props
-    },
-    ref
-  ) => {
+const Folder = forwardRef<HTMLDivElement, FolderProps & React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, element, value, isSelectable = true, isSelect, children, ...props }, ref) => {
     const {
       direction,
       handleExpand,
@@ -233,21 +201,13 @@ const Folder = forwardRef<
     } = useTree()
 
     return (
-      <AccordionPrimitive.Item
-        {...props}
-        value={value}
-        className="relative h-full overflow-hidden"
-      >
+      <AccordionPrimitive.Item {...props} value={value} className="relative h-full overflow-hidden">
         <AccordionPrimitive.Trigger
-          className={cn(
-            `flex items-center gap-1 rounded-md text-sm`,
-            className,
-            {
-              "bg-muted rounded-md": isSelect && isSelectable,
-              "cursor-pointer": isSelectable,
-              "cursor-not-allowed opacity-50": !isSelectable,
-            }
-          )}
+          className={cn(`flex items-center gap-1 rounded-md text-sm`, className, {
+            'bg-muted rounded-md': isSelect && isSelectable,
+            'cursor-pointer': isSelectable,
+            'cursor-not-allowed opacity-50': !isSelectable,
+          })}
           disabled={!isSelectable}
           onClick={() => handleExpand(value)}
         >
@@ -276,7 +236,7 @@ const Folder = forwardRef<
   }
 )
 
-Folder.displayName = "Folder"
+Folder.displayName = 'Folder'
 
 const File = forwardRef<
   HTMLButtonElement,
@@ -289,16 +249,7 @@ const File = forwardRef<
   } & React.ButtonHTMLAttributes<HTMLButtonElement>
 >(
   (
-    {
-      value,
-      className,
-      handleSelect,
-      isSelectable = true,
-      isSelect,
-      fileIcon,
-      children,
-      ...props
-    },
+    { value, className, handleSelect, isSelectable = true, isSelect, fileIcon, children, ...props },
     ref
   ) => {
     const { direction, selectedId, selectItem } = useTree()
@@ -309,12 +260,12 @@ const File = forwardRef<
         type="button"
         disabled={!isSelectable}
         className={cn(
-          "flex w-fit items-center gap-1 rounded-md pr-1 text-sm duration-200 ease-in-out rtl:pr-0 rtl:pl-1",
+          'flex w-fit items-center gap-1 rounded-md pr-1 text-sm duration-200 ease-in-out rtl:pr-0 rtl:pl-1',
           {
-            "bg-muted": isSelected && isSelectable,
+            'bg-muted': isSelected && isSelectable,
           },
-          isSelectable ? "cursor-pointer" : "cursor-not-allowed opacity-50",
-          direction === "rtl" ? "rtl" : "ltr",
+          isSelectable ? 'cursor-pointer' : 'cursor-not-allowed opacity-50',
+          direction === 'rtl' ? 'rtl' : 'ltr',
           className
         )}
         onClick={() => selectItem(value)}
@@ -327,7 +278,7 @@ const File = forwardRef<
   }
 )
 
-File.displayName = "File"
+File.displayName = 'File'
 
 const CollapseButton = forwardRef<
   HTMLButtonElement,
@@ -363,13 +314,9 @@ const CollapseButton = forwardRef<
 
   return (
     <Button
-      variant={"ghost"}
+      variant={'ghost'}
       className="absolute right-2 bottom-1 h-8 w-fit p-1"
-      onClick={
-        expandedItems && expandedItems.length > 0
-          ? closeAll
-          : () => expendAllTree(elements)
-      }
+      onClick={expandedItems && expandedItems.length > 0 ? closeAll : () => expendAllTree(elements)}
       ref={ref}
       {...props}
     >
@@ -379,6 +326,6 @@ const CollapseButton = forwardRef<
   )
 })
 
-CollapseButton.displayName = "CollapseButton"
+CollapseButton.displayName = 'CollapseButton'
 
 export { CollapseButton, File, Folder, Tree, type TreeViewElement }

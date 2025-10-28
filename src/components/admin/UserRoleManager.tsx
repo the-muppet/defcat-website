@@ -3,7 +3,13 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
@@ -27,7 +33,10 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
+  const [message, setMessage] = useState<{
+    type: 'success' | 'error'
+    text: string
+  } | null>(null)
   const [showAddUser, setShowAddUser] = useState(false)
   const [newUserEmail, setNewUserEmail] = useState('')
   const [newUserRole, setNewUserRole] = useState('user')
@@ -66,7 +75,9 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
     setMessage(null)
 
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
       if (!session) {
         throw new Error('Not authenticated')
       }
@@ -75,9 +86,9 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
+          Authorization: `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({ userId, role: newRole })
+        body: JSON.stringify({ userId, role: newRole }),
       })
 
       const result = await response.json()
@@ -92,7 +103,7 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
       console.error('Failed to update role:', err)
       setMessage({
         type: 'error',
-        text: err instanceof Error ? err.message : 'Failed to update role'
+        text: err instanceof Error ? err.message : 'Failed to update role',
       })
     } finally {
       setUpdating(false)
@@ -109,7 +120,9 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
     setMessage(null)
 
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
       if (!session) {
         throw new Error('Not authenticated')
       }
@@ -118,13 +131,13 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           email: newUserEmail.trim(),
           role: newUserRole,
-          patreonTier: newUserTier.trim() || null
-        })
+          patreonTier: newUserTier.trim() || null,
+        }),
       })
 
       const result = await response.json()
@@ -147,14 +160,14 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
       console.error('Failed to add user:', err)
       setMessage({
         type: 'error',
-        text: err instanceof Error ? err.message : 'Failed to add user'
+        text: err instanceof Error ? err.message : 'Failed to add user',
       })
     } finally {
       setAdding(false)
     }
   }
 
-  const filteredUsers = users.filter(user =>
+  const filteredUsers = users.filter((user) =>
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
@@ -173,19 +186,21 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         {message && (
-          <div className={`p-3 rounded-lg flex items-start gap-2 ${
-            message.type === 'success'
-              ? 'bg-green-500/10 border border-green-500/20'
-              : 'bg-destructive/10 border border-destructive/20'
-          }`}>
+          <div
+            className={`p-3 rounded-lg flex items-start gap-2 ${
+              message.type === 'success'
+                ? 'bg-green-500/10 border border-green-500/20'
+                : 'bg-destructive/10 border border-destructive/20'
+            }`}
+          >
             {message.type === 'success' ? (
               <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
             ) : (
               <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
             )}
-            <p className={`text-sm ${
-              message.type === 'success' ? 'text-green-500' : 'text-destructive'
-            }`}>
+            <p
+              className={`text-sm ${message.type === 'success' ? 'text-green-500' : 'text-destructive'}`}
+            >
               {message.text}
             </p>
           </div>
@@ -254,7 +269,10 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="new-user-tier">Patreon Tier (Optional)</Label>
-                <Select value={newUserTier || "none"} onValueChange={(val) => setNewUserTier(val === "none" ? "" : val)}>
+                <Select
+                  value={newUserTier || 'none'}
+                  onValueChange={(val) => setNewUserTier(val === 'none' ? '' : val)}
+                >
                   <SelectTrigger id="new-user-tier">
                     <SelectValue placeholder="None" />
                   </SelectTrigger>
@@ -302,7 +320,8 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
                 <div className="flex-1">
                   <p className="font-medium">{user.email}</p>
                   <p className="text-xs text-muted-foreground">
-                    Tier: {user.patreon_tier || 'None'} • Joined {new Date(user.created_at).toLocaleDateString()}
+                    Tier: {user.patreon_tier || 'None'} • Joined{' '}
+                    {new Date(user.created_at).toLocaleDateString()}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -327,21 +346,22 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
             ))}
 
             {filteredUsers.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground">
-                No users found
-              </div>
+              <div className="text-center py-8 text-muted-foreground">No users found</div>
             )}
           </div>
         )}
 
         <div className="p-3 bg-muted/30 rounded-lg">
           <p className="text-xs text-muted-foreground">
-            <strong>Role Permissions:</strong><br />
-            • <strong>User:</strong> Basic access<br />
-            • <strong>Admin:</strong> Content management (client access)<br />
-            • <strong>Moderator:</strong> Content management + moderation<br />
+            <strong>Role Permissions:</strong>
+            <br />• <strong>User:</strong> Basic access
+            <br />• <strong>Admin:</strong> Content management (client access)
+            <br />• <strong>Moderator:</strong> Content management + moderation
+            <br />
             {isDeveloper && (
-              <>• <strong>Developer:</strong> Full system access (database, SQL queries)</>
+              <>
+                • <strong>Developer:</strong> Full system access (database, SQL queries)
+              </>
             )}
           </p>
         </div>

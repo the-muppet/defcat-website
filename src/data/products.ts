@@ -1,8 +1,4 @@
-export type ProductCategory =
-  | 'Apparel'
-  | 'MTG Accessories'
-  | 'Gaming Accessories'
-  | 'Luxury Items'
+export type ProductCategory = 'Apparel' | 'MTG Accessories' | 'Gaming Accessories' | 'Luxury Items'
 
 export interface Product {
   id: string

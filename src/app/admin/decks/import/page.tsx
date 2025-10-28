@@ -3,15 +3,15 @@
  * Import decks from Moxfield
  */
 
-import Link from 'next/link';
-import { requireAdmin } from '@/lib/auth-guards';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { ArrowLeft } from 'lucide-react';
-import { DeckImportForm } from '@/components/admin/DeckImportForm';
+import Link from 'next/link'
+import { requireAdmin } from '@/lib/auth-guards'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { ArrowLeft } from 'lucide-react'
+import { DeckImportForm } from '@/components/admin/DeckImportForm'
 
 export default async function AdminDeckImportPage() {
-  await requireAdmin();
+  await requireAdmin()
 
   return (
     <div className="container mx-auto px-4 py-8" data-page="admin-deck-import">
@@ -26,14 +26,11 @@ export default async function AdminDeckImportPage() {
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-gradient">Import Deck from Moxfield</h1>
-            <p className="text-muted-foreground mt-1">
-              Enter a Moxfield deck URL or ID to import
-            </p>
+            <p className="text-muted-foreground mt-1">Enter a Moxfield deck URL or ID to import</p>
           </div>
         </div>
 
         {/* Scraper populated Bookmark dropdown list */}
-       
 
         {/* Import Form */}
         <Card className="glass-panel p-6">
@@ -53,12 +50,12 @@ export default async function AdminDeckImportPage() {
 
           <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
             <p className="text-sm">
-              <strong>Note:</strong> The deck data is cached in our database. To refresh a deck's data,
-              you can re-import it with the same Moxfield ID.
+              <strong>Note:</strong> The deck data is cached in our database. To refresh a deck's
+              data, you can re-import it with the same Moxfield ID.
             </p>
           </div>
         </Card>
       </div>
     </div>
-  );
+  )
 }

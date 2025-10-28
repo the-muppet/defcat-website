@@ -55,14 +55,11 @@ export async function fetchCardArt(cardName: string): Promise<string | null> {
   try {
     // Use exact name search
     const encodedName = encodeURIComponent(cardName)
-    const response = await fetch(
-      `https://api.scryfall.com/cards/named?exact=${encodedName}`,
-      {
-        headers: {
-          'Accept': 'application/json',
-        },
-      }
-    )
+    const response = await fetch(`https://api.scryfall.com/cards/named?exact=${encodedName}`, {
+      headers: {
+        Accept: 'application/json',
+      },
+    })
 
     if (!response.ok) {
       console.warn(`Scryfall API error for "${cardName}":`, response.status)
@@ -77,10 +74,10 @@ export async function fetchCardArt(cardName: string): Promise<string | null> {
     }
 
     const card = data as ScryfallCard
-    
+
     // Handle double-faced cards
     let artCropUrl: string | null = null
-    
+
     if (card.image_uris?.art_crop) {
       artCropUrl = card.image_uris.art_crop
     } else if (card.card_faces && card.card_faces[0]?.image_uris?.art_crop) {
@@ -117,10 +114,10 @@ export async function fetchCardArts(
     if (artCrop) {
       results.set(cardName, artCrop)
     }
-    
+
     // Rate limiting - be nice to Scryfall
     if (cardNames.length > 1) {
-      await new Promise(resolve => setTimeout(resolve, delayMs))
+      await new Promise((resolve) => setTimeout(resolve, delayMs))
     }
   }
 

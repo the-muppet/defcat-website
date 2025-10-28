@@ -112,11 +112,13 @@ export function PendingSubmissions() {
                   <div className="flex-1 space-y-3">
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-lg">{submission.email}</span>
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${
-                        submission.status === 'pending'
-                          ? 'bg-yellow-500/20 text-yellow-400'
-                          : 'bg-blue-500/20 text-blue-400'
-                      }`}>
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full ${
+                          submission.status === 'pending'
+                            ? 'bg-yellow-500/20 text-yellow-400'
+                            : 'bg-blue-500/20 text-blue-400'
+                        }`}
+                      >
                         {submission.status === 'pending' ? 'Pending' : 'Queued'}
                       </span>
                       <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400">
@@ -144,7 +146,8 @@ export function PendingSubmissions() {
                         </div>
                       )}
                       <div className="text-muted-foreground">
-                        <strong>Type:</strong> {submission.mystery_deck ? 'Mystery Deck' : 'Custom Build'}
+                        <strong>Type:</strong>{' '}
+                        {submission.mystery_deck ? 'Mystery Deck' : 'Custom Build'}
                       </div>
                       {submission.commander && (
                         <div className="text-muted-foreground">
@@ -155,9 +158,11 @@ export function PendingSubmissions() {
                         <div className="text-muted-foreground flex items-center gap-2">
                           <strong>Colors:</strong>
                           <div className="flex items-center gap-0.5">
-                            {ColorIdentity.getIndividual(submission.color_preference).map((symbol, idx) => (
-                              <i key={idx} className={`ms ms-${symbol.toLowerCase()} ms-2x`} />
-                            ))}
+                            {ColorIdentity.getIndividual(submission.color_preference).map(
+                              (symbol, idx) => (
+                                <i key={idx} className={`ms ms-${symbol.toLowerCase()} ms-2x`} />
+                              )
+                            )}
                           </div>
                         </div>
                       )}
@@ -168,7 +173,8 @@ export function PendingSubmissions() {
                       )}
                       {submission.budget && (
                         <div className="text-muted-foreground">
-                          <strong>Budget:</strong> ${Number(submission.budget).toLocaleString('en-US')}
+                          <strong>Budget:</strong> $
+                          {Number(submission.budget).toLocaleString('en-US')}
                         </div>
                       )}
                       {submission.coffee_preference && (

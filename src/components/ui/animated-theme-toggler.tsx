@@ -1,13 +1,13 @@
-"use client"
+/** biome-ignore-all lint/a11y/useButtonType: <explanation> */
+'use client'
 
-import { useState, useEffect } from "react"
-import { Moon, Sun } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { useModeAnimation, ThemeAnimationType } from "@/hooks/useModeAnimation"
-import { useManaColor } from "@/lib/contexts/ManaColorContext"
+import { useState, useEffect } from 'react'
+import { Moon, Sun } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { useModeAnimation, ThemeAnimationType } from '@/hooks/useModeAnimation'
+import { useManaColor } from '@/lib/contexts/ManaColorContext'
 
-interface AnimatedThemeTogglerProps
-  extends React.ComponentPropsWithoutRef<"button"> {
+interface AnimatedThemeTogglerProps extends React.ComponentPropsWithoutRef<'button'> {
   duration?: number
   animationType?: ThemeAnimationType
   blurAmount?: number
@@ -26,7 +26,7 @@ export const AnimatedThemeToggler = ({
     duration,
     animationType,
     blurAmount,
-    manaSymbol: selectedMana,
+    manaSymbol: selectedMana
   })
 
   useEffect(() => {
@@ -35,10 +35,7 @@ export const AnimatedThemeToggler = ({
 
   if (!mounted) {
     return (
-      <button
-        className={cn(className)}
-        aria-label="Toggle theme"
-      >
+      <button className={cn(className)} aria-label="Toggle theme">
         <div className="w-6 h-6" />
         <span className="sr-only">Toggle theme</span>
       </button>
@@ -46,11 +43,7 @@ export const AnimatedThemeToggler = ({
   }
 
   return (
-    <button
-      ref={ref}
-      onClick={toggleSwitchTheme}
-      className={cn(className)}
-    >
+    <button ref={ref} onClick={toggleSwitchTheme} className={cn(className)}>
       {isDarkMode ? <Sun /> : <Moon />}
       <span className="sr-only">Toggle theme</span>
     </button>

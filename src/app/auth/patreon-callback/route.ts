@@ -12,13 +12,27 @@ export async function GET(request: Request) {
   const code = requestUrl.searchParams.get('code')
   const origin = requestUrl.origin
 
+  console.log('🔐 OAuth callback initiated')
+  console.log('Origin:', origin)
+  console.log('Code present:', !!code)
+
   if (!code) {
+    console.error('No authorization code provided')
     return NextResponse.redirect(`${origin}/auth/login?error=no_code`)
   }
 
   try {
+    // Determine the redirect URI that was used (must match what was sent to Patreon)
+    const isLocalhost = origin.includes('localhost') || origin.includes('127.0.0.1')
+    const redirectUri = isLocalhost
+      ? `${origin}/auth/patreon-callback`
+      : process.env.PATREON_REDIRECT_URI!
+
+    console.log('Determined redirect URI:', redirectUri)
+
     // Exchange code for Patreon access token
-    const patreonAccessToken = await exchangeCodeForToken(code)
+    console.log('Exchanging code for Patreon access token...')
+    const patreonAccessToken = await exchangeCodeForToken(code, redirectUri)
 
     // Fetch user data from Patreon
     const { tier, patreonId } = await fetchPatreonMembership(patreonAccessToken)
@@ -60,24 +74,19 @@ export async function GET(request: Request) {
     })
 
     if (createError) {
-      // User already exists, fetch them from auth.users
-      console.log('User already exists, fetching from auth...')
-      const { data: existingUsers, error: listError } = await adminClient.auth.admin.listUsers()
+      // User already exists, fetch them directly by email
+      console.log('User already exists, fetching by email:', email)
 
-      if (listError) {
-        console.error('Error listing users:', listError)
-        return NextResponse.redirect(`${origin}/auth/login?error=user_lookup_failed`)
+      const { data: existingUserData, error: getUserError } = await adminClient.auth.admin.getUserByEmail(email)
+
+      if (getUserError || !existingUserData?.user) {
+        console.error('Error fetching user by email:', getUserError)
+        console.error('Create error was:', createError)
+        return NextResponse.redirect(`${origin}/auth/login?error=user_lookup_failed&details=${encodeURIComponent(getUserError?.message || 'User not found')}`)
       }
 
-      const existingUser = existingUsers.users.find(u => u.email === email)
-
-      if (existingUser) {
-        userId = existingUser.id
-        console.log('Found existing user:', userId)
-      } else {
-        console.error('User creation error and user not found in auth:', createError)
-        return NextResponse.redirect(`${origin}/auth/login?error=user_creation_failed`)
-      }
+      userId = existingUserData.user.id
+      console.log('Found existing user:', userId)
     } else if (newUser.user) {
       userId = newUser.user.id
       console.log('Created new user:', userId)
@@ -101,19 +110,18 @@ export async function GET(request: Request) {
     }
 
     // Update/create profile, preserving existing role if present
-    const { error: profileError } = await adminClient
-      .from('profiles')
-      .upsert({
-        id: userId,
-        email,
-        patreon_id: isSiteOwner ? null : patreonId, // Don't link site owner to Patreon
-        patreon_tier: isSiteOwner ? 'ArchMage' : tier, // Give site owner highest tier
-        role: userRole,
-        updated_at: new Date().toISOString(),
-      })
+    const { error: profileError } = await adminClient.from('profiles').upsert({
+      id: userId,
+      email,
+      patreon_id: isSiteOwner ? null : patreonId, // Don't link site owner to Patreon
+      patreon_tier: isSiteOwner ? 'ArchMage' : tier, // Give site owner highest tier
+      role: userRole,
+      updated_at: new Date().toISOString(),
+    })
 
     if (profileError) {
       console.error('Profile update error:', profileError)
+      return NextResponse.redirect(`${origin}/auth/login?error=profile_update_failed&details=${encodeURIComponent(profileError.message)}`)
     }
 
     // Set a password for the user (they'll never need to know it)
@@ -148,6 +156,7 @@ export async function GET(request: Request) {
     return NextResponse.redirect(redirectUrl.toString())
   } catch (error) {
     console.error('OAuth callback error:', error)
-    return NextResponse.redirect(`${origin}/auth/login?error=callback_failed`)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.redirect(`${origin}/auth/login?error=callback_failed&details=${encodeURIComponent(errorMessage)}`)
   }
 }

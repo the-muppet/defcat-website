@@ -1,46 +1,46 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import Link from 'next/link';
-import { Edit, Trash2, ExternalLink, Search } from 'lucide-react';
+import { useState } from 'react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import Link from 'next/link'
+import { Edit, Trash2, ExternalLink, Search } from 'lucide-react'
 
 interface Deck {
-  id: string;
-  moxfield_id: string;
-  name: string;
-  commanders: string[] | null;
-  color_identity: string[] | null;
-  created_at: string;
-  view_count: number | null;
+  id: string
+  moxfield_id: string
+  name: string
+  commanders: string[] | null
+  color_identity: string[] | null
+  created_at: string
+  view_count: number | null
 }
 
 interface DecksListProps {
-  decks: Deck[];
+  decks: Deck[]
 }
 
 export function DecksList({ decks }: DecksListProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState('')
 
   const filteredDecks = decks.filter((deck) => {
-    const query = searchQuery.toLowerCase();
+    const query = searchQuery.toLowerCase()
 
     // Search by name
-    if (deck.name?.toLowerCase().includes(query)) return true;
+    if (deck.name?.toLowerCase().includes(query)) return true
 
     // Search by moxfield ID
-    if (deck.moxfield_id?.toLowerCase().includes(query)) return true;
+    if (deck.moxfield_id?.toLowerCase().includes(query)) return true
 
     // Search by commanders
-    if (deck.commanders?.some(cmd => cmd?.toLowerCase().includes(query))) return true;
+    if (deck.commanders?.some((cmd) => cmd?.toLowerCase().includes(query))) return true
 
     // Search by color identity
-    if (deck.color_identity?.join('').toLowerCase().includes(query)) return true;
+    if (deck.color_identity?.join('').toLowerCase().includes(query)) return true
 
-    return false;
-  });
+    return false
+  })
 
   return (
     <div className="space-y-4">
@@ -71,11 +71,7 @@ export function DecksList({ decks }: DecksListProps) {
               {searchQuery ? 'No decks found matching your search' : 'No decks found'}
             </p>
             {searchQuery && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSearchQuery('')}
-              >
+              <Button variant="outline" size="sm" onClick={() => setSearchQuery('')}>
                 Clear search
               </Button>
             )}
@@ -88,9 +84,7 @@ export function DecksList({ decks }: DecksListProps) {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-xl font-bold truncate">
-                      {deck.name}
-                    </h3>
+                    <h3 className="text-xl font-bold truncate">{deck.name}</h3>
                   </div>
 
                   <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
@@ -144,5 +138,5 @@ export function DecksList({ decks }: DecksListProps) {
         ))
       )}
     </div>
-  );
+  )
 }

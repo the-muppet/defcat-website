@@ -1,36 +1,45 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { ExternalLink, GraduationCap, ShoppingBag, Home, FileText } from "lucide-react"
-import Link from "next/link"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { ExternalLink, GraduationCap, ShoppingBag, Home, FileText } from 'lucide-react'
+import Link from 'next/link'
 
 export default function PreviewPage() {
   const pages = [
     {
-      title: "Example Home Page",
-      description: "Complete redesigned home page with all new components integrated",
-      href: "/example-home",
-      icon: <Home className="h-8 w-8" />
+      title: 'Example Home Page',
+      description: 'Complete redesigned home page with all new components integrated',
+      href: '/example-home',
+      icon: <Home className="h-8 w-8" />,
     },
     {
-      title: "Commander College",
-      description: "Educational page with sales video and lesson plan",
-      href: "/commander-college",
-      icon: <GraduationCap className="h-8 w-8" />
+      title: 'Commander College',
+      description: 'Educational page with sales video and lesson plan',
+      href: '/commander-college',
+      icon: <GraduationCap className="h-8 w-8" />,
     },
     {
-      title: "Discount Store",
-      description: "Product listing with category filters and 4-per-row grid",
-      href: "/discount-store",
-      icon: <ShoppingBag className="h-8 w-8" />
-    }
+      title: 'Discount Store',
+      description: 'Product listing with category filters and 4-per-row grid',
+      href: '/discount-store',
+      icon: <ShoppingBag className="h-8 w-8" />,
+    },
   ]
 
   const components = [
-    { name: "NavigationHeader", path: "src/components/layout/NavigationHeader.tsx" },
-    { name: "TutorialModal", path: "src/components/tutorial/TutorialModal.tsx" },
-    { name: "FeaturedVideo", path: "src/components/home/FeaturedVideo.tsx" },
-    { name: "SocialMediaLinks", path: "src/components/home/SocialMediaLinks.tsx" },
-    { name: "RotatingAds", path: "src/components/home/RotatingAds.tsx" }
+    {
+      name: 'NavigationHeader',
+      path: 'src/components/layout/NavigationHeader.tsx',
+    },
+    {
+      name: 'TutorialModal',
+      path: 'src/components/tutorial/TutorialModal.tsx',
+    },
+    { name: 'FeaturedVideo', path: 'src/components/home/FeaturedVideo.tsx' },
+    {
+      name: 'SocialMediaLinks',
+      path: 'src/components/home/SocialMediaLinks.tsx',
+    },
+    { name: 'RotatingAds', path: 'src/components/home/RotatingAds.tsx' },
   ]
 
   return (
@@ -38,7 +47,8 @@ export default function PreviewPage() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(farthest-corner at 50% 0%, var(--bg-tinted) 0%, var(--background) 100%)'
+          background:
+            'radial-gradient(farthest-corner at 50% 0%, var(--bg-tinted) 0%, var(--background) 100%)',
         }}
       />
 
@@ -49,7 +59,7 @@ export default function PreviewPage() {
               <h1
                 className="text-5xl md:text-6xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r"
                 style={{
-                  backgroundImage: `linear-gradient(to right, var(--gradient-start), var(--gradient-end))`
+                  backgroundImage: `linear-gradient(to right, var(--gradient-start), var(--gradient-end))`,
                 }}
               >
                 Front Page Redesign Preview
@@ -94,9 +104,7 @@ export default function PreviewPage() {
                     <FileText className="h-5 w-5" />
                     Created Components
                   </CardTitle>
-                  <CardDescription>
-                    Ready-to-use components for your pages
-                  </CardDescription>
+                  <CardDescription>Ready-to-use components for your pages</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
@@ -125,7 +133,9 @@ export default function PreviewPage() {
                 <CardContent className="space-y-4 text-muted-foreground">
                   <div>
                     <h4 className="font-semibold text-foreground mb-2">1. Update Navigation</h4>
-                    <p>Import and use NavigationHeader in your layout for the new navigation menu</p>
+                    <p>
+                      Import and use NavigationHeader in your layout for the new navigation menu
+                    </p>
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground mb-2">2. Add Components</h4>
@@ -137,7 +147,10 @@ export default function PreviewPage() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground mb-2">4. Style Integration</h4>
-                    <p>All components use your existing design system (glass effects, tinted styles, mana colors)</p>
+                    <p>
+                      All components use your existing design system (glass effects, tinted styles,
+                      mana colors)
+                    </p>
                   </div>
                 </CardContent>
               </Card>

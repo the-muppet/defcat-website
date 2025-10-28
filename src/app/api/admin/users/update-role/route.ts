@@ -6,10 +6,7 @@ export const dynamic = 'force-dynamic'
 
 // Helper to create Supabase client at runtime
 function getSupabaseClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 }
 
 export async function POST(request: NextRequest) {
@@ -18,10 +15,7 @@ export async function POST(request: NextRequest) {
     // Verify user is admin or developer
     const authHeader = request.headers.get('authorization')
     if (!authHeader) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     const browserSupabase = createClient(
@@ -29,15 +23,13 @@ export async function POST(request: NextRequest) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     )
 
-    const { data: { user }, error: userError } = await browserSupabase.auth.getUser(
-      authHeader.replace('Bearer ', '')
-    )
+    const {
+      data: { user },
+      error: userError,
+    } = await browserSupabase.auth.getUser(authHeader.replace('Bearer ', ''))
 
     if (userError || !user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     // Check if user is admin, moderator, or developer
@@ -66,10 +58,7 @@ export async function POST(request: NextRequest) {
     // Validate role
     const validRoles = ['user', 'admin', 'moderator', 'developer']
     if (!validRoles.includes(role)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid role' },
-        { status: 400 }
-      )
+      return NextResponse.json({ success: false, error: 'Invalid role' }, { status: 400 })
     }
 
     // Only developers can assign developer role
@@ -81,10 +70,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update the user's role
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({ role })
-      .eq('id', userId)
+    const { error: updateError } = await supabase.from('profiles').update({ role }).eq('id', userId)
 
     if (updateError) {
       throw updateError
@@ -92,14 +78,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `Role updated to ${role}`
+      message: `Role updated to ${role}`,
     })
   } catch (error) {
     console.error('Failed to update role:', error)
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to update role'
+        error: error instanceof Error ? error.message : 'Failed to update role',
       },
       { status: 500 }
     )

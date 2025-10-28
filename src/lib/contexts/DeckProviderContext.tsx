@@ -1,8 +1,8 @@
-"use client"
+'use client'
 
-import { createContext, useContext, useEffect, useState, ReactNode, useRef, useMemo } from "react"
-import { createClient } from "@/lib/supabase/client"
-import type { Deck } from "@/types/core"
+import { createContext, useContext, useEffect, useState, ReactNode, useRef, useMemo } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import type { Deck } from '@/types/core'
 
 interface DeckContextType {
   decks: Deck[]
@@ -30,16 +30,14 @@ export function DeckProvider({ children }: { children: ReactNode }) {
       setError(null)
       // returning deck contents now requires a table join - we can use "*" here
       const { data, error } = await supabase
-        .from("decks")
-        .select("*")
-        .order("view_count",
-          { ascending: false }
-      )
+        .from('decks')
+        .select('*')
+        .order('view_count', { ascending: false })
       if (error) throw error
       setDecks(data || [])
     } catch (err) {
       setError(err instanceof Error ? err.message : `An error occurred: ${err}`)
-      console.error("Error fetching decks:", err)
+      console.error('Error fetching decks:', err)
     } finally {
       setLoading(false)
     }
@@ -55,17 +53,13 @@ export function DeckProvider({ children }: { children: ReactNode }) {
     [decks, loading, error]
   )
 
-  return (
-    <DeckContext.Provider value={value}>
-      {children}
-    </DeckContext.Provider>
-  )
+  return <DeckContext.Provider value={value}>{children}</DeckContext.Provider>
 }
 
 export function useDecks() {
   const context = useContext(DeckContext)
   if (context === undefined) {
-    throw new Error("useDecks must be used within a DeckProvider")
+    throw new Error('useDecks must be used within a DeckProvider')
   }
   return context
 }

@@ -22,4 +22,9 @@
  * <TierComparison currentTier={user.patreonTier} />
  */
 
-export { TierBadge, TierBadgeCompact, getTierConfig, getAllTiers } from './TierBadge';
+export {
+  TierBadge,
+  TierBadgeCompact,
+  getTierConfig,
+  getAllTiers,
+} from './TierBadge'

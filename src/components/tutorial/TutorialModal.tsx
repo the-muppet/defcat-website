@@ -1,16 +1,16 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { PlayCircle, XCircle } from "lucide-react"
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Progress } from '@/components/ui/progress'
+import { PlayCircle, XCircle } from 'lucide-react'
 
 interface TutorialModalProps {
   isOpen: boolean
@@ -108,7 +108,8 @@ export function TutorialModal({ isOpen, onClose }: TutorialModalProps) {
             <div className="space-y-2">
               <Progress value={progress} className="h-2" />
               <p className="text-sm text-muted-foreground text-center">
-                {Math.ceil((tutorialDuration - (progress * tutorialDuration / 100)) / 1000)}s remaining
+                {Math.ceil((tutorialDuration - (progress * tutorialDuration) / 100) / 1000)}s
+                remaining
               </p>
             </div>
           )}

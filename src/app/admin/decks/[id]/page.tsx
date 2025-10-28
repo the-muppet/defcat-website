@@ -3,36 +3,36 @@
  * Edit individual deck metadata
  */
 
-import { requireAdmin } from '@/lib/auth-guards';
-import { createClient } from '@/lib/supabase/server';
-import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft } from 'lucide-react';
-import { DeckEditForm } from '@/components/admin/DeckEditForm';
+import { requireAdmin } from '@/lib/auth-guards'
+import { createClient } from '@/lib/supabase/server'
+import { notFound } from 'next/navigation'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { ArrowLeft } from 'lucide-react'
+import { DeckEditForm } from '@/components/admin/DeckEditForm'
 
 export const dynamic = 'force-dynamic'
 
 interface PageProps {
   params: {
-    id: string;
-  };
+    id: string
+  }
 }
 
 export default async function AdminDeckEditPage({ params }: PageProps) {
-  await requireAdmin();
+  await requireAdmin()
 
-  const supabase = await createClient();
+  const supabase = await createClient()
 
   const { data: deck, error } = await supabase
     .from('decks')
     .select('*')
     .eq('id', params.id)
-    .single();
+    .single()
 
   if (error || !deck) {
-    notFound();
+    notFound()
   }
 
   return (
@@ -56,9 +56,7 @@ export default async function AdminDeckEditPage({ params }: PageProps) {
         <Card className="glass-card">
           <CardHeader>
             <CardTitle>Deck Details</CardTitle>
-            <CardDescription>
-              Update deck metadata and settings
-            </CardDescription>
+            <CardDescription>Update deck metadata and settings</CardDescription>
           </CardHeader>
           <CardContent>
             <DeckEditForm deck={deck} />
@@ -66,5 +64,5 @@ export default async function AdminDeckEditPage({ params }: PageProps) {
         </Card>
       </div>
     </div>
-  );
+  )
 }

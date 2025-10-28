@@ -44,17 +44,19 @@ export function SiteConfigForm() {
 
       console.log('Loaded config:', data)
       // Map data to ensure non-null values
-      const mappedData: ConfigItem[] = (data || []).map(item => ({
+      const mappedData: ConfigItem[] = (data || []).map((item) => ({
         key: item.key || '',
         value: item.value || '',
         category: item.category || 'general',
         description: item.description || '',
-        is_sensitive: item.is_sensitive || false
+        is_sensitive: item.is_sensitive || false,
       }))
       setConfig(mappedData)
     } catch (err) {
       console.error('Failed to load config:', err)
-      setError(`Failed to load configuration: ${err instanceof Error ? err.message : 'Unknown error'}`)
+      setError(
+        `Failed to load configuration: ${err instanceof Error ? err.message : 'Unknown error'}`
+      )
     } finally {
       setLoading(false)
     }
@@ -62,10 +64,8 @@ export function SiteConfigForm() {
 
   const handleChange = (key: string, value: string) => {
     console.log('handleChange called:', key, value)
-    setConfig(prev => {
-      const updated = prev.map(item =>
-        item.key === key ? { ...item, value } : item
-      )
+    setConfig((prev) => {
+      const updated = prev.map((item) => (item.key === key ? { ...item, value } : item))
       console.log('Updated config:', updated)
       return updated
     })
@@ -81,15 +81,17 @@ export function SiteConfigForm() {
       console.log('Starting save...', config)
 
       // Get auth token
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
       if (!session) {
         throw new Error('Not authenticated')
       }
 
       // Update all config items via API route
-      const updates = config.map(item => ({
+      const updates = config.map((item) => ({
         key: item.key,
-        value: item.value
+        value: item.value,
       }))
 
       console.log('Sending updates to API:', updates)
@@ -98,9 +100,9 @@ export function SiteConfigForm() {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
+          Authorization: `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify(updates)
+        body: JSON.stringify(updates),
       })
 
       const result = await response.json()
@@ -118,18 +120,20 @@ export function SiteConfigForm() {
       await loadConfig()
     } catch (err) {
       console.error('Failed to save config:', err)
-      setError(`Failed to save configuration: ${err instanceof Error ? err.message : 'Unknown error'}`)
+      setError(
+        `Failed to save configuration: ${err instanceof Error ? err.message : 'Unknown error'}`
+      )
     } finally {
       setSaving(false)
     }
   }
 
   const getConfigValue = (key: string) => {
-    return config.find(item => item.key === key)?.value || ''
+    return config.find((item) => item.key === key)?.value || ''
   }
 
   const getConfigItem = (key: string) => {
-    return config.find(item => item.key === key)
+    return config.find((item) => item.key === key)
   }
 
   const renderConfigInput = (key: string, label: string, placeholder?: string) => {
@@ -138,10 +142,10 @@ export function SiteConfigForm() {
 
     return (
       <div className="space-y-2">
-        <label htmlFor={key} className="text-sm font-medium">{label}</label>
-        {item.description && (
-          <p className="text-xs text-muted-foreground">{item.description}</p>
-        )}
+        <label htmlFor={key} className="text-sm font-medium">
+          {label}
+        </label>
+        {item.description && <p className="text-xs text-muted-foreground">{item.description}</p>}
         <Input
           id={key}
           type="text"
@@ -168,9 +172,15 @@ export function SiteConfigForm() {
     <div className="space-y-6">
       {/* Debug info */}
       <div className="p-4 bg-muted rounded-lg text-xs">
-        <p><strong>Debug:</strong> Loaded {config.length} config items</p>
+        <p>
+          <strong>Debug:</strong> Loaded {config.length} config items
+        </p>
         <p>Loading: {loading ? 'true' : 'false'}</p>
-        {config.length > 0 && <p>First item: {config[0].key} = "{config[0].value}"</p>}
+        {config.length > 0 && (
+          <p>
+            First item: {config[0].key} = "{config[0].value}"
+          </p>
+        )}
       </div>
 
       {error && (
@@ -211,12 +221,19 @@ export function SiteConfigForm() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {renderConfigInput('college_video_id', 'Commander College Video', 'e.g., dQw4w9WgXcQ')}
+              {renderConfigInput(
+                'college_video_id',
+                'Commander College Video',
+                'e.g., dQw4w9WgXcQ'
+              )}
               {renderConfigInput('featured_video_id', 'Featured Video (Home)', 'e.g., dQw4w9WgXcQ')}
               <div className="mt-4 p-4 bg-muted rounded-lg">
                 <p className="text-xs text-muted-foreground">
-                  <strong>Tip:</strong> The video ID is the part after <code>?v=</code> in YouTube URLs.
-                  For example: <code>youtube.com/watch?v=<strong>dQw4w9WgXcQ</strong></code>
+                  <strong>Tip:</strong> The video ID is the part after <code>?v=</code> in YouTube
+                  URLs. For example:{' '}
+                  <code>
+                    youtube.com/watch?v=<strong>dQw4w9WgXcQ</strong>
+                  </code>
                 </p>
               </div>
             </CardContent>
@@ -227,9 +244,7 @@ export function SiteConfigForm() {
           <Card className="glass-panel">
             <CardHeader>
               <CardTitle>Social Media Links</CardTitle>
-              <CardDescription>
-                Configure social media profile URLs
-              </CardDescription>
+              <CardDescription>Configure social media profile URLs</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {renderConfigInput('youtube_url', 'YouTube Channel', 'https://youtube.com/@defcat')}
@@ -244,9 +259,7 @@ export function SiteConfigForm() {
           <Card className="glass-panel">
             <CardHeader>
               <CardTitle>General Settings</CardTitle>
-              <CardDescription>
-                Site metadata and general configuration
-              </CardDescription>
+              <CardDescription>Site metadata and general configuration</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {renderConfigInput('site_title', 'Site Title')}
@@ -264,13 +277,22 @@ export function SiteConfigForm() {
             </CardHeader>
             <CardContent className="space-y-2">
               <p className="text-sm text-muted-foreground">
-                For security, API keys and secrets are stored in your <code className="bg-background px-1 py-0.5 rounded">.env.local</code> file:
+                For security, API keys and secrets are stored in your{' '}
+                <code className="bg-background px-1 py-0.5 rounded">.env.local</code> file:
               </p>
               <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-2">
-                <li><code>RESEND_API_KEY</code> - Email service API key</li>
-                <li><code>PATREON_CLIENT_ID</code> - Patreon OAuth client ID</li>
-                <li><code>PATREON_CLIENT_SECRET</code> - Patreon OAuth secret</li>
-                <li><code>SUPABASE_SERVICE_ROLE_KEY</code> - Supabase admin key</li>
+                <li>
+                  <code>RESEND_API_KEY</code> - Email service API key
+                </li>
+                <li>
+                  <code>PATREON_CLIENT_ID</code> - Patreon OAuth client ID
+                </li>
+                <li>
+                  <code>PATREON_CLIENT_SECRET</code> - Patreon OAuth secret
+                </li>
+                <li>
+                  <code>SUPABASE_SERVICE_ROLE_KEY</code> - Supabase admin key
+                </li>
               </ul>
               <p className="text-xs text-yellow-500 mt-4">
                 Never commit <code>.env.local</code> to version control!

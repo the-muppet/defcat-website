@@ -1,8 +1,8 @@
 // hooks/useMoxfieldDeck.ts
-'use client';
+'use client'
 
-import { useQuery } from '@tanstack/react-query';
-import type { MoxfieldDeck } from '@/types/moxfield';
+import { useQuery } from '@tanstack/react-query'
+import type { MoxfieldDeck } from '@/types/moxfield'
 
 async function fetchMoxfieldDeck(publicId: string): Promise<MoxfieldDeck> {
   const response = await fetch('/api/moxfield', {
@@ -14,13 +14,13 @@ async function fetchMoxfieldDeck(publicId: string): Promise<MoxfieldDeck> {
       publicId,
       action: 'get',
     }),
-  });
+  })
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch deck: ${response.statusText}`);
+    throw new Error(`Failed to fetch deck: ${response.statusText}`)
   }
 
-  return response.json();
+  return response.json()
 }
 
 export function useMoxfieldDeck(publicId: string) {
@@ -30,5 +30,5 @@ export function useMoxfieldDeck(publicId: string) {
     staleTime: 1000 * 60 * 60, // 1 hour
     gcTime: 1000 * 60 * 60 * 24, // 24 hours
     enabled: !!publicId,
-  });
+  })
 }

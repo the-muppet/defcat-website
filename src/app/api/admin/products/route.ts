@@ -6,10 +6,7 @@ export const dynamic = 'force-dynamic'
 
 // Helper to create Supabase client at runtime
 function getSupabaseClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 }
 
 export async function POST(request: NextRequest) {
@@ -25,13 +22,13 @@ export async function POST(request: NextRequest) {
     }
 
     const token = authHeader.replace('Bearer ', '')
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser(token)
 
     if (authError || !user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     const { data: profile } = await supabase
@@ -62,26 +59,20 @@ export async function POST(request: NextRequest) {
         is_active,
         sort_order,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .select()
       .single()
 
     if (error) {
       console.error('Insert error:', error)
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 500 }
-      )
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     }
 
     return NextResponse.json({ success: true, data })
   } catch (error) {
     console.error('Product creation error:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to create product' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: 'Failed to create product' }, { status: 500 })
   }
 }
 
@@ -98,13 +89,13 @@ export async function PATCH(request: NextRequest) {
     }
 
     const token = authHeader.replace('Bearer ', '')
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser(token)
 
     if (authError || !user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
     const { data: profile } = await supabase
@@ -134,7 +125,7 @@ export async function PATCH(request: NextRequest) {
         category,
         is_active,
         sort_order,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', id)
       .select()
@@ -142,18 +133,12 @@ export async function PATCH(request: NextRequest) {
 
     if (error) {
       console.error('Update error:', error)
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 500 }
-      )
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     }
 
     return NextResponse.json({ success: true, data })
   } catch (error) {
     console.error('Product update error:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to update product' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: 'Failed to update product' }, { status: 500 })
   }
 }

@@ -32,9 +32,11 @@ async function checkRole() {
   }
 }
 
-checkRole().then(() => {
-  process.exit(0)
-}).catch((err) => {
-  console.error('Failed:', err)
-  process.exit(1)
-})
+checkRole()
+  .then(() => {
+    process.exit(0)
+  })
+  .catch((err) => {
+    console.error('Failed:', err)
+    process.exit(1)
+  })

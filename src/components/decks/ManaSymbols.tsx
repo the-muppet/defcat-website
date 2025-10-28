@@ -1,8 +1,9 @@
 // components/deck/ManaSymbols.tsx
-"use client"
+/** biome-ignore-all lint/a11y/useAriaPropsSupportedByRole: <explanation> */
+'use client'
 
 import { cn } from '@/lib/utils'
-import { ColorIdentity } from '@/lib/utility/color-identity'
+import { ColorIdentity } from '@/types/colors'
 
 interface ManaSymbolsProps {
   /**
@@ -33,14 +34,14 @@ interface ManaSymbolsProps {
   fixedWidth?: boolean
 }
 
-export function ManaSymbols({ 
-  mana, 
-  size = 'md', 
+export function ManaSymbols({
+  mana,
+  size = 'md',
   className,
   cost = false,
   shadow = false,
   useGuildSymbols = false,
-  fixedWidth = false
+  fixedWidth = false,
 }: ManaSymbolsProps) {
   if (!mana || (Array.isArray(mana) && mana.length === 0)) {
     return null
@@ -56,17 +57,17 @@ export function ManaSymbols({
     '3x': 'ms-3x',
     '4x': 'ms-4x',
     '5x': 'ms-5x',
-    '6x': 'ms-6x'
+    '6x': 'ms-6x',
   }
 
   // Parse the mana input
   let symbols: string[]
-  
+
   if (typeof mana === 'string') {
     // Check if it's a mana cost string like "{2}{W}{U}"
     if (mana.includes('{')) {
       // Parse mana cost: "{2}{W}{U}" -> ['2', 'W', 'U']
-      symbols = mana.match(/\{([^}]+)\}/g)?.map(s => s.slice(1, -1)) || []
+      symbols = mana.match(/\{([^}]+)\}/g)?.map((s) => s.slice(1, -1)) || []
     } else {
       // Single color: "W"
       symbols = [mana]
@@ -81,47 +82,47 @@ export function ManaSymbols({
   }
 
   // Try to get guild/clan symbol if enabled and it's a color identity array
-  const colorIdentity = (useGuildSymbols && Array.isArray(mana) && !mana.some(m => m.includes('{'))) 
-    ? ColorIdentity.getClassName(symbols) 
-    : null
+  const colorIdentity =
+    useGuildSymbols && Array.isArray(mana) && !mana.some((m) => m.includes('{'))
+      ? ColorIdentity.getClassName(symbols)
+      : null
 
   // If we found a guild/clan symbol, use that
   if (colorIdentity) {
     return (
       <i
         className={cn(
-          "ms",
+          'ms',
           colorIdentity,
           cost && 'ms-cost',
-          shadow && 'ms-shadow',
           fixedWidth && 'ms-fw',
           sizeClasses[size],
-          "transition-all duration-200 hover:scale-110",
+          'transition-all duration-200 hover:scale-110',
           className
         )}
-        title={ColorIdentity.getName(symbols)}
-        aria-label={`${ColorIdentity.getName(symbols)} color identity`}
+        title={ColorIdentity.getLabel(symbols)}
+        aria-label={`${ColorIdentity.getLabel(symbols)} color identity`}
       />
     )
   }
 
   // Otherwise, show individual mana symbols
   return (
-    <div className={cn("inline-flex gap-0.5 items-center", className)}>
+    <div className={cn('inline-flex gap-0.5 items-center', className)}>
       {symbols.map((symbol, index) => {
         const code = symbol.toLowerCase()
-        
+
         return (
           <i
             key={`${symbol}-${index}`}
             className={cn(
-              "ms",
+              'ms',
               `ms-${code}`,
-              cost && 'ms-cost',
-              shadow && 'ms-shadow',
+              cost,
+              shadow,
               fixedWidth && 'ms-fw',
               sizeClasses[size],
-              "transition-all duration-200 hover:scale-110"
+              'transition-all duration-200 hover:scale-110'
             )}
             aria-label={`${symbol} mana`}
           />
@@ -134,7 +135,7 @@ export function ManaSymbols({
 // Convenient alias for single symbols
 interface ManaSymbolProps {
   color: string
-  size?: 'sm' | 'md' | 'lg' | 'xl' | '2x' | '3x' | '4x' | '5x' | '6x' 
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2x' | '3x' | '4x' | '5x' | '6x'
   cost?: boolean
   shadow?: boolean
   fixedWidth?: boolean
@@ -153,12 +154,17 @@ interface ManaCostProps {
   className?: string
 }
 
-export function ManaCost({ cost: costString, size = 'md', shadow = true, className }: ManaCostProps) {
+export function ManaCost({
+  cost: costString,
+  size = 'md',
+  shadow = true,
+  className,
+}: ManaCostProps) {
   return (
-    <ManaSymbols 
-      mana={costString} 
-      size={size} 
-      cost={true}  // Always show as cost
+    <ManaSymbols
+      mana={costString}
+      size={size}
+      cost={true} // Always show as cost
       shadow={shadow}
       className={className}
     />
