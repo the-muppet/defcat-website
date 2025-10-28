@@ -185,8 +185,9 @@ export default function ExampleHomePage() {
               {/* Filters */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-muted-foreground mb-2 block">Bracket Level</label>
+                  <label htmlFor="bracket-level" className="text-sm text-muted-foreground mb-2 block">Bracket Level</label>
                   <select
+                    id="bracket-level"
                     value={bracketLevel}
                     onChange={(e) => setBracketLevel(e.target.value)}
                     className="w-full px-4 py-3 rounded-lg glass border border-white/10 text-foreground bg-background focus:outline-none focus:ring-2 [&>option]:bg-background [&>option]:text-foreground"
@@ -205,7 +206,7 @@ export default function ExampleHomePage() {
                 </div>
 
                 <div className="relative" ref={tagsDropdownRef}>
-                  <label className="text-sm text-muted-foreground mb-2 block">Tags</label>
+                  <div className="text-sm text-muted-foreground mb-2 block">Tags</div>
                   <button
                     type="button"
                     onClick={() => setShowTagsDropdown(!showTagsDropdown)}

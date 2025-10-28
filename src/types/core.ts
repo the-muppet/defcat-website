@@ -61,6 +61,7 @@ export interface Deck {
   like_count?: number | null
   comment_count?: number | null
   set_codes?: string[] | null
+  bracket?: string | null
   created_at?: string | null
   updated_at?: string | null
 }

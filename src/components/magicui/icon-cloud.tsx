@@ -25,7 +25,7 @@ function easeOutCubic(t: number): number {
 export const IconCloud = memo(function IconCloud({ icons, images }: IconCloudProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [iconPositions, setIconPositions] = useState<Icon[]>([])
-  const [rotation, setRotation] = useState({ x: 0, y: 0 })
+  const [rotation, _setRotation] = useState({ x: 0, y: 0 })
   const [isDragging, setIsDragging] = useState(false)
   const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 })
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
@@ -81,7 +81,7 @@ export const IconCloud = memo(function IconCloud({ icons, images }: IconCloudPro
           offCtx.scale(0.4, 0.4)
           const svgString = renderToString(item as React.ReactElement)
           const img = new Image()
-          img.src = 'data:image/svg+xml;base64,' + btoa(svgString)
+          img.src = `data:image/svg+xml;base64,${btoa(svgString)}`
           img.onload = () => {
             offCtx.clearRect(0, 0, offscreen.width, offscreen.height)
             offCtx.drawImage(img, 0, 0)
@@ -146,8 +146,8 @@ export const IconCloud = memo(function IconCloud({ icons, images }: IconCloudPro
       const rotatedZ = icon.x * sinY + icon.z * cosY
       const rotatedY = icon.y * cosX + rotatedZ * sinX
 
-      const screenX = canvasRef.current!.width / 2 + rotatedX
-      const screenY = canvasRef.current!.height / 2 + rotatedY
+      const screenX = canvasRef.current?.width / 2 + rotatedX
+      const screenY = canvasRef.current?.height / 2 + rotatedY
 
       const scale = (rotatedZ + 200) / 300
       const radius = 20 * scale

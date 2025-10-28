@@ -21,7 +21,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import React, { use, useEffect, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import { CardPreview, ColorDistribution, ManaCurve, TypeDistribution } from '@/components/decks'
 import { RoastButton } from '@/components/decks/RoastButton'
 import { Button } from '@/components/ui/button'

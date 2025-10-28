@@ -24,9 +24,8 @@ import {
   Trophy,
   User,
 } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { ManaSymbols } from '@/components/decks/ManaSymbols'
 import { createClient } from '@/lib/supabase/client'
 import { ColorIdentity } from '@/types/colors'
 import { bracketOptions } from '@/types/core'
@@ -101,7 +100,7 @@ export default function PagedDeckForm() {
         // Check if user has eligible tier (skip for admins)
         if (!isAdmin) {
           const eligibleTiers = ['Duke', 'Wizard', 'ArchMage']
-          if (!eligibleTiers.includes(tier)) {
+          if (!tier || !eligibleTiers.includes(tier)) {
             setTierError(
               `Deck submissions require Duke tier ($50/month) or higher. Your current tier: ${tier || 'None'}`
             )
@@ -181,8 +180,8 @@ export default function PagedDeckForm() {
     { id: 5, name: 'Final Details', icon: Coffee },
   ]
 
-  const validateStep = (step) => {
-    const stepErrors = {}
+  const validateStep = (step: number) => {
+    const stepErrors: Record<string, string> = {}
 
     switch (step) {
       case 1:
@@ -248,7 +247,7 @@ export default function PagedDeckForm() {
     }
   }
 
-  const handleInputChange = (field, value) => {
+  const handleInputChange = (field: string, value: string) => {
     if (field === 'colorPreference') {
       setFormData((prev) => {
         const currentColors = prev.colorPreference as string[]
@@ -1075,6 +1074,7 @@ export default function PagedDeckForm() {
                 mysteryDeck: '',
                 commander: '',
                 colorPreference: [],
+                backupColorPreference: [],
                 theme: '',
                 bracket: '',
                 budget: '',

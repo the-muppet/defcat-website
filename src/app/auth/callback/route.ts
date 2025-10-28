@@ -7,7 +7,6 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { exchangeCodeForToken, fetchPatreonMembership } from '@/lib/api/patreon'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { createClient } from '@/lib/supabase/server'
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
@@ -131,13 +130,13 @@ export async function GET(request: Request) {
       }
 
       // Set cookies and redirect
-      const cookieStore = await cookies()
+      const _cookieStore = await cookies()
       const response = NextResponse.redirect(`${origin}/decks`)
 
       // Set session cookies for Supabase SSR
       const sessionCookies = [
         {
-          name: `sb-${process.env.NEXT_PUBLIC_SUPABASE_URL!.split('//')[1].split('.')[0]}-auth-token`,
+          name: `sb-${process.env.NEXT_PUBLIC_SUPABASE_URL?.split('//')[1].split('.')[0]}-auth-token`,
           value: JSON.stringify({
             access_token: retrySignInData.session.access_token,
             refresh_token: retrySignInData.session.refresh_token,
@@ -160,13 +159,13 @@ export async function GET(request: Request) {
     }
 
     // Original sign-in succeeded
-    const cookieStore = await cookies()
+    const _cookieStore = await cookies()
     const response = NextResponse.redirect(`${origin}/decks`)
 
     // Set session cookies for Supabase SSR
     const sessionCookies = [
       {
-        name: `sb-${process.env.NEXT_PUBLIC_SUPABASE_URL!.split('//')[1].split('.')[0]}-auth-token`,
+        name: `sb-${process.env.NEXT_PUBLIC_SUPABASE_URL?.split('//')[1].split('.')[0]}-auth-token`,
         value: JSON.stringify({
           access_token: signInData.session.access_token,
           refresh_token: signInData.session.refresh_token,

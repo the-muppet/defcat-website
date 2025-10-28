@@ -70,12 +70,12 @@ export function DeckProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     fetchDecks()
-  }, [])
+  }, [fetchDecks])
 
   // Memoize the context value to prevent unnecessary re-renders
   const value = useMemo(
     () => ({ decks, loading, error, refetch: fetchDecks }),
-    [decks, loading, error]
+    [decks, loading, error, fetchDecks]
   )
 
   return <DeckContext.Provider value={value}>{children}</DeckContext.Provider>

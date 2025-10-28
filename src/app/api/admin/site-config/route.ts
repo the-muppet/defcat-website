@@ -64,7 +64,7 @@ export async function PATCH(request: NextRequest) {
       .eq('id', user.id)
       .single()
 
-    if (!profile || !['admin', 'moderator'].includes(profile.role)) {
+    if (!profile || !profile.role || !['admin', 'moderator', 'developer'].includes(profile.role)) {
       return NextResponse.json(
         { success: false, error: 'Forbidden - Admin access required' },
         { status: 403 }

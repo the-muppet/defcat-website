@@ -15,20 +15,21 @@ import { createClient } from '@/lib/supabase/server'
 export const dynamic = 'force-dynamic'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default async function AdminDeckEditPage({ params }: PageProps) {
   await requireAdmin()
 
+  const { id } = await params
   const supabase = await createClient()
 
   const { data: deck, error } = await supabase
-    .from('decks')
+    .from('moxfield_decks')
     .select('*')
-    .eq('id', params.id)
+    .eq('moxfield_id', id)
     .single()
 
   if (error || !deck) {

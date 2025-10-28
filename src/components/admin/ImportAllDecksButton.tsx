@@ -27,7 +27,7 @@ export function ImportAllDecksButton() {
         throw new Error('Failed to trigger import')
       }
 
-      const result = await response.json()
+      const _result = await response.json()
 
       toast.success('Import started successfully!', {
         description: 'The Moxfield scraper is now running. This may take a few minutes.',

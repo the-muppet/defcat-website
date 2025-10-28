@@ -80,7 +80,7 @@ export async function fetchCardArt(cardName: string): Promise<string | null> {
 
     if (card.image_uris?.art_crop) {
       artCropUrl = card.image_uris.art_crop
-    } else if (card.card_faces && card.card_faces[0]?.image_uris?.art_crop) {
+    } else if (card.card_faces?.[0]?.image_uris?.art_crop) {
       // For double-faced cards, use the front face
       artCropUrl = card.card_faces[0].image_uris.art_crop
     }

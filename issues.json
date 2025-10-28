@@ -1,1559 +1,892 @@
-[
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/app/admin/page.tsx",
-    "owner": "typescript",
-    "code": "2345",
-    "severity": 8,
-    "message": "Argument of type 'string | undefined' is not assignable to parameter of type 'string'.\n  Type 'undefined' is not assignable to type 'string'.",
-    "source": "ts",
-    "startLineNumber": 34,
-    "startColumn": 15,
-    "endLineNumber": 34,
-    "endColumn": 23,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/app/admin/page.tsx",
-    "owner": "typescript",
-    "code": "2769",
-    "severity": 8,
-    "message": "No overload matches this call.\n  Overload 1 of 2, '(relation: \"profiles\" | \"bookmark_sync_logs\" | \"cards\" | \"deck_submissions\" | \"decklist_cards\" | \"moxfield_decks\" | \"products\" | \"site_config\" | \"update_logs\" | \"user_credits\" | \"user_roles\"): PostgrestQueryBuilder<...>', gave the following error.\n    Argument of type '\"decks\"' is not assignable to parameter of type '\"profiles\" | \"bookmark_sync_logs\" | \"cards\" | \"deck_submissions\" | \"decklist_cards\" | \"moxfield_decks\" | \"products\" | \"site_config\" | \"update_logs\" | \"user_credits\" | \"user_roles\"'.\n  Overload 2 of 2, '(relation: \"submission_stats\" | \"user_submission_status\"): PostgrestQueryBuilder<{ PostgrestVersion: \"13.0.5\"; }, { Tables: { bookmark_sync_logs: { Row: { bookmark_id: string; completed_at: string | null; ... 9 more ...; updated_decks: number | null; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 9 more ...; user_roles: { ...; }; }; Views: { ...; }; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, { ...; } | { ...; }, \"submission_stats\" | \"user_submission_status\", []>', gave the following error.\n    Argument of type '\"decks\"' is not assignable to parameter of type '\"submission_stats\" | \"user_submission_status\"'.",
-    "source": "ts",
-    "startLineNumber": 40,
-    "startColumn": 19,
-    "endLineNumber": 40,
-    "endColumn": 26,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/app/admin/page.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "assist/source/organizeImports",
-      "target": {
-        "$mid": 1,
-        "path": "/assist/actions/organize-imports",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 2,
-    "message": "The imports and exports are not sorted.",
-    "source": "biome",
-    "startLineNumber": 7,
-    "startColumn": 1,
-    "endLineNumber": 7,
-    "endColumn": 54,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/app/pivot/home/page.tsx",
-    "owner": "typescript",
-    "code": "2339",
-    "severity": 8,
-    "message": "Property 'bracket' does not exist on type 'Deck'.",
-    "source": "ts",
-    "startLineNumber": 77,
-    "startColumn": 49,
-    "endLineNumber": 77,
-    "endColumn": 56,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/app/pivot/home/page.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/a11y/noLabelWithoutControl",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-label-without-control",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 8,
-    "message": "A form label must be associated with an input.",
-    "source": "biome",
-    "startLineNumber": 188,
-    "startColumn": 19,
-    "endLineNumber": 188,
-    "endColumn": 100,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/app/pivot/home/page.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/a11y/noLabelWithoutControl",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-label-without-control",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 8,
-    "message": "A form label must be associated with an input.",
-    "source": "biome",
-    "startLineNumber": 208,
-    "startColumn": 19,
-    "endLineNumber": 208,
-    "endColumn": 91,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/app/pivot/home/page.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "assist/source/organizeImports",
-      "target": {
-        "$mid": 1,
-        "path": "/assist/actions/organize-imports",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 2,
-    "message": "The imports and exports are not sorted.",
-    "source": "biome",
-    "startLineNumber": 3,
-    "startColumn": 1,
-    "endLineNumber": 3,
-    "endColumn": 61,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "typescript",
-    "code": "2345",
-    "severity": 8,
-    "message": "Argument of type 'string | null' is not assignable to parameter of type 'string'.\n  Type 'null' is not assignable to type 'string'.",
-    "source": "ts",
-    "startLineNumber": 103,
-    "startColumn": 39,
-    "endLineNumber": 103,
-    "endColumn": 43,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "typescript",
-    "code": "7006",
-    "severity": 8,
-    "message": "Parameter 'step' implicitly has an 'any' type.",
-    "source": "ts",
-    "startLineNumber": 183,
-    "startColumn": 25,
-    "endLineNumber": 183,
-    "endColumn": 29,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "typescript",
-    "code": "2339",
-    "severity": 8,
-    "message": "Property 'email' does not exist on type '{}'.",
-    "source": "ts",
-    "startLineNumber": 189,
-    "startColumn": 22,
-    "endLineNumber": 189,
-    "endColumn": 27,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "typescript",
-    "code": "2339",
-    "severity": 8,
-    "message": "Property 'email' does not exist on type '{}'.",
-    "source": "ts",
-    "startLineNumber": 191,
-    "startColumn": 22,
-    "endLineNumber": 191,
-    "endColumn": 27,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "typescript",
-    "code": "2339",
-    "severity": 8,
-    "message": "Property 'moxfieldUsername' does not exist on type '{}'.",
-    "source": "ts",
-    "startLineNumber": 194,
-    "startColumn": 22,
-    "endLineNumber": 194,
-    "endColumn": 38,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "typescript",
-    "code": "2339",
-    "severity": 8,
-    "message": "Property 'mysteryDeck' does not exist on type '{}'.",
-    "source": "ts",
-    "startLineNumber": 200,
-    "startColumn": 22,
-    "endLineNumber": 200,
-    "endColumn": 33,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "typescript",
-    "code": "2339",
-    "severity": 8,
-    "message": "Property 'colorPreference' does not exist on type '{}'.",
-    "source": "ts",
-    "startLineNumber": 209,
-    "startColumn": 22,
-    "endLineNumber": 209,
-    "endColumn": 37,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "typescript",
-    "code": "2339",
-    "severity": 8,
-    "message": "Property 'bracket' does not exist on type '{}'.",
-    "source": "ts",
-    "startLineNumber": 214,
-    "startColumn": 22,
-    "endLineNumber": 214,
-    "endColumn": 29,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "typescript",
-    "code": "2339",
-    "severity": 8,
-    "message": "Property 'budget' does not exist on type '{}'.",
-    "source": "ts",
-    "startLineNumber": 217,
-    "startColumn": 22,
-    "endLineNumber": 217,
-    "endColumn": 28,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "typescript",
-    "code": "2339",
-    "severity": 8,
-    "message": "Property 'coffee' does not exist on type '{}'.",
-    "source": "ts",
-    "startLineNumber": 222,
-    "startColumn": 22,
-    "endLineNumber": 222,
-    "endColumn": 28,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "typescript",
-    "code": "7006",
-    "severity": 8,
-    "message": "Parameter 'field' implicitly has an 'any' type.",
-    "source": "ts",
-    "startLineNumber": 250,
-    "startColumn": 30,
-    "endLineNumber": 250,
-    "endColumn": 35,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "typescript",
-    "code": "7006",
-    "severity": 8,
-    "message": "Parameter 'value' implicitly has an 'any' type.",
-    "source": "ts",
-    "startLineNumber": 250,
-    "startColumn": 37,
-    "endLineNumber": 250,
-    "endColumn": 42,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "typescript",
-    "code": "2345",
-    "severity": 8,
-    "message": "Argument of type '{ email: string; moxfieldUsername: string; discordUsername: string; mysteryDeck: string; commander: string; colorPreference: never[]; theme: string; bracket: string; budget: string; coffee: string; idealDate: string; }' is not assignable to parameter of type 'SetStateAction<{ email: string; moxfieldUsername: string; discordUsername: string; mysteryDeck: string; commander: string; colorPreference: string[]; backupColorPreference: string[]; theme: string; bracket: string; budget: string; coffee: string; idealDate: string; }>'.\n  Property 'backupColorPreference' is missing in type '{ email: string; moxfieldUsername: string; discordUsername: string; mysteryDeck: string; commander: string; colorPreference: never[]; theme: string; bracket: string; budget: string; coffee: string; idealDate: string; }' but required in type '{ email: string; moxfieldUsername: string; discordUsername: string; mysteryDeck: string; commander: string; colorPreference: string[]; backupColorPreference: string[]; theme: string; bracket: string; budget: string; coffee: string; idealDate: string; }'.",
-    "source": "ts",
-    "startLineNumber": 1062,
-    "startColumn": 27,
-    "endLineNumber": 1074,
-    "endColumn": 16,
-    "relatedInformation": [
-      {
-        "startLineNumber": 50,
-        "startColumn": 5,
-        "endLineNumber": 50,
-        "endColumn": 42,
-        "message": "'backupColorPreference' is declared here.",
-        "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx"
-      }
-    ],
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": "suppressions/incorrect",
-    "severity": 4,
-    "message": "A suppression shouldn't have an <explanation> placeholder. Example of suppression: // biome-ignore lint: false positive",
-    "source": "biome",
-    "startLineNumber": 1,
-    "startColumn": 55,
-    "endLineNumber": 1,
-    "endColumn": 68,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": "suppressions/incorrect",
-    "severity": 4,
-    "message": "A suppression shouldn't have an <explanation> placeholder. Example of suppression: // biome-ignore lint: false positive",
-    "source": "biome",
-    "startLineNumber": 2,
-    "startColumn": 55,
-    "endLineNumber": 2,
-    "endColumn": 68,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": "suppressions/incorrect",
-    "severity": 4,
-    "message": "A suppression shouldn't have an <explanation> placeholder. Example of suppression: // biome-ignore lint: false positive",
-    "source": "biome",
-    "startLineNumber": 3,
-    "startColumn": 61,
-    "endLineNumber": 3,
-    "endColumn": 74,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": "suppressions/incorrect",
-    "severity": 4,
-    "message": "A suppression shouldn't have an <explanation> placeholder. Example of suppression: // biome-ignore lint: false positive",
-    "source": "biome",
-    "startLineNumber": 4,
-    "startColumn": 47,
-    "endLineNumber": 4,
-    "endColumn": 60,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": "suppressions/incorrect",
-    "severity": 4,
-    "message": "A suppression shouldn't have an <explanation> placeholder. Example of suppression: // biome-ignore lint: false positive",
-    "source": "biome",
-    "startLineNumber": 5,
-    "startColumn": 61,
-    "endLineNumber": 5,
-    "endColumn": 74,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": "suppressions/incorrect",
-    "severity": 4,
-    "message": "A suppression shouldn't have an <explanation> placeholder. Example of suppression: // biome-ignore lint: false positive",
-    "source": "biome",
-    "startLineNumber": 6,
-    "startColumn": 55,
-    "endLineNumber": 6,
-    "endColumn": 68,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/correctness/noUnusedImports",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-unused-imports",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "These imports are unused.",
-    "source": "biome",
-    "startLineNumber": 7,
-    "startColumn": 8,
-    "endLineNumber": 7,
-    "endColumn": 13,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "typescript",
-    "code": "6133",
-    "severity": 4,
-    "message": "'ManaSymbols' is declared but its value is never read.",
-    "source": "ts",
-    "startLineNumber": 30,
-    "startColumn": 1,
-    "endLineNumber": 30,
-    "endColumn": 61,
-    "tags": [1],
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/correctness/noUnusedImports",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-unused-imports",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "This import is unused.",
-    "source": "biome",
-    "startLineNumber": 30,
-    "startColumn": 8,
-    "endLineNumber": 30,
-    "endColumn": 23,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noExcessiveCognitiveComplexity",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-excessive-cognitive-complexity",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Excessive complexity of 23 detected (max: 15).",
-    "source": "biome",
-    "startLineNumber": 33,
-    "startColumn": 25,
-    "endLineNumber": 33,
-    "endColumn": 38,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noExcessiveCognitiveComplexity",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-excessive-cognitive-complexity",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Excessive complexity of 43 detected (max: 15).",
-    "source": "biome",
-    "startLineNumber": 66,
-    "startColumn": 39,
-    "endLineNumber": 66,
-    "endColumn": 42,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noExcessiveCognitiveComplexity",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-excessive-cognitive-complexity",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Excessive complexity of 27 detected (max: 15).",
-    "source": "biome",
-    "startLineNumber": 183,
-    "startColumn": 31,
-    "endLineNumber": 183,
-    "endColumn": 34,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noExcessiveCognitiveComplexity",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-excessive-cognitive-complexity",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Excessive complexity of 54 detected (max: 15).",
-    "source": "biome",
-    "startLineNumber": 282,
-    "startColumn": 48,
-    "endLineNumber": 282,
-    "endColumn": 51,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/correctness/noUnusedVariables",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-unused-variables",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "This variable data is unused.",
-    "source": "biome",
-    "startLineNumber": 333,
-    "startColumn": 17,
-    "endLineNumber": 333,
-    "endColumn": 21,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "typescript",
-    "code": "6133",
-    "severity": 4,
-    "message": "'data' is declared but its value is never read.",
-    "source": "ts",
-    "startLineNumber": 333,
-    "startColumn": 17,
-    "endLineNumber": 333,
-    "endColumn": 21,
-    "tags": [1],
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noExcessiveCognitiveComplexity",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-excessive-cognitive-complexity",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Excessive complexity of 60 detected (max: 15).",
-    "source": "biome",
-    "startLineNumber": 397,
-    "startColumn": 32,
-    "endLineNumber": 397,
-    "endColumn": 35,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "assist/source/organizeImports",
-      "target": {
-        "$mid": 1,
-        "path": "/assist/actions/organize-imports",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 2,
-    "message": "The imports and exports are not sorted.",
-    "source": "biome",
-    "startLineNumber": 7,
-    "startColumn": 1,
-    "endLineNumber": 7,
-    "endColumn": 51,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noUselessFragments",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-useless-fragments",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 2,
-    "message": "This fragment is unnecessary.",
-    "source": "biome",
-    "startLineNumber": 1043,
-    "startColumn": 15,
-    "endLineNumber": 1046,
-    "endColumn": 18,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noUselessFragments",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-useless-fragments",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 2,
-    "message": "This fragment is unnecessary.",
-    "source": "biome",
-    "startLineNumber": 1048,
-    "startColumn": 15,
-    "endLineNumber": 1048,
-    "endColumn": 97,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/lib/auth/index.ts",
-    "owner": "typescript",
-    "code": "2345",
-    "severity": 8,
-    "message": "Argument of type 'string | null' is not assignable to parameter of type 'string'.\n  Type 'null' is not assignable to type 'string'.",
-    "source": "ts",
-    "startLineNumber": 50,
-    "startColumn": 52,
-    "endLineNumber": 50,
-    "endColumn": 64,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/lib/auth/index.ts",
-    "owner": "typescript",
-    "code": "2345",
-    "severity": 8,
-    "message": "Argument of type 'string | null' is not assignable to parameter of type 'string'.\n  Type 'null' is not assignable to type 'string'.",
-    "source": "ts",
-    "startLineNumber": 71,
-    "startColumn": 65,
-    "endLineNumber": 71,
-    "endColumn": 77,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/profile/ProfilePanel.tsx",
-    "owner": "typescript",
-    "code": "6133",
-    "severity": 4,
-    "message": "'Separator' is declared but its value is never read.",
-    "source": "ts",
-    "startLineNumber": 7,
-    "startColumn": 1,
-    "endLineNumber": 7,
-    "endColumn": 54,
-    "tags": [1],
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/profile/ProfilePanel.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/correctness/noUnusedImports",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-unused-imports",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "This import is unused.",
-    "source": "biome",
-    "startLineNumber": 7,
-    "startColumn": 8,
-    "endLineNumber": 7,
-    "endColumn": 21,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/profile/ProfilePanel.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/suspicious/noExplicitAny",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-explicit-any",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Unexpected any. Specify a different type.",
-    "source": "biome",
-    "startLineNumber": 24,
-    "startColumn": 36,
-    "endLineNumber": 24,
-    "endColumn": 39,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/profile/ProfilePanel.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/correctness/useExhaustiveDependencies",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/use-exhaustive-dependencies",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "This hook does not specify its dependency on loadProfile.",
-    "source": "biome",
-    "startLineNumber": 59,
-    "startColumn": 3,
-    "endLineNumber": 59,
-    "endColumn": 12,
-    "relatedInformation": [
-      {
-        "startLineNumber": 60,
-        "startColumn": 5,
-        "endLineNumber": 60,
-        "endColumn": 16,
-        "message": "This dependency is being used here, but is not specified in the hook dependency list. Either include it or remove the dependency array. ",
-        "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/profile/ProfilePanel.tsx"
-      }
-    ],
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/profile/ProfilePanel.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/suspicious/noExplicitAny",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-explicit-any",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Unexpected any. Specify a different type.",
-    "source": "biome",
-    "startLineNumber": 132,
-    "startColumn": 52,
-    "endLineNumber": 132,
-    "endColumn": 55,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/profile/ProfilePanel.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "assist/source/organizeImports",
-      "target": {
-        "$mid": 1,
-        "path": "/assist/actions/organize-imports",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 2,
-    "message": "The imports and exports are not sorted.",
-    "source": "biome",
-    "startLineNumber": 3,
-    "startColumn": 1,
-    "endLineNumber": 3,
-    "endColumn": 44,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/ui/button.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/style/useImportType",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/use-import-type",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "All these imports are only used as types.",
-    "source": "biome",
-    "startLineNumber": 1,
-    "startColumn": 8,
-    "endLineNumber": 1,
-    "endColumn": 31,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/ui/button.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "assist/source/organizeImports",
-      "target": {
-        "$mid": 1,
-        "path": "/assist/actions/organize-imports",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 2,
-    "message": "The imports and exports are not sorted.",
-    "source": "biome",
-    "startLineNumber": 1,
-    "startColumn": 1,
-    "endLineNumber": 1,
-    "endColumn": 31,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/ui/glowEffect.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": "suppressions/incorrect",
-    "severity": 4,
-    "message": "A suppression shouldn't have an <explanation> placeholder. Example of suppression: // biome-ignore lint: false positive",
-    "source": "biome",
-    "startLineNumber": 1,
-    "startColumn": 53,
-    "endLineNumber": 1,
-    "endColumn": 66,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/ui/glowEffect.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/suspicious/noExplicitAny",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-explicit-any",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Unexpected any. Specify a different type.",
-    "source": "biome",
-    "startLineNumber": 45,
-    "startColumn": 39,
-    "endLineNumber": 45,
-    "endColumn": 42,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/ui/glowEffect.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/suspicious/noExplicitAny",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-explicit-any",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Unexpected any. Specify a different type.",
-    "source": "biome",
-    "startLineNumber": 52,
-    "startColumn": 21,
-    "endLineNumber": 52,
-    "endColumn": 24,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/ui/glowEffect.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/suspicious/noExplicitAny",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-explicit-any",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Unexpected any. Specify a different type.",
-    "source": "biome",
-    "startLineNumber": 84,
-    "startColumn": 33,
-    "endLineNumber": 84,
-    "endColumn": 36,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/ui/glowEffect.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/style/noNonNullAssertion",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-non-null-assertion",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Forbidden non-null assertion.",
-    "source": "biome",
-    "startLineNumber": 107,
-    "startColumn": 11,
-    "endLineNumber": 107,
-    "endColumn": 32,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/ui/glowEffect.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noExcessiveCognitiveComplexity",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-excessive-cognitive-complexity",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Excessive complexity of 19 detected (max: 15).",
-    "source": "biome",
-    "startLineNumber": 120,
-    "startColumn": 62,
-    "endLineNumber": 120,
-    "endColumn": 65,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#11",
-    "code": "unknownAtRules",
-    "severity": 4,
-    "message": "Unknown at rule @tailwind",
-    "source": "css",
-    "startLineNumber": 1,
-    "startColumn": 1,
-    "endLineNumber": 1,
-    "endColumn": 10,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#11",
-    "code": "unknownAtRules",
-    "severity": 4,
-    "message": "Unknown at rule @tailwind",
-    "source": "css",
-    "startLineNumber": 2,
-    "startColumn": 1,
-    "endLineNumber": 2,
-    "endColumn": 10,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#11",
-    "code": "unknownAtRules",
-    "severity": 4,
-    "message": "Unknown at rule @tailwind",
-    "source": "css",
-    "startLineNumber": 3,
-    "startColumn": 1,
-    "endLineNumber": 3,
-    "endColumn": 10,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#11",
-    "code": "unknownAtRules",
-    "severity": 4,
-    "message": "Unknown at rule @apply",
-    "source": "css",
-    "startLineNumber": 304,
-    "startColumn": 5,
-    "endLineNumber": 304,
-    "endColumn": 11,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#11",
-    "code": "unknownAtRules",
-    "severity": 4,
-    "message": "Unknown at rule @apply",
-    "source": "css",
-    "startLineNumber": 307,
-    "startColumn": 5,
-    "endLineNumber": 307,
-    "endColumn": 11,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#0",
-    "code": {
-      "value": "css-prefix-order",
-      "target": {
-        "$mid": 1,
-        "path": "/docs/user-guide/hints/hint-css-prefix-order/",
-        "scheme": "https",
-        "authority": "webhint.io"
-      }
-    },
-    "severity": 4,
-    "message": "'backdrop-filter' should be listed after '-webkit-backdrop-filter'.",
-    "source": "Microsoft Edge Tools",
-    "startLineNumber": 318,
-    "startColumn": 3,
-    "endLineNumber": 318,
-    "endColumn": 18,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#11",
-    "code": "unknownAtRules",
-    "severity": 4,
-    "message": "Unknown at rule @apply",
-    "source": "css",
-    "startLineNumber": 336,
-    "startColumn": 3,
-    "endLineNumber": 336,
-    "endColumn": 9,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#0",
-    "code": {
-      "value": "css-prefix-order",
-      "target": {
-        "$mid": 1,
-        "path": "/docs/user-guide/hints/hint-css-prefix-order/",
-        "scheme": "https",
-        "authority": "webhint.io"
-      }
-    },
-    "severity": 4,
-    "message": "'backdrop-filter' should be listed after '-webkit-backdrop-filter'.",
-    "source": "Microsoft Edge Tools",
-    "startLineNumber": 457,
-    "startColumn": 3,
-    "endLineNumber": 457,
-    "endColumn": 18,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#0",
-    "code": {
-      "value": "css-prefix-order",
-      "target": {
-        "$mid": 1,
-        "path": "/docs/user-guide/hints/hint-css-prefix-order/",
-        "scheme": "https",
-        "authority": "webhint.io"
-      }
-    },
-    "severity": 4,
-    "message": "'backdrop-filter' should be listed after '-webkit-backdrop-filter'.",
-    "source": "Microsoft Edge Tools",
-    "startLineNumber": 468,
-    "startColumn": 3,
-    "endLineNumber": 468,
-    "endColumn": 18,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#0",
-    "code": {
-      "value": "css-prefix-order",
-      "target": {
-        "$mid": 1,
-        "path": "/docs/user-guide/hints/hint-css-prefix-order/",
-        "scheme": "https",
-        "authority": "webhint.io"
-      }
-    },
-    "severity": 4,
-    "message": "'backdrop-filter' should be listed after '-webkit-backdrop-filter'.",
-    "source": "Microsoft Edge Tools",
-    "startLineNumber": 479,
-    "startColumn": 3,
-    "endLineNumber": 479,
-    "endColumn": 18,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#0",
-    "code": {
-      "value": "css-prefix-order",
-      "target": {
-        "$mid": 1,
-        "path": "/docs/user-guide/hints/hint-css-prefix-order/",
-        "scheme": "https",
-        "authority": "webhint.io"
-      }
-    },
-    "severity": 4,
-    "message": "'backdrop-filter' should be listed after '-webkit-backdrop-filter'.",
-    "source": "Microsoft Edge Tools",
-    "startLineNumber": 600,
-    "startColumn": 3,
-    "endLineNumber": 600,
-    "endColumn": 18,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noImportantStyles",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-important-styles",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Avoid the use of the !important style.",
-    "source": "biome",
-    "startLineNumber": 628,
-    "startColumn": 83,
-    "endLineNumber": 628,
-    "endColumn": 93,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noImportantStyles",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-important-styles",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Avoid the use of the !important style.",
-    "source": "biome",
-    "startLineNumber": 629,
-    "startColumn": 31,
-    "endLineNumber": 629,
-    "endColumn": 41,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noImportantStyles",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-important-styles",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Avoid the use of the !important style.",
-    "source": "biome",
-    "startLineNumber": 640,
-    "startColumn": 83,
-    "endLineNumber": 640,
-    "endColumn": 93,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noImportantStyles",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-important-styles",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Avoid the use of the !important style.",
-    "source": "biome",
-    "startLineNumber": 641,
-    "startColumn": 35,
-    "endLineNumber": 641,
-    "endColumn": 45,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noImportantStyles",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-important-styles",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Avoid the use of the !important style.",
-    "source": "biome",
-    "startLineNumber": 642,
-    "startColumn": 31,
-    "endLineNumber": 642,
-    "endColumn": 41,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#0",
-    "code": {
-      "value": "css-prefix-order",
-      "target": {
-        "$mid": 1,
-        "path": "/docs/user-guide/hints/hint-css-prefix-order/",
-        "scheme": "https",
-        "authority": "webhint.io"
-      }
-    },
-    "severity": 4,
-    "message": "'backdrop-filter' should be listed after '-webkit-backdrop-filter'.",
-    "source": "Microsoft Edge Tools",
-    "startLineNumber": 736,
-    "startColumn": 5,
-    "endLineNumber": 736,
-    "endColumn": 20,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#0",
-    "code": {
-      "value": "css-prefix-order",
-      "target": {
-        "$mid": 1,
-        "path": "/docs/user-guide/hints/hint-css-prefix-order/",
-        "scheme": "https",
-        "authority": "webhint.io"
-      }
-    },
-    "severity": 4,
-    "message": "'backdrop-filter' should be listed after '-webkit-backdrop-filter'.",
-    "source": "Microsoft Edge Tools",
-    "startLineNumber": 748,
-    "startColumn": 5,
-    "endLineNumber": 748,
-    "endColumn": 20,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noImportantStyles",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-important-styles",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Avoid the use of the !important style.",
-    "source": "biome",
-    "startLineNumber": 785,
-    "startColumn": 18,
-    "endLineNumber": 785,
-    "endColumn": 28,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noImportantStyles",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-important-styles",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Avoid the use of the !important style.",
-    "source": "biome",
-    "startLineNumber": 789,
-    "startColumn": 18,
-    "endLineNumber": 789,
-    "endColumn": 28,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noImportantStyles",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-important-styles",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Avoid the use of the !important style.",
-    "source": "biome",
-    "startLineNumber": 793,
-    "startColumn": 18,
-    "endLineNumber": 793,
-    "endColumn": 28,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noImportantStyles",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-important-styles",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Avoid the use of the !important style.",
-    "source": "biome",
-    "startLineNumber": 797,
-    "startColumn": 18,
-    "endLineNumber": 797,
-    "endColumn": 28,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noImportantStyles",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-important-styles",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Avoid the use of the !important style.",
-    "source": "biome",
-    "startLineNumber": 801,
-    "startColumn": 18,
-    "endLineNumber": 801,
-    "endColumn": 28,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noImportantStyles",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-important-styles",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Avoid the use of the !important style.",
-    "source": "biome",
-    "startLineNumber": 805,
-    "startColumn": 15,
-    "endLineNumber": 805,
-    "endColumn": 25,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noImportantStyles",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-important-styles",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Avoid the use of the !important style.",
-    "source": "biome",
-    "startLineNumber": 810,
-    "startColumn": 18,
-    "endLineNumber": 810,
-    "endColumn": 28,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noImportantStyles",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-important-styles",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Avoid the use of the !important style.",
-    "source": "biome",
-    "startLineNumber": 814,
-    "startColumn": 18,
-    "endLineNumber": 814,
-    "endColumn": 28,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noImportantStyles",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-important-styles",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Avoid the use of the !important style.",
-    "source": "biome",
-    "startLineNumber": 818,
-    "startColumn": 18,
-    "endLineNumber": 818,
-    "endColumn": 28,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noImportantStyles",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-important-styles",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Avoid the use of the !important style.",
-    "source": "biome",
-    "startLineNumber": 822,
-    "startColumn": 18,
-    "endLineNumber": 822,
-    "endColumn": 28,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noImportantStyles",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-important-styles",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Avoid the use of the !important style.",
-    "source": "biome",
-    "startLineNumber": 826,
-    "startColumn": 18,
-    "endLineNumber": 826,
-    "endColumn": 28,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "lint/complexity/noImportantStyles",
-      "target": {
-        "$mid": 1,
-        "path": "/linter/rules/no-important-styles",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 4,
-    "message": "Avoid the use of the !important style.",
-    "source": "biome",
-    "startLineNumber": 830,
-    "startColumn": 15,
-    "endLineNumber": 830,
-    "endColumn": 25,
-    "origin": "extHost1"
-  },
-  {
-    "resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/tier/TierBadge.tsx",
-    "owner": "_generated_diagnostic_collection_name_#15",
-    "code": {
-      "value": "assist/source/organizeImports",
-      "target": {
-        "$mid": 1,
-        "path": "/assist/actions/organize-imports",
-        "scheme": "https",
-        "authority": "biomejs.dev"
-      }
-    },
-    "severity": 2,
-    "message": "The imports and exports are not sorted.",
-    "source": "biome",
-    "startLineNumber": 3,
-    "startColumn": 1,
-    "endLineNumber": 3,
-    "endColumn": 73,
-    "origin": "extHost1"
-  }
-]
+[{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/app/admin/page.tsx",
+	"owner": "typescript",
+	"code": "2345",
+	"severity": 8,
+	"message": "Argument of type 'string | undefined' is not assignable to parameter of type 'string'.\n  Type 'undefined' is not assignable to type 'string'.",
+	"source": "ts",
+	"startLineNumber": 34,
+	"startColumn": 15,
+	"endLineNumber": 34,
+	"endColumn": 23,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/app/admin/page.tsx",
+	"owner": "typescript",
+	"code": "2769",
+	"severity": 8,
+	"message": "No overload matches this call.\n  Overload 1 of 2, '(relation: \"profiles\" | \"bookmark_sync_logs\" | \"cards\" | \"deck_submissions\" | \"decklist_cards\" | \"moxfield_decks\" | \"products\" | \"site_config\" | \"update_logs\" | \"user_credits\" | \"user_roles\"): PostgrestQueryBuilder<...>', gave the following error.\n    Argument of type '\"decks\"' is not assignable to parameter of type '\"profiles\" | \"bookmark_sync_logs\" | \"cards\" | \"deck_submissions\" | \"decklist_cards\" | \"moxfield_decks\" | \"products\" | \"site_config\" | \"update_logs\" | \"user_credits\" | \"user_roles\"'.\n  Overload 2 of 2, '(relation: \"submission_stats\" | \"user_submission_status\"): PostgrestQueryBuilder<{ PostgrestVersion: \"13.0.5\"; }, { Tables: { bookmark_sync_logs: { Row: { bookmark_id: string; completed_at: string | null; ... 9 more ...; updated_decks: number | null; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 9 more ...; user_roles: { ...; }; }; Views: { ...; }; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, { ...; } | { ...; }, \"submission_stats\" | \"user_submission_status\", []>', gave the following error.\n    Argument of type '\"decks\"' is not assignable to parameter of type '\"submission_stats\" | \"user_submission_status\"'.",
+	"source": "ts",
+	"startLineNumber": 40,
+	"startColumn": 19,
+	"endLineNumber": 40,
+	"endColumn": 26,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/app/pivot/home/page.tsx",
+	"owner": "typescript",
+	"code": "2339",
+	"severity": 8,
+	"message": "Property 'bracket' does not exist on type 'Deck'.",
+	"source": "ts",
+	"startLineNumber": 77,
+	"startColumn": 49,
+	"endLineNumber": 77,
+	"endColumn": 56,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/app/pivot/home/page.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": {
+		"value": "lint/a11y/noLabelWithoutControl",
+		"target": {
+			"$mid": 1,
+			"path": "/linter/rules/no-label-without-control",
+			"scheme": "https",
+			"authority": "biomejs.dev"
+		}
+	},
+	"severity": 8,
+	"message": "A form label must be associated with an input.",
+	"source": "biome",
+	"startLineNumber": 188,
+	"startColumn": 19,
+	"endLineNumber": 188,
+	"endColumn": 100,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/app/pivot/home/page.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": {
+		"value": "lint/a11y/noLabelWithoutControl",
+		"target": {
+			"$mid": 1,
+			"path": "/linter/rules/no-label-without-control",
+			"scheme": "https",
+			"authority": "biomejs.dev"
+		}
+	},
+	"severity": 8,
+	"message": "A form label must be associated with an input.",
+	"source": "biome",
+	"startLineNumber": 208,
+	"startColumn": 19,
+	"endLineNumber": 208,
+	"endColumn": 91,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "typescript",
+	"code": "2345",
+	"severity": 8,
+	"message": "Argument of type 'string | null' is not assignable to parameter of type 'string'.\n  Type 'null' is not assignable to type 'string'.",
+	"source": "ts",
+	"startLineNumber": 103,
+	"startColumn": 39,
+	"endLineNumber": 103,
+	"endColumn": 43,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "typescript",
+	"code": "7006",
+	"severity": 8,
+	"message": "Parameter 'step' implicitly has an 'any' type.",
+	"source": "ts",
+	"startLineNumber": 183,
+	"startColumn": 25,
+	"endLineNumber": 183,
+	"endColumn": 29,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "typescript",
+	"code": "2339",
+	"severity": 8,
+	"message": "Property 'email' does not exist on type '{}'.",
+	"source": "ts",
+	"startLineNumber": 189,
+	"startColumn": 22,
+	"endLineNumber": 189,
+	"endColumn": 27,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "typescript",
+	"code": "2339",
+	"severity": 8,
+	"message": "Property 'email' does not exist on type '{}'.",
+	"source": "ts",
+	"startLineNumber": 191,
+	"startColumn": 22,
+	"endLineNumber": 191,
+	"endColumn": 27,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "typescript",
+	"code": "2339",
+	"severity": 8,
+	"message": "Property 'moxfieldUsername' does not exist on type '{}'.",
+	"source": "ts",
+	"startLineNumber": 194,
+	"startColumn": 22,
+	"endLineNumber": 194,
+	"endColumn": 38,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "typescript",
+	"code": "2339",
+	"severity": 8,
+	"message": "Property 'mysteryDeck' does not exist on type '{}'.",
+	"source": "ts",
+	"startLineNumber": 200,
+	"startColumn": 22,
+	"endLineNumber": 200,
+	"endColumn": 33,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "typescript",
+	"code": "2339",
+	"severity": 8,
+	"message": "Property 'colorPreference' does not exist on type '{}'.",
+	"source": "ts",
+	"startLineNumber": 209,
+	"startColumn": 22,
+	"endLineNumber": 209,
+	"endColumn": 37,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "typescript",
+	"code": "2339",
+	"severity": 8,
+	"message": "Property 'bracket' does not exist on type '{}'.",
+	"source": "ts",
+	"startLineNumber": 214,
+	"startColumn": 22,
+	"endLineNumber": 214,
+	"endColumn": 29,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "typescript",
+	"code": "2339",
+	"severity": 8,
+	"message": "Property 'budget' does not exist on type '{}'.",
+	"source": "ts",
+	"startLineNumber": 217,
+	"startColumn": 22,
+	"endLineNumber": 217,
+	"endColumn": 28,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "typescript",
+	"code": "2339",
+	"severity": 8,
+	"message": "Property 'coffee' does not exist on type '{}'.",
+	"source": "ts",
+	"startLineNumber": 222,
+	"startColumn": 22,
+	"endLineNumber": 222,
+	"endColumn": 28,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "typescript",
+	"code": "7006",
+	"severity": 8,
+	"message": "Parameter 'field' implicitly has an 'any' type.",
+	"source": "ts",
+	"startLineNumber": 250,
+	"startColumn": 30,
+	"endLineNumber": 250,
+	"endColumn": 35,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "typescript",
+	"code": "7006",
+	"severity": 8,
+	"message": "Parameter 'value' implicitly has an 'any' type.",
+	"source": "ts",
+	"startLineNumber": 250,
+	"startColumn": 37,
+	"endLineNumber": 250,
+	"endColumn": 42,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "typescript",
+	"code": "2345",
+	"severity": 8,
+	"message": "Argument of type '{ email: string; moxfieldUsername: string; discordUsername: string; mysteryDeck: string; commander: string; colorPreference: never[]; theme: string; bracket: string; budget: string; coffee: string; idealDate: string; }' is not assignable to parameter of type 'SetStateAction<{ email: string; moxfieldUsername: string; discordUsername: string; mysteryDeck: string; commander: string; colorPreference: string[]; backupColorPreference: string[]; theme: string; bracket: string; budget: string; coffee: string; idealDate: string; }>'.\n  Property 'backupColorPreference' is missing in type '{ email: string; moxfieldUsername: string; discordUsername: string; mysteryDeck: string; commander: string; colorPreference: never[]; theme: string; bracket: string; budget: string; coffee: string; idealDate: string; }' but required in type '{ email: string; moxfieldUsername: string; discordUsername: string; mysteryDeck: string; commander: string; colorPreference: string[]; backupColorPreference: string[]; theme: string; bracket: string; budget: string; coffee: string; idealDate: string; }'.",
+	"source": "ts",
+	"startLineNumber": 1070,
+	"startColumn": 27,
+	"endLineNumber": 1082,
+	"endColumn": 16,
+	"relatedInformation": [
+		{
+			"startLineNumber": 50,
+			"startColumn": 5,
+			"endLineNumber": 50,
+			"endColumn": 42,
+			"message": "'backupColorPreference' is declared here.",
+			"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx"
+		}
+	],
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": "suppressions/incorrect",
+	"severity": 4,
+	"message": "A suppression shouldn't have an <explanation> placeholder. Example of suppression: // biome-ignore lint: false positive",
+	"source": "biome",
+	"startLineNumber": 1,
+	"startColumn": 55,
+	"endLineNumber": 1,
+	"endColumn": 68,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": "suppressions/incorrect",
+	"severity": 4,
+	"message": "A suppression shouldn't have an <explanation> placeholder. Example of suppression: // biome-ignore lint: false positive",
+	"source": "biome",
+	"startLineNumber": 2,
+	"startColumn": 55,
+	"endLineNumber": 2,
+	"endColumn": 68,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": "suppressions/incorrect",
+	"severity": 4,
+	"message": "A suppression shouldn't have an <explanation> placeholder. Example of suppression: // biome-ignore lint: false positive",
+	"source": "biome",
+	"startLineNumber": 3,
+	"startColumn": 61,
+	"endLineNumber": 3,
+	"endColumn": 74,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": "suppressions/incorrect",
+	"severity": 4,
+	"message": "A suppression shouldn't have an <explanation> placeholder. Example of suppression: // biome-ignore lint: false positive",
+	"source": "biome",
+	"startLineNumber": 4,
+	"startColumn": 47,
+	"endLineNumber": 4,
+	"endColumn": 60,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": "suppressions/incorrect",
+	"severity": 4,
+	"message": "A suppression shouldn't have an <explanation> placeholder. Example of suppression: // biome-ignore lint: false positive",
+	"source": "biome",
+	"startLineNumber": 5,
+	"startColumn": 61,
+	"endLineNumber": 5,
+	"endColumn": 74,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": "suppressions/incorrect",
+	"severity": 4,
+	"message": "A suppression shouldn't have an <explanation> placeholder. Example of suppression: // biome-ignore lint: false positive",
+	"source": "biome",
+	"startLineNumber": 6,
+	"startColumn": 55,
+	"endLineNumber": 6,
+	"endColumn": 68,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": {
+		"value": "lint/complexity/noExcessiveCognitiveComplexity",
+		"target": {
+			"$mid": 1,
+			"path": "/linter/rules/no-excessive-cognitive-complexity",
+			"scheme": "https",
+			"authority": "biomejs.dev"
+		}
+	},
+	"severity": 4,
+	"message": "Excessive complexity of 23 detected (max: 15).",
+	"source": "biome",
+	"startLineNumber": 33,
+	"startColumn": 25,
+	"endLineNumber": 33,
+	"endColumn": 38,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": {
+		"value": "lint/complexity/noExcessiveCognitiveComplexity",
+		"target": {
+			"$mid": 1,
+			"path": "/linter/rules/no-excessive-cognitive-complexity",
+			"scheme": "https",
+			"authority": "biomejs.dev"
+		}
+	},
+	"severity": 4,
+	"message": "Excessive complexity of 43 detected (max: 15).",
+	"source": "biome",
+	"startLineNumber": 66,
+	"startColumn": 39,
+	"endLineNumber": 66,
+	"endColumn": 42,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": {
+		"value": "lint/complexity/noExcessiveCognitiveComplexity",
+		"target": {
+			"$mid": 1,
+			"path": "/linter/rules/no-excessive-cognitive-complexity",
+			"scheme": "https",
+			"authority": "biomejs.dev"
+		}
+	},
+	"severity": 4,
+	"message": "Excessive complexity of 27 detected (max: 15).",
+	"source": "biome",
+	"startLineNumber": 183,
+	"startColumn": 31,
+	"endLineNumber": 183,
+	"endColumn": 34,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": {
+		"value": "lint/complexity/noExcessiveCognitiveComplexity",
+		"target": {
+			"$mid": 1,
+			"path": "/linter/rules/no-excessive-cognitive-complexity",
+			"scheme": "https",
+			"authority": "biomejs.dev"
+		}
+	},
+	"severity": 4,
+	"message": "Excessive complexity of 54 detected (max: 15).",
+	"source": "biome",
+	"startLineNumber": 282,
+	"startColumn": 48,
+	"endLineNumber": 282,
+	"endColumn": 51,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "typescript",
+	"code": "6133",
+	"severity": 4,
+	"message": "'data' is declared but its value is never read.",
+	"source": "ts",
+	"startLineNumber": 333,
+	"startColumn": 17,
+	"endLineNumber": 333,
+	"endColumn": 21,
+	"tags": [
+		1
+	],
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": {
+		"value": "lint/correctness/noUnusedVariables",
+		"target": {
+			"$mid": 1,
+			"path": "/linter/rules/no-unused-variables",
+			"scheme": "https",
+			"authority": "biomejs.dev"
+		}
+	},
+	"severity": 4,
+	"message": "This variable data is unused.",
+	"source": "biome",
+	"startLineNumber": 333,
+	"startColumn": 17,
+	"endLineNumber": 333,
+	"endColumn": 21,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": {
+		"value": "lint/complexity/noExcessiveCognitiveComplexity",
+		"target": {
+			"$mid": 1,
+			"path": "/linter/rules/no-excessive-cognitive-complexity",
+			"scheme": "https",
+			"authority": "biomejs.dev"
+		}
+	},
+	"severity": 4,
+	"message": "Excessive complexity of 60 detected (max: 15).",
+	"source": "biome",
+	"startLineNumber": 397,
+	"startColumn": 32,
+	"endLineNumber": 397,
+	"endColumn": 35,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": {
+		"value": "lint/complexity/noUselessFragments",
+		"target": {
+			"$mid": 1,
+			"path": "/linter/rules/no-useless-fragments",
+			"scheme": "https",
+			"authority": "biomejs.dev"
+		}
+	},
+	"severity": 2,
+	"message": "This fragment is unnecessary.",
+	"source": "biome",
+	"startLineNumber": 1051,
+	"startColumn": 15,
+	"endLineNumber": 1054,
+	"endColumn": 18,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/admin/CommanderDeckForm.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": {
+		"value": "lint/complexity/noUselessFragments",
+		"target": {
+			"$mid": 1,
+			"path": "/linter/rules/no-useless-fragments",
+			"scheme": "https",
+			"authority": "biomejs.dev"
+		}
+	},
+	"severity": 2,
+	"message": "This fragment is unnecessary.",
+	"source": "biome",
+	"startLineNumber": 1056,
+	"startColumn": 15,
+	"endLineNumber": 1056,
+	"endColumn": 97,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/ui/glowEffect.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": {
+		"value": "lint/style/useConst",
+		"target": {
+			"$mid": 1,
+			"path": "/linter/rules/use-const",
+			"scheme": "https",
+			"authority": "biomejs.dev"
+		}
+	},
+	"severity": 8,
+	"message": "This let declares a variable that is only assigned once.",
+	"source": "biome",
+	"startLineNumber": 82,
+	"startColumn": 11,
+	"endLineNumber": 82,
+	"endColumn": 14,
+	"relatedInformation": [
+		{
+			"startLineNumber": 82,
+			"startColumn": 15,
+			"endLineNumber": 82,
+			"endColumn": 26,
+			"message": "'targetAngle' is never reassigned. ",
+			"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/ui/glowEffect.tsx"
+		}
+	],
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/ui/glowEffect.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": "suppressions/incorrect",
+	"severity": 4,
+	"message": "A suppression shouldn't have an <explanation> placeholder. Example of suppression: // biome-ignore lint: false positive",
+	"source": "biome",
+	"startLineNumber": 1,
+	"startColumn": 53,
+	"endLineNumber": 1,
+	"endColumn": 66,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/ui/glowEffect.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": {
+		"value": "lint/complexity/noExcessiveCognitiveComplexity",
+		"target": {
+			"$mid": 1,
+			"path": "/linter/rules/no-excessive-cognitive-complexity",
+			"scheme": "https",
+			"authority": "biomejs.dev"
+		}
+	},
+	"severity": 4,
+	"message": "Excessive complexity of 19 detected (max: 15).",
+	"source": "biome",
+	"startLineNumber": 46,
+	"startColumn": 62,
+	"endLineNumber": 46,
+	"endColumn": 65,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/lib/auth/index.ts",
+	"owner": "typescript",
+	"code": "2345",
+	"severity": 8,
+	"message": "Argument of type 'string | null' is not assignable to parameter of type 'string'.\n  Type 'null' is not assignable to type 'string'.",
+	"source": "ts",
+	"startLineNumber": 50,
+	"startColumn": 52,
+	"endLineNumber": 50,
+	"endColumn": 64,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/lib/auth/index.ts",
+	"owner": "typescript",
+	"code": "2345",
+	"severity": 8,
+	"message": "Argument of type 'string | null' is not assignable to parameter of type 'string'.\n  Type 'null' is not assignable to type 'string'.",
+	"source": "ts",
+	"startLineNumber": 71,
+	"startColumn": 65,
+	"endLineNumber": 71,
+	"endColumn": 77,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/decks/ColorDist.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": "suppressions/incorrect",
+	"severity": 4,
+	"message": "A suppression shouldn't have an <explanation> placeholder. Example of suppression: // biome-ignore lint: false positive",
+	"source": "biome",
+	"startLineNumber": 2,
+	"startColumn": 61,
+	"endLineNumber": 2,
+	"endColumn": 74,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/decks/ColorDist.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": "suppressions/incorrect",
+	"severity": 4,
+	"message": "A suppression shouldn't have an <explanation> placeholder. Example of suppression: // biome-ignore lint: false positive",
+	"source": "biome",
+	"startLineNumber": 5,
+	"startColumn": 48,
+	"endLineNumber": 5,
+	"endColumn": 61,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/decks/ColorDist.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": {
+		"value": "lint/complexity/noExcessiveCognitiveComplexity",
+		"target": {
+			"$mid": 1,
+			"path": "/linter/rules/no-excessive-cognitive-complexity",
+			"scheme": "https",
+			"authority": "biomejs.dev"
+		}
+	},
+	"severity": 4,
+	"message": "Excessive complexity of 20 detected (max: 15).",
+	"source": "biome",
+	"startLineNumber": 40,
+	"startColumn": 15,
+	"endLineNumber": 40,
+	"endColumn": 18,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/profile/ProfilePanel.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": {
+		"value": "lint/suspicious/noExplicitAny",
+		"target": {
+			"$mid": 1,
+			"path": "/linter/rules/no-explicit-any",
+			"scheme": "https",
+			"authority": "biomejs.dev"
+		}
+	},
+	"severity": 4,
+	"message": "Unexpected any. Specify a different type.",
+	"source": "biome",
+	"startLineNumber": 22,
+	"startColumn": 36,
+	"endLineNumber": 22,
+	"endColumn": 39,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/profile/ProfilePanel.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": {
+		"value": "lint/correctness/useExhaustiveDependencies",
+		"target": {
+			"$mid": 1,
+			"path": "/linter/rules/use-exhaustive-dependencies",
+			"scheme": "https",
+			"authority": "biomejs.dev"
+		}
+	},
+	"severity": 4,
+	"message": "loadProfile changes on every re-render and should not be used as a hook dependency.",
+	"source": "biome",
+	"startLineNumber": 62,
+	"startColumn": 7,
+	"endLineNumber": 62,
+	"endColumn": 18,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/components/profile/ProfilePanel.tsx",
+	"owner": "_generated_diagnostic_collection_name_#16",
+	"code": {
+		"value": "lint/suspicious/noExplicitAny",
+		"target": {
+			"$mid": 1,
+			"path": "/linter/rules/no-explicit-any",
+			"scheme": "https",
+			"authority": "biomejs.dev"
+		}
+	},
+	"severity": 4,
+	"message": "Unexpected any. Specify a different type.",
+	"source": "biome",
+	"startLineNumber": 132,
+	"startColumn": 52,
+	"endLineNumber": 132,
+	"endColumn": 55,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
+	"owner": "_generated_diagnostic_collection_name_#11",
+	"code": "unknownAtRules",
+	"severity": 4,
+	"message": "Unknown at rule @tailwind",
+	"source": "css",
+	"startLineNumber": 1,
+	"startColumn": 1,
+	"endLineNumber": 1,
+	"endColumn": 10,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
+	"owner": "_generated_diagnostic_collection_name_#11",
+	"code": "unknownAtRules",
+	"severity": 4,
+	"message": "Unknown at rule @tailwind",
+	"source": "css",
+	"startLineNumber": 2,
+	"startColumn": 1,
+	"endLineNumber": 2,
+	"endColumn": 10,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
+	"owner": "_generated_diagnostic_collection_name_#11",
+	"code": "unknownAtRules",
+	"severity": 4,
+	"message": "Unknown at rule @tailwind",
+	"source": "css",
+	"startLineNumber": 3,
+	"startColumn": 1,
+	"endLineNumber": 3,
+	"endColumn": 10,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
+	"owner": "_generated_diagnostic_collection_name_#11",
+	"code": "unknownAtRules",
+	"severity": 4,
+	"message": "Unknown at rule @apply",
+	"source": "css",
+	"startLineNumber": 308,
+	"startColumn": 5,
+	"endLineNumber": 308,
+	"endColumn": 11,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
+	"owner": "_generated_diagnostic_collection_name_#11",
+	"code": "unknownAtRules",
+	"severity": 4,
+	"message": "Unknown at rule @apply",
+	"source": "css",
+	"startLineNumber": 311,
+	"startColumn": 5,
+	"endLineNumber": 311,
+	"endColumn": 11,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
+	"owner": "_generated_diagnostic_collection_name_#0",
+	"code": {
+		"value": "css-prefix-order",
+		"target": {
+			"$mid": 1,
+			"path": "/docs/user-guide/hints/hint-css-prefix-order/",
+			"scheme": "https",
+			"authority": "webhint.io"
+		}
+	},
+	"severity": 4,
+	"message": "'backdrop-filter' should be listed after '-webkit-backdrop-filter'.",
+	"source": "Microsoft Edge Tools",
+	"startLineNumber": 322,
+	"startColumn": 3,
+	"endLineNumber": 322,
+	"endColumn": 18,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
+	"owner": "_generated_diagnostic_collection_name_#11",
+	"code": "unknownAtRules",
+	"severity": 4,
+	"message": "Unknown at rule @apply",
+	"source": "css",
+	"startLineNumber": 340,
+	"startColumn": 3,
+	"endLineNumber": 340,
+	"endColumn": 9,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
+	"owner": "_generated_diagnostic_collection_name_#0",
+	"code": {
+		"value": "css-prefix-order",
+		"target": {
+			"$mid": 1,
+			"path": "/docs/user-guide/hints/hint-css-prefix-order/",
+			"scheme": "https",
+			"authority": "webhint.io"
+		}
+	},
+	"severity": 4,
+	"message": "'backdrop-filter' should be listed after '-webkit-backdrop-filter'.",
+	"source": "Microsoft Edge Tools",
+	"startLineNumber": 461,
+	"startColumn": 3,
+	"endLineNumber": 461,
+	"endColumn": 18,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
+	"owner": "_generated_diagnostic_collection_name_#0",
+	"code": {
+		"value": "css-prefix-order",
+		"target": {
+			"$mid": 1,
+			"path": "/docs/user-guide/hints/hint-css-prefix-order/",
+			"scheme": "https",
+			"authority": "webhint.io"
+		}
+	},
+	"severity": 4,
+	"message": "'backdrop-filter' should be listed after '-webkit-backdrop-filter'.",
+	"source": "Microsoft Edge Tools",
+	"startLineNumber": 472,
+	"startColumn": 3,
+	"endLineNumber": 472,
+	"endColumn": 18,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
+	"owner": "_generated_diagnostic_collection_name_#0",
+	"code": {
+		"value": "css-prefix-order",
+		"target": {
+			"$mid": 1,
+			"path": "/docs/user-guide/hints/hint-css-prefix-order/",
+			"scheme": "https",
+			"authority": "webhint.io"
+		}
+	},
+	"severity": 4,
+	"message": "'backdrop-filter' should be listed after '-webkit-backdrop-filter'.",
+	"source": "Microsoft Edge Tools",
+	"startLineNumber": 483,
+	"startColumn": 3,
+	"endLineNumber": 483,
+	"endColumn": 18,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
+	"owner": "_generated_diagnostic_collection_name_#0",
+	"code": {
+		"value": "css-prefix-order",
+		"target": {
+			"$mid": 1,
+			"path": "/docs/user-guide/hints/hint-css-prefix-order/",
+			"scheme": "https",
+			"authority": "webhint.io"
+		}
+	},
+	"severity": 4,
+	"message": "'backdrop-filter' should be listed after '-webkit-backdrop-filter'.",
+	"source": "Microsoft Edge Tools",
+	"startLineNumber": 604,
+	"startColumn": 3,
+	"endLineNumber": 604,
+	"endColumn": 18,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
+	"owner": "_generated_diagnostic_collection_name_#0",
+	"code": {
+		"value": "css-prefix-order",
+		"target": {
+			"$mid": 1,
+			"path": "/docs/user-guide/hints/hint-css-prefix-order/",
+			"scheme": "https",
+			"authority": "webhint.io"
+		}
+	},
+	"severity": 4,
+	"message": "'backdrop-filter' should be listed after '-webkit-backdrop-filter'.",
+	"source": "Microsoft Edge Tools",
+	"startLineNumber": 740,
+	"startColumn": 5,
+	"endLineNumber": 740,
+	"endColumn": 20,
+	"origin": "extHost1"
+},{
+	"resource": "/c:/Users/rprat/projects/cat-app/defcat-website/src/styles/globals.css",
+	"owner": "_generated_diagnostic_collection_name_#0",
+	"code": {
+		"value": "css-prefix-order",
+		"target": {
+			"$mid": 1,
+			"path": "/docs/user-guide/hints/hint-css-prefix-order/",
+			"scheme": "https",
+			"authority": "webhint.io"
+		}
+	},
+	"severity": 4,
+	"message": "'backdrop-filter' should be listed after '-webkit-backdrop-filter'.",
+	"source": "Microsoft Edge Tools",
+	"startLineNumber": 752,
+	"startColumn": 5,
+	"endLineNumber": 752,
+	"endColumn": 20,
+	"origin": "extHost1"
+}]

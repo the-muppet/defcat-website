@@ -7,7 +7,6 @@ import {
   Heading,
   Hr,
   Html,
-  Img,
   Link,
   Preview,
   Section,
@@ -181,7 +180,7 @@ const h1 = {
   padding: '0',
 }
 
-const submissionNumber = {
+const _submissionNumber = {
   color: '#e0e7ff',
   fontSize: '18px',
   fontWeight: '600',

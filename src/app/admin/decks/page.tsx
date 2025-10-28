@@ -12,7 +12,6 @@ import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { requireAdmin } from '@/lib/auth/auth-guards'
 import { createClient } from '@/lib/supabase/server'
-import { Database } from '@/types/supabase'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,14 +22,25 @@ export default async function AdminDecksPage() {
   const supabase = await createClient()
 
   // Fetch all decks with minimal data
-  const { data: decks, error } = await supabase
+  const { data: rawDecks, error } = await supabase
     .from('moxfield_decks')
-    .select('id, moxfield_id, name, commanders, color_identity, created_at, view_count')
+    .select('id, moxfield_id, name, raw_data, created_at, view_count')
     .order('created_at', { ascending: false })
 
   if (error) {
     console.error('Error fetching decks:', error)
   }
+
+  // Transform the data to extract commanders and color_identity from raw_data
+  const decks = rawDecks?.map((deck) => ({
+    id: deck.id,
+    moxfield_id: deck.moxfield_id,
+    name: deck.name,
+    commanders: deck.raw_data?.commanders?.map((c: any) => c.name).filter(Boolean) || [],
+    color_identity: deck.raw_data?.colorIdentity || [],
+    created_at: deck.created_at,
+    view_count: deck.view_count,
+  }))
 
   return (
     <div className="container mx-auto px-4 py-8" data-page="admin-decks">

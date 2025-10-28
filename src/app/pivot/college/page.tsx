@@ -3,7 +3,6 @@
 import { BookOpen, GraduationCap, Target, Zap } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { VideoPlayer } from '@/components/video/VideoPlayer'
 import { createClient } from '@/lib/supabase/client'
 
 export default function CommanderCollegePage() {

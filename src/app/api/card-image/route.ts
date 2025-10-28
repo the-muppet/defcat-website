@@ -55,7 +55,7 @@ async function downloadAndStoreImage(
   supabase: ReturnType<typeof getSupabaseClient>,
   imageUrl: string,
   cardId: string,
-  cardName: string
+  _cardName: string
 ): Promise<string | null> {
   try {
     // Download image from Scryfall

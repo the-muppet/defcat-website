@@ -4,7 +4,7 @@
 import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useMoxfieldSync } from '@/hooks/use-moxfield-sync'
+import { useMoxfieldSync } from '@/lib/hooks/useMoxfield'
 
 export default function MoxfieldSyncPage() {
   const { sync, isLoading, error, data } = useMoxfieldSync()

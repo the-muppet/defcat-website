@@ -57,7 +57,7 @@ class DeckCache {
       if (!this.db) return null
 
       return new Promise((resolve, reject) => {
-        const transaction = this.db!.transaction(DECK_STORE, 'readonly')
+        const transaction = this.db?.transaction(DECK_STORE, 'readonly')
         const store = transaction.objectStore(DECK_STORE)
         const request = store.get(id)
 
@@ -95,7 +95,7 @@ class DeckCache {
       if (!this.db) return
 
       return new Promise((resolve, reject) => {
-        const transaction = this.db!.transaction(DECK_STORE, 'readwrite')
+        const transaction = this.db?.transaction(DECK_STORE, 'readwrite')
         const store = transaction.objectStore(DECK_STORE)
 
         const cached: CachedDeck<T> = {
@@ -120,7 +120,7 @@ class DeckCache {
       if (!this.db) return
 
       return new Promise((resolve, reject) => {
-        const transaction = this.db!.transaction(DECK_STORE, 'readwrite')
+        const transaction = this.db?.transaction(DECK_STORE, 'readwrite')
         const store = transaction.objectStore(DECK_STORE)
         const request = store.delete(id)
 
@@ -138,7 +138,7 @@ class DeckCache {
       if (!this.db) return
 
       return new Promise((resolve, reject) => {
-        const transaction = this.db!.transaction(DECK_STORE, 'readwrite')
+        const transaction = this.db?.transaction(DECK_STORE, 'readwrite')
         const store = transaction.objectStore(DECK_STORE)
         const request = store.clear()
 

@@ -107,7 +107,11 @@
     --glass-base-rgb: 255, 255, 255;
     --glass-border-rgb: 255, 255, 255;
     --glass-shadow-rgb: 0, 0, 0;
-    --glass-bg: linear-gradient(135deg, rgba(var(--slate-dark), 0.12), rgba(var(--slate-rgb), 0.06));
+    --glass-bg: linear-gradient(
+      135deg,
+      rgba(var(--slate-dark), 0.12),
+      rgba(var(--slate-rgb), 0.06)
+    );
     --glass-border: rgba(var(--slate-light), 0.12);
     --glass-blur: 16px;
     --glass-saturation: 1.2;
@@ -625,8 +629,8 @@
 }
 
 .btn-tinted-primary:hover {
-  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)) !important;
-  transform: translateY(-1px) !important;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  transform: translateY(-1px);
 }
 
 .btn-tinted-outline {
@@ -637,9 +641,9 @@
 }
 
 .btn-tinted-outline:hover {
-  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)) !important;
-  border-color: var(--mana-color) !important;
-  transform: translateY(-1px) !important;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  border-color: var(--mana-color);
+  transform: translateY(-1px);
 }
 
 /* Inputs */
@@ -782,50 +786,50 @@ button[style*="--glow-color"]::before {
    =========================== */
 /* Light mode - darker colors for visibility */
 .ms-w {
-  color: #f4b731 !important;
+  color: #f4b731;
 }
 
 .ms-u {
-  color: #0e68ab !important;
+  color: #0e68ab;
 }
 
 .ms-b {
-  color: #6b21a8 !important;
+  color: #6b21a8;
 }
 
 .ms-r {
-  color: #d3202a !important;
+  color: #d3202a;
 }
 
 .ms-g {
-  color: #00733e !important;
+  color: #00733e;
 }
 
 .ms-c {
-  color: #888 !important;
+  color: #888;
 }
 
 /* Dark mode - brighter colors for visibility */
 .dark .ms-w {
-  color: #fffbd5 !important;
+  color: #fffbd5;
 }
 
 .dark .ms-u {
-  color: #2e9fd9 !important;
+  color: #2e9fd9;
 }
 
 .dark .ms-b {
-  color: #a855f7 !important;
+  color: #a855f7;
 }
 
 .dark .ms-r {
-  color: #f87171 !important;
+  color: #f87171;
 }
 
 .dark .ms-g {
-  color: #22c55e !important;
+  color: #22c55e;
 }
 
 .dark .ms-c {
-  color: #ccc !important;
+  color: #ccc;
 }

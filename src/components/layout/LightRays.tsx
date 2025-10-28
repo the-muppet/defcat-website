@@ -1,24 +1,36 @@
 // components/ui/LightRays.tsx
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useState } from 'react'
 
 interface LightRaysProps {
   count?: number
   color?: string
 }
 
+interface Ray {
+  deg: number
+  thickness: number
+  length: number
+  duration: number
+  delay: number
+  rotate: number
+}
+
 export function LightRays({ count = 32, color = '' }: LightRaysProps) {
-  // Generate random properties for each ray (memoized to prevent recalculation)
-  const rays = useMemo(() => {
-    return Array.from({ length: count }, () => ({
-      deg: Math.random(),
-      thickness: 8 + Math.random() * 26,
-      length: -50 + Math.random() * 100,
-      duration: 1 + Math.random() * 1.5,
-      delay: 2 + Math.random() * 1,
-      rotate: -4 + Math.random() * 8,
-    }))
+  const [rays, setRays] = useState<Ray[]>([])
+
+  useEffect(() => {
+    setRays(
+      Array.from({ length: count }, () => ({
+        deg: Math.random(),
+        thickness: 8 + Math.random() * 26,
+        length: -50 + Math.random() * 100,
+        duration: 1 + Math.random() * 1.5,
+        delay: 2 + Math.random() * 1,
+        rotate: -4 + Math.random() * 8,
+      }))
+    )
   }, [count])
 
   return (

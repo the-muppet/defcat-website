@@ -34,7 +34,7 @@ function VerifyContent() {
 
         console.log('Attempting to verify OTP with:', {
           type,
-          tokenHash: tokenHash.substring(0, 10) + '...',
+          tokenHash: `${tokenHash.substring(0, 10)}...`,
         })
 
         // Verify the OTP token to create the session

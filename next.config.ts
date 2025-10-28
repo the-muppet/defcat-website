@@ -17,10 +17,8 @@ const nextConfig: NextConfig = {
     // Disable type checking during build
     ignoreBuildErrors: true,
   },
-  eslint: {
-    // Disable ESLint during build
-    ignoreDuringBuilds: true,
-  },
+  // Disable source maps in development to prevent Turbopack source map 404s
+  productionBrowserSourceMaps: false,
 }
 
 export default nextConfig

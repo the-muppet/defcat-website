@@ -9,8 +9,9 @@ function getSupabaseClient() {
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await context.params
     const supabase = getSupabaseClient()
     const authHeader = request.headers.get('authorization')
     if (!authHeader) {
@@ -43,7 +44,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       )
     }
 
-    const { error } = await supabase.from('products').delete().eq('id', params.id)
+    const { error } = await supabase.from('products').delete().eq('id', id)
 
     if (error) {
       console.error('Delete error:', error)

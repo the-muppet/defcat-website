@@ -10,7 +10,7 @@ import {
   MessageSquare,
   User,
 } from 'lucide-react'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import { useRoastEligibility } from '@/lib/hooks/useRoastEligibility'
 import { createClient } from '@/lib/supabase/client'

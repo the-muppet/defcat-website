@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { memo } from 'react'
 import { CommanderImage } from '@/components/decks/Commander'
 import { ManaSymbols } from '@/components/decks/ManaSymbols'
-import { GlowingEffect } from '@/components/ui/glowEffect'
 import { cn } from '@/lib/utils'
 import type { Database } from '@/types/supabase'
 

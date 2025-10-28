@@ -13,6 +13,40 @@ interface FeaturedVideoProps {
   muted?: boolean
 }
 
+function extractVideoId(input: string): string {
+  if (!input) return ''
+
+  // If it's already just an ID (no slashes or query params), return it
+  if (!input.includes('/') && !input.includes('?')) {
+    return input
+  }
+
+  // Try to extract from various YouTube URL formats
+  try {
+    const url = new URL(input.startsWith('http') ? input : `https://${input}`)
+
+    // Handle youtube.com/watch?v=ID
+    if (url.hostname.includes('youtube.com') && url.searchParams.has('v')) {
+      return url.searchParams.get('v') || ''
+    }
+
+    // Handle youtu.be/ID
+    if (url.hostname.includes('youtu.be')) {
+      return url.pathname.slice(1)
+    }
+
+    // Handle youtube.com/embed/ID
+    if (url.pathname.includes('/embed/')) {
+      return url.pathname.split('/embed/')[1]?.split('?')[0] || ''
+    }
+  } catch {
+    // If URL parsing fails, return original
+    return input
+  }
+
+  return input
+}
+
 export function FeaturedVideo({
   videoId,
   url,
@@ -22,9 +56,8 @@ export function FeaturedVideo({
   light = true,
   muted = false,
 }: FeaturedVideoProps) {
-  console.log('FeaturedVideo props:', { videoId, url, title })
-  const videoUrl = url || (videoId ? `https://www.youtube.com/watch?v=${videoId}` : null)
-  console.log('FeaturedVideo videoUrl:', videoUrl)
+  const extractedId = videoId ? extractVideoId(videoId) : ''
+  const videoUrl = url || (extractedId ? `https://www.youtube.com/watch?v=${extractedId}` : null)
 
   return (
     <section className="py-12 px-6">
@@ -36,10 +69,10 @@ export function FeaturedVideo({
 
         <Card className="glass border-white/10 bg-card-tinted overflow-hidden">
           <CardContent className="p-0">
-            {videoId ? (
+            {extractedId ? (
               <div className="aspect-video relative">
                 <iframe
-                  src={`https://www.youtube.com/embed/${videoId}`}
+                  src={`https://www.youtube.com/embed/${extractedId}`}
                   title={title}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen

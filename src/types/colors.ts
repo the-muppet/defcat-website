@@ -10,7 +10,7 @@ enum ManaSymbol {
 const ManaColorMap = {
   W: 'oklch(0.90 0.40 100)',
   U: 'oklch(0.35 0.40 270)',
-  B: 'oklch(0.30 0.40 335)',
+  B: 'oklch(0.32 0.16 333.58)',
   R: 'oklch(0.35 0.40 50)',
   G: 'oklch(0.40 0.40 150)',
   C: 'oklch(0.5 0 0)',
@@ -18,7 +18,7 @@ const ManaColorMap = {
   // Aliases for convenience
   WHITE: 'oklch(0.90 0.40 100)',
   BLUE: 'oklch(0.35 0.40 270)',
-  BLACK: 'oklch(0.30 0.40 335)',
+  BLACK: 'oklch(0.32 0.16 333.58)',
   RED: 'oklch(0.35 0.40 50)',
   GREEN: 'oklch(0.40 0.40 150)',
   COLORLESS: 'oklch(0.5 0 0)',

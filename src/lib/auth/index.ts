@@ -47,7 +47,7 @@ export async function requireAdmin() {
     .eq('id', user.id)
     .single()
 
-  if (!profile || !['admin', 'developer'].includes(profile.role)) {
+  if (!profile || !profile.role || !['admin', 'developer'].includes(profile.role)) {
     redirect('/')
   }
 
@@ -68,7 +68,7 @@ export async function requireModerator() {
     .eq('id', user.id)
     .single()
 
-  if (!profile || !['moderator', 'admin', 'developer'].includes(profile.role)) {
+  if (!profile || !profile.role || !['moderator', 'admin', 'developer'].includes(profile.role)) {
     redirect('/')
   }
 

@@ -2,8 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import '@/styles'
 import { Footer } from '@/components/layout/Footer'
-import { Header } from '@/components/layout/Header'
-import { ManaBar } from '@/components/ui/scrollbar'
+import { HeaderWrapper } from '@/components/layout/HeaderWrapper'
 import { Providers } from '../lib/contexts/Providers'
 
 const geistSans = Geist({
@@ -40,7 +39,7 @@ export default function RootLayout({
       >
         <Providers>
           <div className="border-b border-white/10">
-            <Header />
+            <HeaderWrapper />
           </div>
           <main className="flex-1 relative">{children}</main>
           <div className="border-t border-white/10 mt-auto">

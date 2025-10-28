@@ -5,6 +5,7 @@ import { ThemeProvider } from 'next-themes'
 import { useState } from 'react'
 import { Toaster } from '@/components/ui/toaster'
 import { ManaColorProvider } from './ManaColorContext'
+import { AuthProvider } from './AuthContext'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -12,12 +13,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 1000 * 60 * 60 * 24, // 24 hours - data updates weekly
-            gcTime: 1000 * 60 * 60 * 24 * 7, // 7 days - keep in cache for a week
-            retry: 1,
-            refetchOnWindowFocus: false,
+            staleTime: 5 * 60 * 1000, // 5 minutes
+            gcTime: 10 * 60 * 1000, // 10 minutes
+            retry: 2,
+            refetchOnWindowFocus: true,
             refetchOnMount: false,
-            refetchOnReconnect: false,
+            refetchOnReconnect: true,
           },
         },
       })
@@ -27,8 +28,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
         <ManaColorProvider>
-          {children}
-          <Toaster />
+          <AuthProvider>
+            {children}
+            <Toaster />
+          </AuthProvider>
         </ManaColorProvider>
       </ThemeProvider>
     </QueryClientProvider>

@@ -5,10 +5,10 @@
  * Downloads images from Scryfall and stores them in Supabase Storage
  */
 
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { createClient } from '@supabase/supabase-js'
 import * as dotenv from 'dotenv'
-import { dirname, join } from 'path'
-import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 dotenv.config({ path: join(__dirname, '..', '.env.local') })

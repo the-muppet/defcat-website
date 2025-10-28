@@ -2,13 +2,12 @@
 'use client'
 
 import type { User } from '@supabase/supabase-js'
-import { ClipboardList, LogIn, LogOut, Sparkles } from 'lucide-react'
+import { ClipboardList, LogIn, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import { AuthLoadingModal } from '@/components/auth/auth-loading-modal'
 import { UserMenu } from '@/components/profile/UserMenu'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
   NavigationMenu,
@@ -19,22 +18,31 @@ import {
 } from '@/components/ui/navigation-menu'
 import { ThemeAnimationType } from '@/lib/hooks/useModeAnimation'
 import { useSubmissionEligibility } from '@/lib/hooks/useSubmissionEligibility'
-import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 import type { PatreonTier } from '@/types/core'
 import { AnimatedThemeToggler } from '../ui/animated-theme-toggler'
 
-export function Header() {
-  const [user, setUser] = useState<User | null>(null)
-  const [userTier, setUserTier] = useState<PatreonTier>('Citizen')
-  const [userRole, setUserRole] = useState<string>('user')
-  const [loading, setLoading] = useState(true)
+interface HeaderProps {
+  initialUser: User | null
+  initialUserTier: PatreonTier
+  initialUserRole: string
+  initialPendingCount: number
+}
+
+export function Header({
+  initialUser,
+  initialUserTier,
+  initialUserRole,
+  initialPendingCount,
+}: HeaderProps) {
+  const [user] = useState<User | null>(initialUser)
+  const [userTier] = useState<PatreonTier>(initialUserTier)
+  const [userRole] = useState<string>(initialUserRole)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [showLogoutModal, setShowLogoutModal] = useState(false)
-  const [pendingCount, setPendingCount] = useState<number>(0)
+  const [pendingCount] = useState<number>(initialPendingCount)
   const [showBadge, setShowBadge] = useState(true)
   const pathname = usePathname()
-  const supabase = createClient()
   const {
     isEligible,
     remainingSubmissions,
@@ -42,69 +50,11 @@ export function Header() {
   } = useSubmissionEligibility()
 
   useEffect(() => {
-    // Get initial session
-    const getUser = async () => {
-      try {
-        const {
-          data: { user },
-          error,
-        } = await supabase.auth.getUser()
-
-        if (error) {
-          console.warn('Auth not configured yet:', error.message)
-          setUser(null)
-        } else {
-          setUser(user)
-
-          // Fetch user profile to get tier and role
-          if (user) {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('patreon_tier, role')
-              .eq('id', user.id)
-              .single()
-
-            if (profile) {
-              setUserTier((profile.patreon_tier as PatreonTier) || 'Citizen')
-              setUserRole(profile.role || 'user')
-
-              // Fetch pending submissions count for admins and developers only
-              if (['admin', 'developer'].includes(profile.role || 'user')) {
-                const { count } = await supabase
-                  .from('deck_submissions')
-                  .select('*', { count: 'exact', head: true })
-                  .in('status', ['pending', 'queued'])
-
-                setPendingCount(count || 0)
-
-                // For developers, check localStorage preference
-                if (profile.role === 'developer') {
-                  const stored = localStorage.getItem('show-submission-badge')
-                  setShowBadge(stored === null || stored === 'true')
-                }
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.warn('Auth error:', error)
-        setUser(null)
-      } finally {
-        setLoading(false)
-      }
+    if (userRole === 'developer') {
+      const stored = localStorage.getItem('show-submission-badge')
+      setShowBadge(stored === null || stored === 'true')
     }
-
-    getUser()
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-    })
-
-    return () => subscription.unsubscribe()
-  }, [supabase.auth])
+  }, [userRole])
 
   // Listen for notification badge toggle events (developer only)
   useEffect(() => {
@@ -121,33 +71,14 @@ export function Header() {
 
   const handleLogin = useCallback(() => {
     setShowLoginModal(true)
-    // Small delay for animation, then redirect
     setTimeout(() => {
       window.location.href = '/auth/login'
     }, 300)
   }, [])
 
-  const handleLogout = useCallback(async () => {
-    setShowLogoutModal(true)
-    try {
-      await supabase.auth.signOut()
-      // Redirect to home after logout - shorter delay for better UX
-      setTimeout(() => {
-        setShowLogoutModal(false)
-        window.location.href = '/'
-      }, 300)
-    } catch (error) {
-      console.error('Logout error:', error)
-      setShowLogoutModal(false)
-      // Still redirect even if there's an error
-      window.location.href = '/'
-    }
-  }, [supabase.auth])
-
   return (
     <>
       <AuthLoadingModal isOpen={showLoginModal} type="login" />
-      <AuthLoadingModal isOpen={showLogoutModal} type="logout" />
 
       <header className="sticky top-0 w-full glass-tinted-strong shadow-tinted-lg z-50">
         <div className="px-8 md:px-16 lg:px-24 flex h-16 items-center justify-between">
@@ -271,9 +202,7 @@ export function Header() {
               className="hover-tinted rounded-full p-2"
             />
             {/* User Section */}
-            {loading ? (
-              <div className="h-10 w-10 rounded-full tinted-accent shimmer-tinted" />
-            ) : user ? (
+            {user ? (
               <div className="flex items-center gap-2">
                 {/* Admin/Developer notification badge */}
                 {pendingCount > 0 &&

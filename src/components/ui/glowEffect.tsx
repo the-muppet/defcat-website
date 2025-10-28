@@ -1,296 +1,192 @@
 /** biome-ignore-all assist/source/organizeImports: <explanation> */
-'use client'
+"use client";
 
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { cn } from '@/lib/utils'
-import { animate } from 'motion/react'
+import { memo, useCallback, useEffect, useRef } from "react";
+import { cn } from "@/lib/utils";
+import { animate } from "motion/react";
 
 interface GlowingEffectProps {
-  blur?: number
-  inactiveZone?: number
-  proximity?: number
-  spread?: number
-  variant?: 'default' | 'white'
-  glow?: boolean
-  className?: string
-  disabled?: boolean
-  movementDuration?: number
-  borderWidth?: number
-}
-
-// Precalculated gradient strings for better performance
-const GRADIENT_PRESETS = {
-  default: `radial-gradient(circle, #dd7bbb 10%, #dd7bbb00 20%),
-    radial-gradient(circle at 40% 40%, #d79f1e 5%, #d79f1e00 15%),
-    radial-gradient(circle at 60% 60%, #5a922c 10%, #5a922c00 20%), 
-    radial-gradient(circle at 40% 60%, #4c7894 10%, #4c789400 20%),
-    repeating-conic-gradient(
-      from 236.84deg at 50% 50%,
-      #dd7bbb 0%,
-      #d79f1e 20%,
-      #5a922c 40%, 
-      #4c7894 60%,
-      #dd7bbb 80%,
-      #dd7bbb 100%
-    )`,
-  white: `repeating-conic-gradient(
-    from 236.84deg at 50% 50%,
-    var(--black) 0%,
-    var(--black) 20%,
-    var(--black) 100%
-  )`,
-}
-
-// Throttle function for mouse movement
-const throttle = <T extends (...args: any[]) => void>(func: T, delay: number): T => {
-  let timeoutId: NodeJS.Timeout | null = null
-  let lastExecTime = 0
-
-  return ((...args: any[]) => {
-    const currentTime = Date.now()
-
-    if (currentTime - lastExecTime > delay) {
-      lastExecTime = currentTime
-      func(...args)
-    } else if (!timeoutId) {
-      timeoutId = setTimeout(
-        () => {
-          lastExecTime = Date.now()
-          func(...args)
-          timeoutId = null
-        },
-        delay - (currentTime - lastExecTime)
-      )
-    }
-  }) as T
+  blur?: number;
+  inactiveZone?: number;
+  proximity?: number;
+  spread?: number;
+  variant?: "default" | "white";
+  glow?: boolean;
+  className?: string;
+  disabled?: boolean;
+  movementDuration?: number;
+  borderWidth?: number;
 }
 
 const GlowingEffect = memo(
   ({
     blur = 0,
     inactiveZone = 0.7,
-    proximity = 48,
-    spread = 15,
-    variant = 'default',
+    proximity = 48,  // Reduced from default
+    spread = 15,     // Reduced from 20
+    variant = "default",
     glow = false,
     className,
     movementDuration = 2,
     borderWidth = 1,
     disabled = true,
   }: GlowingEffectProps) => {
-    const containerRef = useRef<HTMLDivElement>(null)
-    const lastPosition = useRef({ x: 0, y: 0 })
-    const animationFrameRef = useRef<number>(0)
-    const animationRef = useRef<any>(null)
-    const [isVisible, setIsVisible] = useState(true)
-
-    // Precalculate the gradient
-    const gradient = useMemo(() => GRADIENT_PRESETS[variant] || GRADIENT_PRESETS.default, [variant])
-
-    // Precalculate mask image
-    const maskImage = useMemo(
-      () =>
-        `linear-gradient(#0000,#0000),conic-gradient(from calc((var(--start)-${spread})*1deg),#00000000 0deg,#fff,#00000000 calc(${spread}*2deg))`,
-      [spread]
-    )
-
-    // Batch DOM updates
-    const updateStyles = useCallback((updates: Record<string, string>) => {
-      if (!containerRef.current) return
-
-      // Batch all style updates in a single reflow
-      requestAnimationFrame(() => {
-        if (!containerRef.current) return
-        Object.entries(updates).forEach(([key, value]) => {
-          containerRef.current!.style.setProperty(key, value)
-        })
-      })
-    }, [])
+    const containerRef = useRef<HTMLDivElement>(null);
+    const lastPosition = useRef({ x: 0, y: 0 });
+    const animationFrameRef = useRef<number>(0);
 
     const handleMove = useCallback(
       (e?: MouseEvent | { x: number; y: number }) => {
-        if (!containerRef.current || !isVisible) return
+        if (!containerRef.current) return;
 
         if (animationFrameRef.current) {
-          cancelAnimationFrame(animationFrameRef.current)
+          cancelAnimationFrame(animationFrameRef.current);
         }
 
         animationFrameRef.current = requestAnimationFrame(() => {
-          const element = containerRef.current
-          if (!element) return
+          const element = containerRef.current;
+          if (!element) return;
 
-          const rect = element.getBoundingClientRect()
-          const { left, top, width, height } = rect
-          const mouseX = e?.x ?? lastPosition.current.x
-          const mouseY = e?.y ?? lastPosition.current.y
+          const { left, top, width, height } = element.getBoundingClientRect();
+          const mouseX = e?.x ?? lastPosition.current.x;
+          const mouseY = e?.y ?? lastPosition.current.y;
 
           if (e) {
-            lastPosition.current = { x: mouseX, y: mouseY }
+            lastPosition.current = { x: mouseX, y: mouseY };
           }
 
-          // Precalculate center once
-          const centerX = left + width * 0.5
-          const centerY = top + height * 0.5
-          const distanceFromCenter = Math.hypot(mouseX - centerX, mouseY - centerY)
-          const inactiveRadius = 0.5 * Math.min(width, height) * inactiveZone
+          const center = [left + width * 0.5, top + height * 0.5];
+          const distanceFromCenter = Math.hypot(
+            mouseX - center[0],
+            mouseY - center[1]
+          );
+          const inactiveRadius = 0.5 * Math.min(width, height) * inactiveZone;
 
           if (distanceFromCenter < inactiveRadius) {
-            updateStyles({ '--active': '0' })
-            return
+            element.style.setProperty("--active", "0");
+            return;
           }
 
           const isActive =
             mouseX > left - proximity &&
             mouseX < left + width + proximity &&
             mouseY > top - proximity &&
-            mouseY < top + height + proximity
+            mouseY < top + height + proximity;
 
-          if (!isActive) {
-            updateStyles({ '--active': '0' })
-            return
-          }
+          element.style.setProperty("--active", isActive ? "1" : "0");
 
-          updateStyles({ '--active': '1' })
+          if (!isActive) return;
 
-          const currentAngle = parseFloat(element.style.getPropertyValue('--start')) || 0
-          const targetAngle = (180 * Math.atan2(mouseY - centerY, mouseX - centerX)) / Math.PI + 90
+          const currentAngle =
+            parseFloat(element.style.getPropertyValue("--start")) || 0;
+          const targetAngle =
+            (180 * Math.atan2(mouseY - center[1], mouseX - center[0])) /
+              Math.PI +
+            90;
 
-          const angleDiff = ((targetAngle - currentAngle + 180) % 360) - 180
-          const newAngle = currentAngle + angleDiff
+          const angleDiff = ((targetAngle - currentAngle + 180) % 360) - 180;
+          const newAngle = currentAngle + angleDiff;
 
-          // Cancel previous animation if exists
-          if (animationRef.current) {
-            animationRef.current.cancel()
-          }
-
-          animationRef.current = animate(currentAngle, newAngle, {
+          animate(currentAngle, newAngle, {
             duration: movementDuration,
             ease: [0.16, 1, 0.3, 1],
             onUpdate: (value) => {
-              updateStyles({ '--start': String(value) })
+              element.style.setProperty("--start", String(value));
             },
-            onComplete: () => {
-              animationRef.current = null
-            },
-          })
-        })
+          });
+        });
       },
-      [inactiveZone, proximity, movementDuration, isVisible, updateStyles]
-    )
-
-    // Throttled version of handleMove for better performance
-    const throttledHandleMove = useMemo(
-      () => throttle(handleMove, 16), // ~60fps
-      [handleMove]
-    )
-
-    // Intersection Observer for visibility
-    useEffect(() => {
-      if (disabled) return
-
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          setIsVisible(entry.isIntersecting)
-          if (!entry.isIntersecting && animationRef.current) {
-            animationRef.current.cancel()
-            animationRef.current = null
-          }
-        },
-        { threshold: 0.1 }
-      )
-
-      if (containerRef.current) {
-        observer.observe(containerRef.current)
-      }
-
-      return () => observer.disconnect()
-    }, [disabled])
+      [inactiveZone, proximity, movementDuration]
+    );
 
     useEffect(() => {
-      if (disabled || !isVisible) return
+      if (disabled) return;
 
-      const handleScroll = () => throttledHandleMove()
-      const handlePointerMove = (e: PointerEvent) => throttledHandleMove(e)
+      const handleScroll = () => handleMove();
+      const handlePointerMove = (e: PointerEvent) => handleMove(e);
 
-      window.addEventListener('scroll', handleScroll, { passive: true })
-      document.body.addEventListener('pointermove', handlePointerMove, {
+      window.addEventListener("scroll", handleScroll, { passive: true });
+      document.body.addEventListener("pointermove", handlePointerMove, {
         passive: true,
-      })
+      });
 
       return () => {
         if (animationFrameRef.current) {
-          cancelAnimationFrame(animationFrameRef.current)
+          cancelAnimationFrame(animationFrameRef.current);
         }
-        if (animationRef.current) {
-          animationRef.current.cancel()
-        }
-        window.removeEventListener('scroll', handleScroll)
-        document.body.removeEventListener('pointermove', handlePointerMove)
-      }
-    }, [throttledHandleMove, disabled, isVisible])
+        window.removeEventListener("scroll", handleScroll);
+        document.body.removeEventListener("pointermove", handlePointerMove);
+      };
+    }, [handleMove, disabled]);
 
     return (
       <>
         <div
           className={cn(
-            'pointer-events-none absolute -inset-px hidden rounded-[inherit] border opacity-0 transition-opacity',
-            glow && 'opacity-100',
-            variant === 'white' && 'border-white',
-            disabled && '!block'
+            "pointer-events-none absolute -inset-px hidden rounded-[inherit] border opacity-0 transition-opacity",
+            glow && "opacity-100",
+            variant === "white" && "border-white",
+            disabled && "!block"
           )}
         />
         <div
           ref={containerRef}
           style={
             {
-              '--blur': `${blur}px`,
-              '--spread': spread,
-              '--start': '0',
-              '--active': '0',
-              '--glowingeffect-border-width': `${borderWidth}px`,
-              '--gradient': gradient,
-              '--mask-image': maskImage,
+              "--blur": `${blur}px`,
+              "--spread": spread,
+              "--start": "0",
+              "--active": "0",
+              "--glowingeffect-border-width": `${borderWidth}px`,
+              "--repeating-conic-gradient-times": "5",
+              "--gradient":
+                variant === "white"
+                  ? `repeating-conic-gradient(
+                  from 236.84deg at 50% 50%,
+                  var(--black),
+                  var(--black) calc(25% / var(--repeating-conic-gradient-times))
+                )`
+                  : `radial-gradient(circle, #dd7bbb 10%, #dd7bbb00 20%),
+                radial-gradient(circle at 40% 40%, #d79f1e 5%, #d79f1e00 15%),
+                radial-gradient(circle at 60% 60%, #5a922c 10%, #5a922c00 20%), 
+                radial-gradient(circle at 40% 60%, #4c7894 10%, #4c789400 20%),
+                repeating-conic-gradient(
+                  from 236.84deg at 50% 50%,
+                  #dd7bbb 0%,
+                  #d79f1e calc(25% / var(--repeating-conic-gradient-times)),
+                  #5a922c calc(50% / var(--repeating-conic-gradient-times)), 
+                  #4c7894 calc(75% / var(--repeating-conic-gradient-times)),
+                  #dd7bbb calc(100% / var(--repeating-conic-gradient-times))
+                )`,
             } as React.CSSProperties
           }
           className={cn(
-            'pointer-events-none absolute inset-0 rounded-[inherit] opacity-100 transition-opacity',
-            'will-change-[opacity,mask-image]', // GPU acceleration
-            'transform-gpu', // Force GPU layer
-            glow && 'opacity-100',
-            blur > 0 && 'blur-[var(--blur)]',
+            "pointer-events-none absolute inset-0 rounded-[inherit] opacity-100 transition-opacity",
+            glow && "opacity-100",
+            blur > 0 && "blur-[var(--blur)] ",
             className,
-            disabled && '!hidden'
+            disabled && "!hidden"
           )}
         >
           <div
             className={cn(
-              'glow',
-              'rounded-[inherit]',
-              // GPU optimizations
-              '[contain:layout_style_paint]', // CSS containment
-              '[backface-visibility:hidden]',
-              '[perspective:1000px]',
-              'transform-gpu',
-              // After pseudo-element styles
+              "glow",
+              "rounded-[inherit]",
               'after:content-[""] after:rounded-[inherit] after:absolute after:inset-[calc(-1*var(--glowingeffect-border-width))]',
-              'after:[border:var(--glowingeffect-border-width)_solid_transparent]',
-              'after:[background:var(--gradient)] after:[background-attachment:fixed]',
-              'after:opacity-[var(--active)] after:transition-opacity after:duration-300',
-              // GPU acceleration for pseudo-element
-              'after:will-change-[opacity]',
-              'after:transform-gpu',
-              // Optimized mask
-              'after:[mask-clip:padding-box,border-box]',
-              'after:[mask-composite:intersect]',
-              'after:[mask-image:var(--mask-image)]'
+              "after:[border:var(--glowingeffect-border-width)_solid_transparent]",
+              "after:[background:var(--gradient)] after:[background-attachment:fixed]",
+              "after:opacity-[var(--active)] after:transition-opacity after:duration-300",
+              "after:[mask-clip:padding-box,border-box]",
+              "after:[mask-composite:intersect]",
+              "after:[mask-image:linear-gradient(#0000,#0000),conic-gradient(from_calc((var(--start)-var(--spread))*1deg),#00000000_0deg,#fff,#00000000_calc(var(--spread)*2deg))]"
             )}
           />
         </div>
       </>
-    )
+    );
   }
-)
+);
 
-GlowingEffect.displayName = 'GlowingEffect'
+GlowingEffect.displayName = "GlowingEffect";
 
-export { GlowingEffect }
+export { GlowingEffect };

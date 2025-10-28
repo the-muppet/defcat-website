@@ -31,7 +31,7 @@ export function UpdateAllDecksButton() {
         throw new Error('Failed to trigger update')
       }
 
-      const result = await response.json()
+      const _result = await response.json()
 
       toast.success('Update started successfully!', {
         description: 'All decks are being rescraped from Moxfield. This may take several minutes.',

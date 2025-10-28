@@ -48,7 +48,7 @@ export default function DiscountStorePage() {
     }
 
     loadProducts()
-  }, [])
+  }, [supabase.from])
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">

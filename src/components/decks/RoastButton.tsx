@@ -1,6 +1,6 @@
 'use client'
 
-import { Flame, Loader2 } from 'lucide-react'
+import { Flame } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'

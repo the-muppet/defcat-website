@@ -9,20 +9,21 @@ import { requireAdmin } from '@/lib/auth/auth-guards'
 import { createClient } from '@/lib/supabase/server'
 
 interface RouteContext {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 /**
  * PATCH /api/admin/decks/[id]
  * Update deck metadata
  */
-export async function PATCH(request: NextRequest, { params }: RouteContext) {
+export async function PATCH(request: NextRequest, context: RouteContext) {
   try {
     // Verify admin access
     await requireAdmin()
 
+    const { id } = await context.params
     const body = await request.json()
     const { name, description, commanders } = body
 
@@ -40,14 +41,14 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
 
     // Update deck (color_identity is derived, not editable)
     const { data, error } = await supabase
-      .from('decks')
+      .from('moxfield_decks')
       .update({
         name,
         description,
         commanders,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', params.id)
+      .eq('moxfield_id', id)
       .select()
       .single()
 
@@ -67,18 +68,19 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
  * DELETE /api/admin/decks/[id]
  * Delete deck and all associated data
  */
-export async function DELETE(request: NextRequest, { params }: RouteContext) {
+export async function DELETE(_request: NextRequest, context: RouteContext) {
   try {
     // Verify admin access
     await requireAdmin()
 
+    const { id } = await context.params
     const supabase = await createClient()
 
     // Get the deck's moxfield_id first
     const { data: deck, error: fetchError } = await supabase
-      .from('decks')
+      .from('moxfield_decks')
       .select('moxfield_id')
-      .eq('id', params.id)
+      .eq('moxfield_id', id)
       .single()
 
     if (fetchError || !deck) {

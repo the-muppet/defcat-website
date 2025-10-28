@@ -1,44 +1,12 @@
 // app/page.tsx
 'use client'
 
-import { Award, BarChart3, Crown, Loader2, LogIn, Sparkles, TrendingUp } from 'lucide-react'
+import { LogIn, Sparkles } from 'lucide-react'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { DeckCard } from '@/components/decks/DeckCard'
-import { ManaSymbols } from '@/components/decks/ManaSymbols'
 import { LightRays } from '@/components/layout/LightRays'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { NumberTicker } from '@/components/ui/number-ticker'
-import { useDeckStats, useLatestDeck } from '@/lib/api/stats'
-import { cn } from '@/lib/utils'
 
 export default function LandingPage() {
-  const [currentStatIndex, setCurrentStatIndex] = useState(0)
-
-  // Use React Query hooks for data fetching with automatic caching
-  const { data: deckStats, isLoading: statsLoading } = useDeckStats()
-  const { data: featuredDeck, isLoading: deckLoading } = useLatestDeck()
-
-  const loading = statsLoading || deckLoading
-
-  // Rotate stats every 5 seconds (only 2 stats now)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentStatIndex((prev) => (prev + 1) % 2)
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [])
-
-  const maxCurveCount = deckStats ? Math.max(...deckStats.avgManaCurve.map((c) => c.count)) : 1
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-12 w-12 animate-spin" style={{ color: 'var(--mana-color)' }} />
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">

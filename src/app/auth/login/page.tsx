@@ -7,7 +7,7 @@
 
 import { AlertCircle, Mail, Sparkles } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -18,7 +18,7 @@ import { createClient } from '@/lib/supabase/client'
 // Force dynamic rendering - don't prerender at build time
 export const dynamic = 'force-dynamic'
 
-export default function LoginPage() {
+function LoginContent() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -82,7 +82,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative">
-      {/* Subtle tinted background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-bg-tinted via-transparent to-bg-tinted opacity-50" />
 
       <Card className="w-full max-w-md glass-tinted border-tinted shadow-tinted-xl relative">
@@ -218,5 +217,17 @@ export default function LoginPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   )
 }

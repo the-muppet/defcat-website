@@ -5,10 +5,10 @@
  * Processes all uncached cards by calling the cache-card-images edge function in batches
  */
 
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { createClient } from '@supabase/supabase-js'
 import * as dotenv from 'dotenv'
-import { dirname, join } from 'path'
-import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 dotenv.config({ path: join(__dirname, '..', '.env.local') })
@@ -180,7 +180,7 @@ async function main() {
   const durationMinutes = Math.floor(durationMs / 60000)
   const durationSeconds = Math.floor((durationMs % 60000) / 1000)
 
-  console.log('\n' + '='.repeat(50))
+  console.log(`\n${'='.repeat(50)}`)
   console.log('🎉 Backfill Complete!')
   console.log('='.repeat(50))
   console.log(`📊 Total processed: ${totalProcessed}`)

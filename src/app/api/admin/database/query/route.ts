@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
           rowCount: Array.isArray(data) ? data.length : null,
           message: 'Query executed successfully',
         })
-      } catch (err) {
+      } catch (_err) {
         return NextResponse.json(
           {
             success: false,

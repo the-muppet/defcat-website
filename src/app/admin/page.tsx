@@ -28,16 +28,21 @@ export default async function AdminDashboard() {
   const {
     data: { user },
   } = await supabase.auth.getUser()
+
+  if (!user) {
+    throw new Error('User not found')
+  }
+
   const { data: profile } = await supabase
     .from('profiles')
     .select('role')
-    .eq('id', user?.id)
+    .eq('id', user.id)
     .single()
 
   const isDeveloper = profile?.role === 'developer'
 
   const [{ count: deckCount }, { count: userCount }, { count: pendingCount }] = await Promise.all([
-    supabase.from('decks').select('*', { count: 'exact', head: true }),
+    supabase.from('moxfield_decks').select('*', { count: 'exact', head: true }),
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
     supabase
       .from('deck_submissions')
