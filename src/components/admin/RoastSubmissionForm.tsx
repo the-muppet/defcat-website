@@ -39,16 +39,21 @@ const ART_CHOICES = [
   { value: 'mostly', label: 'Mostly' },
 ]
 
-export default function RoastSubmissionForm() {
+interface RoastSubmissionFormProps {
+  prefilledDeckUrl?: string | null
+}
+
+export default function RoastSubmissionForm({ prefilledDeckUrl }: RoastSubmissionFormProps) {
   const eligibility = useRoastEligibility()
   const [currentStep, setCurrentStep] = useState(1)
   const [showSuccess, setShowSuccess] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isDeckPrefilled, setIsDeckPrefilled] = useState(!!prefilledDeckUrl)
 
   const [formData, setFormData] = useState({
     preferredName: '',
     deckDescription: '',
-    moxfieldLink: '',
+    moxfieldLink: prefilledDeckUrl || '',
     targetBracket: '',
     artChoicesIntentional: '',
   })
@@ -230,20 +235,42 @@ export default function RoastSubmissionForm() {
                 <label htmlFor="moxfieldLink">
                   <LinkIcon className="inline-icon" />
                   Moxfield Link to Deck <span className="required">*</span>
+                  {isDeckPrefilled && (
+                    <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-primary/20 text-primary font-semibold">
+                      Pre-selected from DefCat
+                    </span>
+                  )}
                 </label>
-                <input
-                  type="url"
-                  id="moxfieldLink"
-                  value={formData.moxfieldLink}
-                  onChange={(e) => handleInputChange('moxfieldLink', e.target.value)}
-                  className={`form-input ${errors.moxfieldLink ? 'error' : ''}`}
-                  placeholder="https://www.moxfield.com/decks/..."
-                />
+                <div className="relative">
+                  <input
+                    type="url"
+                    id="moxfieldLink"
+                    value={formData.moxfieldLink}
+                    onChange={(e) => {
+                      handleInputChange('moxfieldLink', e.target.value)
+                      if (isDeckPrefilled) setIsDeckPrefilled(false)
+                    }}
+                    className={`form-input ${errors.moxfieldLink ? 'error' : ''} ${isDeckPrefilled ? 'bg-primary/5' : ''}`}
+                    placeholder="https://www.moxfield.com/decks/..."
+                    readOnly={isDeckPrefilled}
+                  />
+                  {isDeckPrefilled && (
+                    <button
+                      type="button"
+                      onClick={() => setIsDeckPrefilled(false)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-primary hover:brightness-110 underline transition-all"
+                    >
+                      Edit
+                    </button>
+                  )}
+                </div>
                 {errors.moxfieldLink && (
                   <span className="error-message">{errors.moxfieldLink}</span>
                 )}
                 <p className="step-description" style={{ marginTop: '0.5rem', marginBottom: 0 }}>
-                  Make sure your deck is set to public on Moxfield
+                  {isDeckPrefilled
+                    ? 'This deck was selected from the DefCat collection. Click "Edit" to change it.'
+                    : 'Make sure your deck is set to public on Moxfield'}
                 </p>
               </div>
             </div>

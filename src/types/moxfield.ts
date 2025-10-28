@@ -267,3 +267,31 @@ export interface DeckStats {
   }
   manaCurve: { [cmc: number]: number }
 }
+
+// app/types/moxfield-sync.ts
+export interface MoxfieldSyncParams {
+  bookmarkId?: string
+  fetchCards?: boolean
+  pageSize?: number
+  maxDecks?: number | null
+}
+
+export interface MoxfieldSyncResponse {
+  success: boolean
+  message?: string
+  totalDecks?: number
+  insertedCount?: number
+  cardsFetched?: number
+  decksFetchedCount?: number
+  bookmarkId?: string
+  durationMs?: number
+  error?: string
+}
+
+export interface SyncStatus {
+  isLoading: boolean
+  error: string | null
+  result: MoxfieldSyncResponse | null
+  startTime?: Date
+  endTime?: Date
+}

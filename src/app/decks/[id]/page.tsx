@@ -25,6 +25,7 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ManaCurve, CardPreview, ColorDistribution, TypeDistribution } from '@/components/decks'
+import { RoastButton } from '@/components/decks/RoastButton'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -147,19 +148,22 @@ export default function DeckDetailPage({ params }: PageProps) {
               Back to Decks
             </Link>
           </Button>
-          <Button variant="outline" onClick={handleShare} className="gap-2">
-            {copied ? (
-              <>
-                <Check className="h-4 w-4" />
-                Copied!
-              </>
-            ) : (
-              <>
-                <Share2 className="h-4 w-4" />
-                Share
-              </>
-            )}
-          </Button>
+          <div className="flex items-center gap-2">
+            {deck.moxfield_url && <RoastButton moxfieldUrl={deck.moxfield_url} variant="default" />}
+            <Button variant="outline" onClick={handleShare} className="gap-2">
+              {copied ? (
+                <>
+                  <Check className="h-4 w-4" />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <Share2 className="h-4 w-4" />
+                  Share
+                </>
+              )}
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

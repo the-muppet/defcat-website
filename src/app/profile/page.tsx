@@ -9,7 +9,9 @@ import { ManaSymbolSelector } from '@/components/settings/ManaSymbolSelector'
 import { NotificationBadgeToggle } from '@/components/settings/NotificationBadgeToggle'
 import { TierBadge } from '@/components/tier/TierBadge'
 import { MyDrafts } from '@/components/profile/MyDrafts'
-import { User, Mail, Shield, Award, Palette, Loader2 } from 'lucide-react'
+import { ProfileEditForm } from '@/components/profile/ProfileEditForm'
+import { UserDecks } from '@/components/profile/UserDecks'
+import { User, Mail, Shield, Award, Palette, Loader2, Edit, Library } from 'lucide-react'
 import { GlowingEffect } from '@/components/ui/glowEffect'
 import type { Database } from '@/types/supabase'
 
@@ -68,6 +70,40 @@ export default function ProfilePage() {
 
   return (
     <ul className="grid grid-cols-1 gap-4 md:grid-cols-12 lg:gap-6 [&>li]:min-w-0">
+      {/* Edit Profile - Full width */}
+      <li className="list-none md:col-span-12">
+        <div className="relative  rounded-2xl border p-2 md:rounded-3xl md:p-3">
+          <GlowingEffect
+            blur={0}
+            borderWidth={3}
+            spread={80}
+            glow={true}
+            disabled={false}
+            proximity={64}
+            inactiveZone={0.01}
+          />
+          <Card className="glass-panel border-0 relative ">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Edit className="h-5 w-5" />
+                Edit Profile
+              </CardTitle>
+              <CardDescription>Update your account information</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ProfileEditForm
+                userId={user.id}
+                currentEmail={user.email}
+                currentMoxfieldUsername={profile?.moxfield_username || null}
+                onSuccess={() => {
+                  window.location.reload()
+                }}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      </li>
+
       {/* Appearance - Full width */}
       <li className="list-none md:col-span-12">
         <div className="relative  rounded-2xl border p-2 md:rounded-3xl md:p-3">

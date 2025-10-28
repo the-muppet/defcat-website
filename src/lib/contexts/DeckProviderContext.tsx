@@ -28,13 +28,30 @@ export function DeckProvider({ children }: { children: ReactNode }) {
     try {
       setLoading(true)
       setError(null)
-      // returning deck contents now requires a table join - we can use "*" here
       const { data, error } = await supabase
-        .from('decks')
+        .from('moxfield_decks')
         .select('*')
         .order('view_count', { ascending: false })
+
       if (error) throw error
-      setDecks(data || [])
+
+      const mappedDecks = (data || []).map((deck) => ({
+        id: deck.moxfield_id,
+        moxfield_id: deck.moxfield_id,
+        moxfield_url: deck.public_url,
+        name: deck.name,
+        commanders: deck.raw_data?.commanders?.map((c: any) => c.name).filter(Boolean) || [],
+        color_identity: deck.raw_data?.colorIdentity || [],
+        format: deck.format,
+        description: deck.raw_data?.description || null,
+        view_count: deck.view_count,
+        like_count: deck.like_count,
+        comment_count: deck.comment_count,
+        created_at: deck.created_at,
+        updated_at: deck.last_updated_at,
+      }))
+
+      setDecks(mappedDecks)
     } catch (err) {
       setError(err instanceof Error ? err.message : `An error occurred: ${err}`)
       console.error('Error fetching decks:', err)

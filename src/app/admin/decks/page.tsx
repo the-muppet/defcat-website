@@ -7,12 +7,12 @@ import { requireAdmin } from '@/lib/auth-guards'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Plus } from 'lucide-react'
 import { ImportAllDecksButton } from '@/components/admin/ImportAllDecksButton'
 import { UpdateAllDecksButton } from '@/components/admin/UpdateAllDecksButton'
 import { DecksList } from '@/components/admin/DecksList'
+import { Database } from '@/types/supabase'
 
 export const dynamic = 'force-dynamic'
 
@@ -24,7 +24,7 @@ export default async function AdminDecksPage() {
 
   // Fetch all decks with minimal data
   const { data: decks, error } = await supabase
-    .from('decks')
+    .from('moxfield_decks')
     .select('id, moxfield_id, name, commanders, color_identity, created_at, view_count')
     .order('created_at', { ascending: false })
 

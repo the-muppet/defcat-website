@@ -93,7 +93,12 @@ export function useSubmissionEligibility(): SubmissionStatus {
 
         if (statusError || !submissionStatus) {
           // Fallback if view query fails
-          const maxSubs = profile.patreon_tier === 'ArchMage' ? 2 : 1
+          let maxSubs = 1
+          if (profile.patreon_tier === 'Wizard') {
+            maxSubs = 3
+          } else if (profile.patreon_tier === 'ArchMage') {
+            maxSubs = 2
+          }
 
           setStatus({
             isEligible: true,
@@ -116,7 +121,7 @@ export function useSubmissionEligibility(): SubmissionStatus {
           isLoading: false,
           error:
             submissionStatus.remaining_submissions === 0
-              ? `You've used all ${submissionStatus.max_submissions} submission(s) for this month. Limit resets on the 1st.`
+              ? 'You have no deck submission credits remaining. Credits are granted monthly based on your Patreon tier and accumulate over time.'
               : null,
         })
       } catch (error) {

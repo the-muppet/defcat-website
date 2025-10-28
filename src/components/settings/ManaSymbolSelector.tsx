@@ -1,30 +1,34 @@
 /** biome-ignore-all lint/a11y/noSvgWithoutTitle: <explanation> */
 'use client'
 
-import { ManaSymbol, getColorInfo } from '@/types/colors'
+import { ColorIdentity } from '@/types/colors'
 import { useManaColor } from '@/lib/contexts/ManaColorContext'
 import { cn } from '@/lib/utils'
 
+// Preserve the intended order (WUBRG + Colorless)
+const MANA_SYMBOLS = [
+  ColorIdentity.Symbol.WHITE,
+  ColorIdentity.Symbol.BLUE,
+  ColorIdentity.Symbol.BLACK,
+  ColorIdentity.Symbol.RED,
+  ColorIdentity.Symbol.GREEN,
+  ColorIdentity.Symbol.COLORLESS,
+] as const
+
 export function ManaSymbolSelector() {
   const { selectedMana, setSelectedMana } = useManaColor()
-
-  const manaSymbols = [
-    ManaSymbol.WHITE,
-    ManaSymbol.BLUE,
-    ManaSymbol.BLACK,
-    ManaSymbol.RED,
-    ManaSymbol.GREEN,
-    ManaSymbol.COLORLESS,
-  ]
+  
+  // Cache the selected colorInfo to avoid multiple getColorInfo calls
+  const selectedColorInfo = ColorIdentity.getColorInfo(selectedMana)
 
   return (
     <div className="space-y-2">
       <p className="text-xs text-muted-foreground">Choose your mana color</p>
 
       <div className="flex gap-1.5 flex-wrap">
-        {manaSymbols.map((symbol) => {
+        {MANA_SYMBOLS.map((symbol) => {
           const isSelected = selectedMana === symbol
-          const colorInfo = getColorInfo(symbol)
+          const colorInfo = ColorIdentity.getColorInfo(symbol)
 
           return (
             <button
@@ -51,7 +55,7 @@ export function ManaSymbolSelector() {
               <i
                 className={cn(
                   colorInfo.className,
-                  'ms-2x', // Much smaller than ms-5x
+                  'ms-4x',
                   'transition-all duration-200',
                   isSelected ? 'opacity-100' : 'opacity-60 hover:opacity-80'
                 )}
@@ -85,9 +89,9 @@ export function ManaSymbolSelector() {
         <span className="text-muted-foreground">Selected:</span>
         <span
           className="font-medium transition-colors duration-200"
-          style={{ color: getColorInfo(selectedMana).color }}
+          style={{ color: selectedColorInfo.color }}
         >
-          {getColorInfo(selectedMana).name}
+          {selectedColorInfo.name}
         </span>
       </div>
     </div>

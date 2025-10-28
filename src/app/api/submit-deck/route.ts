@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { DeckSubmissionEmail } from '@/emails'
 import type { DeckSubmissionFormData, SubmissionResponse } from '@/types/form'
-import { ColorIdentity } from '@/lib/utility/color-identity'
+import { ColorIdentity } from '@/types/colors'
 
 // Force dynamic rendering to avoid build-time errors
 export const dynamic = 'force-dynamic'

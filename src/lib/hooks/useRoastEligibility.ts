@@ -99,21 +99,15 @@ export function useRoastEligibility(): RoastEligibilityStatus {
           return
         }
 
-        // Check roast credits for current month
-        const currentMonth = new Date()
-        currentMonth.setDate(1)
-        currentMonth.setHours(0, 0, 0, 0)
-        const monthString = currentMonth.toISOString().split('T')[0]
-
-        const { data: credits, error: creditsError } = await supabase
-          .from('user_credits')
+        // Check cumulative roast credits using the user_roast_status view
+        const { data: roastStatus, error: creditsError } = await supabase
+          .from('user_roast_status')
           .select('roast_credits')
           .eq('user_id', user.id)
-          .eq('credits_month', monthString)
           .single()
 
-        if (creditsError && creditsError.code !== 'PGRST116') {
-          console.error('Error checking credits:', creditsError)
+        if (creditsError) {
+          console.error('Error checking roast credits:', creditsError)
           setStatus({
             isEligible: false,
             tier,
@@ -125,16 +119,15 @@ export function useRoastEligibility(): RoastEligibilityStatus {
           return
         }
 
-        const roastCredits = credits?.roast_credits ?? 0
+        const roastCredits = roastStatus?.roast_credits ?? 0
 
         if (roastCredits <= 0) {
-          const nextMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1)
           setStatus({
             isEligible: false,
             tier,
             roastCredits: 0,
             isLoading: false,
-            error: `You've used all your roast credits for this month. Credits refresh on ${nextMonth.toLocaleDateString()}`,
+            error: 'You have no roast credits remaining. Credits are granted monthly based on your Patreon tier.',
             isPrivileged: false,
           })
           return

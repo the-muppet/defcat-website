@@ -1,3 +1,5 @@
+/** biome-ignore-all lint/a11y/useButtonType: <explanation> */
+/** biome-ignore-all lint/a11y/noLabelWithoutControl: <explanation> */
 'use client'
 
 import { useState, useMemo, memo } from 'react'
@@ -6,6 +8,8 @@ import { useDecks } from '@/lib/hooks/useDecks'
 import { cn } from '@/lib/utils'
 import type { Deck } from '@/types/core'
 import { ManaSymbols } from '@/components/decks/ManaSymbols'
+import { ColorIdentity } from '@/types/colors'
+import { RoastButton } from '@/components/decks/RoastButton'
 
 // Memoized deck row component
 const DeckRow = memo(function DeckRow({ deck }: { deck: Deck }) {
@@ -52,6 +56,11 @@ const DeckRow = memo(function DeckRow({ deck }: { deck: Deck }) {
           <ExternalLink className="h-4 w-4" />
         </a>
       </td>
+      <td className="py-4 px-4 text-center">
+        <div className="flex items-center justify-center gap-2">
+          {deck.moxfield_url && <RoastButton moxfieldUrl={deck.moxfield_url} variant="icon-only" />}
+        </div>
+      </td>
     </tr>
   )
 })
@@ -60,7 +69,7 @@ export default function TableLayout() {
   const { data: decks = [], isLoading: loading, error } = useDecks()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedColors, setSelectedColors] = useState<string[]>([])
-  const [sortBy, setSortBy] = useState<'name' | 'view_count' | 'like_count' | 'updated_at'>(
+  const [sortBy, setSortBy] = useState<'name' | 'commanders' | 'color_identity' | 'view_count' | 'like_count' | 'updated_at'>(
     'view_count'
   )
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
@@ -90,7 +99,7 @@ export default function TableLayout() {
     if (selectedColors.length > 0) {
       filtered = filtered.filter((deck) => {
         return selectedColors.every((color) => {
-          // Special handling for WUBRG - check if deck has all 5 colors
+          // Special handling for WUBRG
           if (color === 'WUBRG') {
             return ['W', 'U', 'B', 'R', 'G'].every((c) => deck.color_identity?.includes(c))
           }
@@ -108,8 +117,16 @@ export default function TableLayout() {
         bVal = new Date(bVal || 0).getTime()
       }
 
-      if (sortBy === 'name') {
-        return sortOrder === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal)
+      if (sortBy === 'name' || sortBy === 'commanders') {
+        const aStr = sortBy === 'commanders' ? (aVal?.[0] || '') : aVal
+        const bStr = sortBy === 'commanders' ? (bVal?.[0] || '') : bVal
+        return sortOrder === 'asc' ? aStr.localeCompare(bStr) : bStr.localeCompare(aStr)
+      }
+
+      if (sortBy === 'color_identity') {
+        const aLen = (aVal?.length || 0)
+        const bLen = (bVal?.length || 0)
+        return sortOrder === 'asc' ? aLen - bLen : bLen - aLen
       }
 
       return sortOrder === 'asc' ? (aVal || 0) - (bVal || 0) : (bVal || 0) - (aVal || 0)
@@ -132,7 +149,7 @@ export default function TableLayout() {
     }
   }
 
-  const SortIcon = ({ column }: { column: typeof sortBy }) => {
+  const SortIcon = ({ column }: { column: 'name' | 'commanders' | 'color_identity' | 'view_count' | 'like_count' | 'updated_at' }) => {
     if (sortBy !== column) return null
     return sortOrder === 'asc' ? (
       <ChevronUp className="h-4 w-4" />
@@ -173,26 +190,105 @@ export default function TableLayout() {
             />
           </div>
 
-          {/* Color Identity with tinted hover */}
+          {/* Color Identity with mana symbols */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-muted-foreground mb-3">
-              Color Identity
-            </label>
-            <div className="space-y-2">
-              {colorOptions.map((color) => (
-                <label
-                  key={color.code}
-                  className="flex items-center gap-3 cursor-pointer hover:bg-accent-tinted p-2 rounded-lg transition-all"
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-sm font-medium text-muted-foreground">
+                Color Identity
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  if (selectedColors.length === 7) {
+                    setSelectedColors([])
+                  } else {
+                    setSelectedColors(['W', 'U', 'B', 'R', 'G', 'C', 'WUBRG'])
+                  }
+                }}
+                className="text-xs text-[var(--mana-color)] hover:brightness-110 transition-all"
+              >
+                {selectedColors.length === 7 ? 'Clear All' : 'Select All'}
+              </button>
+            </div>
+            <div className="flex flex-col gap-2">
+              {ColorIdentity.ORDER.map((letter) => {
+                const colorInfo = ColorIdentity.getColorInfo(letter)
+                return (
+                  <button
+                    key={letter}
+                    type="button"
+                    onClick={() => toggleColor(letter)}
+                    className={cn(
+                      'flex items-center gap-3 p-2 rounded-lg transition-all duration-200',
+                      selectedColors.includes(letter)
+                        ? 'bg-accent-tinted ring-2 scale-100'
+                        : 'hover:bg-accent-tinted/50 scale-95 opacity-70 hover:opacity-100'
+                    )}
+                    style={
+                      selectedColors.includes(letter)
+                        ? ({ '--tw-ring-color': colorInfo.color } as React.CSSProperties)
+                        : undefined
+                    }
+                  >
+                    <i
+                      className={colorInfo.className}
+                      style={{
+                        fontSize: '24px',
+                        color: selectedColors.includes(letter) ? colorInfo.color : undefined,
+                      }}
+                    />
+                    <span className="text-base font-medium">{colorInfo.name}</span>
+                  </button>
+                )
+              })}
+              {selectedColors.includes('WUBRG') ? (
+                <div
+                  className="rounded-lg p-[2px] transition-all duration-200"
+                  style={{
+                    background: `linear-gradient(135deg, ${ColorIdentity.Colors.W}, ${ColorIdentity.Colors.U}, ${ColorIdentity.Colors.B}, ${ColorIdentity.Colors.R}, ${ColorIdentity.Colors.G})`,
+                  }}
                 >
-                  <input
-                    type="checkbox"
-                    checked={selectedColors.includes(color.code)}
-                    onChange={() => toggleColor(color.code)}
-                    className="w-4 h-4 rounded border-tinted bg-background text-[var(--mana-color)] focus:ring-[var(--mana-color)]"
-                  />
-                  <span className="text-sm">{color.name}</span>
-                </label>
-              ))}
+                  <button
+                    type="button"
+                    onClick={() => toggleColor('WUBRG')}
+                    className="flex items-center gap-3 p-2 rounded-[6px] transition-all duration-200 w-full bg-card scale-100"
+                  >
+                    <div className="flex gap-0.5">
+                      {['W', 'U', 'B', 'R', 'G'].map((letter) => {
+                        const colorInfo = ColorIdentity.getColorInfo(letter)
+                        return (
+                          <i
+                            key={letter}
+                            className={colorInfo.className}
+                            style={{ fontSize: '16px' }}
+                          />
+                        )
+                      })}
+                    </div>
+                    <span className="text-base font-medium">5-Color</span>
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => toggleColor('WUBRG')}
+                  className="flex items-center gap-3 p-2 rounded-lg transition-all duration-200 hover:bg-accent-tinted/50 scale-95 opacity-70 hover:opacity-100"
+                >
+                  <div className="flex gap-0.5">
+                    {['W', 'U', 'B', 'R', 'G'].map((letter) => {
+                      const colorInfo = ColorIdentity.getColorInfo(letter)
+                      return (
+                        <i
+                          key={letter}
+                          className={colorInfo.className}
+                          style={{ fontSize: '16px' }}
+                        />
+                      )
+                    })}
+                  </div>
+                  <span className="text-base font-medium">5-Color</span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -250,47 +346,98 @@ export default function TableLayout() {
                     <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
                       <button
                         onClick={() => handleSort('name')}
-                        className="flex items-center gap-2 hover:text-foreground"
+                        className="flex items-center gap-2 hover:text-foreground transition-colors cursor-pointer"
                       >
                         Deck Name
-                        <SortIcon column="name" />
+                        {sortBy === 'name' ? (
+                          <SortIcon column="name" />
+                        ) : (
+                          <div className="h-4 w-4 opacity-30 hover:opacity-60">
+                            <ChevronUp className="h-4 w-4" />
+                          </div>
+                        )}
                       </button>
                     </th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
-                      Commander(s)
+                      <button
+                        onClick={() => handleSort('commanders')}
+                        className="flex items-center gap-2 hover:text-foreground transition-colors cursor-pointer"
+                      >
+                        Commander(s)
+                        {sortBy === 'commanders' ? (
+                          <SortIcon column="commanders" />
+                        ) : (
+                          <div className="h-4 w-4 opacity-30 hover:opacity-60">
+                            <ChevronUp className="h-4 w-4" />
+                          </div>
+                        )}
+                      </button>
                     </th>
                     <th className="text-center py-3 px-4 text-sm font-semibold text-muted-foreground">
-                      Colors
+                      <button
+                        onClick={() => handleSort('color_identity')}
+                        className="flex items-center gap-2 mx-auto hover:text-foreground transition-colors cursor-pointer"
+                      >
+                        Colors
+                        {sortBy === 'color_identity' ? (
+                          <SortIcon column="color_identity" />
+                        ) : (
+                          <div className="h-4 w-4 opacity-30 hover:opacity-60">
+                            <ChevronUp className="h-4 w-4" />
+                          </div>
+                        )}
+                      </button>
                     </th>
                     <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
                       <button
                         onClick={() => handleSort('view_count')}
-                        className="flex items-center gap-2 ml-auto hover:text-foreground"
+                        className="flex items-center gap-2 ml-auto hover:text-foreground transition-colors cursor-pointer"
                       >
                         Views
-                        <SortIcon column="view_count" />
+                        {sortBy === 'view_count' ? (
+                          <SortIcon column="view_count" />
+                        ) : (
+                          <div className="h-4 w-4 opacity-30 hover:opacity-60">
+                            <ChevronUp className="h-4 w-4" />
+                          </div>
+                        )}
                       </button>
                     </th>
                     <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
                       <button
                         onClick={() => handleSort('like_count')}
-                        className="flex items-center gap-2 ml-auto hover:text-foreground"
+                        className="flex items-center gap-2 ml-auto hover:text-foreground transition-colors cursor-pointer"
                       >
                         Likes
-                        <SortIcon column="like_count" />
+                        {sortBy === 'like_count' ? (
+                          <SortIcon column="like_count" />
+                        ) : (
+                          <div className="h-4 w-4 opacity-30 hover:opacity-60">
+                            <ChevronUp className="h-4 w-4" />
+                          </div>
+                        )}
                       </button>
                     </th>
                     <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
                       <button
                         onClick={() => handleSort('updated_at')}
-                        className="flex items-center gap-2 ml-auto hover:text-foreground"
+                        className="flex items-center gap-2 ml-auto hover:text-foreground transition-colors cursor-pointer"
                       >
                         Updated
-                        <SortIcon column="updated_at" />
+                        {sortBy === 'updated_at' ? (
+                          <SortIcon column="updated_at" />
+                        ) : (
+                          <div className="h-4 w-4 opacity-30 hover:opacity-60">
+                            <ChevronUp className="h-4 w-4" />
+                          </div>
+                        )}
                       </button>
                     </th>
                     <th className="text-center py-3 px-4 text-sm font-semibold text-muted-foreground">
                       Link
+                    </th>
+                    <th className="text-center py-3 px-4 text-sm font-semibold text-muted-foreground">
+                      Actions
                     </th>
                   </tr>
                 </thead>

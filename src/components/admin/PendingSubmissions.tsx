@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ClipboardList, Loader2, CheckCircle, XCircle, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { ColorIdentity } from '@/lib/utility/color-identity'
+import { ColorIdentity } from '@/types/colors'
 
 interface PendingSubmission {
   id: string

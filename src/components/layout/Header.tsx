@@ -9,8 +9,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { LogIn, LogOut, Sparkles, ClipboardList } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { TierBadge } from '@/components/tier/TierBadge'
 import type { PatreonTier } from '@/types/core'
+import { useSubmissionEligibility } from '@/lib/hooks/useSubmissionEligibility'
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -21,8 +21,7 @@ import {
 import { AnimatedThemeToggler } from '../ui/animated-theme-toggler'
 import { ThemeAnimationType } from '@/lib/hooks/useModeAnimation'
 import { AuthLoadingModal } from '@/components/auth/auth-loading-modal'
-import { Navigation } from './Navigation'
-import { UserMenu } from '@/components/user/UserMenu'
+import { UserMenu } from '@/components/profile/UserMenu'
 import { cn } from '@/lib/utils'
 
 export function Header() {
@@ -36,6 +35,7 @@ export function Header() {
   const [showBadge, setShowBadge] = useState(true)
   const pathname = usePathname()
   const supabase = createClient()
+  const { isEligible, remainingSubmissions, isLoading: submissionLoading } = useSubmissionEligibility()
 
   useEffect(() => {
     // Get initial session
@@ -285,6 +285,19 @@ export function Header() {
                       </span>
                     </Link>
                   )}
+                {/* Deck submission credit indicator */}
+                {!submissionLoading && isEligible && remainingSubmissions > 0 && (
+                  <Link
+                    href="/decks/submission"
+                    className="relative hover-tinted rounded-lg p-2 transition-all"
+                    title={`${remainingSubmissions} deck submission${remainingSubmissions !== 1 ? 's' : ''} remaining`}
+                  >
+                    <Sparkles className="h-5 w-5" style={{ color: 'var(--mana-color)' }} />
+                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
+                      {remainingSubmissions}
+                    </span>
+                  </Link>
+                )}
                 <div className="hover-tinted rounded-full">
                   <UserMenu
                     user={{

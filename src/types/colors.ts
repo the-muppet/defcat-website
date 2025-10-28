@@ -1,5 +1,4 @@
-
-export enum ManaSymbol {
+enum ManaSymbol {
   WHITE = 'white',
   BLUE = 'blue',
   BLACK = 'black',
@@ -8,7 +7,7 @@ export enum ManaSymbol {
   COLORLESS = 'colorless',
 }
 
-export const ManaColor = {
+const ManaColorMap = {
   W: 'oklch(0.90 0.40 100)',
   U: 'oklch(0.35 0.40 270)',
   B: 'oklch(0.30 0.40 335)',
@@ -32,84 +31,91 @@ type ColorInfo = {
   color: string        // OKLCH color value
 }
 
-export const ColorMapping: Record<string, ColorInfo> = {
-  W: { letter: 'W', name: 'White', className: 'ms ms-w', color: ManaColor.W },
-  U: { letter: 'U', name: 'Blue', className: 'ms ms-u', color: ManaColor.U },
-  B: { letter: 'B', name: 'Black', className: 'ms ms-b', color: ManaColor.B },
-  R: { letter: 'R', name: 'Red', className: 'ms ms-r', color: ManaColor.R },
-  G: { letter: 'G', name: 'Green', className: 'ms ms-g', color: ManaColor.G },
-  C: { letter: 'C', name: 'Colorless', className: 'ms ms-c', color: ManaColor.C },
-}
-
-// Convert ManaSymbol enum to letter code
-export const symbolToLetter = (symbol: ManaSymbol): string => {
-  const map: Record<ManaSymbol, string> = {
-    [ManaSymbol.WHITE]: 'W',
-    [ManaSymbol.BLUE]: 'U',
-    [ManaSymbol.BLACK]: 'B',
-    [ManaSymbol.RED]: 'R',
-    [ManaSymbol.GREEN]: 'G',
-    [ManaSymbol.COLORLESS]: 'C',
-  }
-  return map[symbol]
-}
-
-// Convert letter code to ManaSymbol enum
-export const letterToSymbol = (letter: string): ManaSymbol => {
-  const map: Record<string, ManaSymbol> = {
-    W: ManaSymbol.WHITE,
-    U: ManaSymbol.BLUE,
-    B: ManaSymbol.BLACK,
-    R: ManaSymbol.RED,
-    G: ManaSymbol.GREEN,
-    C: ManaSymbol.COLORLESS,
-  }
-  return map[letter.toUpperCase()] || ManaSymbol.COLORLESS
-}
-
-// Get color value from symbol, letter, or name
-export const getColorValue = (input: ManaSymbol | string): string => {
-  if (Object.values(ManaSymbol).includes(input as ManaSymbol)) {
-    const letter = symbolToLetter(input as ManaSymbol)
-    return ColorMapping[letter].color
-  }
-  const upper = input.toUpperCase()
-  return ColorMapping[upper]?.color || ManaColor.C
-}
-
-// Get ColorInfo from symbol, letter, or name
-export const getColorInfo = (input: ManaSymbol | string): ColorInfo => {
-  if (Object.values(ManaSymbol).includes(input as ManaSymbol)) {
-    const letter = symbolToLetter(input as ManaSymbol)
-    return ColorMapping[letter]
-  }
-  const upper = input.toUpperCase()
-  return ColorMapping[upper] || ColorMapping.C
-}
-
-/**
- * Extract color letters from a mana cost string
- * "{2}{W}{U}" -> ['W', 'U']
- * "{W/U}" -> ['W', 'U']
- */
-export const extractColorsFromManaCost = (manaCost: string | null | undefined): string[] => {
-  if (!manaCost) return ['C']
-  
-  const colors: string[] = []
-  
-  // Check for each color (including hybrid mana)
-  if (manaCost.includes('W')) colors.push('W')
-  if (manaCost.includes('U')) colors.push('U')
-  if (manaCost.includes('B')) colors.push('B')
-  if (manaCost.includes('R')) colors.push('R')
-  if (manaCost.includes('G')) colors.push('G')
-  
-  // If no colors found or only generic mana, return colorless
-  return colors.length > 0 ? colors : ['C']
+const ColorMapping: Record<string, ColorInfo> = {
+  W: { letter: 'W', name: 'White', className: 'ms ms-w', color: ManaColorMap.W },
+  U: { letter: 'U', name: 'Blue', className: 'ms ms-u', color: ManaColorMap.U },
+  B: { letter: 'B', name: 'Black', className: 'ms ms-b', color: ManaColorMap.B },
+  R: { letter: 'R', name: 'Red', className: 'ms ms-r', color: ManaColorMap.R },
+  G: { letter: 'G', name: 'Green', className: 'ms ms-g', color: ManaColorMap.G },
+  C: { letter: 'C', name: 'Colorless', className: 'ms ms-c', color: ManaColorMap.C },
 }
 
 export const ColorIdentity = {
+  // Constants
   ORDER: ['W', 'U', 'B', 'R', 'G', 'C'],
+  
+  // Enums
+  Symbol: ManaSymbol,
+  
+  // Color values
+  Colors: ManaColorMap,
+  
+  // Convert ManaSymbol enum to letter code
+  symbolToLetter: (symbol: ManaSymbol): string => {
+    const map: Record<ManaSymbol, string> = {
+      [ManaSymbol.WHITE]: 'W',
+      [ManaSymbol.BLUE]: 'U',
+      [ManaSymbol.BLACK]: 'B',
+      [ManaSymbol.RED]: 'R',
+      [ManaSymbol.GREEN]: 'G',
+      [ManaSymbol.COLORLESS]: 'C',
+    }
+    return map[symbol]
+  },
+  
+  // Convert letter code to ManaSymbol enum
+  letterToSymbol: (letter: string): ManaSymbol => {
+    const map: Record<string, ManaSymbol> = {
+      W: ManaSymbol.WHITE,
+      U: ManaSymbol.BLUE,
+      B: ManaSymbol.BLACK,
+      R: ManaSymbol.RED,
+      G: ManaSymbol.GREEN,
+      C: ManaSymbol.COLORLESS,
+    }
+    return map[letter.toUpperCase()] || ManaSymbol.COLORLESS
+  },
+  
+  // Get color value from symbol, letter, or name
+  getColorValue: (input: ManaSymbol | string): string => {
+    if (Object.values(ManaSymbol).includes(input as ManaSymbol)) {
+      const letter = ColorIdentity.symbolToLetter(input as ManaSymbol)
+      return ColorMapping[letter].color
+    }
+    const upper = input.toUpperCase()
+    return ColorMapping[upper]?.color || ManaColorMap.C
+  },
+  
+  // Get ColorInfo from symbol, letter, or name
+  getColorInfo: (input: ManaSymbol | string): ColorInfo => {
+    if (Object.values(ManaSymbol).includes(input as ManaSymbol)) {
+      const letter = ColorIdentity.symbolToLetter(input as ManaSymbol)
+      return ColorMapping[letter]
+    }
+    const upper = input.toUpperCase()
+    return ColorMapping[upper] || ColorMapping.C
+  },
+  
+  /**
+   * Extract color letters from a mana cost string
+   * "{2}{W}{U}" -> ['W', 'U']
+   * "{W/U}" -> ['W', 'U']
+   */
+  extractColorsFromManaCost: (manaCost: string | null | undefined): string[] => {
+    if (!manaCost) return ['C']
+    
+    const colors: string[] = []
+    
+    // Check for each color (including hybrid mana)
+    if (manaCost.includes('W')) colors.push('W')
+    if (manaCost.includes('U')) colors.push('U')
+    if (manaCost.includes('B')) colors.push('B')
+    if (manaCost.includes('R')) colors.push('R')
+    if (manaCost.includes('G')) colors.push('G')
+    
+    // If no colors found or only generic mana, return colorless
+    return colors.length > 0 ? colors : ['C']
+  },
   
   /**
    * Normalize color array to sorted, deduplicated string
@@ -215,3 +221,6 @@ export const ColorIdentity = {
     return normalized.split('').map(c => ColorMapping[c]?.name).join('/')
   },
 }
+
+// Type exports for external use
+export type { ColorInfo } 

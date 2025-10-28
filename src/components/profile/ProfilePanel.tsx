@@ -9,7 +9,9 @@ import { ManaSymbolSelector } from '@/components/settings/ManaSymbolSelector'
 import { NotificationBadgeToggle } from '@/components/settings/NotificationBadgeToggle'
 import { TierBadge } from '@/components/tier/TierBadge'
 import { MyDrafts } from '@/components/profile/MyDrafts'
-import { User, Mail, Shield, Award, Palette, Loader2 } from 'lucide-react'
+import { ProfileEditForm } from '@/components/profile/ProfileEditForm'
+import { UserDecks } from '@/components/profile/UserDecks'
+import { UserIcon, Shield, Award, Palette, Loader2, Library } from 'lucide-react'
 import { GlowingEffect } from '@/components/ui/glowEffect'
 import type { Database } from '@/types/supabase'
 
@@ -20,33 +22,42 @@ export default function ProfilePage() {
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const supabase = createClient()
 
-  useEffect(() => {
-    async function loadProfile() {
-      const {
-        data: { user: authUser },
-      } = await supabase.auth.getUser()
-
-      if (!authUser) {
-        router.push('/auth/login')
-        return
-      }
-
-      setUser(authUser)
-
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('patreon_tier, role, created_at')
-        .eq('id', authUser.id)
-        .single()
-
-      setProfile(profileData)
-      setLoading(false)
+  const loadProfile = async (isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true)
     }
 
-    loadProfile()
-  }, [router, supabase])
+    const {
+      data: { user: authUser },
+    } = await supabase.auth.getUser()
+
+    if (!authUser) {
+      router.push('/auth/login')
+      return
+    }
+
+    setUser(authUser)
+
+    const { data: profileData } = await supabase
+      .from('profiles')
+      .select('patreon_tier, role, created_at, moxfield_username, email')
+      .eq('id', authUser.id)
+      .single()
+
+    setProfile(profileData)
+    setLoading(false)
+    if (isRefresh) {
+      setRefreshing(false)
+    }
+  }
+
+  useEffect(() => {
+    loadProfile(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   if (loading) {
     return (
@@ -67,8 +78,62 @@ export default function ProfilePage() {
     : 'Unknown'
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-2 py-2">
-      <ul className="grid grid-cols-1 gap-2 md:grid-cols-2 [&>li]:min-w-0">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      <div className="container mx-auto px-4 sm:px-8 md:px-16 lg:px-24 py-8 max-w-5xl">
+        <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 [&>li]:min-w-0">
+        {/* Account & Profile - Full width */}
+        <li className="list-none md:col-span-2">
+          <div className="relative rounded-md border p-0.5">
+            <GlowingEffect
+              blur={0}
+              borderWidth={1}
+              spread={30}
+              glow={true}
+              disabled={false}
+              proximity={24}
+              inactiveZone={0.01}
+            />
+            <Card className="glass-panel border-0 relative">
+              <CardHeader className="py-2 px-3">
+                <CardTitle className="flex items-center gap-1.5 text-sm">
+                  <UserIcon className="h-3.5 w-3.5" />
+                  Account & Profile
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="px-3 pb-2 space-y-4">
+                {/* Read-only account info */}
+                <div className="space-y-2 p-3 bg-accent/50 rounded-lg">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-muted-foreground">User ID</span>
+                    <span className="text-xs font-mono truncate max-w-[200px]">{user.id}</span>
+                  </div>
+                  <Separator className="my-1" />
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-muted-foreground">Joined</span>
+                    <span className="text-xs">{joinedDate}</span>
+                  </div>
+                </div>
+
+                {/* Editable fields */}
+                <ProfileEditForm
+                  userId={user.id}
+                  currentEmail={profile?.email || user.email}
+                  currentMoxfieldUsername={profile?.moxfield_username || null}
+                  onSuccess={() => {
+                    loadProfile(true)
+                  }}
+                />
+                {refreshing && (
+                  <div className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    Refreshing profile...
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </li>
+
         {/* Appearance - Full width */}
         <li className="list-none md:col-span-2">
           <div className="relative rounded-md border p-0.5">
@@ -95,41 +160,8 @@ export default function ProfilePage() {
           </div>
         </li>
 
-        {/* Account Information */}
-        <li className="list-none">
-          <div className="relative rounded-md border p-0.5">
-            <GlowingEffect
-              blur={0}
-              borderWidth={1}
-              spread={30}
-              glow={true}
-              disabled={false}
-              proximity={24}
-              inactiveZone={0.01}
-            />
-            <Card className="glass-panel border-0 relative h-full">
-              <CardHeader className="py-2 px-3">
-                <CardTitle className="flex items-center gap-1.5 text-sm">
-                  <Mail className="h-3.5 w-3.5" />
-                  Account
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-1.5 px-3 pb-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-muted-foreground">Email</span>
-                  <span className="text-xs font-medium truncate max-w-[140px]">{user.email}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-muted-foreground">Joined</span>
-                  <span className="text-xs">{joinedDate}</span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </li>
-
         {/* Patreon Tier */}
-        <li className="list-none">
+        <li className="list-none md:col-span-2">
           <div className="relative rounded-md border p-0.5">
             <GlowingEffect
               blur={0}
@@ -149,6 +181,35 @@ export default function ProfilePage() {
               </CardHeader>
               <CardContent className="px-3 pb-2">
                 <TierBadge tier={userTier as any} showTooltip={true} />
+              </CardContent>
+            </Card>
+          </div>
+        </li>
+
+        {/* My Decks from Moxfield */}
+        <li className="list-none md:col-span-2">
+          <div className="relative rounded-md border p-0.5">
+            <GlowingEffect
+              blur={0}
+              borderWidth={1}
+              spread={30}
+              glow={true}
+              disabled={false}
+              proximity={24}
+              inactiveZone={0.01}
+            />
+            <Card className="glass-panel border-0 relative">
+              <CardHeader className="py-2 px-3">
+                <CardTitle className="flex items-center gap-1.5 text-sm">
+                  <Library className="h-3.5 w-3.5" />
+                  My Decks
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Your Moxfield decks
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-3 pb-2">
+                <UserDecks moxfieldUsername={profile?.moxfield_username || null} />
               </CardContent>
             </Card>
           </div>
@@ -221,7 +282,8 @@ export default function ProfilePage() {
             </div>
           </li>
         )}
-      </ul>
+        </ul>
+      </div>
     </div>
   )
 }

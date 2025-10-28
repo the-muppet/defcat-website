@@ -1,7 +1,10 @@
 'use client'
 // biome-ignore assist/source/organizeImports: <explanation>
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
-import { ManaSymbol, ManaColor } from '@/types/colors'
+import { ColorIdentity } from '@/types/colors'
+
+// alias for the ManaSymbol enum
+type ManaSymbol = typeof ColorIdentity.Symbol[keyof typeof ColorIdentity.Symbol]
 
 interface ManaColorContextType {
   selectedMana: ManaSymbol
@@ -11,15 +14,15 @@ interface ManaColorContextType {
 const ManaColorContext = createContext<ManaColorContextType | undefined>(undefined)
 
 export function ManaColorProvider({ children }: { children: ReactNode }) {
-  const [selectedMana, setSelectedManaState] = useState<ManaSymbol>(ManaSymbol.GREEN)
+  const [selectedMana, setSelectedManaState] = useState<ManaSymbol>(ColorIdentity.Symbol.GREEN)
 
   useEffect(() => {
     const saved = localStorage.getItem('mana-color')
-    if (saved && Object.values(ManaSymbol).includes(saved as ManaSymbol)) {
+    if (saved && Object.values(ColorIdentity.Symbol).includes(saved as ManaSymbol)) {
       setSelectedManaState(saved as ManaSymbol)
       applyManaColor(saved as ManaSymbol)
     } else {
-      applyManaColor(ManaSymbol.COLORLESS)
+      applyManaColor(ColorIdentity.Symbol.COLORLESS)
     }
   }, [])
 
@@ -44,17 +47,8 @@ export function useManaColor() {
   return context
 }
 
-// Apply mana color to CSS variables with consistent colorization
+// add mana color to CSS variables
 function applyManaColor(mana: ManaSymbol) {
-  const colors: Record<ManaSymbol, string> = {
-    [ManaSymbol.WHITE]: ManaColor.WHITE,
-    [ManaSymbol.BLUE]: ManaColor.BLUE,
-    [ManaSymbol.BLACK]: ManaColor.BLACK,
-    [ManaSymbol.RED]: ManaColor.RED,
-    [ManaSymbol.GREEN]: ManaColor.GREEN,
-    [ManaSymbol.COLORLESS]: ManaColor.COLORLESS,
-  }
-
   const root = document.documentElement
 
   // Set the transition only once
@@ -62,8 +56,8 @@ function applyManaColor(mana: ManaSymbol) {
     root.style.transition = 'background-color 400ms ease-out, color 400ms ease-out'
   }
 
-  // Update the color
-  root.style.setProperty('--mana-color', colors[mana])
+  const color = ColorIdentity.getColorValue(mana)
+  root.style.setProperty('--mana-color', color)
 
   // Set data attribute for CSS targeting
   root.setAttribute('data-mana', mana)

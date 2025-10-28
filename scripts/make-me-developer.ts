@@ -12,7 +12,7 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 async function makeDeveloper() {
-  const userId = '6596337a-0e78-4c5a-9cf8-2b2aa6118495'
+  const userId = '08ee43a7-a212-4d8c-8b08-394822a89002'
 
   console.log(`Setting user ${userId} to developer role...`)
 

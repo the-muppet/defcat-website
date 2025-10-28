@@ -1,3 +1,9 @@
+/** biome-ignore-all lint/a11y/noLabelWithoutControl: <explanation> */
+/** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
+/** biome-ignore-all lint/a11y/useButtonType: <explanation> */
+/** biome-ignore-all lint/a11y/useAriaPropsSupportedByRole: <explanation> */
+/** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
 import React, { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -19,8 +25,8 @@ import {
   User,
   Hourglass,
 } from 'lucide-react'
-import { bracketOptions, COLOR_MAPPINGS } from '@/types/core'
-import { ColorIdentity } from '@/lib/utility/color-identity'
+import { bracketOptions } from '@/types/core'
+import { ColorIdentity } from '@/types/colors'
 import { ManaSymbols } from '@/components/decks/ManaSymbols'
 import { toast } from 'sonner'
 
@@ -41,6 +47,7 @@ export default function PagedDeckForm() {
     mysteryDeck: '',
     commander: '',
     colorPreference: [] as string[],
+    backupColorPreference: [] as string[],
     theme: '',
     bracket: '',
     budget: '',
@@ -50,6 +57,7 @@ export default function PagedDeckForm() {
 
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [completedSteps, setCompletedSteps] = useState<number[]>([])
+  const [showBackupColors, setShowBackupColors] = useState(false)
 
   const totalSteps = 5
 
@@ -539,19 +547,19 @@ export default function PagedDeckForm() {
 
             <div className="form-group">
               <label>
-                Color Preference (select up to 3){' '}
+                Primary Color Preference{' '}
                 {formData.mysteryDeck === 'no' && !formData.commander && (
                   <span className="required">*</span>
                 )}
               </label>
-              <div className="grid grid-cols-5 gap-x-6 gap-y-2 justify-items-center">
-                {Object.entries(COLOR_MAPPINGS)
-                  .filter(([colorId]) => colorId !== 'C' && colorId !== 'WUBRG')
-                  .map(([colorId, colorData]) => (
+              <div className="grid grid-cols-5 gap-x-6 gap-y-4 justify-items-center">
+                {['W', 'U', 'B', 'R', 'G'].map((colorId) => {
+                  const colorInfo = ColorIdentity.getColorInfo(colorId)
+                  return (
                     <label
                       key={colorId}
                       className="cursor-pointer flex flex-col items-center gap-2"
-                      title={colorData.name}
+                      title={colorInfo.name}
                     >
                       <input
                         type="checkbox"
@@ -563,52 +571,172 @@ export default function PagedDeckForm() {
                       <div
                         className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.colorPreference.includes(colorId) ? 'bg-accent-tinted ring-2 ring-[var(--mana-color)]' : ''}`}
                       >
-                        {colorData.individual.map((symbol, idx) => (
-                          <i
-                            key={idx}
-                            className={`ms ms-${symbol.toLowerCase()} ms-3x transition-all duration-200 hover:scale-110`}
-                            aria-label={`${symbol} mana`}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-xs text-center">{colorData.name}</span>
-                    </label>
-                  ))}
-                <div className="col-span-5 flex justify-center gap-6">
-                  {['C', 'WUBRG'].map((colorId) => {
-                    const colorData = COLOR_MAPPINGS[colorId]
-                    return (
-                      <label
-                        key={colorId}
-                        className="cursor-pointer flex flex-col items-center gap-2"
-                        title={colorData.name}
-                      >
-                        <input
-                          type="checkbox"
-                          name="colorPreference"
-                          checked={formData.colorPreference.includes(colorId)}
-                          onChange={() => handleInputChange('colorPreference', colorId)}
-                          className="sr-only"
+                        <i
+                          className={`${colorInfo.className} ms-3x transition-all duration-200 hover:scale-110`}
+                          aria-label={`${colorInfo.name} mana`}
                         />
-                        <div
-                          className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.colorPreference.includes(colorId) ? 'bg-accent-tinted ring-2 ring-[var(--mana-color)]' : ''}`}
-                        >
-                          {colorData.individual.map((symbol, idx) => (
-                            <i
-                              key={idx}
-                              className={`ms ms-${symbol.toLowerCase()} ms-3x transition-all duration-200 hover:scale-110`}
-                              aria-label={`${symbol} mana`}
-                            />
-                          ))}
-                        </div>
-                        <span className="text-xs text-center">{colorData.name}</span>
-                      </label>
-                    )
-                  })}
+                      </div>
+                      <span className="text-xs text-center">{colorInfo.name}</span>
+                    </label>
+                  )
+                })}
+                <div className="col-span-5 flex justify-center gap-6">
+                  <label
+                    className="cursor-pointer flex flex-col items-center gap-2"
+                    title={ColorIdentity.getColorInfo('C').name}
+                  >
+                    <input
+                      type="checkbox"
+                      name="colorPreference"
+                      checked={formData.colorPreference.includes('C')}
+                      onChange={() => handleInputChange('colorPreference', 'C')}
+                      className="sr-only"
+                    />
+                    <div
+                      className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.colorPreference.includes('C') ? 'bg-accent-tinted ring-2 ring-[var(--mana-color)]' : ''}`}
+                    >
+                      <i
+                        className={`${ColorIdentity.getColorInfo('C').className} ms-3x transition-all duration-200 hover:scale-110`}
+                        aria-label={`${ColorIdentity.getColorInfo('C').name} mana`}
+                      />
+                    </div>
+                    <span className="text-xs text-center">{ColorIdentity.getColorInfo('C').name}</span>
+                  </label>
+                  <label
+                    className="cursor-pointer flex flex-col items-center gap-2"
+                    title="5-Color"
+                  >
+                    <input
+                      type="checkbox"
+                      name="colorPreference"
+                      checked={formData.colorPreference.includes('WUBRG')}
+                      onChange={() => handleInputChange('colorPreference', 'WUBRG')}
+                      className="sr-only"
+                    />
+                    <div
+                      className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.colorPreference.includes('WUBRG') ? 'bg-accent-tinted ring-2 ring-[var(--mana-color)]' : ''}`}
+                    >
+                      {['W', 'U', 'B', 'R', 'G'].map((color) => (
+                        <i
+                          key={color}
+                          className={`${ColorIdentity.getColorInfo(color).className} ms-2x transition-all duration-200`}
+                          aria-label={`${color} mana`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-xs text-center">5-Color</span>
+                  </label>
                 </div>
               </div>
               {errors.colorPreference && (
                 <span className="error-message">{errors.colorPreference}</span>
+              )}
+
+              {/* Add Backup Colors Button */}
+              {!showBackupColors && (
+                <button
+                  type="button"
+                  onClick={() => setShowBackupColors(true)}
+                  className="mt-4 flex items-center gap-2 text-sm text-[var(--mana-color)] hover:brightness-110 transition-all"
+                >
+                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[var(--mana-color)] text-white text-xs">+</span>
+                  Add backup color preference
+                </button>
+              )}
+
+              {/* Backup Color Selection */}
+              {showBackupColors && (
+                <div className="mt-6 p-4 bg-accent-tinted/30 rounded-lg border border-tinted">
+                  <div className="flex items-center justify-between mb-4">
+                    <label className="text-sm font-medium">Backup Color Preference (Optional)</label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowBackupColors(false)
+                        setFormData({ ...formData, backupColorPreference: [] })
+                      }}
+                      className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-5 gap-x-6 gap-y-4 justify-items-center">
+                    {['W', 'U', 'B', 'R', 'G'].map((colorId) => {
+                      const colorInfo = ColorIdentity.getColorInfo(colorId)
+                      return (
+                        <label
+                          key={colorId}
+                          className="cursor-pointer flex flex-col items-center gap-2"
+                          title={colorInfo.name}
+                        >
+                          <input
+                            type="checkbox"
+                            name="backupColorPreference"
+                            checked={formData.backupColorPreference.includes(colorId)}
+                            onChange={() => handleInputChange('backupColorPreference', colorId)}
+                            className="sr-only"
+                          />
+                          <div
+                            className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.backupColorPreference.includes(colorId) ? 'bg-accent-tinted ring-2 ring-[var(--mana-color)]' : ''}`}
+                          >
+                            <i
+                              className={`${colorInfo.className} ms-3x transition-all duration-200 hover:scale-110`}
+                              aria-label={`${colorInfo.name} mana`}
+                            />
+                          </div>
+                          <span className="text-xs text-center">{colorInfo.name}</span>
+                        </label>
+                      )
+                    })}
+                    <div className="col-span-5 flex justify-center gap-6">
+                      <label
+                        className="cursor-pointer flex flex-col items-center gap-2"
+                        title={ColorIdentity.getColorInfo('C').name}
+                      >
+                        <input
+                          type="checkbox"
+                          name="backupColorPreference"
+                          checked={formData.backupColorPreference.includes('C')}
+                          onChange={() => handleInputChange('backupColorPreference', 'C')}
+                          className="sr-only"
+                        />
+                        <div
+                          className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.backupColorPreference.includes('C') ? 'bg-accent-tinted ring-2 ring-[var(--mana-color)]' : ''}`}
+                        >
+                          <i
+                            className={`${ColorIdentity.getColorInfo('C').className} ms-3x transition-all duration-200 hover:scale-110`}
+                            aria-label={`${ColorIdentity.getColorInfo('C').name} mana`}
+                          />
+                        </div>
+                        <span className="text-xs text-center">{ColorIdentity.getColorInfo('C').name}</span>
+                      </label>
+                      <label
+                        className="cursor-pointer flex flex-col items-center gap-2"
+                        title="5-Color"
+                      >
+                        <input
+                          type="checkbox"
+                          name="backupColorPreference"
+                          checked={formData.backupColorPreference.includes('WUBRG')}
+                          onChange={() => handleInputChange('backupColorPreference', 'WUBRG')}
+                          className="sr-only"
+                        />
+                        <div
+                          className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.backupColorPreference.includes('WUBRG') ? 'bg-accent-tinted ring-2 ring-[var(--mana-color)]' : ''}`}
+                        >
+                          {['W', 'U', 'B', 'R', 'G'].map((color) => (
+                            <i
+                              key={color}
+                              className={`${ColorIdentity.getColorInfo(color).className} ms-2x transition-all duration-200`}
+                              aria-label={`${color} mana`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-xs text-center">5-Color</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
 
@@ -758,24 +886,68 @@ export default function PagedDeckForm() {
                 )}
                 {formData.colorPreference.length > 0 && (
                   <div className="review-item">
-                    <span className="review-label">Color Preferences:</span>
+                    <span className="review-label">Primary Color Preferences:</span>
                     <span className="review-value">
                       <div className="flex gap-4 flex-wrap">
                         {formData.colorPreference.map((colorId) => {
-                          const colorData = COLOR_MAPPINGS[colorId]
+                          const colorInfo = ColorIdentity.getColorInfo(colorId)
+                          const is5Color = colorId === 'WUBRG'
                           return (
                             <div key={colorId} className="flex items-center gap-2">
-                              <div className="inline-flex gap-0.5 items-center">
-                                {colorData.individual.map((symbol, idx) => (
-                                  <i
-                                    key={idx}
-                                    className={`ms ms-${symbol.toLowerCase()} text-base`}
-                                    aria-label={`${symbol} mana`}
-                                  />
-                                ))}
-                              </div>
+                              {is5Color ? (
+                                <div className="inline-flex gap-0.5 items-center">
+                                  {['W', 'U', 'B', 'R', 'G'].map((color) => (
+                                    <i
+                                      key={color}
+                                      className={`${ColorIdentity.getColorInfo(color).className} text-base`}
+                                      aria-label={`${color} mana`}
+                                    />
+                                  ))}
+                                </div>
+                              ) : (
+                                <i
+                                  className={`${colorInfo.className} text-base`}
+                                  aria-label={`${colorInfo.name} mana`}
+                                />
+                              )}
                               <span className="text-xs text-muted-foreground">
-                                {colorData.name}
+                                {is5Color ? '5-Color' : colorInfo.name}
+                              </span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </span>
+                  </div>
+                )}
+                {formData.backupColorPreference.length > 0 && (
+                  <div className="review-item">
+                    <span className="review-label">Backup Color Preferences:</span>
+                    <span className="review-value">
+                      <div className="flex gap-4 flex-wrap">
+                        {formData.backupColorPreference.map((colorId) => {
+                          const colorInfo = ColorIdentity.getColorInfo(colorId)
+                          const is5Color = colorId === 'WUBRG'
+                          return (
+                            <div key={colorId} className="flex items-center gap-2">
+                              {is5Color ? (
+                                <div className="inline-flex gap-0.5 items-center">
+                                  {['W', 'U', 'B', 'R', 'G'].map((color) => (
+                                    <i
+                                      key={color}
+                                      className={`${ColorIdentity.getColorInfo(color).className} text-base`}
+                                      aria-label={`${color} mana`}
+                                    />
+                                  ))}
+                                </div>
+                              ) : (
+                                <i
+                                  className={`${colorInfo.className} text-base`}
+                                  aria-label={`${colorInfo.name} mana`}
+                                />
+                              )}
+                              <span className="text-xs text-muted-foreground">
+                                {is5Color ? '5-Color' : colorInfo.name}
                               </span>
                             </div>
                           )

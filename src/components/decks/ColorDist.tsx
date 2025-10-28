@@ -4,7 +4,7 @@
 
 // biome-ignore assist/source/organizeImports: <explanation>
 import { useState } from 'react'
-import { ColorIdentity, extractColorsFromManaCost, getColorInfo } from '@/types/colors'
+import { ColorIdentity } from '@/types/colors'
 import { cn } from '@/lib/utils'
 
 interface DeckCard {
@@ -53,7 +53,7 @@ export function ColorDistribution({ cards, selectedType }: { cards: DeckCard[], 
   // Calculate color combo distribution
   const colorCombos = filteredCards.reduce(
     (acc, dc) => {
-      const colors = extractColorsFromManaCost(dc.cards?.mana_cost)
+      const colors = ColorIdentity.extractColorsFromManaCost(dc.cards?.mana_cost)
       const colorKey = ColorIdentity.normalize(colors)
       acc[colorKey] = (acc[colorKey] || 0) + dc.quantity
       return acc
@@ -90,7 +90,7 @@ export function ColorDistribution({ cards, selectedType }: { cards: DeckCard[], 
             {sortedColors.map(([colorLetter, count]) => {
               const percentage = (count / totalSymbols) * 100
               const isHovered = hoveredColor === colorLetter
-              const colorInfo = getColorInfo(colorLetter)
+              const colorInfo = ColorIdentity.getColorInfo(colorLetter)
 
               return (
                 <div

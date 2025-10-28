@@ -1,6 +1,7 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: <explanation> */
 import { useEffect, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
-import { ManaSymbol } from '@/types/colors'
+import { ColorIdentity } from '@/types/colors'
 import { createManaMask } from '../utility/mana'
 
 const isBrowser = typeof window !== 'undefined'
@@ -54,6 +55,8 @@ interface ReactThemeSwitchAnimationHook {
   isDarkMode: boolean
 }
 
+type ManaSymbol = typeof ColorIdentity.Symbol[keyof typeof ColorIdentity.Symbol]
+
 export interface ReactThemeSwitchAnimationProps {
   duration?: number
   easing?: string
@@ -78,7 +81,7 @@ export const useModeAnimation = (
     animationType = ThemeAnimationType.MANA,
     blurAmount = 2,
     styleId = 'theme-switch-style',
-    manaSymbol = ManaSymbol.BLACK,
+    manaSymbol = ColorIdentity.letterToSymbol('c'),
     isDarkMode: externalDarkMode,
     onDarkModeChange,
   } = props || {}
