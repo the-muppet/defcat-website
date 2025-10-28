@@ -33,7 +33,7 @@ export function UserDecks({ moxfieldUsername }: UserDecksProps) {
       try {
         const { data, error: fetchError } = await supabase
           .from('moxfield_decks')
-          .select('*')
+          .select('id, name, format, view_count, like_count, comment_count, mainboard_count, last_updated_at, public_url')
           .eq('author_username', moxfieldUsername)
           .neq('author_username', 'DefCatMtg')
           .order('last_updated_at', { ascending: false })

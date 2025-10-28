@@ -49,8 +49,15 @@ export async function POST(request: NextRequest) {
 
     // For safety, only allow SELECT queries and specific tables
     if (table) {
-      // Direct table query
-      const { data, error } = await supabase.from(table).select('*')
+      // Direct table query - handle large tables specially
+      let selectClause = '*'
+
+      // For moxfield_decks, exclude raw_data to avoid 406 errors
+      if (table === 'moxfield_decks') {
+        selectClause = 'id, moxfield_id, public_url, name, format, view_count, like_count, comment_count, mainboard_count, sideboard_count, author_username, created_at, last_updated_at'
+      }
+
+      const { data, error } = await supabase.from(table).select(selectClause)
 
       if (error) {
         return NextResponse.json({

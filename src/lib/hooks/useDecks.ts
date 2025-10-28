@@ -118,7 +118,7 @@ export function useDeckInfo(id: string) {
       const supabase = createClient()
       const { data, error } = await supabase
         .from('moxfield_decks')
-        .select('*')
+        .select('moxfield_id, public_url, name, raw_data, format, view_count, like_count, comment_count, created_at, last_updated_at')
         .eq('moxfield_id', id)
         .single()
 

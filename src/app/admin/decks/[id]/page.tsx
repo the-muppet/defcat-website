@@ -28,7 +28,7 @@ export default async function AdminDeckEditPage({ params }: PageProps) {
 
   const { data: deck, error } = await supabase
     .from('moxfield_decks')
-    .select('*')
+    .select('id, moxfield_id, public_url, name, raw_data, format, view_count, like_count, comment_count, mainboard_count, sideboard_count, author_username, created_at, last_updated_at')
     .eq('moxfield_id', id)
     .single()
 

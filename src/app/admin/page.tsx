@@ -6,6 +6,7 @@
 
 import {
   BarChart3,
+  BookOpen,
   ClipboardList,
   Database,
   Package,
@@ -42,11 +43,11 @@ export default async function AdminDashboard() {
   const isDeveloper = profile?.role === 'developer'
 
   const [{ count: deckCount }, { count: userCount }, { count: pendingCount }] = await Promise.all([
-    supabase.from('moxfield_decks').select('*', { count: 'exact', head: true }),
-    supabase.from('profiles').select('*', { count: 'exact', head: true }),
+    supabase.from('moxfield_decks').select('id', { count: 'exact', head: true }),
+    supabase.from('profiles').select('id', { count: 'exact', head: true }),
     supabase
       .from('deck_submissions')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .in('status', ['pending', 'queued']),
   ])
 
@@ -201,6 +202,21 @@ export default async function AdminDashboard() {
             <CardContent>
               <Button asChild className="w-full btn-tinted-primary">
                 <Link href="/admin/settings">Site Settings</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="card-tinted border-tinted hover:shadow-tinted-lg transition-all">
+            <CardHeader>
+              <BookOpen className="h-8 w-8 mb-2" style={{ color: 'var(--mana-color)' }} />
+              <CardTitle className="text-foreground">Documentation</CardTitle>
+              <CardDescription className="text-muted-foreground">
+                System architecture diagrams and technical documentation
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild className="w-full btn-tinted-primary">
+                <Link href="/admin/docs">View Documentation</Link>
               </Button>
             </CardContent>
           </Card>

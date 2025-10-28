@@ -38,7 +38,7 @@ export function DeckProvider({ children }: { children: ReactNode }) {
       setError(null)
       const { data, error } = await supabase
         .from('moxfield_decks')
-        .select('*')
+        .select('moxfield_id, public_url, name, raw_data, format, view_count, like_count, comment_count, created_at, last_updated_at')
         .order('view_count', { ascending: false })
 
       if (error) throw error
