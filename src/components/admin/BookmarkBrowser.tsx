@@ -98,7 +98,8 @@ export function DeckURLSelector({
     if (open && decks.length === 0) {
       fetchDecks()
     }
-  }, [open])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, decks.length])
 
   const handleSelect = (deck: DeckItem) => {
     setSelectedDeck(deck)

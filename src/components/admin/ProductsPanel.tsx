@@ -9,7 +9,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -37,6 +37,7 @@ export function ProductsPanel() {
 
   useEffect(() => {
     loadProducts()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const loadProducts = async () => {
@@ -346,7 +347,11 @@ export function ProductsPanel() {
                         type="number"
                         value={product.sort_order}
                         onChange={(e) =>
-                          handleUpdateProduct(product.id, 'sort_order', parseInt(e.target.value))
+                          handleUpdateProduct(
+                            product.id,
+                            'sort_order',
+                            parseInt(e.target.value, 10)
+                          )
                         }
                         className="input-tinted"
                       />

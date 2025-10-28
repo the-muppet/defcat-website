@@ -1,7 +1,7 @@
 'use client'
 
-import { AlertCircle, CheckCircle2, Search, Shield, UserPlus, Users, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { AlertCircle, CheckCircle2, Search, Shield, UserPlus, X } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
-import { PATREON_TIERS, type PatreonTier } from '@/types/core'
+import { PATREON_TIERS } from '@/types/core'
 
 interface User {
   id: string
@@ -49,11 +49,7 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
     ? ['user', 'admin', 'moderator', 'developer']
     : ['user', 'admin', 'moderator']
 
-  useEffect(() => {
-    loadUsers()
-  }, [])
-
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -68,7 +64,12 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [supabase])
+
+  useEffect(() => {
+    loadUsers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleUpdateRole = async (userId: string, newRole: string) => {
     setUpdating(true)

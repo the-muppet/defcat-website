@@ -1,6 +1,6 @@
 'use client'
 
-import { CheckCircle, ClipboardList, Clock, Loader2, XCircle } from 'lucide-react'
+import { CheckCircle, ClipboardList, Loader2, XCircle } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -32,6 +32,7 @@ export function PendingSubmissions() {
 
   useEffect(() => {
     loadSubmissions()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   async function loadSubmissions() {

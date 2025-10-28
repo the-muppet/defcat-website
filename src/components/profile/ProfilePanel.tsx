@@ -12,7 +12,6 @@ import { ManaSymbolSelector } from '@/components/settings/ManaSymbolSelector'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { GlowingEffect } from '@/components/ui/glowEffect'
-import { Separator } from '@/components/ui/separator'
 import { createClient } from '@/lib/supabase/client'
 import type { Database } from '@/types/supabase'
 

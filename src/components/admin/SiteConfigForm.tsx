@@ -1,7 +1,7 @@
 'use client'
 
 import { AlertCircle, Globe, Loader2, Save, Users, Youtube } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -24,11 +24,7 @@ export function SiteConfigForm() {
   const [success, setSuccess] = useState(false)
   const supabase = createClient()
 
-  useEffect(() => {
-    loadConfig()
-  }, [])
-
-  const loadConfig = async () => {
+  const loadConfig = useCallback(async () => {
     try {
       console.log('Loading site config...')
       const { data, error } = await supabase
@@ -60,7 +56,12 @@ export function SiteConfigForm() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [supabase])
+
+  useEffect(() => {
+    loadConfig()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleChange = (key: string, value: string) => {
     console.log('handleChange called:', key, value)
@@ -128,7 +129,7 @@ export function SiteConfigForm() {
     }
   }
 
-  const getConfigValue = (key: string) => {
+  const _getConfigValue = (key: string) => {
     return config.find((item) => item.key === key)?.value || ''
   }
 
