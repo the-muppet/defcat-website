@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useMemo, useRef, useEffect } from 'react'
-import { Search, Loader2, ChevronDown } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { FeaturedVideo } from '@/components/home/FeaturedVideo'
-import { SocialMediaLinks } from '@/components/home/SocialMediaLinks'
-import { RotatingAds } from '@/components/home/RotatingAds'
+import { ChevronDown, Loader2, Search } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { DeckCard } from '@/components/decks/DeckCard'
+import { FeaturedVideo } from '@/components/home/FeaturedVideo'
+import { RotatingAds } from '@/components/home/RotatingAds'
+import { SocialMediaLinks } from '@/components/home/SocialMediaLinks'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import { useDecks } from '@/lib/hooks/useDecks'
 import { createClient } from '@/lib/supabase/client'
 
@@ -169,7 +169,7 @@ export default function ExampleHomePage() {
                     className={`transition-all duration-300 rounded-full p-2 ${
                       selectedColors.includes(symbol)
                         ? 'scale-100 opacity-100 ring-2 bg-accent-tinted'
-                        : 'scale-90 opacity-50 hover:opacity-80 hover:scale-95'
+                        : 'scale-90 hover:opacity-80 hover:scale-95'
                     }`}
                     style={
                       selectedColors.includes(symbol)

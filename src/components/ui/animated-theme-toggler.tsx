@@ -1,11 +1,11 @@
 /** biome-ignore-all lint/a11y/useButtonType: <explanation> */
 'use client'
 
-import { useState, useEffect } from 'react'
 import { Moon, Sun } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { useModeAnimation, ThemeAnimationType } from '@/hooks/useModeAnimation'
+import { useEffect, useState } from 'react'
+import { ThemeAnimationType, useModeAnimation } from '@/hooks/useModeAnimation'
 import { useManaColor } from '@/lib/contexts/ManaColorContext'
+import { cn } from '@/lib/utils'
 
 interface AnimatedThemeTogglerProps extends React.ComponentPropsWithoutRef<'button'> {
   duration?: number
@@ -26,7 +26,7 @@ export const AnimatedThemeToggler = ({
     duration,
     animationType,
     blurAmount,
-    manaSymbol: selectedMana
+    manaSymbol: selectedMana,
   })
 
   useEffect(() => {

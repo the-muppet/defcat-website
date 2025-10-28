@@ -1,10 +1,10 @@
 // components/auth/logout-button.tsx
 'use client'
 
-import { Button } from '@/components/ui/button'
 import { LogOut } from 'lucide-react'
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
 
 export function LogoutButton() {
   const [isLoading, setIsLoading] = useState(false)

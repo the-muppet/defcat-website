@@ -23,8 +23,8 @@
  */
 
 export {
+  getAllTiers,
+  getTierConfig,
   TierBadge,
   TierBadgeCompact,
-  getTierConfig,
-  getAllTiers,
 } from './TierBadge'

@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useEffect, useState } from 'react'
 import { deckCache } from '@/lib/cache/indexed-db'
+import { createClient } from '@/lib/supabase/client'
 import type { Deck } from '@/types/core'
 
 interface UseCachedDeckResult {

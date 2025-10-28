@@ -1,8 +1,8 @@
 // app/about/page.tsx
 'use client'
 
+import { Sparkles, Target, Trophy, Users } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Sparkles, Target, Users, Trophy } from 'lucide-react'
 
 export default function AboutPage() {
   return (

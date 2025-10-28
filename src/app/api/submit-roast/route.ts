@@ -1,7 +1,7 @@
 // app/api/submit-roast/route.ts
 
-import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { type NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import type { SubmissionResponse } from '@/types/form'
 

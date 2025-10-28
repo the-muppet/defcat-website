@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 // Force dynamic rendering - don't prerender at build time

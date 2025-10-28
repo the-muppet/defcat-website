@@ -65,10 +65,10 @@ export function TypeDistribution({ deckCards }: TypeDistributionProps) {
               <div className="flex-1 relative">
                 <div className="bg-background/40 backdrop-blur-sm rounded-lg h-10 overflow-hidden border border-border/50 shadow-inner">
                   <div
-                    className={`bg-gradient-to-r ${typeColors[type]|| typeColors['Other']} h-full transition-all duration-500 backdrop-blur-sm`}
+                    className={`bg-gradient-to-r ${typeColors[type] || typeColors['Other']} h-full transition-all duration-500 backdrop-blur-sm`}
                     style={{
                       width: `${Math.max(barPercentage, 8)}%`,
-                      opacity: 0.9
+                      opacity: 0.9,
                     }}
                   >
                     <div className="absolute inset-0 flex items-center justify-between px-4 pointer-events-none">

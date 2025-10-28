@@ -1,8 +1,8 @@
+import { Users } from 'lucide-react'
+import { DeveloperTools } from '@/components/admin/DeveloperTools'
+import { UserRoleManager } from '@/components/admin/UserRoleManager'
 import { requireAdmin } from '@/lib/auth/require-admin'
 import { createClient } from '@/lib/supabase/server'
-import { UserRoleManager } from '@/components/admin/UserRoleManager'
-import { DeveloperTools } from '@/components/admin/DeveloperTools'
-import { Users } from 'lucide-react'
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'

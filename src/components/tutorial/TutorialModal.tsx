@@ -1,6 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { PlayCircle, XCircle } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -8,9 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
-import { PlayCircle, XCircle } from 'lucide-react'
 
 interface TutorialModalProps {
   isOpen: boolean

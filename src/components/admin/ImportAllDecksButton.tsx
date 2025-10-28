@@ -1,10 +1,10 @@
 'use client'
 
+import { Download, Loader2 } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Download, Loader2 } from 'lucide-react'
-import { toast } from 'sonner'
 
 export function ImportAllDecksButton() {
   const [importing, setImporting] = useState(false)

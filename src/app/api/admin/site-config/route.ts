@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { type NextRequest, NextResponse } from 'next/server'
 
 // Force dynamic rendering to avoid build-time errors
 export const dynamic = 'force-dynamic'

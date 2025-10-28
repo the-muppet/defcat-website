@@ -1,13 +1,14 @@
 // components/deck/DeckCard.tsx
 'use client'
 
-import { memo } from 'react'
-import Link from 'next/link'
-import type { Database } from '@/types/supabase'
-import { ManaSymbols } from '@/components/decks/ManaSymbols'
-import { CommanderImage } from '@/components/decks/Commander'
 import { ExternalLink, Eye, Heart } from 'lucide-react'
+import Link from 'next/link'
+import { memo } from 'react'
+import { CommanderImage } from '@/components/decks/Commander'
+import { ManaSymbols } from '@/components/decks/ManaSymbols'
+import { GlowingEffect } from '@/components/ui/glowEffect'
 import { cn } from '@/lib/utils'
+import type { Database } from '@/types/supabase'
 
 type Deck = Database['public']['Tables']['decks']['Row']
 

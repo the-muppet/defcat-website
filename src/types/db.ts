@@ -1,16 +1,10 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
+    PostgrestVersion: '13.0.5'
   }
   graphql_public: {
     Tables: {
@@ -171,7 +165,7 @@ export type Database = {
           patreon_username: string
           status: string | null
           submission_month: string | null
-          submission_type: Database["public"]["Enums"]["submission_type"] | null
+          submission_type: Database['public']['Enums']['submission_type'] | null
           theme: string | null
           updated_at: string | null
           user_id: string | null
@@ -196,9 +190,7 @@ export type Database = {
           patreon_username: string
           status?: string | null
           submission_month?: string | null
-          submission_type?:
-            | Database["public"]["Enums"]["submission_type"]
-            | null
+          submission_type?: Database['public']['Enums']['submission_type'] | null
           theme?: string | null
           updated_at?: string | null
           user_id?: string | null
@@ -223,9 +215,7 @@ export type Database = {
           patreon_username?: string
           status?: string | null
           submission_month?: string | null
-          submission_type?:
-            | Database["public"]["Enums"]["submission_type"]
-            | null
+          submission_type?: Database['public']['Enums']['submission_type'] | null
           theme?: string | null
           updated_at?: string | null
           user_id?: string | null
@@ -265,18 +255,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "decklist_cards_card_id_fkey"
-            columns: ["card_id"]
+            foreignKeyName: 'decklist_cards_card_id_fkey'
+            columns: ['card_id']
             isOneToOne: false
-            referencedRelation: "cards"
-            referencedColumns: ["id"]
+            referencedRelation: 'cards'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "decklist_cards_moxfield_deck_id_fkey"
-            columns: ["moxfield_deck_id"]
+            foreignKeyName: 'decklist_cards_moxfield_deck_id_fkey'
+            columns: ['moxfield_deck_id']
             isOneToOne: false
-            referencedRelation: "moxfield_decks"
-            referencedColumns: ["moxfield_id"]
+            referencedRelation: 'moxfield_decks'
+            referencedColumns: ['moxfield_id']
           },
         ]
       }
@@ -401,7 +391,7 @@ export type Database = {
           id: string
           moxfield_username: string | null
           patreon_id: string | null
-          patreon_tier: Database["public"]["Enums"]["patreon_tier"] | null
+          patreon_tier: Database['public']['Enums']['patreon_tier'] | null
           role: string | null
           updated_at: string | null
         }
@@ -411,7 +401,7 @@ export type Database = {
           id: string
           moxfield_username?: string | null
           patreon_id?: string | null
-          patreon_tier?: Database["public"]["Enums"]["patreon_tier"] | null
+          patreon_tier?: Database['public']['Enums']['patreon_tier'] | null
           role?: string | null
           updated_at?: string | null
         }
@@ -421,7 +411,7 @@ export type Database = {
           id?: string
           moxfield_username?: string | null
           patreon_id?: string | null
-          patreon_tier?: Database["public"]["Enums"]["patreon_tier"] | null
+          patreon_tier?: Database['public']['Enums']['patreon_tier'] | null
           role?: string | null
           updated_at?: string | null
         }
@@ -557,17 +547,17 @@ export type Database = {
         Row: {
           created_at: string | null
           id: number
-          role: Database["public"]["Enums"]["user_role"] | null
+          role: Database['public']['Enums']['user_role'] | null
         }
         Insert: {
           created_at?: string | null
           id?: number
-          role?: Database["public"]["Enums"]["user_role"] | null
+          role?: Database['public']['Enums']['user_role'] | null
         }
         Update: {
           created_at?: string | null
           id?: number
-          role?: Database["public"]["Enums"]["user_role"] | null
+          role?: Database['public']['Enums']['user_role'] | null
         }
         Relationships: []
       }
@@ -592,7 +582,7 @@ export type Database = {
       user_submission_status: {
         Row: {
           max_submissions: number | null
-          patreon_tier: Database["public"]["Enums"]["patreon_tier"] | null
+          patreon_tier: Database['public']['Enums']['patreon_tier'] | null
           remaining_submissions: number | null
           used_submissions: number | null
           user_id: string | null
@@ -623,31 +613,25 @@ export type Database = {
       refund_credit: {
         Args: {
           p_submission_month: string
-          p_submission_type: Database["public"]["Enums"]["submission_type"]
+          p_submission_type: Database['public']['Enums']['submission_type']
           p_user_id: string
         }
         Returns: boolean
       }
       show_limit: { Args: never; Returns: number }
-      show_trgm: { Args: { "": string }; Returns: string[] }
+      show_trgm: { Args: { '': string }; Returns: string[] }
       use_credit: {
         Args: {
-          p_submission_type: Database["public"]["Enums"]["submission_type"]
+          p_submission_type: Database['public']['Enums']['submission_type']
           p_user_id: string
         }
         Returns: boolean
       }
     }
     Enums: {
-      patreon_tier:
-        | "Citizen"
-        | "Knight"
-        | "Emissary"
-        | "Duke"
-        | "Wizard"
-        | "ArchMage"
-      submission_type: "deck" | "roast"
-      user_role: "user" | "member" | "moderator" | "administrator" | "developer"
+      patreon_tier: 'Citizen' | 'Knight' | 'Emissary' | 'Duke' | 'Wizard' | 'ArchMage'
+      submission_type: 'deck' | 'roast'
+      user_role: 'user' | 'member' | 'moderator' | 'administrator' | 'developer'
     }
     CompositeTypes: {
       [_ in never]: never
@@ -655,33 +639,31 @@ export type Database = {
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -690,23 +672,23 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
+    | keyof DefaultSchema['Tables']
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -715,23 +697,23 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
+    | keyof DefaultSchema['Tables']
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -740,36 +722,36 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
+    | keyof DefaultSchema['Enums']
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
+    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
+    | keyof DefaultSchema['CompositeTypes']
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
+    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
@@ -778,16 +760,9 @@ export const Constants = {
   },
   public: {
     Enums: {
-      patreon_tier: [
-        "Citizen",
-        "Knight",
-        "Emissary",
-        "Duke",
-        "Wizard",
-        "ArchMage",
-      ],
-      submission_type: ["deck", "roast"],
-      user_role: ["user", "member", "moderator", "administrator", "developer"],
+      patreon_tier: ['Citizen', 'Knight', 'Emissary', 'Duke', 'Wizard', 'ArchMage'],
+      submission_type: ['deck', 'roast'],
+      user_role: ['user', 'member', 'moderator', 'administrator', 'developer'],
     },
   },
 } as const

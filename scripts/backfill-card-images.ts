@@ -7,8 +7,8 @@
 
 import { createClient } from '@supabase/supabase-js'
 import * as dotenv from 'dotenv'
-import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 dotenv.config({ path: join(__dirname, '..', '.env.local') })
@@ -88,7 +88,9 @@ async function main() {
   console.log(`⏱️  Delay between batches: ${DELAY_BETWEEN_BATCHES_MS}ms\n`)
 
   const estimatedBatches = Math.ceil(initialCount / BATCH_SIZE)
-  const estimatedTimeMinutes = Math.ceil((estimatedBatches * (BATCH_SIZE * 100 + DELAY_BETWEEN_BATCHES_MS)) / 60000)
+  const estimatedTimeMinutes = Math.ceil(
+    (estimatedBatches * (BATCH_SIZE * 100 + DELAY_BETWEEN_BATCHES_MS)) / 60000
+  )
 
   console.log(`⏳ Estimated batches: ${estimatedBatches}`)
   console.log(`⏳ Estimated time: ~${estimatedTimeMinutes} minutes\n`)
@@ -165,7 +167,9 @@ async function main() {
         break
       }
 
-      console.log(`   Continuing to next batch... (${consecutiveFailures}/${MAX_CONSECUTIVE_FAILURES} consecutive failures)\n`)
+      console.log(
+        `   Continuing to next batch... (${consecutiveFailures}/${MAX_CONSECUTIVE_FAILURES} consecutive failures)\n`
+      )
 
       // Wait before retrying
       await new Promise((resolve) => setTimeout(resolve, DELAY_BETWEEN_BATCHES_MS))
@@ -195,8 +199,7 @@ async function main() {
   }
 }
 
-main()
-  .catch((error) => {
-    console.error('💥 Fatal error:', error)
-    process.exit(1)
-  })
+main().catch((error) => {
+  console.error('💥 Fatal error:', error)
+  process.exit(1)
+})

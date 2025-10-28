@@ -4,7 +4,7 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from '
 import { ColorIdentity } from '@/types/colors'
 
 // alias for the ManaSymbol enum
-type ManaSymbol = typeof ColorIdentity.Symbol[keyof typeof ColorIdentity.Symbol]
+type ManaSymbol = (typeof ColorIdentity.Symbol)[keyof typeof ColorIdentity.Symbol]
 
 interface ManaColorContextType {
   selectedMana: ManaSymbol

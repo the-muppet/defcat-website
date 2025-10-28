@@ -1,17 +1,18 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { Loader2, Save, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Loader2, Save, X } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 
 interface ProfileEditFormProps {
   userId: string
   currentEmail: string
   currentMoxfieldUsername: string | null
+  joinedDate?: string
   onSuccess?: () => void
   onCancel?: () => void
 }
@@ -20,6 +21,7 @@ export function ProfileEditForm({
   userId,
   currentEmail,
   currentMoxfieldUsername,
+  joinedDate,
   onSuccess,
   onCancel,
 }: ProfileEditFormProps) {
@@ -75,8 +77,19 @@ export function ProfileEditForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="email">Email Address</Label>
+      {/* Joined Date (Read-only) */}
+      {joinedDate && (
+        <div className="grid grid-cols-[140px_1fr] items-center gap-4">
+          <Label className="text-sm text-muted-foreground text-right">Joined</Label>
+          <span className="text-sm">{joinedDate}</span>
+        </div>
+      )}
+
+      {/* Email Address */}
+      <div className="grid grid-cols-[140px_1fr] items-center gap-4">
+        <Label htmlFor="email" className="text-sm text-muted-foreground text-right">
+          Email Address
+        </Label>
         <Input
           id="email"
           type="email"
@@ -87,19 +100,25 @@ export function ProfileEditForm({
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="moxfield_username">Moxfield Username</Label>
-        <Input
-          id="moxfield_username"
-          type="text"
-          value={moxfieldUsername}
-          onChange={(e) => setMoxfieldUsername(e.target.value)}
-          className="bg-accent-tinted border-tinted"
-          placeholder="Enter your Moxfield username"
-        />
-        <p className="text-xs text-muted-foreground">
-          Used to link your Moxfield decks to your profile
-        </p>
+      {/* Moxfield Username */}
+      <div className="grid grid-cols-[140px_1fr] items-start gap-4">
+        <Label
+          htmlFor="moxfield_username"
+          className="text-sm text-muted-foreground text-right pt-2"
+        >
+          Moxfield Username
+        </Label>
+        <div className="space-y-1">
+          <Input
+            id="moxfield_username"
+            type="text"
+            value={moxfieldUsername}
+            onChange={(e) => setMoxfieldUsername(e.target.value)}
+            className="bg-accent-tinted border-tinted"
+            placeholder="Your Moxfield username"
+          />
+          <p className="text-xs text-muted-foreground">Links your Moxfield decks to your profile</p>
+        </div>
       </div>
 
       {error && (
@@ -112,39 +131,39 @@ export function ProfileEditForm({
         </div>
       )}
 
-      <div className="flex gap-2">
-        <Button
-          type="submit"
-          disabled={!hasChanges || isLoading}
-          className={cn(
-            'flex-1',
-            !hasChanges && 'opacity-50 cursor-not-allowed'
-          )}
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              <Save className="h-4 w-4 mr-2" />
-              Save Changes
-            </>
-          )}
-        </Button>
-        {onCancel && (
+      <div className="grid grid-cols-[140px_1fr] gap-4">
+        <div />
+        <div className="flex gap-2">
           <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            disabled={isLoading}
-            className="border-tinted"
+            type="submit"
+            disabled={!hasChanges || isLoading}
+            className={cn('flex-1', !hasChanges && 'opacity-50 cursor-not-allowed')}
           >
-            <X className="h-4 w-4 mr-2" />
-            Cancel
+            {isLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4 mr-2" />
+                Save Changes
+              </>
+            )}
           </Button>
-        )}
+          {onCancel && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              disabled={isLoading}
+              className="border-tinted"
+            >
+              <X className="h-4 w-4 mr-2" />
+              Cancel
+            </Button>
+          )}
+        </div>
       </div>
     </form>
   )

@@ -1,9 +1,9 @@
 /** biome-ignore-all lint/a11y/noSvgWithoutTitle: <explanation> */
 'use client'
 
-import { ColorIdentity } from '@/types/colors'
 import { useManaColor } from '@/lib/contexts/ManaColorContext'
 import { cn } from '@/lib/utils'
+import { ColorIdentity } from '@/types/colors'
 
 // Preserve the intended order (WUBRG + Colorless)
 const MANA_SYMBOLS = [
@@ -17,7 +17,7 @@ const MANA_SYMBOLS = [
 
 export function ManaSymbolSelector() {
   const { selectedMana, setSelectedMana } = useManaColor()
-  
+
   // Cache the selected colorInfo to avoid multiple getColorInfo calls
   const selectedColorInfo = ColorIdentity.getColorInfo(selectedMana)
 
@@ -25,7 +25,7 @@ export function ManaSymbolSelector() {
     <div className="space-y-2">
       <p className="text-xs text-muted-foreground">Choose your mana color</p>
 
-      <div className="flex gap-1.5 flex-wrap">
+      <div className="flex gap-5 flex-wrap">
         {MANA_SYMBOLS.map((symbol) => {
           const isSelected = selectedMana === symbol
           const colorInfo = ColorIdentity.getColorInfo(symbol)
@@ -36,13 +36,11 @@ export function ManaSymbolSelector() {
               type="button"
               onClick={() => setSelectedMana(symbol)}
               className={cn(
-                'relative w-10 h-10 rounded-lg border-2 transition-all duration-200',
+                'relative w-15 h-15 rounded-lg border-2 transition-all duration-200',
                 'hover:scale-105 active:scale-95',
-                'flex items-center justify-center p-1',
+                'flex items-center justify-center p-2',
                 'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
-                isSelected
-                  ? 'scale-105 shadow-sm'
-                  : 'border-tinted/50 hover:shadow-sm'
+                isSelected ? 'scale-105 shadow-sm' : 'border-tinted/50 hover:shadow-sm'
               )}
               style={{
                 color: isSelected ? colorInfo.color : 'var(--muted-foreground)',

@@ -2,7 +2,7 @@
  * Tests for Patreon API client
  */
 
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { determineTier } from '../patreon'
 
 describe('Patreon API', () => {

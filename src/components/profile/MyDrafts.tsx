@@ -1,11 +1,16 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { FileText, Trash2, Edit, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Edit, FileText, Loader2, Trash2 } from 'lucide-react'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
+import { Button } from '@/components/ui/button'
+import { createClient } from '@/lib/supabase/client'
 
 interface DraftSubmission {
   id: string
@@ -62,92 +67,85 @@ export function MyDrafts() {
 
   if (loading) {
     return (
-      <Card className="glass-panel">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            My Drafts
-          </CardTitle>
-          <CardDescription>Your saved deck submission drafts</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
+  if (drafts.length === 0) {
+    return (
+      <div className="text-center py-8 text-muted-foreground">
+        <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
+        <p>No draft submissions</p>
+        <p className="text-sm mt-1">Start a new submission to save drafts</p>
+      </div>
     )
   }
 
   return (
-    <Card className="glass-panel">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <FileText className="h-5 w-5" />
-          My Drafts
-        </CardTitle>
-        <CardDescription>
-          Your saved deck submission drafts ({drafts.length}/5)
-          {drafts.length >= 5 && <span className="text-yellow-500 ml-2">• Limit reached</span>}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {drafts.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
-            <p>No draft submissions</p>
-            <p className="text-sm mt-1">Start a new submission to save drafts</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {drafts.map((draft) => (
-              <div
-                key={draft.id}
-                className="flex items-center justify-between p-4 rounded-lg bg-accent-tinted border border-tinted hover:bg-accent-tinted/80 transition-all"
-              >
-                <div className="flex-1">
-                  <div className="font-medium">
-                    {draft.mystery_deck ? 'Mystery Deck' : draft.commander || 'Custom Build'}
+    <Accordion type="single" collapsible className="w-full">
+      {drafts.map((draft) => (
+        <AccordionItem key={draft.id} value={`draft-${draft.id}`}>
+          <AccordionTrigger className="hover:no-underline">
+            <div className="flex items-center justify-between w-full pr-4">
+              <span className="font-medium">
+                {draft.mystery_deck ? 'Mystery Deck' : draft.commander || 'Custom Build'}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {new Date(draft.created_at).toLocaleDateString()}
+              </span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="space-y-3 pt-2">
+              <div className="text-sm space-y-1">
+                {draft.color_preference && (
+                  <div>
+                    <span className="text-muted-foreground">Colors:</span>
+                    <span className="ml-2 font-medium">{draft.color_preference}</span>
                   </div>
-                  <div className="text-sm text-muted-foreground mt-1">
-                    {draft.color_preference && `Colors: ${draft.color_preference}`}
-                    {draft.bracket && ` • ${draft.bracket}`}
+                )}
+                {draft.bracket && (
+                  <div>
+                    <span className="text-muted-foreground">Bracket:</span>
+                    <span className="ml-2 font-medium">{draft.bracket}</span>
                   </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    Saved {new Date(draft.created_at).toLocaleDateString()}
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    asChild
-                    size="sm"
-                    variant="outline"
-                    className="border-tinted hover:bg-accent-tinted"
-                  >
-                    <Link href={`/decks/submission?draft=${draft.id}`}>
-                      <Edit className="h-4 w-4 mr-1" />
-                      Edit
-                    </Link>
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="border-red-500/20 hover:bg-red-500/10 text-red-500"
-                    onClick={() => deleteDraft(draft.id)}
-                    disabled={deleting === draft.id}
-                  >
-                    {deleting === draft.id ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Trash2 className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
+                )}
               </div>
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+              <div className="flex gap-2">
+                <Button
+                  asChild
+                  size="sm"
+                  variant="outline"
+                  className="border-tinted hover:bg-accent-tinted"
+                >
+                  <Link href={`/decks/submission?draft=${draft.id}`}>
+                    <Edit className="h-4 w-4 mr-1" />
+                    Edit Draft
+                  </Link>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-red-500/20 hover:bg-red-500/10 text-red-500"
+                  onClick={() => deleteDraft(draft.id)}
+                  disabled={deleting === draft.id}
+                >
+                  {deleting === draft.id ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Delete
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      ))}
+    </Accordion>
   )
 }

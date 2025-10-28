@@ -11,16 +11,12 @@ import { requireValidEnv } from '../src/lib/env'
 const env = requireValidEnv()
 
 // Create admin client with service role key
-const supabase = createClient(
-  env.NEXT_PUBLIC_SUPABASE_URL,
-  env.SUPABASE_SERVICE_ROLE_KEY,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  }
-)
+const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+  },
+})
 
 async function verifyRLSPolicies() {
   console.log('🔍 Verifying RLS Policies...\n')
@@ -37,16 +33,10 @@ async function verifyRLSPolicies() {
 
     // Test deck_cards query with anon client
     console.log('Testing deck_cards query with anon key...')
-    const anonClient = createClient(
-      env.NEXT_PUBLIC_SUPABASE_URL,
-      env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    )
+    const anonClient = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
     // First, get a sample deck_id
-    const { data: decks, error: decksError } = await anonClient
-      .from('decks')
-      .select('id')
-      .limit(1)
+    const { data: decks, error: decksError } = await anonClient.from('decks').select('id').limit(1)
 
     if (decksError) {
       console.error('❌ Error fetching decks:', decksError)
@@ -89,10 +79,7 @@ async function verifyRLSPolicies() {
     console.log(`Found ${deckCards?.length || 0} cards\n`)
 
     // Test cards table
-    const { data: cards, error: cardsError } = await anonClient
-      .from('cards')
-      .select('*')
-      .limit(1)
+    const { data: cards, error: cardsError } = await anonClient.from('cards').select('*').limit(1)
 
     if (cardsError) {
       console.error('❌ Error fetching cards:', cardsError)
@@ -103,7 +90,6 @@ async function verifyRLSPolicies() {
     console.log('✅ cards query successful!\n')
 
     console.log('✅ All RLS policies are working correctly!')
-
   } catch (error) {
     console.error('❌ Unexpected error:', error)
     throw error
@@ -119,22 +105,22 @@ async function fixRLSPolicies() {
       policy: `
         DROP POLICY IF EXISTS "Public read access for cards" ON cards;
         CREATE POLICY "Public read access for cards" ON cards FOR SELECT USING (true);
-      `
+      `,
     },
     {
       table: 'decks',
       policy: `
         DROP POLICY IF EXISTS "Public read access for decks" ON decks;
         CREATE POLICY "Public read access for decks" ON decks FOR SELECT USING (true);
-      `
+      `,
     },
     {
       table: 'deck_cards',
       policy: `
         DROP POLICY IF EXISTS "Public read access for deck_cards" ON deck_cards;
         CREATE POLICY "Public read access for deck_cards" ON deck_cards FOR SELECT USING (true);
-      `
-    }
+      `,
+    },
   ]
 
   for (const { table, policy } of policies) {

@@ -6,8 +6,8 @@
 
 import { createClient } from '@supabase/supabase-js'
 import * as dotenv from 'dotenv'
-import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 dotenv.config({ path: join(__dirname, '..', '.env.local') })
@@ -23,10 +23,7 @@ async function main() {
   const tables = ['decks', 'cards', 'deck_cards']
 
   for (const table of tables) {
-    const { data, error } = await supabase
-      .from(table)
-      .select('*')
-      .limit(1)
+    const { data, error } = await supabase.from(table).select('*').limit(1)
 
     if (error) {
       console.log(`❌ "${table}": ${error.message}`)
@@ -53,7 +50,7 @@ async function main() {
 
     if (error) {
       console.log(`❌ Relationship query failed: ${error.message}`)
-      console.log('\n💡 This is the 404 error you\'re seeing in the browser!')
+      console.log("\n💡 This is the 404 error you're seeing in the browser!")
     } else {
       console.log(`✅ Relationship query works!`)
     }

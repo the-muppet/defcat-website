@@ -1,17 +1,17 @@
 // app/page.tsx
 'use client'
 
-import { useState, useEffect } from 'react'
-import { cn } from '@/lib/utils'
-import { TrendingUp, Sparkles, BarChart3, Crown, Award, Loader2, LogIn } from 'lucide-react'
+import { Award, BarChart3, Crown, Loader2, LogIn, Sparkles, TrendingUp } from 'lucide-react'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { DeckCard } from '@/components/decks/DeckCard'
 import { ManaSymbols } from '@/components/decks/ManaSymbols'
 import { LightRays } from '@/components/layout/LightRays'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { DeckCard } from '@/components/decks/DeckCard'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { NumberTicker } from '@/components/ui/number-ticker'
 import { useDeckStats, useLatestDeck } from '@/lib/api/stats'
-import Link from 'next/link'
+import { cn } from '@/lib/utils'
 
 export default function LandingPage() {
   const [currentStatIndex, setCurrentStatIndex] = useState(0)

@@ -1,6 +1,6 @@
 // hooks/useRoastEligibility.ts
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 interface RoastEligibilityStatus {
@@ -127,7 +127,8 @@ export function useRoastEligibility(): RoastEligibilityStatus {
             tier,
             roastCredits: 0,
             isLoading: false,
-            error: 'You have no roast credits remaining. Credits are granted monthly based on your Patreon tier.',
+            error:
+              'You have no roast credits remaining. Credits are granted monthly based on your Patreon tier.',
             isPrivileged: false,
           })
           return

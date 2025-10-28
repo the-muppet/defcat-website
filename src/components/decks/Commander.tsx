@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { fetchCardArt } from '@/lib/api/scryfall'
 import { Loader2 } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
+import { fetchCardArt } from '@/lib/api/scryfall'
+import { cn } from '@/lib/utils'
 
 interface CommanderImageProps {
   commanders: string[] // Array of commanders

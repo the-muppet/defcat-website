@@ -9,9 +9,9 @@
 
 import { createClient } from '@supabase/supabase-js'
 import * as dotenv from 'dotenv'
-import { fileURLToPath } from 'url'
-import { dirname, join } from 'path'
 import { readFileSync } from 'fs'
+import { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 dotenv.config({ path: join(__dirname, '..', '.env.local') })
@@ -34,8 +34,8 @@ async function main() {
   const imagesPath = join(__dirname, '..', 'images.txt')
   const imagesScryfallIds = readFileSync(imagesPath, 'utf-8')
     .split('\n')
-    .map(id => id.trim())
-    .filter(id => id.length > 0)
+    .map((id) => id.trim())
+    .filter((id) => id.length > 0)
 
   console.log(`✅ Found ${imagesScryfallIds.length} actual images in storage\n`)
 
@@ -70,7 +70,7 @@ async function main() {
         cached_image_url: correctUrl(scryfallId),
         cache_attempts: 1,
         last_cache_attempt_at: new Date().toISOString(),
-        cache_error: null
+        cache_error: null,
       })
       .eq('scryfall_id', scryfallId)
 
@@ -93,10 +93,10 @@ async function main() {
       cached_image_url: null,
       cache_attempts: 0,
       last_cache_attempt_at: null,
-      cache_error: null
+      cache_error: null,
     })
     .not('cached_image_url', 'is', null)
-    .not('scryfall_id', 'in', `(${imagesScryfallIds.map(id => `'${id}'`).join(',')})`)
+    .not('scryfall_id', 'in', `(${imagesScryfallIds.map((id) => `'${id}'`).join(',')})`)
 
   if (clearError) {
     console.error('❌ Error clearing phantom entries:', clearError)
@@ -130,8 +130,7 @@ async function main() {
   }
 }
 
-main()
-  .catch((error) => {
-    console.error('💥 Fatal error:', error)
-    process.exit(1)
-  })
+main().catch((error) => {
+  console.error('💥 Fatal error:', error)
+  process.exit(1)
+})

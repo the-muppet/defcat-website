@@ -1,23 +1,24 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { ChevronDown, FileText, Library, Loader2, Package, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
-import { ManaSymbolSelector } from '@/components/settings/ManaSymbolSelector'
-import { NotificationBadgeToggle } from '@/components/settings/NotificationBadgeToggle'
-import { TierBadge } from '@/components/tier/TierBadge'
+import { useEffect, useState } from 'react'
 import { MyDrafts } from '@/components/profile/MyDrafts'
+import { MySubmissions } from '@/components/profile/MySubmissions'
 import { ProfileEditForm } from '@/components/profile/ProfileEditForm'
+import { TierCreditsCard } from '@/components/profile/TierCreditsCard'
 import { UserDecks } from '@/components/profile/UserDecks'
-import { UserIcon, Shield, Award, Palette, Loader2, Library } from 'lucide-react'
+import { ManaSymbolSelector } from '@/components/settings/ManaSymbolSelector'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { GlowingEffect } from '@/components/ui/glowEffect'
+import { Separator } from '@/components/ui/separator'
+import { createClient } from '@/lib/supabase/client'
 import type { Database } from '@/types/supabase'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
 
-export default function ProfilePage() {
+export default function ProfilePanel() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -43,7 +44,9 @@ export default function ProfilePage() {
 
     const { data: profileData } = await supabase
       .from('profiles')
-      .select('patreon_tier, role, created_at, moxfield_username, email')
+      .select(
+        'id, patreon_tier, role, created_at, moxfield_username, email, patreon_id, updated_at'
+      )
       .eq('id', authUser.id)
       .single()
 
@@ -61,8 +64,8 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     )
   }
@@ -72,217 +75,208 @@ export default function ProfilePage() {
   }
 
   const userTier = profile?.patreon_tier || 'Citizen'
-  const userRole = profile?.role || 'user'
   const joinedDate = profile?.created_at
     ? new Date(profile.created_at).toLocaleDateString()
     : 'Unknown'
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      <div className="container mx-auto px-4 sm:px-8 md:px-16 lg:px-24 py-8 max-w-5xl">
-        <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 [&>li]:min-w-0">
-        {/* Account & Profile - Full width */}
-        <li className="list-none md:col-span-2">
-          <div className="relative rounded-md border p-0.5">
+      <div className="mx-auto py-8 w-[90%] sm:w-[85%] md:w-[80%] lg:w-[75%] xl:w-[70%]">
+        <div className="flex flex-col gap-6">
+          {/* Top Row: Profile Settings & Mana Selector */}
+          <div className="relative rounded-2xl border">
             <GlowingEffect
               blur={0}
-              borderWidth={1}
-              spread={30}
+              borderWidth={3}
+              spread={80}
               glow={true}
               disabled={false}
-              proximity={24}
+              proximity={64}
               inactiveZone={0.01}
             />
             <Card className="glass-panel border-0 relative">
-              <CardHeader className="py-2 px-3">
-                <CardTitle className="flex items-center gap-1.5 text-sm">
-                  <UserIcon className="h-3.5 w-3.5" />
-                  Account & Profile
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="px-3 pb-2 space-y-4">
-                {/* Read-only account info */}
-                <div className="space-y-2 p-3 bg-accent/50 rounded-lg">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-muted-foreground">User ID</span>
-                    <span className="text-xs font-mono truncate max-w-[200px]">{user.id}</span>
+              <CardContent className="p-0 m-0">
+                <div className="flex items-center justify-between">
+                  {/* Profile Settings Title */}
+                  <div className="flex items-center gap-3">
+                    <User className="h-8 w-8" style={{ color: 'var(--mana-color)' }} />
+                    <div>
+                      <h1 className="text-2xl font-bold">Profile Settings</h1>
+                      <p className="text-sm text-muted-foreground">Manage your account</p>
+                    </div>
                   </div>
-                  <Separator className="my-1" />
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-muted-foreground">Joined</span>
-                    <span className="text-xs">{joinedDate}</span>
+
+                  {/* Mana Symbol Selector */}
+                  <div className="flex-shrink-0">
+                    <ManaSymbolSelector />
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+          </div>
 
-                {/* Editable fields */}
-                <ProfileEditForm
-                  userId={user.id}
-                  currentEmail={profile?.email || user.email}
-                  currentMoxfieldUsername={profile?.moxfield_username || null}
-                  onSuccess={() => {
-                    loadProfile(true)
-                  }}
+          {/* Main Content: 2 Columns - Full Height */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1">
+            {/* LEFT COLUMN */}
+            <div className="space-y-4 flex flex-col">
+              {/* Tier + Credits Card (15-20% height) */}
+              <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3">
+                <GlowingEffect
+                  blur={0}
+                  borderWidth={3}
+                  spread={80}
+                  glow={true}
+                  disabled={false}
+                  proximity={64}
+                  inactiveZone={0.01}
                 />
-                {refreshing && (
-                  <div className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                    Refreshing profile...
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </li>
+                <TierCreditsCard tier={userTier as any} />
+              </div>
 
-        {/* Appearance - Full width */}
-        <li className="list-none md:col-span-2">
-          <div className="relative rounded-md border p-0.5">
-            <GlowingEffect
-              blur={0}
-              borderWidth={1}
-              spread={30}
-              glow={true}
-              disabled={false}
-              proximity={24}
-              inactiveZone={0.01}
-            />
-            <Card className="glass-panel border-0 relative">
-              <CardHeader className="py-2 px-3">
-                <CardTitle className="flex items-center gap-1.5 text-sm">
-                  <Palette className="h-3.5 w-3.5" />
-                  Appearance
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="px-3 pb-2">
-                <ManaSymbolSelector />
-              </CardContent>
-            </Card>
-          </div>
-        </li>
-
-        {/* Patreon Tier */}
-        <li className="list-none md:col-span-2">
-          <div className="relative rounded-md border p-0.5">
-            <GlowingEffect
-              blur={0}
-              borderWidth={1}
-              spread={30}
-              glow={true}
-              disabled={false}
-              proximity={24}
-              inactiveZone={0.01}
-            />
-            <Card className="glass-panel border-0 relative h-full">
-              <CardHeader className="py-2 px-3">
-                <CardTitle className="flex items-center gap-1.5 text-sm">
-                  <Award className="h-3.5 w-3.5" />
-                  Tier
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="px-3 pb-2">
-                <TierBadge tier={userTier as any} showTooltip={true} />
-              </CardContent>
-            </Card>
-          </div>
-        </li>
-
-        {/* My Decks from Moxfield */}
-        <li className="list-none md:col-span-2">
-          <div className="relative rounded-md border p-0.5">
-            <GlowingEffect
-              blur={0}
-              borderWidth={1}
-              spread={30}
-              glow={true}
-              disabled={false}
-              proximity={24}
-              inactiveZone={0.01}
-            />
-            <Card className="glass-panel border-0 relative">
-              <CardHeader className="py-2 px-3">
-                <CardTitle className="flex items-center gap-1.5 text-sm">
-                  <Library className="h-3.5 w-3.5" />
-                  My Decks
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Your Moxfield decks
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="px-3 pb-2">
-                <UserDecks moxfieldUsername={profile?.moxfield_username || null} />
-              </CardContent>
-            </Card>
-          </div>
-        </li>
-
-        {/* My Drafts */}
-        <li className="list-none md:col-span-2">
-          <div className="relative rounded-md border p-0.5">
-            <GlowingEffect
-              blur={0}
-              borderWidth={1}
-              spread={30}
-              glow={true}
-              disabled={false}
-              proximity={24}
-              inactiveZone={0.01}
-            />
-            <MyDrafts />
-          </div>
-        </li>
-
-        {/* Role & Permissions - Conditional */}
-        {(userRole === 'admin' || userRole === 'moderator' || userRole === 'developer') && (
-          <li className="list-none md:col-span-2">
-            <div className="relative rounded-md border p-0.5">
-              <GlowingEffect
-                blur={0}
-                borderWidth={1}
-                spread={30}
-                glow={true}
-                disabled={false}
-                proximity={24}
-                inactiveZone={0.01}
-              />
-              <Card className="glass-panel border-0 relative">
-                <CardHeader className="py-2 px-3">
-                  <CardTitle className="flex items-center gap-1.5 text-sm">
-                    <Shield className="h-3.5 w-3.5" />
-                    Permissions
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-1.5 px-3 pb-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs capitalize font-medium">{userRole}</span>
-                    {userRole === 'developer' && (
-                      <span className="text-[10px] px-1 py-0.5 rounded bg-purple-500/20 text-purple-400">
-                        Full
-                      </span>
+              {/* Account & Profile Form */}
+              <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3 flex-1">
+                <GlowingEffect
+                  blur={0}
+                  borderWidth={3}
+                  spread={80}
+                  glow={true}
+                  disabled={false}
+                  proximity={64}
+                  inactiveZone={0.01}
+                />
+                <Card className="glass-panel border-0 relative">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <User className="h-5 w-5" />
+                      Account Information
+                    </CardTitle>
+                    <CardDescription>Update your profile details</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Editable fields */}
+                    <ProfileEditForm
+                      userId={user.id}
+                      currentEmail={profile?.email || user.email}
+                      currentMoxfieldUsername={profile?.moxfield_username || null}
+                      joinedDate={joinedDate}
+                      onSuccess={() => {
+                        loadProfile(true)
+                      }}
+                    />
+                    {refreshing && (
+                      <div className="text-sm text-muted-foreground flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Refreshing profile...
+                      </div>
                     )}
-                    {userRole === 'admin' && (
-                      <span className="text-[10px] px-1 py-0.5 rounded bg-blue-500/20 text-blue-400">
-                        Admin
-                      </span>
-                    )}
-                    {userRole === 'moderator' && (
-                      <span className="text-[10px] px-1 py-0.5 rounded bg-green-500/20 text-green-400">
-                        Mod
-                      </span>
-                    )}
-                  </div>
-
-                  {userRole === 'developer' && (
-                    <>
-                      <Separator className="my-1" />
-                      <NotificationBadgeToggle />
-                    </>
-                  )}
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          </li>
-        )}
-        </ul>
+
+            {/* RIGHT COLUMN */}
+            <div className="space-y-4 flex flex-col">
+              {/* My Decks */}
+              <Collapsible defaultOpen={true} className="flex-1 flex flex-col">
+                <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3 flex flex-col flex-1">
+                  <GlowingEffect
+                    blur={0}
+                    borderWidth={3}
+                    spread={80}
+                    glow={true}
+                    disabled={false}
+                    proximity={64}
+                    inactiveZone={0.01}
+                  />
+                  <Card className="glass-panel border-0 relative flex flex-col flex-1">
+                    <CollapsibleTrigger className="w-full">
+                      <CardHeader className="cursor-pointer hover:bg-accent/50 transition-colors">
+                        <CardTitle className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Library className="h-5 w-5" />
+                            My Decks
+                          </div>
+                          <ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-180" />
+                        </CardTitle>
+                      </CardHeader>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="flex-1 overflow-hidden">
+                      <CardContent className="h-full overflow-auto">
+                        <UserDecks moxfieldUsername={profile?.moxfield_username || null} />
+                      </CardContent>
+                    </CollapsibleContent>
+                  </Card>
+                </div>
+              </Collapsible>
+
+              {/* My Drafts */}
+              <Collapsible defaultOpen={true} className="flex-1 flex flex-col">
+                <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3 flex flex-col flex-1">
+                  <GlowingEffect
+                    blur={0}
+                    borderWidth={3}
+                    spread={80}
+                    glow={true}
+                    disabled={false}
+                    proximity={64}
+                    inactiveZone={0.01}
+                  />
+                  <Card className="glass-panel border-0 relative flex flex-col flex-1">
+                    <CollapsibleTrigger className="w-full">
+                      <CardHeader className="cursor-pointer hover:bg-accent/50 transition-colors">
+                        <CardTitle className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <FileText className="h-5 w-5" />
+                            My Drafts
+                          </div>
+                          <ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-180" />
+                        </CardTitle>
+                      </CardHeader>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="flex-1 overflow-hidden">
+                      <CardContent className="h-full overflow-auto">
+                        <MyDrafts />
+                      </CardContent>
+                    </CollapsibleContent>
+                  </Card>
+                </div>
+              </Collapsible>
+
+              {/* My Submissions */}
+              <Collapsible defaultOpen={true} className="flex-1 flex flex-col">
+                <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3 flex flex-col flex-1">
+                  <GlowingEffect
+                    blur={0}
+                    borderWidth={3}
+                    spread={80}
+                    glow={true}
+                    disabled={false}
+                    proximity={64}
+                    inactiveZone={0.01}
+                  />
+                  <Card className="glass-panel border-0 relative flex flex-col flex-1">
+                    <CollapsibleTrigger className="w-full">
+                      <CardHeader className="cursor-pointer hover:bg-accent/50 transition-colors">
+                        <CardTitle className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Package className="h-5 w-5" />
+                            My Submissions
+                          </div>
+                          <ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-180" />
+                        </CardTitle>
+                      </CardHeader>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="flex-1 overflow-hidden">
+                      <CardContent className="h-full overflow-auto">
+                        <MySubmissions />
+                      </CardContent>
+                    </CollapsibleContent>
+                  </Card>
+                </div>
+              </Collapsible>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

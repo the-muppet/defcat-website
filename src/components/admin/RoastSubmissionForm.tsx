@@ -1,19 +1,19 @@
-import React, { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import {
-  ChevronRight,
+  AlertCircle,
+  CheckCircle,
   ChevronLeft,
+  ChevronRight,
   Flame,
+  Hash,
+  Link as LinkIcon,
+  Loader2,
   MessageSquare,
   User,
-  Link as LinkIcon,
-  CheckCircle,
-  Loader2,
-  AlertCircle,
-  Hash,
 } from 'lucide-react'
+import React, { useState } from 'react'
 import { toast } from 'sonner'
 import { useRoastEligibility } from '@/lib/hooks/useRoastEligibility'
+import { createClient } from '@/lib/supabase/client'
 import '../../styles/form.css'
 
 const BRACKET_OPTIONS = [

@@ -6,8 +6,8 @@
 
 import { createClient } from '@supabase/supabase-js'
 import * as dotenv from 'dotenv'
-import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 dotenv.config({ path: join(__dirname, '..', '.env.local') })
@@ -33,7 +33,7 @@ async function main() {
   }
 
   console.log(`✅ Found ${decks?.length || 0} decks`)
-  decks?.forEach(deck => {
+  decks?.forEach((deck) => {
     console.log(`\n  📦 ${deck.name}`)
     console.log(`     ID: ${deck.id}`)
     console.log(`     Moxfield ID: ${deck.moxfield_id}`)
@@ -61,7 +61,7 @@ async function main() {
   } else {
     console.log(`✅ Found ${decklistCards?.length || 0} cards for "${firstDeck.name}"`)
     if (decklistCards && decklistCards.length > 0) {
-      decklistCards.forEach(card => {
+      decklistCards.forEach((card) => {
         console.log(`   - ${card.card_name} x${card.quantity} (${card.board})`)
       })
     } else {
@@ -80,7 +80,7 @@ async function main() {
     console.error('❌ Error:', moxfieldError.message)
   } else {
     console.log(`✅ Found ${moxfieldDecks?.length || 0} moxfield_decks entries`)
-    moxfieldDecks?.forEach(d => console.log(`   - ${d.name} (${d.moxfield_id})`))
+    moxfieldDecks?.forEach((d) => console.log(`   - ${d.name} (${d.moxfield_id})`))
   }
 
   // Test 4: Check if there's a mismatch
@@ -145,7 +145,7 @@ async function main() {
     } else {
       console.log(`   ✅ Query successful! Found ${cards?.length || 0} cards`)
       if (cards && cards.length > 0) {
-        cards.forEach(c => {
+        cards.forEach((c) => {
           console.log(`      - ${c.cards?.name || 'Unknown'} x${c.quantity}`)
         })
       }

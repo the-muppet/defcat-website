@@ -4,9 +4,9 @@
  * DELETE - Remove deck and associated data
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/auth/auth-guards'
 import { createClient } from '@/lib/supabase/server'
-import { requireAdmin } from '@/lib/auth-guards'
 
 interface RouteContext {
   params: {

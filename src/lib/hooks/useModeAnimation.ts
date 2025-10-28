@@ -55,7 +55,7 @@ interface ReactThemeSwitchAnimationHook {
   isDarkMode: boolean
 }
 
-type ManaSymbol = typeof ColorIdentity.Symbol[keyof typeof ColorIdentity.Symbol]
+type ManaSymbol = (typeof ColorIdentity.Symbol)[keyof typeof ColorIdentity.Symbol]
 
 export interface ReactThemeSwitchAnimationProps {
   duration?: number

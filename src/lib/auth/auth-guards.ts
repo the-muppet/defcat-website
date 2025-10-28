@@ -3,8 +3,8 @@
  * Server-side guards for protecting routes based on authentication and roles
  */
 
-import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
 import type { UserRole } from '@/types/core'
 
 /**

@@ -1,8 +1,8 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import RoastSubmissionForm from '@/components/admin/RoastSubmissionForm'
 import { Suspense } from 'react'
+import RoastSubmissionForm from '@/components/admin/RoastSubmissionForm'
 
 function RoastSubmissionContent() {
   const searchParams = useSearchParams()

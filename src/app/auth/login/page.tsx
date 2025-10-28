@@ -5,15 +5,15 @@
  */
 'use client'
 
-import { useState, useEffect } from 'react'
+import { AlertCircle, Mail, Sparkles } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { createClient } from '@/lib/supabase/client'
-import { Sparkles, Mail, AlertCircle } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { createClient } from '@/lib/supabase/client'
 
 // Force dynamic rendering - don't prerender at build time
 export const dynamic = 'force-dynamic'

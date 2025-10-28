@@ -3,11 +3,11 @@
  * Handles the OAuth callback from Patreon
  */
 
+import { cookies } from 'next/headers'
+import { NextResponse } from 'next/server'
+import { exchangeCodeForToken, fetchPatreonMembership } from '@/lib/api/patreon'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
-import { exchangeCodeForToken, fetchPatreonMembership } from '@/lib/api/patreon'
-import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)

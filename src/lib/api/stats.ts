@@ -3,8 +3,8 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
-import type { Database } from '@/types/supabase'
 import { ColorIdentity } from '@/types/colors'
+import type { Database } from '@/types/supabase'
 
 type Deck = Database['public']['Tables']['decks']['Row']
 

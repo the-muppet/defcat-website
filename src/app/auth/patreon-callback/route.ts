@@ -3,9 +3,9 @@
  * Handles Patreon OAuth and creates proper Supabase sessions
  */
 
-import { createAdminClient } from '@/lib/supabase/admin'
-import { exchangeCodeForToken, fetchPatreonMembership } from '@/lib/api/patreon'
 import { NextResponse } from 'next/server'
+import { exchangeCodeForToken, fetchPatreonMembership } from '@/lib/api/patreon'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
@@ -77,12 +77,15 @@ export async function GET(request: Request) {
       // User already exists, fetch them directly by email
       console.log('User already exists, fetching by email:', email)
 
-      const { data: existingUserData, error: getUserError } = await adminClient.auth.admin.getUserByEmail(email)
+      const { data: existingUserData, error: getUserError } =
+        await adminClient.auth.admin.getUserByEmail(email)
 
       if (getUserError || !existingUserData?.user) {
         console.error('Error fetching user by email:', getUserError)
         console.error('Create error was:', createError)
-        return NextResponse.redirect(`${origin}/auth/login?error=user_lookup_failed&details=${encodeURIComponent(getUserError?.message || 'User not found')}`)
+        return NextResponse.redirect(
+          `${origin}/auth/login?error=user_lookup_failed&details=${encodeURIComponent(getUserError?.message || 'User not found')}`
+        )
       }
 
       userId = existingUserData.user.id
@@ -121,7 +124,9 @@ export async function GET(request: Request) {
 
     if (profileError) {
       console.error('Profile update error:', profileError)
-      return NextResponse.redirect(`${origin}/auth/login?error=profile_update_failed&details=${encodeURIComponent(profileError.message)}`)
+      return NextResponse.redirect(
+        `${origin}/auth/login?error=profile_update_failed&details=${encodeURIComponent(profileError.message)}`
+      )
     }
 
     // Set a password for the user (they'll never need to know it)
@@ -157,6 +162,8 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error('OAuth callback error:', error)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    return NextResponse.redirect(`${origin}/auth/login?error=callback_failed&details=${encodeURIComponent(errorMessage)}`)
+    return NextResponse.redirect(
+      `${origin}/auth/login?error=callback_failed&details=${encodeURIComponent(errorMessage)}`
+    )
   }
 }

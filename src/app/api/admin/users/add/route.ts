@@ -1,8 +1,8 @@
-import { createAdminClient } from '@/lib/supabase/admin'
-import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { PasswordResetEmail } from '@/emails'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { createClient } from '@/lib/supabase/server'
 
 // Lazy-initialize Resend client
 function getResendClient() {

@@ -3,14 +3,14 @@
  * Edit individual deck metadata
  */
 
-import { requireAdmin } from '@/lib/auth-guards'
-import { createClient } from '@/lib/supabase/server'
-import { notFound } from 'next/navigation'
+import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { DeckEditForm } from '@/components/admin/DeckEditForm'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowLeft } from 'lucide-react'
-import { DeckEditForm } from '@/components/admin/DeckEditForm'
+import { requireAdmin } from '@/lib/auth/auth-guards'
+import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 

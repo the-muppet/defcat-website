@@ -3,7 +3,7 @@
  * Production-ready JSON logging with correlation IDs
  */
 
-import { trace, context } from '@opentelemetry/api'
+import { context, trace } from '@opentelemetry/api'
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error'
 

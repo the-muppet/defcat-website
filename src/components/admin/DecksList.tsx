@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Edit, ExternalLink, Search, Trash2 } from 'lucide-react'
 import Link from 'next/link'
-import { Edit, Trash2, ExternalLink, Search } from 'lucide-react'
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 
 interface Deck {
   id: string

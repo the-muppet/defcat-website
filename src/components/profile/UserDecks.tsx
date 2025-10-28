@@ -1,9 +1,14 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { ExternalLink, Loader2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
+import { createClient } from '@/lib/supabase/client'
 import type { Database } from '@/types/db'
 
 type MoxfieldDeck = Database['public']['Tables']['moxfield_decks']['Row']
@@ -99,15 +104,21 @@ export function UserDecks({ moxfieldUsername }: UserDecksProps) {
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
                     <span className="text-muted-foreground">Views:</span>
-                    <span className="ml-2 font-medium">{deck.view_count?.toLocaleString() || 0}</span>
+                    <span className="ml-2 font-medium">
+                      {deck.view_count?.toLocaleString() || 0}
+                    </span>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Likes:</span>
-                    <span className="ml-2 font-medium">{deck.like_count?.toLocaleString() || 0}</span>
+                    <span className="ml-2 font-medium">
+                      {deck.like_count?.toLocaleString() || 0}
+                    </span>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Comments:</span>
-                    <span className="ml-2 font-medium">{deck.comment_count?.toLocaleString() || 0}</span>
+                    <span className="ml-2 font-medium">
+                      {deck.comment_count?.toLocaleString() || 0}
+                    </span>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Mainboard:</span>

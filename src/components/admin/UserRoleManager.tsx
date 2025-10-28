@@ -1,8 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { AlertCircle, CheckCircle2, Search, Shield, UserPlus, Users, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -10,10 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
-import { Users, Shield, CheckCircle2, AlertCircle, Search, UserPlus, X } from 'lucide-react'
 import { PATREON_TIERS, type PatreonTier } from '@/types/core'
 
 interface User {

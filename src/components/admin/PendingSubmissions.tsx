@@ -1,10 +1,10 @@
 'use client'
 
+import { CheckCircle, ClipboardList, Clock, Loader2, XCircle } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { ClipboardList, Loader2, CheckCircle, XCircle, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { createClient } from '@/lib/supabase/client'
 import { ColorIdentity } from '@/types/colors'
 
 interface PendingSubmission {

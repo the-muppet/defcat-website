@@ -20,7 +20,13 @@ interface DeckCard {
   } | null
 }
 
-export function ColorDistribution({ cards, selectedType }: { cards: DeckCard[], selectedType?: string | null }) {
+export function ColorDistribution({
+  cards,
+  selectedType,
+}: {
+  cards: DeckCard[]
+  selectedType?: string | null
+}) {
   const [hoveredColor, setHoveredColor] = useState<string | null>(null)
   const [hoveredCombo, setHoveredCombo] = useState<string | null>(null)
 
@@ -68,13 +74,11 @@ export function ColorDistribution({ cards, selectedType }: { cards: DeckCard[], 
     return <div className="text-center py-8 text-muted-foreground">No color data available</div>
   }
 
-  const sortedColors = Object.entries(colorCounts).sort(([a], [b]) =>
-    ColorIdentity.ORDER.indexOf(a) - ColorIdentity.ORDER.indexOf(b)
+  const sortedColors = Object.entries(colorCounts).sort(
+    ([a], [b]) => ColorIdentity.ORDER.indexOf(a) - ColorIdentity.ORDER.indexOf(b)
   )
 
-  const sortedCombos = Object.entries(colorCombos).sort(([a], [b]) => 
-    ColorIdentity.compare(a, b)
-  )
+  const sortedCombos = Object.entries(colorCombos).sort(([a], [b]) => ColorIdentity.compare(a, b))
 
   return (
     <div className="space-y-4">
@@ -110,7 +114,9 @@ export function ColorDistribution({ cards, selectedType }: { cards: DeckCard[], 
                     <div className="absolute left-1/2 -translate-x-1/2 -top-14 bg-popover text-popover-foreground px-3 py-2 rounded-md text-sm font-medium shadow-lg border whitespace-nowrap z-10">
                       <div className="flex items-center gap-2">
                         <i className={colorInfo.className} />
-                        <span>: {count} ({percentage.toFixed(1)}%)</span>
+                        <span>
+                          : {count} ({percentage.toFixed(1)}%)
+                        </span>
                       </div>
                       <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-popover" />
                     </div>

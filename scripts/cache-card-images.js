@@ -7,8 +7,8 @@
 
 import { createClient } from '@supabase/supabase-js'
 import * as dotenv from 'dotenv'
-import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 dotenv.config({ path: join(__dirname, '..', '.env.local') })
@@ -141,8 +141,7 @@ async function main() {
   console.log(`   Already cached: ${skipped}`)
 }
 
-main()
-  .catch((error) => {
-    console.error('💥 Fatal error:', error)
-    process.exit(1)
-  })
+main().catch((error) => {
+  console.error('💥 Fatal error:', error)
+  process.exit(1)
+})

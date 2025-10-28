@@ -4,31 +4,32 @@
 /** biome-ignore-all lint/a11y/useButtonType: <explanation> */
 /** biome-ignore-all lint/a11y/useAriaPropsSupportedByRole: <explanation> */
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
-import React, { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
+
 import {
-  ChevronRight,
-  ChevronLeft,
-  Sparkles,
-  Palette,
-  Trophy,
-  Coffee,
-  CheckCircle,
-  Loader2,
   AlertCircle,
-  Swords,
-  Mail,
-  Hash,
-  DollarSign,
   Calendar,
-  MessageSquare,
-  User,
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight,
+  Coffee,
+  DollarSign,
+  Hash,
   Hourglass,
+  Loader2,
+  Mail,
+  MessageSquare,
+  Palette,
+  Sparkles,
+  Swords,
+  Trophy,
+  User,
 } from 'lucide-react'
-import { bracketOptions } from '@/types/core'
-import { ColorIdentity } from '@/types/colors'
-import { ManaSymbols } from '@/components/decks/ManaSymbols'
+import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { ManaSymbols } from '@/components/decks/ManaSymbols'
+import { createClient } from '@/lib/supabase/client'
+import { ColorIdentity } from '@/types/colors'
+import { bracketOptions } from '@/types/core'
 
 export default function PagedDeckForm() {
   const [currentStep, setCurrentStep] = useState(1)
@@ -600,7 +601,9 @@ export default function PagedDeckForm() {
                         aria-label={`${ColorIdentity.getColorInfo('C').name} mana`}
                       />
                     </div>
-                    <span className="text-xs text-center">{ColorIdentity.getColorInfo('C').name}</span>
+                    <span className="text-xs text-center">
+                      {ColorIdentity.getColorInfo('C').name}
+                    </span>
                   </label>
                   <label
                     className="cursor-pointer flex flex-col items-center gap-2"
@@ -639,7 +642,9 @@ export default function PagedDeckForm() {
                   onClick={() => setShowBackupColors(true)}
                   className="mt-4 flex items-center gap-2 text-sm text-[var(--mana-color)] hover:brightness-110 transition-all"
                 >
-                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[var(--mana-color)] text-white text-xs">+</span>
+                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[var(--mana-color)] text-white text-xs">
+                    +
+                  </span>
                   Add backup color preference
                 </button>
               )}
@@ -648,7 +653,9 @@ export default function PagedDeckForm() {
               {showBackupColors && (
                 <div className="mt-6 p-4 bg-accent-tinted/30 rounded-lg border border-tinted">
                   <div className="flex items-center justify-between mb-4">
-                    <label className="text-sm font-medium">Backup Color Preference (Optional)</label>
+                    <label className="text-sm font-medium">
+                      Backup Color Preference (Optional)
+                    </label>
                     <button
                       type="button"
                       onClick={() => {
@@ -708,7 +715,9 @@ export default function PagedDeckForm() {
                             aria-label={`${ColorIdentity.getColorInfo('C').name} mana`}
                           />
                         </div>
-                        <span className="text-xs text-center">{ColorIdentity.getColorInfo('C').name}</span>
+                        <span className="text-xs text-center">
+                          {ColorIdentity.getColorInfo('C').name}
+                        </span>
                       </label>
                       <label
                         className="cursor-pointer flex flex-col items-center gap-2"
@@ -1089,8 +1098,8 @@ export default function PagedDeckForm() {
           <div className="header-logo">
             <Swords style={{ width: 32, height: 32, color: 'white' }} />
           </div>
-          <h1 className="header-title">Custom Commander Deck Submission</h1>
-          <p className="header-subtitle">Premium deck building for $50+ tier patrons</p>
+          <h1 className="header-title">Deck Submission Form</h1>
+          <p className="header-subtitle">Customized Commander Creations</p>
           {userTier && submissionsRemaining !== null && (
             <div
               className="tier-info"

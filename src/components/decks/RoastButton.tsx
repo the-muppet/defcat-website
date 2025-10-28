@@ -2,14 +2,9 @@
 
 import { Flame, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { useRoastEligibility } from '@/lib/hooks/useRoastEligibility'
 import { Button } from '@/components/ui/button'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { useRoastEligibility } from '@/lib/hooks/useRoastEligibility'
 import { cn } from '@/lib/utils'
 
 interface RoastButtonProps {
@@ -44,9 +39,7 @@ export function RoastButton({ moxfieldUrl, variant = 'default', className }: Roa
       {variant === 'compact' && (
         <>
           <span className="ml-2">Roast</span>
-          {!isPrivileged && (
-            <span className="ml-1 text-xs opacity-70">({roastCredits})</span>
-          )}
+          {!isPrivileged && <span className="ml-1 text-xs opacity-70">({roastCredits})</span>}
         </>
       )}
     </>

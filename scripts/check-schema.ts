@@ -10,10 +10,7 @@ import { requireValidEnv } from '../src/lib/env.js'
 
 const env = requireValidEnv()
 
-const supabase = createClient(
-  env.NEXT_PUBLIC_SUPABASE_URL,
-  env.SUPABASE_SERVICE_ROLE_KEY
-)
+const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY)
 
 async function main() {
   console.log('🔍 Checking database schema...\n')
@@ -22,10 +19,7 @@ async function main() {
 
   for (const table of tables) {
     try {
-      const { data, error } = await supabase
-        .from(table)
-        .select('*')
-        .limit(0) // Just check if table exists
+      const { data, error } = await supabase.from(table).select('*').limit(0) // Just check if table exists
 
       if (error) {
         if (error.code === '42P01') {

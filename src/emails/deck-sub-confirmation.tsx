@@ -5,13 +5,13 @@ import {
   Container,
   Head,
   Heading,
+  Hr,
   Html,
   Img,
   Link,
   Preview,
   Section,
   Text,
-  Hr,
 } from '@react-email/components'
 
 interface DeckSubmissionEmailProps {

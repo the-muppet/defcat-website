@@ -10,20 +10,20 @@ export function useMoxfieldSync() {
   const sync = async (params: MoxfieldSyncParams) => {
     setIsLoading(true)
     setError(null)
-    
+
     try {
       const response = await fetch('/api/admin/moxfield-sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(params),
       })
-      
+
       const result = await response.json()
-      
+
       if (!response.ok) {
         throw new Error(result.error || `HTTP ${response.status}`)
       }
-      
+
       setData(result)
       return result
     } catch (err) {

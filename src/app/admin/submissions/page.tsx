@@ -1,7 +1,7 @@
 // app/admin/submissions/page.tsx
 
-import { requireAdmin } from '@/lib/auth-guards'
 import { PendingSubmissions } from '@/components/admin/PendingSubmissions'
+import { requireAdmin } from '@/lib/auth/auth-guards'
 
 // Force dynamic rendering - this page requires authentication
 export const dynamic = 'force-dynamic'

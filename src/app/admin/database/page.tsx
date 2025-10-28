@@ -1,6 +1,6 @@
-import { requireDeveloper } from '@/lib/auth/require-developer'
-import { DatabasePanel } from '@/components/admin/DatabasePanel'
 import { Database } from 'lucide-react'
+import { DatabasePanel } from '@/components/admin/DatabasePanel'
+import { requireDeveloper } from '@/lib/auth/require-developer'
 
 export const dynamic = 'force-dynamic'
 

@@ -1,8 +1,9 @@
 'use client'
 
-import * as React from 'react'
 import { useMediaQuery } from '@uidotdev/usehooks'
-import { createClient } from '@/lib/supabase/client'
+import { Loader2 } from 'lucide-react'
+import * as React from 'react'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -14,8 +15,7 @@ import {
 } from '@/components/ui/command'
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Badge } from '@/components/ui/badge'
-import { Loader2 } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
 type DeckItem = {
   deckId: string

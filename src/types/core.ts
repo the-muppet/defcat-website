@@ -1,4 +1,3 @@
-
 // Database Types
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
@@ -140,14 +139,9 @@ export const bracketOptions = [
   { value: 'bracket4', label: 'Bracket 4', description: 'High power' },
   { value: 'bracket5', label: 'Bracket 5', description: 'Fringe competitive' },
   { value: 'cedh', label: 'cEDH', description: 'Perfect tournament optimized deck' },
-  { value: 'wild', label: 'GO WILD', description: "I DON'T CARE GO FOR IT DEFCAT" }
+  { value: 'wild', label: 'GO WILD', description: "I DON'T CARE GO FOR IT DEFCAT" },
 ]
 
-export type ScryfallImageSize =
-    |'png'
-    |'art'
-    |'lg' 
-    |'md' 
-    |'sm' 
+export type ScryfallImageSize = 'png' | 'art' | 'lg' | 'md' | 'sm'
 
 export type cardFace = 'front' | 'back'

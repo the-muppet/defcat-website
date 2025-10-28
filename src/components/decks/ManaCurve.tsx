@@ -68,7 +68,7 @@ export function ManaCurve({ cards }: { cards: DeckCard[] }) {
                   style={{
                     height: `${heightPercentage}%`,
                     minHeight: count > 0 ? '4px' : '0',
-                    opacity: 0.9
+                    opacity: 0.9,
                   }}
                 >
                   {/* Count label on hover */}

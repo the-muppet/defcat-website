@@ -1,11 +1,11 @@
 // app/api/submit-deck/route.ts
 
-import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { type NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { DeckSubmissionEmail } from '@/emails'
-import type { DeckSubmissionFormData, SubmissionResponse } from '@/types/form'
 import { ColorIdentity } from '@/types/colors'
+import type { DeckSubmissionFormData, SubmissionResponse } from '@/types/form'
 
 // Force dynamic rendering to avoid build-time errors
 export const dynamic = 'force-dynamic'

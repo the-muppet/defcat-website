@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState, Suspense } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react'
 import { ShineBorder } from '@/components/ui/shine-border'
+import { createClient } from '@/lib/supabase/client'
 
 // Force dynamic rendering - don't prerender at build time
 export const dynamic = 'force-dynamic'

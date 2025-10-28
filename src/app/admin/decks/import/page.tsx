@@ -1,20 +1,20 @@
 // app/admin/moxfield-sync/page.tsx
 'use client'
 
-import { useMoxfieldSync } from '@/hooks/use-moxfield-sync'
+import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Loader2 } from 'lucide-react'
+import { useMoxfieldSync } from '@/hooks/use-moxfield-sync'
 
 export default function MoxfieldSyncPage() {
   const { sync, isLoading, error, data } = useMoxfieldSync()
-  
+
   const bookmarkId = 'xpGzQ' // or get from env/config
-  
+
   return (
     <div className="container mx-auto p-8 max-w-4xl">
       <h1 className="text-3xl font-bold mb-8">Moxfield Sync</h1>
-      
+
       <div className="grid gap-4 md:grid-cols-2">
         {/* Quick Sync - Metadata Only */}
         <Card>
@@ -22,7 +22,7 @@ export default function MoxfieldSyncPage() {
             <CardTitle>Quick Sync</CardTitle>
           </CardHeader>
           <CardContent>
-            <Button 
+            <Button
               onClick={() => sync({ bookmarkId, fetchCards: false })}
               disabled={isLoading}
               className="w-full"
@@ -39,7 +39,7 @@ export default function MoxfieldSyncPage() {
             <CardTitle>Test Sync</CardTitle>
           </CardHeader>
           <CardContent>
-            <Button 
+            <Button
               onClick={() => sync({ bookmarkId, fetchCards: true, maxDecks: 5 })}
               disabled={isLoading}
               className="w-full"
@@ -56,7 +56,7 @@ export default function MoxfieldSyncPage() {
             <CardTitle>Incremental Sync</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <Button 
+            <Button
               onClick={() => sync({ bookmarkId, fetchCards: true, maxDecks: 25 })}
               disabled={isLoading}
               variant="outline"
@@ -64,7 +64,7 @@ export default function MoxfieldSyncPage() {
             >
               25 Decks
             </Button>
-            <Button 
+            <Button
               onClick={() => sync({ bookmarkId, fetchCards: true, maxDecks: 50 })}
               disabled={isLoading}
               variant="outline"
@@ -72,7 +72,7 @@ export default function MoxfieldSyncPage() {
             >
               50 Decks
             </Button>
-            <Button 
+            <Button
               onClick={() => sync({ bookmarkId, fetchCards: true, maxDecks: 100 })}
               disabled={isLoading}
               variant="outline"
@@ -89,7 +89,7 @@ export default function MoxfieldSyncPage() {
             <CardTitle className="text-orange-700">Full Sync</CardTitle>
           </CardHeader>
           <CardContent>
-            <Button 
+            <Button
               onClick={() => sync({ bookmarkId, fetchCards: true })}
               disabled={isLoading}
               variant="destructive"

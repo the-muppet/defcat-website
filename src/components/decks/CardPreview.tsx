@@ -16,8 +16,8 @@ function getScryfallImageUrl(
   size: ScryfallImageSize = 'png',
   side: cardFace = 'front'
 ): string {
-  const imgExt = size !== 'png' ? 'jpg' : 'png';
-  return `https://cards.scryfall.io/${size}/${side}/${scryfallId[0]}/${scryfallId[1]}/${scryfallId}.${imgExt}`;
+  const imgExt = size !== 'png' ? 'jpg' : 'png'
+  return `https://cards.scryfall.io/${size}/${side}/${scryfallId[0]}/${scryfallId[1]}/${scryfallId}.${imgExt}`
 }
 
 /**
@@ -65,12 +65,8 @@ export function CardPreview({ card, quantity }: { card: DeckCard['cards']; quant
       {/* Card Image Preview on Hover */}
       {isHovered && imageUrl && (
         <div className="fixed left-2 top-1/2 -translate-y-1/2 pointer-events-none z-[9999]">
-          <div className="bg-card border-2 border-primary rounded-xl overflow-hidden shadow-2xl">
-            <img
-              src={imageUrl}
-              alt={card?.name}
-              className=""
-            />
+          <div className="bg-card border-2 border-primary rounded-xl overflow-hidden shadow-2xl max-w-[250px]">
+            <img src={imageUrl} alt={card?.name} className="w-full h-auto" />
           </div>
         </div>
       )}

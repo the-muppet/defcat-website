@@ -6,10 +6,10 @@ export const dynamic = 'force-dynamic'
 export async function POST(request: Request) {
   try {
     const params = await request.json()
-    
+
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-    
+
     if (!supabaseUrl || !supabaseKey) {
       throw new Error('Missing Supabase credentials')
     }
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${supabaseKey}`,
+        Authorization: `Bearer ${supabaseKey}`,
       },
       body: JSON.stringify(params),
     })

@@ -3,7 +3,7 @@
  * Downloads card images from Scryfall and stores them in Supabase Storage
  */
 
-import { createClient } from '@supabase/supabase-js'
+import type { createClient } from '@supabase/supabase-js'
 
 const STORAGE_BUCKET = 'media'
 const STORAGE_PATH = 'card-images'

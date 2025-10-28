@@ -1,6 +1,6 @@
 'use client'
 
-import { Crown, Shield, Star, Sparkles, Zap, Users } from 'lucide-react'
+import { Crown, Shield, Sparkles, Star, Users, Zap } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import type { PatreonTier } from '@/types/core'

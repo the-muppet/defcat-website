@@ -2,14 +2,15 @@
 /** biome-ignore-all lint/a11y/noLabelWithoutControl: <explanation> */
 'use client'
 
-import { useState, useMemo, memo } from 'react'
-import { ExternalLink, Filter, X, ChevronUp, ChevronDown } from 'lucide-react'
+import { ChevronDown, ChevronUp, ExternalLink, Filter, X } from 'lucide-react'
+import { memo, useMemo, useState } from 'react'
+import { ManaSymbols } from '@/components/decks/ManaSymbols'
+import { RoastButton } from '@/components/decks/RoastButton'
+import { GlowingEffect } from '@/components/ui/glowEffect'
 import { useDecks } from '@/lib/hooks/useDecks'
 import { cn } from '@/lib/utils'
-import type { Deck } from '@/types/core'
-import { ManaSymbols } from '@/components/decks/ManaSymbols'
 import { ColorIdentity } from '@/types/colors'
-import { RoastButton } from '@/components/decks/RoastButton'
+import type { Deck } from '@/types/core'
 
 // Memoized deck row component
 const DeckRow = memo(function DeckRow({ deck }: { deck: Deck }) {
@@ -69,9 +70,9 @@ export default function TableLayout() {
   const { data: decks = [], isLoading: loading, error } = useDecks()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedColors, setSelectedColors] = useState<string[]>([])
-  const [sortBy, setSortBy] = useState<'name' | 'commanders' | 'color_identity' | 'view_count' | 'like_count' | 'updated_at'>(
-    'view_count'
-  )
+  const [sortBy, setSortBy] = useState<
+    'name' | 'commanders' | 'color_identity' | 'view_count' | 'like_count' | 'updated_at'
+  >('view_count')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const [showFilters, setShowFilters] = useState(true)
 
@@ -118,14 +119,14 @@ export default function TableLayout() {
       }
 
       if (sortBy === 'name' || sortBy === 'commanders') {
-        const aStr = sortBy === 'commanders' ? (aVal?.[0] || '') : aVal
-        const bStr = sortBy === 'commanders' ? (bVal?.[0] || '') : bVal
+        const aStr = sortBy === 'commanders' ? aVal?.[0] || '' : aVal
+        const bStr = sortBy === 'commanders' ? bVal?.[0] || '' : bVal
         return sortOrder === 'asc' ? aStr.localeCompare(bStr) : bStr.localeCompare(aStr)
       }
 
       if (sortBy === 'color_identity') {
-        const aLen = (aVal?.length || 0)
-        const bLen = (bVal?.length || 0)
+        const aLen = aVal?.length || 0
+        const bLen = bVal?.length || 0
         return sortOrder === 'asc' ? aLen - bLen : bLen - aLen
       }
 
@@ -149,7 +150,11 @@ export default function TableLayout() {
     }
   }
 
-  const SortIcon = ({ column }: { column: 'name' | 'commanders' | 'color_identity' | 'view_count' | 'like_count' | 'updated_at' }) => {
+  const SortIcon = ({
+    column,
+  }: {
+    column: 'name' | 'commanders' | 'color_identity' | 'view_count' | 'like_count' | 'updated_at'
+  }) => {
     if (sortBy !== column) return null
     return sortOrder === 'asc' ? (
       <ChevronUp className="h-4 w-4" />
@@ -339,114 +344,125 @@ export default function TableLayout() {
           ) : error ? (
             <div className="text-center text-destructive py-20">Error loading decks</div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-tinted">
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
-                      <button
-                        onClick={() => handleSort('name')}
-                        className="flex items-center gap-2 hover:text-foreground transition-colors cursor-pointer"
-                      >
-                        Deck Name
-                        {sortBy === 'name' ? (
-                          <SortIcon column="name" />
-                        ) : (
-                          <div className="h-4 w-4 opacity-30 hover:opacity-60">
-                            <ChevronUp className="h-4 w-4" />
-                          </div>
-                        )}
-                      </button>
-                    </th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
-                      <button
-                        onClick={() => handleSort('commanders')}
-                        className="flex items-center gap-2 hover:text-foreground transition-colors cursor-pointer"
-                      >
-                        Commander(s)
-                        {sortBy === 'commanders' ? (
-                          <SortIcon column="commanders" />
-                        ) : (
-                          <div className="h-4 w-4 opacity-30 hover:opacity-60">
-                            <ChevronUp className="h-4 w-4" />
-                          </div>
-                        )}
-                      </button>
-                    </th>
-                    <th className="text-center py-3 px-4 text-sm font-semibold text-muted-foreground">
-                      <button
-                        onClick={() => handleSort('color_identity')}
-                        className="flex items-center gap-2 mx-auto hover:text-foreground transition-colors cursor-pointer"
-                      >
-                        Colors
-                        {sortBy === 'color_identity' ? (
-                          <SortIcon column="color_identity" />
-                        ) : (
-                          <div className="h-4 w-4 opacity-30 hover:opacity-60">
-                            <ChevronUp className="h-4 w-4" />
-                          </div>
-                        )}
-                      </button>
-                    </th>
-                    <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
-                      <button
-                        onClick={() => handleSort('view_count')}
-                        className="flex items-center gap-2 ml-auto hover:text-foreground transition-colors cursor-pointer"
-                      >
-                        Views
-                        {sortBy === 'view_count' ? (
-                          <SortIcon column="view_count" />
-                        ) : (
-                          <div className="h-4 w-4 opacity-30 hover:opacity-60">
-                            <ChevronUp className="h-4 w-4" />
-                          </div>
-                        )}
-                      </button>
-                    </th>
-                    <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
-                      <button
-                        onClick={() => handleSort('like_count')}
-                        className="flex items-center gap-2 ml-auto hover:text-foreground transition-colors cursor-pointer"
-                      >
-                        Likes
-                        {sortBy === 'like_count' ? (
-                          <SortIcon column="like_count" />
-                        ) : (
-                          <div className="h-4 w-4 opacity-30 hover:opacity-60">
-                            <ChevronUp className="h-4 w-4" />
-                          </div>
-                        )}
-                      </button>
-                    </th>
-                    <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
-                      <button
-                        onClick={() => handleSort('updated_at')}
-                        className="flex items-center gap-2 ml-auto hover:text-foreground transition-colors cursor-pointer"
-                      >
-                        Updated
-                        {sortBy === 'updated_at' ? (
-                          <SortIcon column="updated_at" />
-                        ) : (
-                          <div className="h-4 w-4 opacity-30 hover:opacity-60">
-                            <ChevronUp className="h-4 w-4" />
-                          </div>
-                        )}
-                      </button>
-                    </th>
-                    <th className="text-center py-3 px-4 text-sm font-semibold text-muted-foreground">
-                      Link
-                    </th>
-                    <th className="text-center py-3 px-4 text-sm font-semibold text-muted-foreground">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredDecks.map((deck) => (
-                    <DeckRow key={deck.id} deck={deck} />
-                  ))}
-                </tbody>
-              </table>
+            <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3 overflow-hidden">
+              <GlowingEffect
+                blur={0}
+                borderWidth={3}
+                spread={80}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+              />
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-tinted">
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                        <button
+                          onClick={() => handleSort('name')}
+                          className="flex items-center gap-2 hover:text-foreground transition-colors cursor-pointer"
+                        >
+                          Deck Name
+                          {sortBy === 'name' ? (
+                            <SortIcon column="name" />
+                          ) : (
+                            <div className="h-4 w-4 opacity-30 hover:opacity-60">
+                              <ChevronUp className="h-4 w-4" />
+                            </div>
+                          )}
+                        </button>
+                      </th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
+                        <button
+                          onClick={() => handleSort('commanders')}
+                          className="flex items-center gap-2 hover:text-foreground transition-colors cursor-pointer"
+                        >
+                          Commander(s)
+                          {sortBy === 'commanders' ? (
+                            <SortIcon column="commanders" />
+                          ) : (
+                            <div className="h-4 w-4 opacity-30 hover:opacity-60">
+                              <ChevronUp className="h-4 w-4" />
+                            </div>
+                          )}
+                        </button>
+                      </th>
+                      <th className="text-center py-3 px-4 text-sm font-semibold text-muted-foreground">
+                        <button
+                          onClick={() => handleSort('color_identity')}
+                          className="flex items-center gap-2 mx-auto hover:text-foreground transition-colors cursor-pointer"
+                        >
+                          Colors
+                          {sortBy === 'color_identity' ? (
+                            <SortIcon column="color_identity" />
+                          ) : (
+                            <div className="h-4 w-4 opacity-30 hover:opacity-60">
+                              <ChevronUp className="h-4 w-4" />
+                            </div>
+                          )}
+                        </button>
+                      </th>
+                      <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
+                        <button
+                          onClick={() => handleSort('view_count')}
+                          className="flex items-center gap-2 ml-auto hover:text-foreground transition-colors cursor-pointer"
+                        >
+                          Views
+                          {sortBy === 'view_count' ? (
+                            <SortIcon column="view_count" />
+                          ) : (
+                            <div className="h-4 w-4 opacity-30 hover:opacity-60">
+                              <ChevronUp className="h-4 w-4" />
+                            </div>
+                          )}
+                        </button>
+                      </th>
+                      <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
+                        <button
+                          onClick={() => handleSort('like_count')}
+                          className="flex items-center gap-2 ml-auto hover:text-foreground transition-colors cursor-pointer"
+                        >
+                          Likes
+                          {sortBy === 'like_count' ? (
+                            <SortIcon column="like_count" />
+                          ) : (
+                            <div className="h-4 w-4 opacity-30 hover:opacity-60">
+                              <ChevronUp className="h-4 w-4" />
+                            </div>
+                          )}
+                        </button>
+                      </th>
+                      <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
+                        <button
+                          onClick={() => handleSort('updated_at')}
+                          className="flex items-center gap-2 ml-auto hover:text-foreground transition-colors cursor-pointer"
+                        >
+                          Updated
+                          {sortBy === 'updated_at' ? (
+                            <SortIcon column="updated_at" />
+                          ) : (
+                            <div className="h-4 w-4 opacity-30 hover:opacity-60">
+                              <ChevronUp className="h-4 w-4" />
+                            </div>
+                          )}
+                        </button>
+                      </th>
+                      <th className="text-center py-3 px-4 text-sm font-semibold text-muted-foreground">
+                        Link
+                      </th>
+                      <th className="text-center py-3 px-4 text-sm font-semibold text-muted-foreground">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredDecks.map((deck) => (
+                      <DeckRow key={deck.id} deck={deck} />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>

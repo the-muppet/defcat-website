@@ -91,7 +91,7 @@ export interface Affiliates {
 }
 
 export interface AuthorTags {
-  author: string;
+  author: string
 }
 
 export interface Hub {

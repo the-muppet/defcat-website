@@ -1,9 +1,9 @@
 'use client'
 
-import { useLatestDeck } from '@/lib/api/stats'
+import { Loader2, Sparkles } from 'lucide-react'
 import { DeckCard } from '@/components/decks/DeckCard'
 import { Card, CardContent } from '@/components/ui/card'
-import { Sparkles, Loader2 } from 'lucide-react'
+import { useLatestDeck } from '@/lib/api/stats'
 
 export function FeaturedDeckCard() {
   const { data: featuredDeck, isLoading, error } = useLatestDeck()

@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
 import { HelpCircle } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler'
-import { ThemeAnimationType } from '@/lib/hooks/useModeAnimation'
+import { useState } from 'react'
 import { TutorialModal } from '@/components/tutorial/TutorialModal'
+import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler'
+import { Button } from '@/components/ui/button'
+import { ThemeAnimationType } from '@/lib/hooks/useModeAnimation'
 import { cn } from '@/lib/utils'
 
 export function NavigationHeader() {

@@ -15,10 +15,10 @@
  *   import { createAdminClient } from '@/lib/supabase/admin'
  */
 
-export { createClient as createBrowserClient } from './client'
-export { createClient as createServerClient } from './server'
-export { updateSession } from './middleware'
 export { createAdminClient } from './admin'
+export { createClient as createBrowserClient } from './client'
+export { updateSession } from './middleware'
+export { createClient as createServerClient } from './server'
 
 export interface supabase {
   updateSession: (session: any) => any

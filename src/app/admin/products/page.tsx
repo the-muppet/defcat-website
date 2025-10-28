@@ -1,6 +1,6 @@
-import { requireAdmin } from '@/lib/auth/require-admin'
-import { ProductsPanel } from '@/components/admin/ProductsPanel'
 import { Package } from 'lucide-react'
+import { ProductsPanel } from '@/components/admin/ProductsPanel'
+import { requireAdmin } from '@/lib/auth/require-admin'
 
 export const dynamic = 'force-dynamic'
 

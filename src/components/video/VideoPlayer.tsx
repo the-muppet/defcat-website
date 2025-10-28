@@ -1,7 +1,7 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import { Loader2, Play } from 'lucide-react'
+import dynamic from 'next/dynamic'
 
 const ReactPlayer = dynamic(() => import('react-player'), {
   ssr: false,

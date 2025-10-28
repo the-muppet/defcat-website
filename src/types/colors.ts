@@ -14,7 +14,7 @@ const ManaColorMap = {
   R: 'oklch(0.35 0.40 50)',
   G: 'oklch(0.40 0.40 150)',
   C: 'oklch(0.5 0 0)',
-  
+
   // Aliases for convenience
   WHITE: 'oklch(0.90 0.40 100)',
   BLUE: 'oklch(0.35 0.40 270)',
@@ -25,10 +25,10 @@ const ManaColorMap = {
 } as const
 
 type ColorInfo = {
-  letter: string        // Single letter code (W, U, B, R, G, C)
-  name: string         // Full name
-  className: string    // Mana Font CSS/icon class name
-  color: string        // OKLCH color value
+  letter: string // Single letter code (W, U, B, R, G, C)
+  name: string // Full name
+  className: string // Mana Font CSS/icon class name
+  color: string // OKLCH color value
 }
 
 const ColorMapping: Record<string, ColorInfo> = {
@@ -43,13 +43,13 @@ const ColorMapping: Record<string, ColorInfo> = {
 export const ColorIdentity = {
   // Constants
   ORDER: ['W', 'U', 'B', 'R', 'G', 'C'],
-  
+
   // Enums
   Symbol: ManaSymbol,
-  
+
   // Color values
   Colors: ManaColorMap,
-  
+
   // Convert ManaSymbol enum to letter code
   symbolToLetter: (symbol: ManaSymbol): string => {
     const map: Record<ManaSymbol, string> = {
@@ -62,7 +62,7 @@ export const ColorIdentity = {
     }
     return map[symbol]
   },
-  
+
   // Convert letter code to ManaSymbol enum
   letterToSymbol: (letter: string): ManaSymbol => {
     const map: Record<string, ManaSymbol> = {
@@ -75,7 +75,7 @@ export const ColorIdentity = {
     }
     return map[letter.toUpperCase()] || ManaSymbol.COLORLESS
   },
-  
+
   // Get color value from symbol, letter, or name
   getColorValue: (input: ManaSymbol | string): string => {
     if (Object.values(ManaSymbol).includes(input as ManaSymbol)) {
@@ -85,7 +85,7 @@ export const ColorIdentity = {
     const upper = input.toUpperCase()
     return ColorMapping[upper]?.color || ManaColorMap.C
   },
-  
+
   // Get ColorInfo from symbol, letter, or name
   getColorInfo: (input: ManaSymbol | string): ColorInfo => {
     if (Object.values(ManaSymbol).includes(input as ManaSymbol)) {
@@ -95,7 +95,7 @@ export const ColorIdentity = {
     const upper = input.toUpperCase()
     return ColorMapping[upper] || ColorMapping.C
   },
-  
+
   /**
    * Extract color letters from a mana cost string
    * "{2}{W}{U}" -> ['W', 'U']
@@ -103,38 +103,38 @@ export const ColorIdentity = {
    */
   extractColorsFromManaCost: (manaCost: string | null | undefined): string[] => {
     if (!manaCost) return ['C']
-    
+
     const colors: string[] = []
-    
+
     // Check for each color (including hybrid mana)
     if (manaCost.includes('W')) colors.push('W')
     if (manaCost.includes('U')) colors.push('U')
     if (manaCost.includes('B')) colors.push('B')
     if (manaCost.includes('R')) colors.push('R')
     if (manaCost.includes('G')) colors.push('G')
-    
+
     // If no colors found or only generic mana, return colorless
     return colors.length > 0 ? colors : ['C']
   },
-  
+
   /**
    * Normalize color array to sorted, deduplicated string
    * ['U', 'W', 'W'] -> 'WU'
    */
   normalize: (colors: string[]): string => {
-    const unique = [...new Set(colors.map(c => c.toUpperCase()))]
-    return unique.sort((a, b) => 
-      ColorIdentity.ORDER.indexOf(a) - ColorIdentity.ORDER.indexOf(b)
-    ).join('')
+    const unique = [...new Set(colors.map((c) => c.toUpperCase()))]
+    return unique
+      .sort((a, b) => ColorIdentity.ORDER.indexOf(a) - ColorIdentity.ORDER.indexOf(b))
+      .join('')
   },
-  
+
   /**
    * Compare two color identities for sorting
    */
   compare: (a: string, b: string): number => {
     // Compare by length first (monocolor < multicolor)
     if (a.length !== b.length) return a.length - b.length
-    
+
     // Then by color order
     for (let i = 0; i < a.length; i++) {
       const aIdx = ColorIdentity.ORDER.indexOf(a[i])
@@ -143,40 +143,33 @@ export const ColorIdentity = {
     }
     return 0
   },
-  
+
   /**
    * Get icon class for a color identity
    * 'WU' -> 'ms-wu' (Azorius)
    * 'W' -> 'ms-w'
    */
   getClassName: (
-    colors: string[] | string, 
-    cost: boolean = false, 
+    colors: string[] | string,
+    cost: boolean = false,
     shadow: boolean = false
   ): string => {
-    const normalized = typeof colors === 'string' 
-      ? colors 
-      : ColorIdentity.normalize(colors)
-    
-    const base = `ms-${normalized.toLowerCase()}`
-    const mods = [
-        cost ? 'ms-cost' : '',
-        shadow ? 'ms-shadow' : ''
-    ].filter(Boolean);
+    const normalized = typeof colors === 'string' ? colors : ColorIdentity.normalize(colors)
 
-    return [base, ...mods].join(' ');
+    const base = `ms-${normalized.toLowerCase()}`
+    const mods = [cost ? 'ms-cost' : '', shadow ? 'ms-shadow' : ''].filter(Boolean)
+
+    return [base, ...mods].join(' ')
   },
-  
+
   /**
    * Get human-readable label for color identity
    * 'WU' -> 'Azorius' or 'White/Blue'
    * 'W' -> 'White'
    */
   getLabel: (colors: string[] | string): string => {
-    const normalized = typeof colors === 'string' 
-      ? colors 
-      : ColorIdentity.normalize(colors)
-    
+    const normalized = typeof colors === 'string' ? colors : ColorIdentity.normalize(colors)
+
     // Guild names (two colors)
     const guildNames: Record<string, string> = {
       WU: 'Azorius',
@@ -190,7 +183,7 @@ export const ColorIdentity = {
       BG: 'Golgari',
       RG: 'Gruul',
     }
-    
+
     // Shard/Wedge names (three colors)
     const triNames: Record<string, string> = {
       WUB: 'Esper',
@@ -204,23 +197,26 @@ export const ColorIdentity = {
       URG: 'Temur',
       BRG: 'Jund',
     }
-    
+
     if (normalized.length === 1) {
       return ColorMapping[normalized]?.name || 'Colorless'
     }
-    
+
     if (normalized.length === 2 && guildNames[normalized]) {
       return guildNames[normalized]
     }
-    
+
     if (normalized.length === 3 && triNames[normalized]) {
       return triNames[normalized]
     }
-    
+
     // Fallback to color names
-    return normalized.split('').map(c => ColorMapping[c]?.name).join('/')
+    return normalized
+      .split('')
+      .map((c) => ColorMapping[c]?.name)
+      .join('/')
   },
 }
 
 // Type exports for external use
-export type { ColorInfo } 
+export type { ColorInfo }

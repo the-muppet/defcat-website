@@ -2,9 +2,9 @@
  * Admin Site Settings Page
  */
 
-import { requireAdmin } from '@/lib/auth-guards'
 import { Settings } from 'lucide-react'
 import { SiteConfigForm } from '@/components/admin/SiteConfigForm'
+import { requireAdmin } from '@/lib/auth/auth-guards'
 
 export const dynamic = 'force-dynamic'
 

@@ -3,15 +3,15 @@
  * Lists all decks with edit/delete capabilities
  */
 
-import { requireAdmin } from '@/lib/auth-guards'
-import { createClient } from '@/lib/supabase/server'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Plus } from 'lucide-react'
+import Link from 'next/link'
+import { DecksList } from '@/components/admin/DecksList'
 import { ImportAllDecksButton } from '@/components/admin/ImportAllDecksButton'
 import { UpdateAllDecksButton } from '@/components/admin/UpdateAllDecksButton'
-import { DecksList } from '@/components/admin/DecksList'
+import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { requireAdmin } from '@/lib/auth/auth-guards'
+import { createClient } from '@/lib/supabase/server'
 import { Database } from '@/types/supabase'
 
 export const dynamic = 'force-dynamic'

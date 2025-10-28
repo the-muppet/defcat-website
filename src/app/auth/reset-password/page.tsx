@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { AlertCircle, CheckCircle2, Loader2, Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { useEffect, useState } from 'react'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { AlertCircle, CheckCircle2, Lock, Loader2 } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
 // Force dynamic rendering - don't prerender at build time
 export const dynamic = 'force-dynamic'

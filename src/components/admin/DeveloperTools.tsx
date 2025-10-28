@@ -1,8 +1,9 @@
 'use client'
 
+import { AlertCircle, CheckCircle2, Code, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Select,
   SelectContent,
@@ -11,7 +12,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
-import { Code, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react'
 import { PATREON_TIERS } from '@/types/core'
 
 export function DeveloperTools() {

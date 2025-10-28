@@ -1,11 +1,11 @@
 'use client'
 
+import { AlertCircle, CheckCircle2, Database, Play, Table, Trash2 } from 'lucide-react'
 import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { createClient } from '@/lib/supabase/client'
-import { Database, Play, Trash2, AlertCircle, CheckCircle2, Table } from 'lucide-react'
 
 export function DatabasePanel() {
   const [query, setQuery] = useState('')

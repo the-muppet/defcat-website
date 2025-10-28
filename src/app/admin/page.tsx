@@ -4,20 +4,20 @@
  * Updated with accessible tinted styling
  */
 
-import { requireAdmin } from '@/lib/auth-guards'
-import { createClient } from '@/lib/supabase/server'
-import Link from 'next/link'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import {
+  BarChart3,
+  ClipboardList,
   Database,
-  Users,
   Package,
   Settings,
   TrendingUp,
-  BarChart3,
-  ClipboardList,
+  Users,
 } from 'lucide-react'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { requireAdmin } from '@/lib/auth/auth-guards'
+import { createClient } from '@/lib/supabase/server'
 
 export default async function AdminDashboard() {
   await requireAdmin()

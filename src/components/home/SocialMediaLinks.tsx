@@ -1,17 +1,17 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
 import {
-  Youtube,
-  Twitter,
-  Twitch,
-  Instagram,
+  DollarSign,
   Facebook,
   Globe,
-  Music,
+  Instagram,
   Linkedin,
-  DollarSign,
+  Music,
+  Twitch,
+  Twitter,
+  Youtube,
 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 interface SocialLink {
   name: string

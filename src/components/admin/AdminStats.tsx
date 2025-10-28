@@ -1,6 +1,6 @@
-import { createClient } from '@/lib/supabase/server'
+import { BarChart3, Database, TrendingUp, Users } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Database, Users, TrendingUp, BarChart3 } from 'lucide-react'
+import { createClient } from '@/lib/supabase/server'
 
 export async function AdminStats() {
   const supabase = await createClient()

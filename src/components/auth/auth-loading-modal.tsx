@@ -1,7 +1,7 @@
 // components/auth/auth-loading-modal.tsx
 'use client'
 
-import { motion, AnimatePresence } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
 
 interface AuthLoadingModalProps {
   isOpen: boolean

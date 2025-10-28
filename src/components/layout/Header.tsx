@@ -1,16 +1,15 @@
 // components/layout/header.tsx
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import { User } from '@supabase/supabase-js'
-import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { LogIn, LogOut, Sparkles, ClipboardList } from 'lucide-react'
+import type { User } from '@supabase/supabase-js'
+import { ClipboardList, LogIn, LogOut, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import type { PatreonTier } from '@/types/core'
-import { useSubmissionEligibility } from '@/lib/hooks/useSubmissionEligibility'
+import { useCallback, useEffect, useState } from 'react'
+import { AuthLoadingModal } from '@/components/auth/auth-loading-modal'
+import { UserMenu } from '@/components/profile/UserMenu'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -18,11 +17,12 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu'
-import { AnimatedThemeToggler } from '../ui/animated-theme-toggler'
 import { ThemeAnimationType } from '@/lib/hooks/useModeAnimation'
-import { AuthLoadingModal } from '@/components/auth/auth-loading-modal'
-import { UserMenu } from '@/components/profile/UserMenu'
+import { useSubmissionEligibility } from '@/lib/hooks/useSubmissionEligibility'
+import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
+import type { PatreonTier } from '@/types/core'
+import { AnimatedThemeToggler } from '../ui/animated-theme-toggler'
 
 export function Header() {
   const [user, setUser] = useState<User | null>(null)
@@ -35,7 +35,11 @@ export function Header() {
   const [showBadge, setShowBadge] = useState(true)
   const pathname = usePathname()
   const supabase = createClient()
-  const { isEligible, remainingSubmissions, isLoading: submissionLoading } = useSubmissionEligibility()
+  const {
+    isEligible,
+    remainingSubmissions,
+    isLoading: submissionLoading,
+  } = useSubmissionEligibility()
 
   useEffect(() => {
     // Get initial session

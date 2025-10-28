@@ -3,13 +3,13 @@
  * Provides distributed tracing, metrics, and logging
  */
 
-import { NodeSDK } from '@opentelemetry/sdk-node'
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
-import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
-import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics'
-import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from '@opentelemetry/semantic-conventions'
-import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node'
 import { DiagConsoleLogger, DiagLogLevel, diag } from '@opentelemetry/api'
+import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node'
+import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http'
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
+import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics'
+import { NodeSDK } from '@opentelemetry/sdk-node'
+import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from '@opentelemetry/semantic-conventions'
 
 export async function registerOTel() {
   // Enable debug logging in development

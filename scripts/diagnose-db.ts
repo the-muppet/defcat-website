@@ -14,10 +14,7 @@ async function main() {
   console.log('🔍 Diagnosing database issues...\n')
 
   // Test with anon client (what the browser uses)
-  const anonClient = createClient(
-    env.NEXT_PUBLIC_SUPABASE_URL,
-    env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  )
+  const anonClient = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
   // Test 1: Can we fetch decks?
   console.log('Test 1: Fetching decks...')
@@ -50,7 +47,9 @@ async function main() {
     } else {
       console.log(`✅ Found ${deckCards?.length || 0} deck_card(s)`)
       if (deckCards && deckCards.length > 0) {
-        console.log(`   Sample: card_id=${deckCards[0].card_id}, quantity=${deckCards[0].quantity}\n`)
+        console.log(
+          `   Sample: card_id=${deckCards[0].card_id}, quantity=${deckCards[0].quantity}\n`
+        )
       } else {
         console.log('⚠️  No deck_cards found for this deck!\n')
       }
@@ -95,8 +94,12 @@ async function main() {
     if (joinError) {
       console.error('❌ Error with relationship query:', joinError)
       console.log('\n📋 This is the error causing the 404 in your browser!')
-      console.log('   The relationship between deck_cards and cards may not be recognized by Supabase.')
-      console.log('\n💡 Solution: The foreign key exists, but Supabase PostgREST may need to be refreshed.')
+      console.log(
+        '   The relationship between deck_cards and cards may not be recognized by Supabase.'
+      )
+      console.log(
+        '\n💡 Solution: The foreign key exists, but Supabase PostgREST may need to be refreshed.'
+      )
       console.log('   Try reloading the schema in Supabase Dashboard > API > Reload Schema\n')
     } else {
       console.log(`✅ Relationship query worked! Found ${joined?.length || 0} cards`)
@@ -107,8 +110,7 @@ async function main() {
   console.log('✅ Diagnosis complete!')
 }
 
-main()
-  .catch((error) => {
-    console.error('Fatal error:', error)
-    process.exit(1)
-  })
+main().catch((error) => {
+  console.error('Fatal error:', error)
+  process.exit(1)
+})

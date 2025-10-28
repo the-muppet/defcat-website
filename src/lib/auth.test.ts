@@ -2,7 +2,7 @@
  * Tests for Authentication utilities
  */
 
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 describe('Auth Utilities', () => {
   it('should export auth helper functions', async () => {
