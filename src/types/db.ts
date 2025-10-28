@@ -86,12 +86,16 @@ export type Database = {
       }
       cards: {
         Row: {
+          cache_attempts: number | null
+          cache_error: string | null
+          cached_image_url: string | null
           cmc: number | null
           color_identity: string[] | null
           colors: string[] | null
           created_at: string | null
           id: string
           image_url: string | null
+          last_cache_attempt_at: string | null
           mana_cost: string | null
           name: string
           oracle_text: string | null
@@ -103,12 +107,16 @@ export type Database = {
           type_line: string | null
         }
         Insert: {
+          cache_attempts?: number | null
+          cache_error?: string | null
+          cached_image_url?: string | null
           cmc?: number | null
           color_identity?: string[] | null
           colors?: string[] | null
           created_at?: string | null
           id: string
           image_url?: string | null
+          last_cache_attempt_at?: string | null
           mana_cost?: string | null
           name: string
           oracle_text?: string | null
@@ -120,12 +128,16 @@ export type Database = {
           type_line?: string | null
         }
         Update: {
+          cache_attempts?: number | null
+          cache_error?: string | null
+          cached_image_url?: string | null
           cmc?: number | null
           color_identity?: string[] | null
           colors?: string[] | null
           created_at?: string | null
           id?: string
           image_url?: string | null
+          last_cache_attempt_at?: string | null
           mana_cost?: string | null
           name?: string
           oracle_text?: string | null
@@ -267,144 +279,6 @@ export type Database = {
             referencedColumns: ["moxfield_id"]
           },
         ]
-      }
-      decks: {
-        Row: {
-          are_comments_enabled: boolean | null
-          authors: Json | null
-          authors_can_edit: boolean | null
-          auto_bracket: number | null
-          bookmark_count: number | null
-          bracket: number | null
-          color_identity: string[] | null
-          color_identity_percentages: Json | null
-          color_percentages: Json | null
-          colors: string[] | null
-          commanders: string[] | null
-          commanders_data: Json | null
-          comment_count: number | null
-          created_at: string | null
-          created_at_moxfield: string | null
-          created_by: Json | null
-          decklist_synced_at: string | null
-          description: string | null
-          format: string | null
-          has_primer: boolean | null
-          hub_names: string[] | null
-          id: string
-          ignore_brackets: boolean | null
-          is_legal: boolean | null
-          is_shared: boolean | null
-          last_updated_at_moxfield: string | null
-          like_count: number | null
-          main_card: Json | null
-          main_card_id: string | null
-          main_card_id_is_back_face: boolean | null
-          main_card_id_is_card_face: boolean | null
-          mainboard_count: number | null
-          maybeboard_count: number | null
-          moxfield_id: string
-          moxfield_url: string | null
-          name: string
-          needs_decklist_sync: boolean | null
-          set_codes: string[] | null
-          sfw_comment_count: number | null
-          sideboard_count: number | null
-          updated_at: string | null
-          view_count: number | null
-          visibility: string | null
-        }
-        Insert: {
-          are_comments_enabled?: boolean | null
-          authors?: Json | null
-          authors_can_edit?: boolean | null
-          auto_bracket?: number | null
-          bookmark_count?: number | null
-          bracket?: number | null
-          color_identity?: string[] | null
-          color_identity_percentages?: Json | null
-          color_percentages?: Json | null
-          colors?: string[] | null
-          commanders?: string[] | null
-          commanders_data?: Json | null
-          comment_count?: number | null
-          created_at?: string | null
-          created_at_moxfield?: string | null
-          created_by?: Json | null
-          decklist_synced_at?: string | null
-          description?: string | null
-          format?: string | null
-          has_primer?: boolean | null
-          hub_names?: string[] | null
-          id?: string
-          ignore_brackets?: boolean | null
-          is_legal?: boolean | null
-          is_shared?: boolean | null
-          last_updated_at_moxfield?: string | null
-          like_count?: number | null
-          main_card?: Json | null
-          main_card_id?: string | null
-          main_card_id_is_back_face?: boolean | null
-          main_card_id_is_card_face?: boolean | null
-          mainboard_count?: number | null
-          maybeboard_count?: number | null
-          moxfield_id: string
-          moxfield_url?: string | null
-          name: string
-          needs_decklist_sync?: boolean | null
-          set_codes?: string[] | null
-          sfw_comment_count?: number | null
-          sideboard_count?: number | null
-          updated_at?: string | null
-          view_count?: number | null
-          visibility?: string | null
-        }
-        Update: {
-          are_comments_enabled?: boolean | null
-          authors?: Json | null
-          authors_can_edit?: boolean | null
-          auto_bracket?: number | null
-          bookmark_count?: number | null
-          bracket?: number | null
-          color_identity?: string[] | null
-          color_identity_percentages?: Json | null
-          color_percentages?: Json | null
-          colors?: string[] | null
-          commanders?: string[] | null
-          commanders_data?: Json | null
-          comment_count?: number | null
-          created_at?: string | null
-          created_at_moxfield?: string | null
-          created_by?: Json | null
-          decklist_synced_at?: string | null
-          description?: string | null
-          format?: string | null
-          has_primer?: boolean | null
-          hub_names?: string[] | null
-          id?: string
-          ignore_brackets?: boolean | null
-          is_legal?: boolean | null
-          is_shared?: boolean | null
-          last_updated_at_moxfield?: string | null
-          like_count?: number | null
-          main_card?: Json | null
-          main_card_id?: string | null
-          main_card_id_is_back_face?: boolean | null
-          main_card_id_is_card_face?: boolean | null
-          mainboard_count?: number | null
-          maybeboard_count?: number | null
-          moxfield_id?: string
-          moxfield_url?: string | null
-          name?: string
-          needs_decklist_sync?: boolean | null
-          set_codes?: string[] | null
-          sfw_comment_count?: number | null
-          sideboard_count?: number | null
-          updated_at?: string | null
-          view_count?: number | null
-          visibility?: string | null
-        }
-        Relationships: []
       }
       moxfield_decks: {
         Row: {
@@ -586,48 +460,63 @@ export type Database = {
         }
         Relationships: []
       }
-      sync_logs: {
+      update_logs: {
         Row: {
-          bookmark_id: string
           completed_at: string | null
+          created_at: string | null
           duration_ms: number | null
+          error_details: Json | null
           error_message: string | null
-          failed_decks: number | null
+          failed_count: number | null
           id: string
           metadata: Json | null
-          started_at: string | null
+          operation_type: string
+          processed_count: number | null
+          skipped_count: number | null
+          started_at: string
           status: string
-          total_decks: number | null
-          unchanged_decks: number | null
-          updated_decks: number | null
+          success_count: number | null
+          total_items: number | null
+          triggered_by: string | null
+          updated_at: string | null
         }
         Insert: {
-          bookmark_id: string
           completed_at?: string | null
+          created_at?: string | null
           duration_ms?: number | null
+          error_details?: Json | null
           error_message?: string | null
-          failed_decks?: number | null
+          failed_count?: number | null
           id?: string
           metadata?: Json | null
-          started_at?: string | null
+          operation_type: string
+          processed_count?: number | null
+          skipped_count?: number | null
+          started_at?: string
           status: string
-          total_decks?: number | null
-          unchanged_decks?: number | null
-          updated_decks?: number | null
+          success_count?: number | null
+          total_items?: number | null
+          triggered_by?: string | null
+          updated_at?: string | null
         }
         Update: {
-          bookmark_id?: string
           completed_at?: string | null
+          created_at?: string | null
           duration_ms?: number | null
+          error_details?: Json | null
           error_message?: string | null
-          failed_decks?: number | null
+          failed_count?: number | null
           id?: string
           metadata?: Json | null
-          started_at?: string | null
+          operation_type?: string
+          processed_count?: number | null
+          skipped_count?: number | null
+          started_at?: string
           status?: string
-          total_decks?: number | null
-          unchanged_decks?: number | null
-          updated_decks?: number | null
+          success_count?: number | null
+          total_items?: number | null
+          triggered_by?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -684,48 +573,6 @@ export type Database = {
       }
     }
     Views: {
-      recent_syncs: {
-        Row: {
-          bookmark_id: string | null
-          duration_ms: number | null
-          error_count: number | null
-          failed_decks: number | null
-          id: string | null
-          started_at: string | null
-          status: string | null
-          success_rate: number | null
-          total_decks: number | null
-          unchanged_decks: number | null
-          updated_decks: number | null
-        }
-        Insert: {
-          bookmark_id?: string | null
-          duration_ms?: number | null
-          error_count?: never
-          failed_decks?: number | null
-          id?: string | null
-          started_at?: string | null
-          status?: string | null
-          success_rate?: never
-          total_decks?: number | null
-          unchanged_decks?: number | null
-          updated_decks?: number | null
-        }
-        Update: {
-          bookmark_id?: string | null
-          duration_ms?: number | null
-          error_count?: never
-          failed_decks?: number | null
-          id?: string | null
-          started_at?: string | null
-          status?: string | null
-          success_rate?: never
-          total_decks?: number | null
-          unchanged_decks?: number | null
-          updated_decks?: number | null
-        }
-        Relationships: []
-      }
       submission_stats: {
         Row: {
           archmage_submissions: number | null
@@ -764,6 +611,10 @@ export type Database = {
       import_deck_from_jsonb: {
         Args: { deck_jsonb: Json; deck_moxfield_id: string }
         Returns: string
+      }
+      increment_cache_attempts: {
+        Args: { attempt_time: string; card_id: string; error_msg: string }
+        Returns: undefined
       }
       refresh_user_credits: {
         Args: { p_patreon_tier: string; p_user_id: string }
