@@ -163,6 +163,17 @@ export const ColorIdentity = {
   },
 
   /**
+   * Get individual color letters from a color identity string
+   * 'WU' -> ['W', 'U']
+   * 'BRG' -> ['B', 'R', 'G']
+   */
+  getIndividual: (colors: string | null | undefined): string[] => {
+    if (!colors) return ['C']
+    const normalized = typeof colors === 'string' ? colors : colors.toString()
+    return normalized.toUpperCase().split('')
+  },
+
+  /**
    * Get human-readable label for color identity
    * 'WU' -> 'Azorius' or 'White/Blue'
    * 'W' -> 'White'

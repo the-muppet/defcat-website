@@ -19,13 +19,14 @@ export default function LandingPage() {
         }}
       />
 
-      {/* Logo background */}
-      <div
-        className="absolute inset-0 pointer-events-none bg-center bg-no-repeat bg-contain opacity-30"
+      {/* Logo background - LCP optimized */}
+      <img
+        src="/defcat_logo.png"
+        alt=""
+        fetchPriority="high"
+        className="absolute inset-0 w-full h-full object-contain object-[center_70%] pointer-events-none opacity-70"
         style={{
-          backgroundImage: 'url(/defcat_logo.png)',
-          backgroundSize: '55%',
-          backgroundPosition: 'center 30%',
+          objectFit: 'contain',
         }}
       />
 

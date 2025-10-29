@@ -2,7 +2,7 @@
 
 import { ChevronDown, FileText, Library, Loader2, Package, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { MyDrafts } from '@/components/profile/MyDrafts'
 import { MySubmissions } from '@/components/profile/MySubmissions'
 import { ProfileEditForm } from '@/components/profile/ProfileEditForm'
@@ -25,36 +25,39 @@ export default function ProfilePanel() {
   const [refreshing, setRefreshing] = useState(false)
   const supabase = createClient()
 
-  const loadProfile = async (isRefresh = false) => {
-    if (isRefresh) {
-      setRefreshing(true)
-    }
+  const loadProfile = useCallback(
+    async (isRefresh = false) => {
+      if (isRefresh) {
+        setRefreshing(true)
+      }
 
-    const {
-      data: { user: authUser },
-    } = await supabase.auth.getUser()
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser()
 
-    if (!authUser) {
-      router.push('/auth/login')
-      return
-    }
+      if (!authUser) {
+        router.push('/auth/login')
+        return
+      }
 
-    setUser(authUser)
+      setUser(authUser)
 
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select(
-        'id, patreon_tier, role, created_at, moxfield_username, email, patreon_id, updated_at'
-      )
-      .eq('id', authUser.id)
-      .single()
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select(
+          'id, patreon_tier, role, created_at, moxfield_username, email, patreon_id, updated_at'
+        )
+        .eq('id', authUser.id)
+        .single()
 
-    setProfile(profileData)
-    setLoading(false)
-    if (isRefresh) {
-      setRefreshing(false)
-    }
-  }
+      setProfile(profileData)
+      setLoading(false)
+      if (isRefresh) {
+        setRefreshing(false)
+      }
+    },
+    [supabase, router]
+  )
 
   useEffect(() => {
     loadProfile(false)

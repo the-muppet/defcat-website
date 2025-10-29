@@ -54,14 +54,34 @@ export function PendingSubmissions() {
     setUpdating(id)
     const supabase = createClient()
 
-    const { error } = await supabase
-      .from('deck_submissions')
-      .update({ status: newStatus })
-      .eq('id', id)
+    // Get session token for API authentication
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
 
-    if (!error) {
-      await loadSubmissions()
+    if (!session) {
+      console.error('No session found')
+      setUpdating(null)
+      return
     }
+
+    // Use API route for admin operations
+    const response = await fetch(`/api/admin/submissions/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ status: newStatus }),
+    })
+
+    if (response.ok) {
+      await loadSubmissions()
+    } else {
+      const error = await response.json()
+      console.error('Failed to update submission:', error)
+    }
+
     setUpdating(null)
   }
 

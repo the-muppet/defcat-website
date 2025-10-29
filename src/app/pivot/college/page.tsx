@@ -19,12 +19,36 @@ export default function CommanderCollegePage() {
         .single()
 
       if (data && !error) {
-        const videoId = data.value || ''
-        setCollegeVideoId(videoId)
+        const videoValue = data.value || ''
+        // Extract video ID from URL if full URL is provided
+        const extractedId = extractYouTubeId(videoValue)
+        setCollegeVideoId(extractedId)
       }
     }
     fetchCollegeVideo()
   }, [])
+
+  // Helper function to extract YouTube ID from URL or return ID as-is
+  function extractYouTubeId(input: string): string {
+    if (!input) return ''
+
+    // If it's already just an ID (no slashes or dots), return it
+    if (!input.includes('/') && !input.includes('.')) return input
+
+    // Try to extract from various YouTube URL formats
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\?\/]+)/,
+      /^([a-zA-Z0-9_-]{11})$/, // Direct ID format
+    ]
+
+    for (const pattern of patterns) {
+      const match = input.match(pattern)
+      if (match && match[1]) return match[1]
+    }
+
+    // If no pattern matches, return the input as-is
+    return input
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">

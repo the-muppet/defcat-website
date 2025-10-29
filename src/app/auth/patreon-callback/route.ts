@@ -74,21 +74,29 @@ export async function GET(request: Request) {
     })
 
     if (createError) {
-      // User already exists, fetch them directly by email
-      console.log('User already exists, fetching by email:', email)
+      // User already exists, list all users and find by email
+      console.log('User already exists, searching for user by email:', email)
 
-      const { data: existingUserData, error: getUserError } =
-        await adminClient.auth.admin.getUserByEmail(email)
+      const { data: listData, error: listError } =
+        await adminClient.auth.admin.listUsers()
 
-      if (getUserError || !existingUserData?.user) {
-        console.error('Error fetching user by email:', getUserError)
-        console.error('Create error was:', createError)
+      if (listError) {
+        console.error('Error listing users:', listError)
         return NextResponse.redirect(
-          `${origin}/auth/login?error=user_lookup_failed&details=${encodeURIComponent(getUserError?.message || 'User not found')}`
+          `${origin}/auth/login?error=user_lookup_failed&details=${encodeURIComponent(listError.message)}`
         )
       }
 
-      userId = existingUserData.user.id
+      const existingUser = listData.users.find((u) => u.email?.toLowerCase() === email.toLowerCase())
+
+      if (!existingUser) {
+        console.error('User not found in auth.users table')
+        return NextResponse.redirect(
+          `${origin}/auth/login?error=user_lookup_failed&details=${encodeURIComponent('User not found')}`
+        )
+      }
+
+      userId = existingUser.id
       console.log('Found existing user:', userId)
     } else if (newUser.user) {
       userId = newUser.user.id

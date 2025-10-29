@@ -87,12 +87,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { data: submissionStatus } = await supabase
           .from('user_submission_status')
           .select('*')
+          .eq('user_id', user.id)
           .single()
 
         if (submissionStatus) {
           submissionRemaining = submissionStatus.remaining_submissions
           submissionMax = submissionStatus.max_submissions
         } else {
+          // Default limits based on tier
           if (tier === 'Wizard') submissionMax = 3
           else if (tier === 'ArchMage') submissionMax = 2
           else submissionMax = 1

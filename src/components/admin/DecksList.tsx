@@ -124,7 +124,7 @@ export function DecksList({ decks }: DecksListProps) {
                     </Link>
                   </Button>
                   <Button asChild variant="outline" size="sm">
-                    <Link href={`/admin/decks/${deck.id}`}>
+                    <Link href={`/admin/decks/${deck.moxfield_id}`}>
                       <Edit className="h-4 w-4" />
                     </Link>
                   </Button>

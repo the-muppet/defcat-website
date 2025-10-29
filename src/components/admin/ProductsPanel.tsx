@@ -33,6 +33,7 @@ export function ProductsPanel() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -84,6 +85,7 @@ export function ProductsPanel() {
   const handleSaveProduct = async (product: Product) => {
     setSaving(true)
     setError(null)
+    setSuccessMessage(null)
 
     try {
       const {
@@ -118,6 +120,9 @@ export function ProductsPanel() {
           throw new Error(data.error || 'Failed to create product')
         }
 
+        setSuccessMessage('Product created successfully!')
+        setTimeout(() => setSuccessMessage(null), 3000)
+
         // Reload to get the real ID
         await loadProducts()
       } else {
@@ -145,6 +150,9 @@ export function ProductsPanel() {
         if (!response.ok || !data.success) {
           throw new Error(data.error || 'Failed to update product')
         }
+
+        setSuccessMessage('Product updated successfully!')
+        setTimeout(() => setSuccessMessage(null), 3000)
       }
     } catch (err) {
       console.error('Save error:', err)
@@ -198,6 +206,21 @@ export function ProductsPanel() {
 
   return (
     <div className="space-y-6">
+      {/* Success Message */}
+      {successMessage && (
+        <div className="p-4 bg-green-500/10 border border-green-500 rounded-lg">
+          <p className="text-sm text-green-500">{successMessage}</p>
+        </div>
+      )}
+
+      {/* Error Message */}
+      {error && (
+        <div className="p-4 bg-destructive/10 border border-destructive rounded-lg flex items-center gap-2">
+          <AlertCircle className="h-5 w-5 text-destructive" />
+          <p className="text-sm text-destructive">{error}</p>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">Products Management</h2>

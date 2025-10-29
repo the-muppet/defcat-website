@@ -26,17 +26,17 @@ import {
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { useAuth } from '@/lib/contexts/AuthContext'
 import { createClient } from '@/lib/supabase/client'
 import { ColorIdentity } from '@/types/colors'
 import { bracketOptions } from '@/types/core'
 
 export default function PagedDeckForm() {
+  const auth = useAuth()
   const [currentStep, setCurrentStep] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
   const [showSuccess, setShowSuccess] = useState(false)
   const [tierError, setTierError] = useState<string | null>(null)
-  const [userTier, setUserTier] = useState<string | null>(null)
-  const [submissionsRemaining, setSubmissionsRemaining] = useState<number | null>(null)
   const [willBeQueued, setWillBeQueued] = useState(false)
   const [totalSubmissions, setTotalSubmissions] = useState(0)
   const MAX_QUEUED = 3
@@ -152,9 +152,6 @@ export default function PagedDeckForm() {
           if (remaining <= 0) {
             setWillBeQueued(true)
           }
-        } else {
-          // Admins have unlimited submissions
-          setSubmissionsRemaining(999)
         }
 
         if (profile.email) {
@@ -558,7 +555,7 @@ export default function PagedDeckForm() {
                   return (
                     <label
                       key={colorId}
-                      className="cursor-pointer flex flex-col items-center gap-2"
+                      className="cursor-pointer flex flex-col items-center gap-2 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--mana-color)] rounded-lg"
                       title={colorInfo.name}
                     >
                       <input
@@ -582,7 +579,7 @@ export default function PagedDeckForm() {
                 })}
                 <div className="col-span-5 flex justify-center gap-6">
                   <label
-                    className="cursor-pointer flex flex-col items-center gap-2"
+                    className="cursor-pointer flex flex-col items-center gap-2 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--mana-color)] rounded-lg"
                     title={ColorIdentity.getColorInfo('C').name}
                   >
                     <input
@@ -605,7 +602,7 @@ export default function PagedDeckForm() {
                     </span>
                   </label>
                   <label
-                    className="cursor-pointer flex flex-col items-center gap-2"
+                    className="cursor-pointer flex flex-col items-center gap-2 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--mana-color)] rounded-lg"
                     title="5-Color"
                   >
                     <input
@@ -672,7 +669,7 @@ export default function PagedDeckForm() {
                       return (
                         <label
                           key={colorId}
-                          className="cursor-pointer flex flex-col items-center gap-2"
+                          className="cursor-pointer flex flex-col items-center gap-2 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--mana-color)] rounded-lg"
                           title={colorInfo.name}
                         >
                           <input
@@ -696,7 +693,7 @@ export default function PagedDeckForm() {
                     })}
                     <div className="col-span-5 flex justify-center gap-6">
                       <label
-                        className="cursor-pointer flex flex-col items-center gap-2"
+                        className="cursor-pointer flex flex-col items-center gap-2 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--mana-color)] rounded-lg"
                         title={ColorIdentity.getColorInfo('C').name}
                       >
                         <input
@@ -719,7 +716,7 @@ export default function PagedDeckForm() {
                         </span>
                       </label>
                       <label
-                        className="cursor-pointer flex flex-col items-center gap-2"
+                        className="cursor-pointer flex flex-col items-center gap-2 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--mana-color)] rounded-lg"
                         title="5-Color"
                       >
                         <input
@@ -928,12 +925,12 @@ export default function PagedDeckForm() {
                     </span>
                   </div>
                 )}
-                {formData.backupColorPreference.length > 0 && (
+                {formData.backupColorPreference?.length > 0 && (
                   <div className="review-item">
                     <span className="review-label">Backup Color Preferences:</span>
                     <span className="review-value">
                       <div className="flex gap-4 flex-wrap">
-                        {formData.backupColorPreference.map((colorId) => {
+                        {(formData.backupColorPreference || []).map((colorId) => {
                           const colorInfo = ColorIdentity.getColorInfo(colorId)
                           const is5Color = colorId === 'WUBRG'
                           return (
@@ -1056,9 +1053,9 @@ export default function PagedDeckForm() {
               <>Your custom Commander deck request has been received. We'll be in touch soon!</>
             )}
           </p>
-          {!willBeQueued && submissionsRemaining !== null && submissionsRemaining > 0 && (
+          {!willBeQueued && auth.submission.remaining > 0 && (
             <p className="success-meta">
-              You have {submissionsRemaining - 1} slot(s) remaining this month
+              You have {auth.submission.remaining - 1} slot(s) remaining this month
             </p>
           )}
           {willBeQueued && <p className="success-meta">Queue position: {totalSubmissions + 1}</p>}
@@ -1100,7 +1097,7 @@ export default function PagedDeckForm() {
           </div>
           <h1 className="header-title">Deck Submission Form</h1>
           <p className="header-subtitle">Customized Commander Creations</p>
-          {userTier && submissionsRemaining !== null && (
+          {auth.profile.tier && auth.submission.remaining !== undefined && (
             <div
               className="tier-info"
               style={{
@@ -1114,11 +1111,11 @@ export default function PagedDeckForm() {
               }}
             >
               <p style={{ margin: 0, fontSize: '0.875rem' }}>
-                <strong>{userTier} Tier:</strong>{' '}
-                {submissionsRemaining > 0 ? (
+                <strong>{auth.profile.tier} Tier:</strong>{' '}
+                {auth.submission.remaining > 0 ? (
                   <>
-                    {submissionsRemaining} slot
-                    {submissionsRemaining !== 1 ? 's' : ''} available this month
+                    {auth.submission.remaining} slot
+                    {auth.submission.remaining !== 1 ? 's' : ''} available this month
                   </>
                 ) : (
                   <>

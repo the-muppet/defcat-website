@@ -127,7 +127,7 @@
     /* Darker tinted backgrounds for dark mode */
     --bg-tinted: rgba(var(--mana-rgb), 0.03);
     --card-tinted: rgba(var(--mana-rgb), 0.05);
-    --accent-tinted: rgba(var(--mana-rgb), 0.1);
+    --accent-tinted: var(--mana-tint-medium);
     --border-tinted: rgba(var(--mana-rgb), 0.2);
 
     /* Enhanced gradients for dark mode */

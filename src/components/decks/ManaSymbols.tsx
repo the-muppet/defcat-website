@@ -67,7 +67,8 @@ export function ManaSymbols({
     // Check if it's a mana cost string like "{2}{W}{U}"
     if (mana.includes('{')) {
       // Parse mana cost: "{2}{W}{U}" -> ['2', 'W', 'U']
-      symbols = mana.match(/\{([^}]+)\}/g)?.map((s) => s.slice(1, -1)) || []
+      // For hybrid mana like {W/U}, remove the slash: {W/U} -> 'WU'
+      symbols = mana.match(/\{([^}]+)\}/g)?.map((s) => s.slice(1, -1).replace('/', '')) || []
     } else {
       // Single color: "W"
       symbols = [mana]
