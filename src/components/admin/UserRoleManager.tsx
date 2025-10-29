@@ -4,6 +4,7 @@ import { AlertCircle, CheckCircle2, Search, Shield, UserPlus, X } from 'lucide-r
 import { useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { GlowingEffect } from '@/components/ui/glowEffect'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -173,7 +174,17 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
   )
 
   return (
-    <Card className="glass-panel">
+    <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3">
+      <GlowingEffect
+        blur={0}
+        borderWidth={3}
+        spread={80}
+        glow={true}
+        disabled={false}
+        proximity={64}
+        inactiveZone={0.01}
+      />
+      <Card className="card-glass border-0 relative">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Shield className="h-5 w-5" />
@@ -368,5 +379,6 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
         </div>
       </CardContent>
     </Card>
+    </div>
   )
 }

@@ -16,8 +16,8 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu'
+import { useSubmissionEligibility } from '@/lib/contexts/AuthContext'
 import { ThemeAnimationType } from '@/lib/hooks/useModeAnimation'
-import { useSubmissionEligibility } from '@/lib/hooks/useSubmissionEligibility'
 import { cn } from '@/lib/utils'
 import type { PatreonTier } from '@/types/core'
 import { AnimatedThemeToggler } from '../ui/animated-theme-toggler'

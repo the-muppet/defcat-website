@@ -1,6 +1,6 @@
 'use client'
 
-import CommanderDeckForm from '@/components/admin/CommanderDeckForm'
+import CommanderDeckForm from '@/components/forms/CommanderDeckForm'
 
 export default function DeckSubmissionPage() {
   return (

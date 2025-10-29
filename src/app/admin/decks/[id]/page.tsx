@@ -6,7 +6,7 @@
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { DeckEditForm } from '@/components/admin/DeckEditForm'
+import { DeckEditForm } from '@/components/forms/DeckEditForm'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { requireAdmin } from '@/lib/auth/auth-guards'

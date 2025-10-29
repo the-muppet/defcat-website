@@ -6,6 +6,11 @@ DefCat DeckVault is a full-stack Next.js application for managing Magic: The Gat
 ## System Architecture Diagram
 
 ```mermaid
+---
+type: ELK
+name: "System Architecture"
+theme: Neo Dark
+---
 graph TB
     subgraph "External Services"
         Patreon[Patreon OAuth API]
@@ -23,7 +28,7 @@ graph TB
             Home[Home Page<br/>src/app/page.tsx]
             About[About Page<br/>src/app/about/page.tsx]
             Decks[Deck Browser<br/>src/app/decks/page.tsx]
-            DeckDetail[Deck Detail<br/>src/app/decks/[id]/page.tsx]
+            DeckDetail[Deck Detail<br/>src/app/decks/id/page.tsx]
         end
 
         subgraph "Auth Pages"

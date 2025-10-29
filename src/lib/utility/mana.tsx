@@ -1,11 +1,3 @@
-export const ManaColor = {
-  WHITE: 'oklch(0.90 0.40 100)',
-  BLUE: 'oklch(0.35 0.40 270)',
-  BLACK: 'oklch(0.30 0.40 335)',
-  RED: 'oklch(0.35 0.40 50)',
-  GREEN: 'oklch(0.40 0.40 150)',
-  COLORLESS: 'oklch(0.5 0 0)',
-}
 
 const ManaSymbolPaths: Record<string, string> = {
   WHITE:

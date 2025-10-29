@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { GlowingEffect } from '@/components/ui/glowEffect'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -194,13 +195,24 @@ export function ProductsPanel() {
 
   if (loading) {
     return (
-      <Card className="glass-panel">
-        <CardContent className="py-8">
-          <div className="flex items-center justify-center">
-            <div className="animate-spin h-8 w-8 border-4 border-tinted border-t-transparent rounded-full" />
-          </div>
-        </CardContent>
-      </Card>
+      <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3">
+        <GlowingEffect
+          blur={0}
+          borderWidth={3}
+          spread={80}
+          glow={true}
+          disabled={false}
+          proximity={64}
+          inactiveZone={0.01}
+        />
+        <Card className="card-glass border-0 relative">
+          <CardContent className="py-8">
+            <div className="flex items-center justify-center">
+              <div className="animate-spin h-8 w-8 border-4 border-tinted border-t-transparent rounded-full" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     )
   }
 
@@ -222,10 +234,6 @@ export function ProductsPanel() {
       )}
 
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Products Management</h2>
-          <p className="text-muted-foreground">Manage Fourthwall product links</p>
-        </div>
         <Button onClick={handleAddProduct} className="btn-tinted-primary">
           <Plus className="h-4 w-4 mr-2" />
           Add Product
@@ -233,20 +241,41 @@ export function ProductsPanel() {
       </div>
 
       {error && (
-        <Card className="border-destructive/50 bg-destructive/10">
-          <CardContent className="py-4">
-            <div className="flex items-center gap-2 text-destructive">
-              <AlertCircle className="h-5 w-5" />
-              <p className="text-sm">{error}</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="relative rounded-2xl border border-destructive/50 p-2 md:rounded-3xl md:p-3">
+          <GlowingEffect
+            blur={0}
+            borderWidth={3}
+            spread={80}
+            glow={true}
+            disabled={false}
+            proximity={64}
+            inactiveZone={0.01}
+          />
+          <Card className="border-0 bg-destructive/10 relative">
+            <CardContent className="py-4">
+              <div className="flex items-center gap-2 text-destructive">
+                <AlertCircle className="h-5 w-5" />
+                <p className="text-sm">{error}</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       <Accordion type="multiple" className="space-y-4">
         {products.map((product) => (
           <AccordionItem key={product.id} value={product.id} className="border-none">
-            <Card className="glass-panel">
+            <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3">
+              <GlowingEffect
+                blur={0}
+                borderWidth={3}
+                spread={80}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+              />
+              <Card className="card-glass border-0 relative">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <AccordionTrigger className="hover:no-underline flex-1">
@@ -396,19 +425,31 @@ export function ProductsPanel() {
                 </CardContent>
               </AccordionContent>
             </Card>
+            </div>
           </AccordionItem>
         ))}
       </Accordion>
 
       {products.length === 0 && (
-        <Card className="glass-panel">
-          <CardContent className="py-12">
-            <div className="text-center text-muted-foreground">
-              <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No products yet. Click "Add Product" to get started.</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3">
+          <GlowingEffect
+            blur={0}
+            borderWidth={3}
+            spread={80}
+            glow={true}
+            disabled={false}
+            proximity={64}
+            inactiveZone={0.01}
+          />
+          <Card className="card-glass border-0 relative">
+            <CardContent className="py-12">
+              <div className="text-center text-muted-foreground">
+                <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>No products yet. Click "Add Product" to get started.</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   )

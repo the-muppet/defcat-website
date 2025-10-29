@@ -4,6 +4,7 @@ import { AlertCircle, CheckCircle2, Code, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { GlowingEffect } from '@/components/ui/glowEffect'
 import {
   Select,
   SelectContent,
@@ -112,82 +113,93 @@ export function DeveloperTools() {
   }
 
   return (
-    <Card className="glass-panel border-purple-500/20 bg-purple-500/5">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Code className="h-5 w-5 text-purple-500" />
-          Developer Tools
-          <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400">
-            Developer Only
-          </span>
-        </CardTitle>
-        <CardDescription>Testing utilities for spoofing Patreon tier levels</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Spoof Patreon Tier</label>
-          <Select value={spoofedTier} onValueChange={setSpoofedTier}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select tier to spoof" />
-            </SelectTrigger>
-            <SelectContent>
-              {PATREON_TIERS.map((tier) => (
-                <SelectItem key={tier} value={tier}>
-                  {tier}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+    <div className="relative rounded-2xl border border-purple-500/20 p-2 md:rounded-3xl md:p-3">
+      <GlowingEffect
+        blur={0}
+        borderWidth={3}
+        spread={80}
+        glow={true}
+        disabled={false}
+        proximity={64}
+        inactiveZone={0.01}
+      />
+      <Card className="card-glass border-0 bg-purple-500/5 relative">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Code className="h-5 w-5 text-purple-500" />
+            Developer Tools
+            <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400">
+              Developer Only
+            </span>
+          </CardTitle>
+          <CardDescription>Testing utilities for spoofing Patreon tier levels</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Spoof Patreon Tier</label>
+            <Select value={spoofedTier} onValueChange={setSpoofedTier}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select tier to spoof" />
+              </SelectTrigger>
+              <SelectContent>
+                {PATREON_TIERS.map((tier) => (
+                  <SelectItem key={tier} value={tier}>
+                    {tier}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-        <div className="flex gap-2">
-          <Button
-            onClick={handleSpoofTier}
-            disabled={loading || !spoofedTier}
-            className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
-          >
-            {loading ? 'Updating...' : 'Spoof Tier'}
-          </Button>
-          <Button
-            onClick={handleResetTier}
-            disabled={loading}
-            variant="outline"
-            className="border-purple-500 text-purple-500 hover:bg-purple-500/10"
-          >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Reset
-          </Button>
-        </div>
-
-        {message && (
-          <div
-            className={`p-3 rounded-lg flex items-start gap-2 ${
-              message.type === 'success'
-                ? 'bg-green-500/10 border border-green-500/20'
-                : 'bg-destructive/10 border border-destructive/20'
-            }`}
-          >
-            {message.type === 'success' ? (
-              <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
-            ) : (
-              <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
-            )}
-            <p
-              className={`text-sm ${message.type === 'success' ? 'text-green-500' : 'text-destructive'}`}
+          <div className="flex gap-2">
+            <Button
+              onClick={handleSpoofTier}
+              disabled={loading || !spoofedTier}
+              className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
             >
-              {message.text}
+              {loading ? 'Updating...' : 'Spoof Tier'}
+            </Button>
+            <Button
+              onClick={handleResetTier}
+              disabled={loading}
+              variant="outline"
+              className="border-purple-500 text-purple-500 hover:bg-purple-500/10"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Reset
+            </Button>
+          </div>
+
+          {message && (
+            <div
+              className={`p-3 rounded-lg flex items-start gap-2 ${
+                message.type === 'success'
+                  ? 'bg-green-500/10 border border-green-500/20'
+                  : 'bg-destructive/10 border border-destructive/20'
+              }`}
+            >
+              {message.type === 'success' ? (
+                <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
+              ) : (
+                <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
+              )}
+              <p
+                className={`text-sm ${message.type === 'success' ? 'text-green-500' : 'text-destructive'}`}
+              >
+                {message.text}
+              </p>
+            </div>
+          )}
+
+          <div className="p-3 bg-muted/30 rounded-lg">
+            <p className="text-xs text-muted-foreground">
+              <strong>Note:</strong> Spoofed tiers persist until reset. This allows you to test
+              tier-gated features without changing your actual Patreon subscription. The spoofed tier
+              is stored in your profile and will override the real Patreon tier until reset.
             </p>
           </div>
-        )}
-
-        <div className="p-3 bg-muted/30 rounded-lg">
-          <p className="text-xs text-muted-foreground">
-            <strong>Note:</strong> Spoofed tiers persist until reset. This allows you to test
-            tier-gated features without changing your actual Patreon subscription. The spoofed tier
-            is stored in your profile and will override the real Patreon tier until reset.
-          </p>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   )
 }

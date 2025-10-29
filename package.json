@@ -18,7 +18,9 @@
     "fetch:decks": "tsx scripts/import-decks.ts",
     "fetch:images": "tsx scripts/backfill-card-images.ts",
     "cleanup:phantom-cache": "tsx scripts/cleanup-phantom-cache.ts",
-    "seed:config": "tsx scripts/seed-site-config.ts"
+    "seed:config": "tsx scripts/seed-site-config.ts",
+    "create-test-user": "tsx scripts/create-test-user.ts",
+    "db:types": "bash scripts/gen-types.sh"
   },
   "dependencies": {
     "@custom-react-hooks/use-media-query": "^1.5.1",
@@ -52,12 +54,14 @@
     "@tailwindcss/postcss": "^4.0.0",
     "@tailwindcss/typography": "^0.5.19",
     "@tanstack/react-query": "^5.90.3",
+    "@types/lodash": "^4.17.20",
     "@uidotdev/usehooks": "^2.4.1",
     "biome": "^0.3.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "lightningcss": "^1.30.2",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.548.0",
     "mana-font": "^1.18.0",
     "mermaid": "^11.12.1",

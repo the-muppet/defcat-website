@@ -9,19 +9,12 @@ import type { PatreonTier } from '@/types/core'
 interface AuthState {
   user: User | null
   profile: {
-    tier: PatreonTier
+    tier: PatreonTier | string // Now accepts any tier from DB
     role: 'user' | 'admin' | 'moderator' | 'developer'
   }
-  roast: {
-    isEligible: boolean
-    credits: number
-    isUnlimited: boolean
-  }
-  submission: {
-    isEligible: boolean
-    remaining: number
-    max: number
-  }
+  credits: Record<string, number> // Dynamic credits: { roast: 5, deck: 3, review: 2 }
+  eligibility: Record<string, boolean> // Dynamic eligibility based on credits
+  tierBenefits: Record<string, number> // What this tier should get monthly
   isLoading: boolean
   isAuthenticated: boolean
 }
@@ -44,77 +37,67 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return {
           user: null,
           profile: { tier: 'Citizen', role: 'user' },
-          roast: { isEligible: false, credits: 0, isUnlimited: false },
-          submission: { isEligible: false, remaining: 0, max: 0 },
+          credits: {},
+          eligibility: {},
+          tierBenefits: {},
           isLoading: false,
           isAuthenticated: false,
         }
       }
 
+      // Get profile
       const { data: profile } = await supabase
         .from('profiles')
         .select('patreon_tier, role')
         .eq('id', user.id)
         .single()
 
-      const tier = (profile?.patreon_tier as PatreonTier) || 'Citizen'
+      const tier = profile?.patreon_tier || 'Citizen'
       const role = (profile?.role as 'user' | 'admin' | 'moderator' | 'developer') || 'user'
-      const isPrivileged = ['admin', 'moderator', 'developer'].includes(role)
 
-      const roastEligibleTiers = ['Emissary', 'Duke', 'Wizard', 'ArchMage']
-      const hasRoastTier = roastEligibleTiers.includes(tier)
+      // Get user's current credits (dynamic)
+      const { data: userCredits } = await supabase
+        .from('user_credits')
+        .select('credits')
+        .eq('user_id', user.id)
+        .maybeSingle()
 
-      let roastCredits = 0
-      if (hasRoastTier || isPrivileged) {
-        if (isPrivileged) {
-          roastCredits = 999
-        } else {
-          const { data: roastStatus } = await supabase
-            .from('user_roast_status')
-            .select('roast_credits')
-            .eq('user_id', user.id)
-            .single()
-          roastCredits = roastStatus?.roast_credits ?? 0
+      // Get tier benefits configuration
+      const { data: tierBenefits } = await supabase
+        .from('tier_benefits')
+        .select(`
+          credit_type_id,
+          amount,
+          credit_types (
+            id,
+            display_name
+          )
+        `)
+        .eq('tier_id', tier.toLowerCase())
+
+      // Build credits object
+      let credits: Record<string, number> = userCredits?.credits || {}
+
+      // Build tier benefits map
+      const benefits: Record<string, number> = {}
+      tierBenefits?.forEach(tb => {
+        if (tb.credit_type_id) {
+          benefits[tb.credit_type_id] = tb.amount
         }
-      }
+      })
 
-      const submissionEligibleTiers = ['Duke', 'Wizard', 'ArchMage']
-      const hasSubmissionTier = submissionEligibleTiers.includes(tier)
-
-      let submissionRemaining = 0
-      let submissionMax = 0
-      if (hasSubmissionTier || isPrivileged) {
-        const { data: submissionStatus } = await supabase
-          .from('user_submission_status')
-          .select('*')
-          .eq('user_id', user.id)
-          .single()
-
-        if (submissionStatus) {
-          submissionRemaining = submissionStatus.remaining_submissions
-          submissionMax = submissionStatus.max_submissions
-        } else {
-          // Default limits based on tier
-          if (tier === 'Wizard') submissionMax = 3
-          else if (tier === 'ArchMage') submissionMax = 2
-          else submissionMax = 1
-          submissionRemaining = submissionMax
-        }
-      }
+      // Build eligibility map (has credits > 0)
+      const eligibility: Record<string, boolean> = {}
+      Object.keys(credits).forEach(creditType => {
+        eligibility[creditType] = credits[creditType] > 0
+      })
 
       return {
         user,
         profile: { tier, role },
-        roast: {
-          isEligible: (hasRoastTier || isPrivileged) && roastCredits > 0,
-          credits: roastCredits,
-          isUnlimited: isPrivileged,
-        },
-        submission: {
-          isEligible: (hasSubmissionTier || isPrivileged) && submissionRemaining > 0,
-          remaining: submissionRemaining,
-          max: submissionMax,
-        },
+        credits,
+        eligibility,
+        tierBenefits: benefits,
         isLoading: false,
         isAuthenticated: true,
       }
@@ -126,8 +109,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value: AuthState = data || {
     user: null,
     profile: { tier: 'Citizen', role: 'user' },
-    roast: { isEligible: false, credits: 0, isUnlimited: false },
-    submission: { isEligible: false, remaining: 0, max: 0 },
+    credits: {},
+    eligibility: {},
+    tierBenefits: {},
     isLoading,
     isAuthenticated: false,
   }
@@ -141,4 +125,35 @@ export function useAuth() {
     throw new Error('useAuth must be used within AuthProvider')
   }
   return context
+}
+
+// Helper hooks for backward compatibility
+export function useRoastEligibility() {
+  const { credits, eligibility, isLoading } = useAuth()
+  return {
+    isEligible: eligibility.roast || false,
+    roastCredits: credits.roast || 0,
+    isLoading,
+  }
+}
+
+export function useSubmissionEligibility() {
+  const { credits, eligibility, tierBenefits, isLoading } = useAuth()
+  return {
+    isEligible: eligibility.deck || false,
+    remainingSubmissions: credits.deck || 0,
+    maxSubmissions: tierBenefits.deck || 0,
+    isLoading,
+  }
+}
+
+// Generic hook for any credit type
+export function useCreditType(creditType: string) {
+  const { credits, eligibility, tierBenefits, profile } = useAuth()
+  
+  return {
+    credits: credits[creditType] || 0,
+    isEligible: eligibility[creditType] || false,
+    monthlyAllowance: tierBenefits[creditType] || 0
+  }
 }

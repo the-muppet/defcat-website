@@ -7,9 +7,7 @@ import { memo } from 'react'
 import { CommanderImage } from '@/components/decks/Commander'
 import { ManaSymbols } from '@/components/decks/ManaSymbols'
 import { cn } from '@/lib/utils'
-import type { Database } from '@/types/supabase'
-
-type Deck = Database['public']['Tables']['decks']['Row']
+import type { Deck } from '@/types/core'
 
 interface DeckCardProps {
   deck: Deck

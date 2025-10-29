@@ -9,7 +9,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { createClient } from '@/lib/supabase/client'
-import type { Database } from '@/types/db'
+import type { Database } from '@/types/supabase/generated'
 
 type MoxfieldDeck = Database['public']['Tables']['moxfield_decks']['Row']
 

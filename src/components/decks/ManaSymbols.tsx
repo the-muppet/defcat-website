@@ -90,12 +90,13 @@ export function ManaSymbols({
 
   // If we found a guild/clan symbol, use that
   if (colorIdentity) {
+    const isHybrid = symbols.length > 1
     return (
       <i
         className={cn(
           'ms',
           colorIdentity,
-          cost && 'ms-cost',
+          (cost || isHybrid) && 'ms-cost',
           fixedWidth && 'ms-fw',
           sizeClasses[size],
           'transition-all duration-200 hover:scale-110',

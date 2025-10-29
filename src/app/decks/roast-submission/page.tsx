@@ -2,7 +2,7 @@
 
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
-import RoastSubmissionForm from '@/components/admin/RoastSubmissionForm'
+import RoastSubmissionForm from '@/components/forms/RoastSubmissionForm'
 
 function RoastSubmissionContent() {
   const searchParams = useSearchParams()

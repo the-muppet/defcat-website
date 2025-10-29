@@ -1,5 +1,6 @@
+/** biome-ignore-all lint/a11y/noLabelWithoutControl: <explanation> */
+/** biome-ignore-all lint/a11y/useButtonType: <explanation> */
 import {
-  AlertCircle,
   CheckCircle,
   ChevronLeft,
   ChevronRight,
@@ -12,7 +13,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { useRoastEligibility } from '@/lib/hooks/useRoastEligibility'
+import { useRoastEligibility } from '@/context/AuthContext'
 import { createClient } from '@/lib/supabase/client'
 import '../../styles/form.css'
 
@@ -378,37 +379,6 @@ export default function RoastSubmissionForm({ prefilledDeckUrl }: RoastSubmissio
               />
               <p className="step-description">Checking eligibility...</p>
             </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // Error state (not eligible)
-  if (!eligibility.isEligible) {
-    return (
-      <div className="deck-form-container">
-        <div className="form-wrapper">
-          <div className="form-header">
-            <div className="header-logo">
-              <AlertCircle style={{ width: '32px', height: '32px', color: 'white' }} />
-            </div>
-            <h1 className="header-title">Eligibility Required</h1>
-            <p className="header-subtitle">{eligibility.error}</p>
-          </div>
-          <div className="form-card" style={{ textAlign: 'center' }}>
-            <p className="step-description" style={{ marginBottom: '2rem' }}>
-              Roast submissions are available to Emissary tier and above ($30/month). Upgrade your
-              Patreon tier to submit roast requests.
-            </p>
-            <a
-              href="https://www.patreon.com/defcat"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-primary"
-            >
-              Upgrade on Patreon
-            </a>
           </div>
         </div>
       </div>

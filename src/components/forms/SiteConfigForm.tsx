@@ -1,6 +1,6 @@
 'use client'
 
-import { AlertCircle, Globe, Loader2, Save, Users, Youtube } from 'lucide-react'
+import { AlertCircle, Globe, Loader2, LucideVideo, Save, Users } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -60,7 +60,6 @@ export function SiteConfigForm() {
 
   useEffect(() => {
     loadConfig()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleChange = (key: string, value: string) => {
@@ -200,7 +199,7 @@ export function SiteConfigForm() {
       <Tabs defaultValue="videos" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="videos">
-            <Youtube className="h-4 w-4 mr-2" />
+            <LucideVideo className="h-4 w-4 mr-2" />
             Videos
           </TabsTrigger>
           <TabsTrigger value="social">

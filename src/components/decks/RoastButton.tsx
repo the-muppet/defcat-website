@@ -4,7 +4,7 @@ import { Flame } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { useRoastEligibility } from '@/lib/hooks/useRoastEligibility'
+import { useRoastEligibility } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'
 
 interface RoastButtonProps {
@@ -14,7 +14,7 @@ interface RoastButtonProps {
 }
 
 export function RoastButton({ moxfieldUrl, variant = 'default', className }: RoastButtonProps) {
-  const { isEligible, roastCredits, isLoading, error, isPrivileged } = useRoastEligibility()
+  const { isEligible, roastCredits, isLoading } = useRoastEligibility()
 
   const roastUrl = `/decks/roast-submission?deckUrl=${encodeURIComponent(moxfieldUrl)}`
 
@@ -26,20 +26,11 @@ export function RoastButton({ moxfieldUrl, variant = 'default', className }: Roa
   const buttonContent = (
     <>
       <Flame className="h-4 w-4" />
-      {variant === 'default' && (
-        <>
-          <span className="ml-2">Roast This Deck</span>
-          {!isPrivileged && (
-            <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-destructive/20 text-destructive font-semibold">
-              {roastCredits} left
-            </span>
-          )}
-        </>
-      )}
+      {variant === 'default' && <span className="ml-2">Roast This Deck</span>}
       {variant === 'compact' && (
         <>
           <span className="ml-2">Roast</span>
-          {!isPrivileged && <span className="ml-1 text-xs opacity-70">({roastCredits})</span>}
+          <span className="ml-1 text-xs opacity-70">({roastCredits})</span>
         </>
       )}
     </>
@@ -65,9 +56,7 @@ export function RoastButton({ moxfieldUrl, variant = 'default', className }: Roa
         <TooltipContent>
           <p className="text-sm">
             {variant === 'icon-only' && 'Roast This Deck - '}
-            {isPrivileged
-              ? 'Unlimited roasts (Staff)'
-              : `${roastCredits} roast credit${roastCredits !== 1 ? 's' : ''} remaining this month`}
+            {`${roastCredits} roast credit${roastCredits !== 1 ? 's' : ''} remaining this month`}
           </p>
         </TooltipContent>
       </Tooltip>

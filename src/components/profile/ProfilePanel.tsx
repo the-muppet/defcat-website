@@ -13,9 +13,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { GlowingEffect } from '@/components/ui/glowEffect'
 import { createClient } from '@/lib/supabase/client'
-import type { Database } from '@/types/supabase'
+import type { db } from '@/types/supabase'
 
-type Profile = Database['public']['Tables']['profiles']['Row']
+type Profile = db['public']['Tables']['profiles']['Row']
 
 export default function ProfilePanel() {
   const router = useRouter()
@@ -88,28 +88,28 @@ export default function ProfilePanel() {
           {/* Top Row: Profile Settings & Mana Selector */}
           <div className="relative rounded-2xl border">
             <GlowingEffect
-              blur={0}
+              blur={1}
               borderWidth={3}
-              spread={80}
+              spread={40}
               glow={true}
               disabled={false}
-              proximity={64}
-              inactiveZone={0.01}
+              proximity={25}
+              inactiveZone={0.2}
             />
             <Card className="glass-panel border-0 relative">
               <CardContent className="p-0 m-0">
                 <div className="flex items-center justify-between">
                   {/* Profile Settings Title */}
                   <div className="flex items-center gap-3">
-                    <User className="h-8 w-8" style={{ color: 'var(--mana-color)' }} />
+                    <User className="h-12 w-12" style={{ color: 'var(--mana-color)' }} />
                     <div>
-                      <h1 className="text-2xl font-bold">Profile Settings</h1>
+                      <h1 className="text-2xl mana-color">Profile Settings</h1>
                       <p className="text-sm text-muted-foreground">Manage your account</p>
                     </div>
                   </div>
 
                   {/* Mana Symbol Selector */}
-                  <div className="flex-shrink-0">
+                  <div className="pr-6 relative">
                     <ManaSymbolSelector />
                   </div>
                 </div>

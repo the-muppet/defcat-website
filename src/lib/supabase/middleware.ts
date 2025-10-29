@@ -2,17 +2,18 @@
  * Supabase Client for Middleware
  * Use this in Next.js middleware for session management
  */
+/** biome-ignore-all lint/suspicious/useIterableCallbackReturn: <explanation> */
 
 import { createServerClient } from '@supabase/ssr'
 import { type NextRequest, NextResponse } from 'next/server'
-import type { Database } from '@/types/supabase'
+import type { db } from '@/types/supabase'
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   })
 
-  const supabase = createServerClient<Database>(
+  const supabase = createServerClient<db>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {

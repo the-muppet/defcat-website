@@ -95,7 +95,9 @@ export function ColorDistribution({
               const percentage = (count / totalSymbols) * 100
               const isHovered = hoveredColor === colorLetter
               const colorInfo = ColorIdentity.getColorInfo(colorLetter)
-
+              console.log(`colorInfo returned: ${colorInfo.color}`)
+              const colorClass = ColorIdentity.getClassName(colorInfo.color)
+              console.log(`colorClass returned: ${colorClass}`)
               return (
                 <div
                   key={colorLetter}
@@ -113,7 +115,7 @@ export function ColorDistribution({
                   {isHovered && (
                     <div className="absolute left-1/2 -translate-x-1/2 -top-14 bg-popover text-popover-foreground px-3 py-2 rounded-md text-sm font-medium shadow-lg border whitespace-nowrap z-10">
                       <div className="flex items-center gap-2">
-                        <i className={colorInfo.className} />
+                        <i className={`ms ${colorClass}`}/>
                         <span>
                           : {count} ({percentage.toFixed(1)}%)
                         </span>
@@ -157,7 +159,15 @@ export function ColorDistribution({
                   )}
                 >
                   <div className="flex items-center gap-2">
-                    <i className={ColorIdentity.getClassName(combo)} />
+                    {combo.length === 2 ? (
+                      <i className={ColorIdentity.getClassName(combo, true)} />
+                    ) : (
+                      <div className="flex gap-0.5">
+                        {Array.from(combo).map((color, idx) => (
+                          <i key={idx} className={ColorIdentity.getClassName(color)} />
+                        ))}
+                      </div>
+                    )}
                     <span className="font-large">{ColorIdentity.getLabel(combo)}</span>
                   </div>
                   <div className="flex items-center gap-3">

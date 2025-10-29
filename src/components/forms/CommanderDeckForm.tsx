@@ -26,13 +26,14 @@ import {
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { useAuth } from '@/lib/contexts/AuthContext'
+import { useAuth, useSubmissionEligibility } from '@/lib/contexts/AuthContext'
 import { createClient } from '@/lib/supabase/client'
 import { ColorIdentity } from '@/types/colors'
 import { bracketOptions } from '@/types/core'
 
 export default function PagedDeckForm() {
   const auth = useAuth()
+  const { isEligible, remainingSubmissions, maxSubmissions } = useSubmissionEligibility()
   const [currentStep, setCurrentStep] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -65,97 +66,63 @@ export default function PagedDeckForm() {
   useEffect(() => {
     const checkEligibility = async () => {
       try {
-        const supabase = createClient()
-        const {
-          data: { user },
-          error: userError,
-        } = await supabase.auth.getUser()
+        // Wait for auth to load
+        if (auth.isLoading) {
+          return
+        }
 
-        if (userError || !user) {
+        if (!auth.isAuthenticated || !auth.user) {
           setTierError('Please log in to submit a deck request.')
           setIsLoading(false)
           return
         }
 
-        // Get user's profile with tier info
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('patreon_tier, email, role')
-          .eq('id', user.id)
-          .single()
+        // Check submission eligibility from auth context
+        if (!isEligible) {
+          const eligibleTiers = ['Duke', 'Wizard', 'ArchMage']
+          if (!eligibleTiers.includes(auth.profile.tier)) {
+            setTierError(
+              `Deck submissions require Duke tier ($50/month) or higher. Your current tier: ${auth.profile.tier}`
+            )
+            setIsLoading(false)
+            return
+          }
+        }
 
-        if (profileError || !profile) {
-          setTierError('Unable to verify your Patreon tier. Please ensure your account is linked.')
+        // Check for queued submissions
+        const supabase = createClient()
+        const { data: submissions, error: countError } = await supabase
+          .from('deck_submissions')
+          .select('status')
+          .eq('user_id', auth.user.id)
+          .gte(
+            'created_at',
+            new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
+          )
+
+        if (countError) {
+          console.error('Error checking submissions:', countError)
+        }
+
+        const queuedSubmissions = submissions?.filter((s) => s.status === 'queued').length || 0
+        const totalSubmissionsCount = submissions?.length || 0
+
+        setTotalSubmissions(totalSubmissionsCount)
+
+        if (queuedSubmissions >= MAX_QUEUED) {
+          setTierError(
+            `You have ${MAX_QUEUED} deck requests already queued. Please wait for them to be processed before submitting more.`
+          )
           setIsLoading(false)
           return
         }
 
-        const tier = profile.patreon_tier
-        const role = profile.role
-        setUserTier(tier)
-
-        // Admins and moderators bypass tier checks
-        const isAdmin = role === 'admin' || role === 'moderator'
-
-        // Check if user has eligible tier (skip for admins)
-        if (!isAdmin) {
-          const eligibleTiers = ['Duke', 'Wizard', 'ArchMage']
-          if (!tier || !eligibleTiers.includes(tier)) {
-            setTierError(
-              `Deck submissions require Duke tier ($50/month) or higher. Your current tier: ${tier || 'None'}`
-            )
-            setIsLoading(false)
-            return
-          }
+        if (remainingSubmissions <= 0) {
+          setWillBeQueued(true)
         }
 
-        // Check monthly submission limit (skip for admins)
-        if (!isAdmin) {
-          const maxSubmissions = tier === 'ArchMage' ? 2 : 1
-
-          // Get all submissions this month (pending, queued, completed)
-          const { data: submissions, error: countError } = await supabase
-            .from('deck_submissions')
-            .select('status')
-            .eq('user_id', user.id)
-            .gte(
-              'created_at',
-              new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
-            )
-
-          if (countError) {
-            console.error('Error checking submissions:', countError)
-          }
-
-          const activeSubmissions =
-            submissions?.filter(
-              (s) =>
-                s.status === 'pending' || s.status === 'in_progress' || s.status === 'completed'
-            ).length || 0
-
-          const queuedSubmissions = submissions?.filter((s) => s.status === 'queued').length || 0
-          const totalSubmissionsCount = activeSubmissions + queuedSubmissions
-
-          setTotalSubmissions(totalSubmissionsCount)
-
-          const remaining = maxSubmissions - activeSubmissions
-          setSubmissionsRemaining(remaining)
-
-          if (queuedSubmissions >= MAX_QUEUED) {
-            setTierError(
-              `You have ${MAX_QUEUED} deck requests already queued. Please wait for them to be processed before submitting more.`
-            )
-            setIsLoading(false)
-            return
-          }
-
-          if (remaining <= 0) {
-            setWillBeQueued(true)
-          }
-        }
-
-        if (profile.email) {
-          setFormData((prev) => ({ ...prev, email: profile.email }))
+        if (auth.user.email) {
+          setFormData((prev) => ({ ...prev, email: auth.user.email }))
         }
 
         setIsLoading(false)
@@ -167,7 +134,7 @@ export default function PagedDeckForm() {
     }
 
     checkEligibility()
-  }, [])
+  }, [auth.isLoading, auth.isAuthenticated])
 
   const steps = [
     { id: 1, name: 'Basic Info', icon: User },
@@ -1053,9 +1020,9 @@ export default function PagedDeckForm() {
               <>Your custom Commander deck request has been received. We'll be in touch soon!</>
             )}
           </p>
-          {!willBeQueued && auth.submission.remaining > 0 && (
+          {!willBeQueued && remainingSubmissions > 0 && (
             <p className="success-meta">
-              You have {auth.submission.remaining - 1} slot(s) remaining this month
+              You have {remainingSubmissions - 1} slot(s) remaining this month
             </p>
           )}
           {willBeQueued && <p className="success-meta">Queue position: {totalSubmissions + 1}</p>}
@@ -1097,7 +1064,7 @@ export default function PagedDeckForm() {
           </div>
           <h1 className="header-title">Deck Submission Form</h1>
           <p className="header-subtitle">Customized Commander Creations</p>
-          {auth.profile.tier && auth.submission.remaining !== undefined && (
+          {auth.profile.tier && remainingSubmissions !== undefined && (
             <div
               className="tier-info"
               style={{
@@ -1112,10 +1079,10 @@ export default function PagedDeckForm() {
             >
               <p style={{ margin: 0, fontSize: '0.875rem' }}>
                 <strong>{auth.profile.tier} Tier:</strong>{' '}
-                {auth.submission.remaining > 0 ? (
+                {remainingSubmissions > 0 ? (
                   <>
-                    {auth.submission.remaining} slot
-                    {auth.submission.remaining !== 1 ? 's' : ''} available this month
+                    {remainingSubmissions} slot
+                    {remainingSubmissions !== 1 ? 's' : ''} available this month
                   </>
                 ) : (
                   <>

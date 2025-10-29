@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { GlowingEffect } from '@/components/ui/glowEffect'
 import { Input } from '@/components/ui/input'
 
 interface Deck {
@@ -65,76 +66,98 @@ export function DecksList({ decks }: DecksListProps) {
 
       {/* Decks List */}
       {filteredDecks.length === 0 ? (
-        <Card className="glass-panel p-8">
-          <div className="text-center text-muted-foreground">
-            <p className="mb-2">
-              {searchQuery ? 'No decks found matching your search' : 'No decks found'}
-            </p>
-            {searchQuery && (
-              <Button variant="outline" size="sm" onClick={() => setSearchQuery('')}>
-                Clear search
-              </Button>
-            )}
-          </div>
-        </Card>
+        <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3">
+          <GlowingEffect
+            blur={0}
+            borderWidth={3}
+            spread={80}
+            glow={true}
+            disabled={false}
+            proximity={64}
+            inactiveZone={0.01}
+          />
+          <Card className="card-glass border-0 p-8 relative">
+            <div className="text-center text-muted-foreground">
+              <p className="mb-2">
+                {searchQuery ? 'No decks found matching your search' : 'No decks found'}
+              </p>
+              {searchQuery && (
+                <Button variant="outline" size="sm" onClick={() => setSearchQuery('')}>
+                  Clear search
+                </Button>
+              )}
+            </div>
+          </Card>
+        </div>
       ) : (
         filteredDecks.map((deck) => (
-          <Card key={deck.id} className="glass-card hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-xl font-bold truncate">{deck.name}</h3>
-                  </div>
+          <div key={deck.id} className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3">
+            <GlowingEffect
+              blur={0}
+              borderWidth={3}
+              spread={80}
+              glow={true}
+              disabled={false}
+              proximity={64}
+              inactiveZone={0.01}
+            />
+            <Card className="glass-card border-0 hover:shadow-lg transition-shadow relative">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="text-xl font-bold truncate">{deck.name}</h3>
+                    </div>
 
-                  <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                    {/* Commanders */}
-                    {deck.commanders && deck.commanders.length > 0 && (
+                    <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+                      {/* Commanders */}
+                      {deck.commanders && deck.commanders.length > 0 && (
+                        <div className="flex items-center gap-1">
+                          <span className="font-medium">Commanders:</span>
+                          <span>{deck.commanders.join(', ')}</span>
+                        </div>
+                      )}
+
+                      {/* Color Identity */}
+                      {deck.color_identity && deck.color_identity.length > 0 && (
+                        <div className="flex items-center gap-1">
+                          <span className="font-medium">Colors:</span>
+                          <span>{deck.color_identity.join('')}</span>
+                        </div>
+                      )}
+
+                      {/* Stats */}
                       <div className="flex items-center gap-1">
-                        <span className="font-medium">Commanders:</span>
-                        <span>{deck.commanders.join(', ')}</span>
+                        <span className="font-medium">Views:</span>
+                        <span>{deck.view_count || 0}</span>
                       </div>
-                    )}
+                    </div>
 
-                    {/* Color Identity */}
-                    {deck.color_identity && deck.color_identity.length > 0 && (
-                      <div className="flex items-center gap-1">
-                        <span className="font-medium">Colors:</span>
-                        <span>{deck.color_identity.join('')}</span>
-                      </div>
-                    )}
-
-                    {/* Stats */}
-                    <div className="flex items-center gap-1">
-                      <span className="font-medium">Views:</span>
-                      <span>{deck.view_count || 0}</span>
+                    <div className="text-xs text-muted-foreground mt-2">
+                      Moxfield ID: {deck.moxfield_id}
                     </div>
                   </div>
 
-                  <div className="text-xs text-muted-foreground mt-2">
-                    Moxfield ID: {deck.moxfield_id}
+                  {/* Actions */}
+                  <div className="flex gap-2 shrink-0">
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={`/decks/${deck.id}`} target="_blank">
+                        <ExternalLink className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={`/admin/decks/${deck.moxfield_id}`}>
+                        <Edit className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                    <Button variant="destructive" size="sm">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
-
-                {/* Actions */}
-                <div className="flex gap-2 shrink-0">
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={`/decks/${deck.id}`} target="_blank">
-                      <ExternalLink className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={`/admin/decks/${deck.moxfield_id}`}>
-                      <Edit className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                  <Button variant="destructive" size="sm">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         ))
       )}
     </div>

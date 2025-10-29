@@ -79,6 +79,7 @@ const GlowingEffect = memo(
 
           const currentAngle =
             parseFloat(element.style.getPropertyValue("--start")) || 0;
+          
           const targetAngle =
             (180 * Math.atan2(mouseY - center[1], mouseX - center[0])) /
               Math.PI +
@@ -138,7 +139,7 @@ const GlowingEffect = memo(
               "--start": "0",
               "--active": "0",
               "--glowingeffect-border-width": `${borderWidth}px`,
-              "--repeating-conic-gradient-times": "5",
+              "--repeating-conic-gradient-times": "6",
               "--gradient":
                 variant === "white"
                   ? `repeating-conic-gradient(
@@ -146,20 +147,11 @@ const GlowingEffect = memo(
                   var(--black),
                   var(--black) calc(25% / var(--repeating-conic-gradient-times))
                 )`
-                  : `radial-gradient(circle, #dd7bbb 10%, #dd7bbb00 20%),
-                radial-gradient(circle at 40% 40%, #d79f1e 5%, #d79f1e00 15%),
-                radial-gradient(circle at 60% 60%, #5a922c 10%, #5a922c00 20%), 
-                radial-gradient(circle at 40% 60%, #4c7894 10%, #4c789400 20%),
-                repeating-conic-gradient(
-                  from 236.84deg at 50% 50%,
-                  #dd7bbb 0%,
-                  #d79f1e calc(25% / var(--repeating-conic-gradient-times)),
-                  #5a922c calc(50% / var(--repeating-conic-gradient-times)), 
-                  #4c7894 calc(75% / var(--repeating-conic-gradient-times)),
-                  #dd7bbb calc(100% / var(--repeating-conic-gradient-times))
+                  : `radial-gradient(circle, #8b5cf6 10%, #8b5cf600 20%),radial-gradient(circle at 40% 40%, #fbbf24 5%, #fbbf2400 15%),radial-gradient(circle at 60% 60%, #22c55e 10%, #22c55e00 20%),radial-gradient(circle at 40% 60%, #3b82f6 10%, #3b82f600 20%),radial-gradient(circle at 50% 80%, #ef4444 8%, #ef444400 18%),repeating-conic-gradient(from 236.84deg at 50% 50%, #8b5cf6 0%,#fbbf24 calc(20% / var(--repeating-conic-gradient-times)),#ef4444 calc(40% / var(--repeating-conic-gradient-times)),  #22c55e calc(60% / var(--repeating-conic-gradient-times)),#3b82f6 calc(80% / var(--repeating-conic-gradient-times)),#8b5cf6 calc(100% / var(--repeating-conic-gradient-times))
                 )`,
             } as React.CSSProperties
           }
+          
           className={cn(
             "pointer-events-none absolute inset-0 rounded-[inherit] opacity-100 transition-opacity",
             glow && "opacity-100",
