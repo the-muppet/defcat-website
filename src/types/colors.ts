@@ -10,7 +10,7 @@ enum ManaSymbol {
 const ManaColorMap = {
   W: 'oklch(0.90 0.40 100)',
   U: 'oklch(0.35 0.40 270)',
-  B: 'oklch(0.32 0.16 333.58)',
+  B: 'oklch(0.32 0.16 330)',
   R: 'oklch(0.35 0.40 50)',
   G: 'oklch(0.40 0.40 150)',
   C: 'oklch(0.5 0 0)',
@@ -156,7 +156,7 @@ export const ColorIdentity = {
   ): string => {
     const normalized = typeof colors === 'string' ? colors : ColorIdentity.normalize(colors)
 
-    const base = `ms-${normalized.toLowerCase()}`
+    const base = `ms ms-${normalized.toLowerCase()}`
     const mods = [cost ? 'ms-cost' : '', shadow ? 'ms-shadow' : ''].filter(Boolean)
 
     return [base, ...mods].join(' ')
@@ -168,18 +168,18 @@ export const ColorIdentity = {
    * 'BRG' -> ['B', 'R', 'G']
    */
   getIndividual: (colors: string | null | undefined): string[] => {
-    if (!colors) return ['C']
-    const normalized = typeof colors === 'string' ? colors : colors.toString()
-    return normalized.toUpperCase().split('')
+    const colorStr = String(colors)
+    return colorStr.toUpperCase().split('')
   },
 
   /**
    * Get human-readable label for color identity
-   * 'WU' -> 'Azorius' or 'White/Blue'
+   * 'WU' -> 'White/Blue'
    * 'W' -> 'White'
    */
   getLabel: (colors: string[] | string): string => {
     const normalized = typeof colors === 'string' ? colors : ColorIdentity.normalize(colors)
+
 
     // Guild names (two colors)
     const guildNames: Record<string, string> = {
@@ -213,15 +213,7 @@ export const ColorIdentity = {
       return ColorMapping[normalized]?.name || 'Colorless'
     }
 
-    if (normalized.length === 2 && guildNames[normalized]) {
-      return guildNames[normalized]
-    }
-
-    if (normalized.length === 3 && triNames[normalized]) {
-      return triNames[normalized]
-    }
-
-    // Fallback to color names
+    // Return color names instead of guild/clan names
     return normalized
       .split('')
       .map((c) => ColorMapping[c]?.name)

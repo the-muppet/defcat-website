@@ -17,13 +17,24 @@ export interface Profile {
   role: UserRole
 }
 
-export interface UserCredits {
+export type CreditType = {
   id: string
+  display_name: string
+  description: string | null
+  is_active: boolean
+}
+
+export type Tier = {
+  id: string
+  display_name: string
+  sort_order: number
+  is_active: boolean
+}
+
+export type UserCredits = {
   user_id: string
-  patreon_tier: string
-  deck_credits: number
-  roast_credits: number
-  credits_month: string
+  credits: Record<string, number> // Dynamic based on credit_types
+  last_granted: Record<string, string>
   created_at: string
   updated_at: string
 }
