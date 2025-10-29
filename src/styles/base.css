@@ -1,0 +1,127 @@
+/*=================================
+   HUE & CHROMA: These values represent the identity of the color scheme.
+   They generally do not change between light and dark modes.
+  ============================================ */
+
+:root {
+  /* Base Slate Gray */
+  --h-gray: 248; /* Oklch hue for a cool gray */
+  --c-gray: 0.015; /* Low chroma for a subtle gray */
+
+  /* Primary Blue */
+  --h-primary: 265; /* Oklch hue for a deeper blue */
+  --c-primary: 0.1;
+
+  /* Destructive Red */
+  --h-destructive: 25;
+  --c-destructive: 0.15;
+
+  /* Chart Colors */
+  --h-chart-1: 30; --c-chart-1: 0.16;
+  --h-chart-2: 150; --c-chart-2: 0.14;
+  /* ... etc ... */
+  
+  --radius: 0.5rem;
+}
+
+/* 
+  ====================================================================
+  LIGHTNESS SCALE
+  This is the truth for all shades. Edit these values
+  To make the entire application darker or lighter
+  ====================================================================
+*/
+:root {
+  /* --- LIGHT MODE TONE SCALE   (0 = black, 1 = white) --- */
+  --lightness-app-bg: 0.96;         /* Lightest background */
+  --lightness-subtle-bg: 0.92;      /* For muted/secondary elements */
+  --lightness-ui-element: 1;        /* Cards, popovers, inputs */
+  --lightness-ui-border: 0.88;      /* Borders */
+  --lightness-hover: 0.94;          /* Hover states */
+
+  --lightness-text-primary: 0.25;     /* Darkest text */
+  --lightness-text-secondary: 0.4;    /* Muted text */
+  --lightness-primary-solid: 0.4;     /* Primary button background */
+  --lightness-primary-text: 0.98;     /* Text on primary button */
+}
+
+.dark {
+  /* --- DARK MODE TONE SCALE (1 = white, 0 = black ) --- */
+  --lightness-app-bg: 0.15;         /* Darkest background */
+  --lightness-subtle-bg: 0.2;       /* For muted/secondary elements */
+  --lightness-ui-element: 0.18;     /* Cards, popovers, inputs */
+  --lightness-ui-border: 0.25;      /* Borders */
+  --lightness-hover: 0.22;          /* Hover states */
+
+  --lightness-text-primary: 0.98;     /* Brightest text */
+  --lightness-text-secondary: 0.7;    /* Muted text */
+  --lightness-primary-solid: 0.8;     /* Primary button background */
+  --lightness-primary-text: 0.2;      /* Text on primary button */
+}
+
+
+/* 
+  ====================================================================
+  THEME VARIABLE COMPOSITION
+  These variables now build themselves from the components.
+  You almost never need to edit this section again.
+  ====================================================================
+*/
+:root, .dark {
+  /* Base */
+  --background: oklch(var(--lightness-app-bg) var(--c-gray) var(--h-gray));
+  --foreground: oklch(var(--lightness-text-primary) var(--c-gray) var(--h-gray));
+  
+  /* Cards & Popovers */
+  --card: oklch(var(--lightness-ui-element) var(--c-gray) var(--h-gray));
+  --card-foreground: oklch(var(--lightness-text-primary) var(--c-gray) var(--h-gray));
+  --popover: oklch(var(--lightness-ui-element) var(--c-gray) var(--h-gray));
+  --popover-foreground: oklch(var(--lightness-text-primary) var(--c-gray) var(--h-gray));
+  
+  /* Primary */
+  --primary: oklch(var(--lightness-primary-solid) var(--c-primary) var(--h-primary));
+  --primary-foreground: oklch(var(--lightness-primary-text) var(--c-primary) var(--h-primary));
+  
+  /* Secondary & Muted */
+  --secondary: oklch(var(--lightness-subtle-bg) var(--c-gray) var(--h-gray));
+  --secondary-foreground: oklch(var(--lightness-text-primary) var(--c-gray) var(--h-gray));
+  --muted: oklch(var(--lightness-subtle-bg) var(--c-gray) var(--h-gray));
+  --muted-foreground: oklch(var(--lightness-text-secondary) var(--c-gray) var(--h-gray));
+
+  /* Accent (can be its own color or alias another) */
+  --accent: oklch(var(--lightness-subtle-bg) var(--c-gray) var(--h-gray));
+  --accent-foreground: oklch(var(--lightness-text-primary) var(--c-gray) var(--h-gray));
+
+  /* Destructive */
+  --destructive: oklch(0.6 var(--c-destructive) var(--h-destructive));
+  --destructive-foreground: oklch(0.98 var(--c-destructive) var(--h-destructive));
+
+  /* Other UI */
+  --border: oklch(var(--lightness-ui-border) var(--c-gray) var(--h-gray));
+  --input: oklch(var(--lightness-ui-element) var(--c-gray) var(--h-gray));
+  --ring: oklch(0.7 var(--c-primary) var(--h-primary));
+}
+
+
+/* 
+  ====================================================================
+  MANA THEMES - ONLY SWAP HUE & CHROMA
+  The lightness relationships from the base theme are inherited,
+  making the mana themes automatically adapt.
+  ====================================================================
+*/
+.mana-white {
+  --h-primary: 95;  --c-primary: 0.16;
+}
+.mana-blue {
+  --h-primary: 265; --c-primary: 0.1;
+}
+.mana-black {
+  --h-primary: 290; --c-primary: 0.12;
+}
+.mana-red {
+  --h-primary: 25;  --c-primary: 0.18;
+}
+.mana-green {
+  --h-primary: 155; --c-primary: 0.15;
+}

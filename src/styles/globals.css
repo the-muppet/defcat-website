@@ -4,66 +4,71 @@
 
 @layer base {
   :root {
-    /* Base slate-gray color system */
-    --background: 0 0% 100%; /* #F1F3F5 - Slightly darker base */
-    --foreground: 222.2 84% 4.9%; /* Keep the dark text */
-    /* Create distinct elevation layers */
-    --card: 0 0% 100%; /* #FFFFFF - Pure white cards pop */
+    /* Base slate-gray color system with proper contrast */
+    --background: 210 17% 96%; /* #F4F6F8 - Light gray background */
+    --foreground: 222.2 84% 4.9%; /* Dark text */
+    
+    /* Distinct elevation layers with proper hierarchy */
+    --card: 0 0% 100%; /* #FFFFFF - White cards on gray bg */
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%; /* White popovers */
     --popover-foreground: 222.2 84% 4.9%;
-    /* More variety in the accent colors */
-    --primary: 222.2 47.4% 11.2%; /* #E9ECEF - Subtle gray */
+    
+    /* Varied accent colors */
+    --primary: 222.2 47.4% 11.2%; /* Dark primary */
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%; /* #E5E9EC - Slightly different */
+    --secondary: 214 14% 92%; /* #E8EAED - Distinct secondary */
     --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%; /* #EFF1F3 - Lighter muted */
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%; /* #DEE2E6 - Darker accent */
+    --muted: 210 14% 89%; /* #E1E5E8 - Visible muted */
+    --muted-foreground: 215.4 16.3% 36.9%; /* Darker muted text */
+    --accent: 214 18% 85%; /* #D5DBE1 - Clear accent */
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%; /* #D3D8DE - More visible borders */
-    --input: 214.3 31.8% 91.4%; /* #EBEEF1 - Slightly inset inputs */
+    --border: 214 20% 84%; /* #CDD4DC - Visible borders */
+    --input: 0 0% 100%; /* White inputs on gray bg */
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
+    
+    /* Enhanced glass effects */
     --glass-bg: linear-gradient(
       135deg,
-      rgba(var(--slate-light), 0.12) /* Increased opacity */,
-      rgba(var(--slate-rgb), 0.06)
+      rgba(255, 255, 255, 0.7),
+      rgba(255, 255, 255, 0.5)
     );
-    --glass-border: rgba(var(--slate-light), 0.25); /* More visible */
-    --glass-blur: 16px; /* Stronger blur */
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --glass-blur: 20px;
 
-    /* Add shadows for depth */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
-    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.08);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.08);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+    /* Depth shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 
-    --mana-tint-subtle: rgba(var(--mana-rgb), 0.15); /* Was 0.02 */
-    --mana-tint-light: rgba(var(--mana-rgb), 0.25); /* Was 0.04 */
-    --mana-tint-medium: rgba(var(--mana-rgb), 0.4); /* Was 0.08 */
-    --mana-tint-strong: rgba(var(--mana-rgb), 0.55); /* Was 0.15 */
-    --mana-tint-intense: rgba(var(--mana-rgb), 0.7); /* Was 0.25 */
+    /* MUCH stronger mana tints - actually visible now */
+    --mana-tint-subtle: rgba(var(--manargb), 0.12);
+    --mana-tint-light: rgba(var(--manargb), 0.18);
+    --mana-tint-medium: rgba(var(--manargb), 0.25);
+    --mana-tint-strong: rgba(var(--manargb), 0.35);
+    --mana-tint-intense: rgba(var(--manargb), 0.45);
 
-    /* Mana-tinted backgrounds */
-    --bg-tinted: rgba(var(--mana-rgb), 0.08); /* Was 0.02 */
-    --card-tinted: rgba(var(--mana-rgb), 0.12); /* Was 0.03 */
-    --accent-tinted: rgba(var(--mana-rgb), 0.25); /* Was 0.08 */
-    --border-tinted: rgba(var(--mana-rgb), 0.35); /* Was 0.15 */
+    /* Actually colored backgrounds */
+    --bg-tinted: rgba(var(--manargb), 0.04);
+    --card-tinted: rgba(var(--manargb), 0.06);
+    --accent-tinted: rgba(var(--manargb), 0.15);
+    --border-tinted: rgba(var(--manargb), 0.25);
 
-    /* Background gradients */
-    --bg-radial-top: rgba(var(--mana-rgb), 0.15); /* Was 0.05 */
-    --bg-radial-bottom: rgba(var(--mana-rgb), 0.06); /* Was 0.02 */
-    --bg-gradient-opacity: 0.8; /* Was 0.5 */
-    --bg-dot-color: rgba(var(--mana-rgb), 0.25); /* Was 0.1 */
+    /* Visible background gradients */
+    --bg-radial-top: rgba(var(--manargb), 0.08);
+    --bg-radial-bottom: rgba(var(--manargb), 0.03);
+    --bg-gradient-opacity: 0.6;
+    --bg-dot-color: rgba(var(--manargb), 0.15);
 
-    /* Interaction states */
-    --hover-overlay: rgba(var(--mana-rgb), 0.15); /* Was 0.04 */
-    --active-overlay: rgba(var(--mana-rgb), 0.25); /* Was 0.08 */
-    --focus-ring: rgba(var(--mana-rgb), 0.45); /* Was 0.25 */
+    /* Clear interaction states */
+    --hover-overlay: rgba(var(--manargb), 0.08);
+    --active-overlay: rgba(var(--manargb), 0.15);
+    --focus-ring: rgba(var(--manargb), 0.35);
 
     /* Text contrast ensuring WCAG AA compliance */
     --text-primary: rgba(15, 23, 42, 0.95);
@@ -85,9 +90,9 @@
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 220 23% 11%; /* Slightly lighter than bg for hierarchy */
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 220 23% 13%;
     --popover-foreground: 210 40% 98%;
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
@@ -99,47 +104,42 @@
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
+    --border: 217.2 32.6% 20%; /* More visible borders */
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
 
-    /* Glass effects with slate base for dark mode */
-    --glass-base-rgb: 255, 255, 255;
-    --glass-border-rgb: 255, 255, 255;
-    --glass-shadow-rgb: 0, 0, 0;
+    /* Glass effects for dark mode */
     --glass-bg: linear-gradient(
       135deg,
-      rgba(var(--slate-dark), 0.12),
-      rgba(var(--slate-rgb), 0.06)
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.04)
     );
-    --glass-border: rgba(var(--slate-light), 0.12);
-    --glass-blur: 16px;
-    --glass-saturation: 1.2;
-    --glass-brightness: 1.05;
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-blur: 20px;
 
-    /* Adjusted mana tints for dark mode */
-    --mana-tint-subtle: rgba(var(--mana-rgb), 0.04);
-    --mana-tint-light: rgba(var(--mana-rgb), 0.08);
-    --mana-tint-medium: rgba(var(--mana-rgb), 0.15);
-    --mana-tint-strong: rgba(var(--mana-rgb), 0.25);
-    --mana-tint-intense: rgba(var(--mana-rgb), 0.35);
+    /* Adjusted mana tints for dark mode - more visible */
+    --mana-tint-subtle: rgba(var(--manargb), 0.08);
+    --mana-tint-light: rgba(var(--manargb), 0.12);
+    --mana-tint-medium: rgba(var(--manargb), 0.18);
+    --mana-tint-strong: rgba(var(--manargb), 0.28);
+    --mana-tint-intense: rgba(var(--manargb), 0.38);
 
     /* Darker tinted backgrounds for dark mode */
-    --bg-tinted: rgba(var(--mana-rgb), 0.03);
-    --card-tinted: rgba(var(--mana-rgb), 0.05);
-    --accent-tinted: var(--mana-tint-medium);
-    --border-tinted: rgba(var(--mana-rgb), 0.2);
+    --bg-tinted: rgba(var(--manargb), 0.05);
+    --card-tinted: rgba(var(--manargb), 0.08);
+    --accent-tinted: rgba(var(--manargb), 0.18);
+    --border-tinted: rgba(var(--manargb), 0.25);
 
     /* Enhanced gradients for dark mode */
-    --bg-radial-top: rgba(var(--mana-rgb), 0.08);
-    --bg-radial-bottom: rgba(var(--mana-rgb), 0.03);
+    --bg-radial-top: rgba(var(--manargb), 0.12);
+    --bg-radial-bottom: rgba(var(--manargb), 0.05);
     --bg-gradient-opacity: 0.7;
-    --bg-dot-color: rgba(var(--mana-rgb), 0.15);
+    --bg-dot-color: rgba(var(--manargb), 0.18);
 
     /* Stronger interaction states */
-    --hover-overlay: rgba(var(--mana-rgb), 0.06);
-    --active-overlay: rgba(var(--mana-rgb), 0.12);
-    --focus-ring: rgba(var(--mana-rgb), 0.35);
+    --hover-overlay: rgba(var(--manargb), 0.1);
+    --active-overlay: rgba(var(--manargb), 0.18);
+    --focus-ring: rgba(var(--manargb), 0.4);
 
     /* Text contrast for dark mode */
     --text-primary: rgba(248, 250, 252, 0.95);
@@ -159,149 +159,57 @@
   }
 
   .mana-colorless {
-    --mana-color: #80808c;
+    --mana-color: #94a3b8;
+    --manargb: 148, 163, 184;
   }
 
-  /* White mana color theme */
+  /* White mana color theme - warm yellows */
   .mana-white {
-    --mana-color: #fbbf24;
-    --mana-rgb: 251, 191, 36;
-    --bg-tinted: rgba(209, 155, 19, 0.856);
-    --card-tinted: rgba(251, 191, 36, 0.03);
-    --accent-tinted: rgba(251, 191, 36, 0.08);
-    --border-tinted: rgba(251, 191, 36, 0.15);
+    --mana-color: #fcf404;
+    --manargb: 251, 191, 36;
     --gradient-start: #fef08a;
     --gradient-mid: #fbbf24;
-    --gradient-end: #f59e0b;
-    --bg-radial-top: rgba(251, 191, 36, 0.05);
-    --bg-radial-bottom: rgba(251, 191, 36, 0.02);
-    --bg-dot-color: rgba(251, 191, 36, 0.1);
-    --focus-ring: rgba(251, 191, 36, 0.2);
+    --gradient-end: #faf336;
   }
 
-  .dark .mana-white {
-    --bg-tinted: rgba(251, 191, 36, 0.03);
-    --card-tinted: rgba(251, 191, 36, 0.05);
-    --accent-tinted: rgba(251, 191, 36, 0.1);
-    --border-tinted: rgba(251, 191, 36, 0.2);
-    --bg-radial-top: rgba(251, 191, 36, 0.08);
-    --bg-radial-bottom: rgba(251, 191, 36, 0.03);
-    --bg-dot-color: rgba(251, 191, 36, 0.15);
-    --focus-ring: rgba(251, 191, 36, 0.3);
-  }
-
-  /* Blue mana color theme */
+  /* Blue mana color theme - cool blues */
   .mana-blue {
     --mana-color: #3b82f6;
-    --mana-rgb: 59, 130, 246;
-    --bg-tinted: rgba(59, 130, 246, 0.02);
-    --card-tinted: rgba(59, 130, 246, 0.03);
-    --accent-tinted: rgba(59, 130, 246, 0.08);
-    --border-tinted: rgba(59, 130, 246, 0.15);
+    --manargb: 59, 130, 246;
     --gradient-start: #60a5fa;
     --gradient-mid: #3b82f6;
     --gradient-end: #2563eb;
-    --bg-radial-top: rgba(59, 130, 246, 0.05);
-    --bg-radial-bottom: rgba(59, 130, 246, 0.02);
-    --bg-dot-color: rgba(59, 130, 246, 0.1);
-    --focus-ring: rgba(59, 130, 246, 0.2);
   }
 
-  .dark .mana-blue {
-    --bg-tinted: rgba(59, 130, 246, 0.03);
-    --card-tinted: rgba(59, 130, 246, 0.05);
-    --accent-tinted: rgba(59, 130, 246, 0.1);
-    --border-tinted: rgba(59, 130, 246, 0.2);
-    --bg-radial-top: rgba(59, 130, 246, 0.08);
-    --bg-radial-bottom: rgba(59, 130, 246, 0.03);
-    --bg-dot-color: rgba(59, 130, 246, 0.15);
-    --focus-ring: rgba(59, 130, 246, 0.3);
-  }
-
-  /* Black mana color theme */
+  /* Black mana color theme - deep purples */
   .mana-black {
-    --mana-color: #3c0540;
-    --mana-rgb: 107, 114, 128;
-    --bg-tinted: rgba(107, 114, 128, 0.02);
-    --card-tinted: rgba(107, 114, 128, 0.03);
-    --accent-tinted: rgba(107, 114, 128, 0.08);
-    --border-tinted: rgba(107, 114, 128, 0.15);
-    --gradient-start: #9ca3af;
-    --gradient-mid: #6b7280;
-    --gradient-end: #4b5563;
-    --bg-radial-top: rgba(107, 114, 128, 0.05);
-    --bg-radial-bottom: rgba(107, 114, 128, 0.02);
-    --bg-dot-color: rgba(107, 114, 128, 0.1);
-    --focus-ring: rgba(107, 114, 128, 0.2);
+    --mana-color: #8b5cf6;
+    --manargb: 139, 92, 246;
+    --gradient-start: #a78bfa;
+    --gradient-mid: #8b5cf6;
+    --gradient-end: #7c3aed;
   }
 
-  .dark .mana-black {
-    --bg-tinted: rgba(107, 114, 128, 0.03);
-    --card-tinted: rgba(107, 114, 128, 0.05);
-    --accent-tinted: rgba(107, 114, 128, 0.1);
-    --border-tinted: rgba(107, 114, 128, 0.2);
-    --bg-radial-top: rgba(107, 114, 128, 0.08);
-    --bg-radial-bottom: rgba(107, 114, 128, 0.03);
-    --bg-dot-color: rgba(107, 114, 128, 0.15);
-    --focus-ring: rgba(107, 114, 128, 0.3);
-  }
-
-  /* Red mana color theme */
+  /* Red mana color theme - vibrant reds */
   .mana-red {
     --mana-color: #ef4444;
-    --mana-rgb: 239, 68, 68;
-    --bg-tinted: rgba(239, 68, 68, 0.02);
-    --card-tinted: rgba(239, 68, 68, 0.03);
-    --accent-tinted: rgba(239, 68, 68, 0.08);
-    --border-tinted: rgba(239, 68, 68, 0.15);
+    --manargb: 239, 68, 68;
     --gradient-start: #f87171;
     --gradient-mid: #ef4444;
     --gradient-end: #dc2626;
-    --bg-radial-top: rgba(239, 68, 68, 0.05);
-    --bg-radial-bottom: rgba(239, 68, 68, 0.02);
-    --bg-dot-color: rgba(239, 68, 68, 0.1);
-    --focus-ring: rgba(239, 68, 68, 0.2);
   }
 
-  .dark .mana-red {
-    --bg-tinted: rgba(239, 68, 68, 0.03);
-    --card-tinted: rgba(239, 68, 68, 0.05);
-    --accent-tinted: rgba(239, 68, 68, 0.1);
-    --border-tinted: rgba(239, 68, 68, 0.2);
-    --bg-radial-top: rgba(239, 68, 68, 0.08);
-    --bg-radial-bottom: rgba(239, 68, 68, 0.03);
-    --bg-dot-color: rgba(239, 68, 68, 0.15);
-    --focus-ring: rgba(239, 68, 68, 0.3);
-  }
-
-  /* Green mana color theme */
+  /* Green mana color theme - rich greens */
   .mana-green {
     --mana-color: #22c55e;
-    --mana-rgb: 34, 197, 94;
-    --bg-tinted: rgba(34, 197, 94, 0.02);
-    --card-tinted: rgba(34, 197, 94, 0.03);
-    --accent-tinted: rgba(34, 197, 94, 0.08);
-    --border-tinted: rgba(34, 197, 94, 0.15);
+    --manargb: 34, 197, 94;
     --gradient-start: #4ade80;
     --gradient-mid: #22c55e;
     --gradient-end: #16a34a;
-    --bg-radial-top: rgba(34, 197, 94, 0.05);
-    --bg-radial-bottom: rgba(34, 197, 94, 0.02);
-    --bg-dot-color: rgba(34, 197, 94, 0.1);
-    --focus-ring: rgba(34, 197, 94, 0.2);
   }
 
-  .dark .mana-green {
-    --bg-tinted: rgba(34, 197, 94, 0.03);
-    --card-tinted: rgba(34, 197, 94, 0.05);
-    --accent-tinted: rgba(34, 197, 94, 0.1);
-    --border-tinted: rgba(34, 197, 94, 0.2);
-    --bg-radial-top: rgba(34, 197, 94, 0.08);
-    --bg-radial-bottom: rgba(34, 197, 94, 0.03);
-    --bg-dot-color: rgba(34, 197, 94, 0.15);
-    --focus-ring: rgba(34, 197, 94, 0.3);
-  }
-}
+  .mana-wubrg {
+    --gradient:radial-gradient(circle, #8b5cf6 10%, #8b5cf600 20%),radial-gradient(circle at 40% 40%, #fbbf24 5%, #fbbf2400 15%),radial-gradient(circle at 60% 60%, #22c55e 10%, #22c55e00 20%),radial-gradient(circle at 40% 60%, #3b82f6 10%, #3b82f600 20%),radial-gradient(circle at 50% 80%, #ef4444 8%, #ef444400 18%),repeating-conic-gradient(from 236.84deg at 50% 50%, #8b5cf6 0%,#fbbf24 calc(20% / var(--repeating-conic-gradient-times)),#ef4444 calc(40% / var(--repeating-conic-gradient-times)),  #22c55e calc(60% / var(--repeating-conic-gradient-times)),#3b82f6 calc(80% / var(--repeating-conic-gradient-times)),#8b5cf6 calc(100% / var(--repeating-conic-gradient-times)))}}
 
 @layer base {
   * {
@@ -318,21 +226,22 @@
 
 /* Glass card styles */
 .glass {
-  background: linear-gradient(135deg, var(--glass-bg-start), var(--glass-bg-end));
+  background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px 0 var(--glass-shadow);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
 .glass:hover {
   background: linear-gradient(
     135deg,
-    rgba(var(--glass-base-rgb), calc(0.1 + var(--glass-hover-opacity-boost))),
-    rgba(var(--glass-base-rgb), calc(0.05 + var(--glass-hover-opacity-boost)))
+    rgba(255, 255, 255, 0.75),
+    rgba(255, 255, 255, 0.55)
   );
-  border-color: rgba(var(--glass-border-rgb), calc(0.18 + var(--glass-border-hover-opacity-boost)));
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.12);
 }
 
 /* Button styles */
@@ -346,18 +255,18 @@
   );
   color: white;
   padding: 0.5rem 1rem;
-  box-shadow: 0 4px 12px rgba(var(--mana-rgb), 0.2);
+  box-shadow: 0 4px 12px rgba(var(--manargb), 0.25);
 }
 
 .button:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(var(--mana-rgb), 0.3);
+  box-shadow: 0 6px 20px rgba(var(--manargb), 0.35);
   filter: brightness(1.1);
 }
 
 .button:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(var(--mana-rgb), 0.2);
+  box-shadow: 0 2px 8px rgba(var(--manargb), 0.2);
 }
 
 /* Scrollbar styling */
@@ -375,15 +284,17 @@
   background: var(--mana-color);
   border-radius: 6px;
   border: 2px solid var(--background);
+  opacity: 0.8;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--gradient-end);
+  opacity: 1;
 }
 
 /* Selection styling */
 ::selection {
-  background: rgba(var(--mana-rgb), 0.2);
+  background: rgba(var(--manargb), 0.25);
   color: var(--foreground);
 }
 
@@ -396,23 +307,13 @@
 
 /* Custom animations */
 @keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
 }
 
 @keyframes glow {
-  0%,
-  100% {
-    box-shadow: 0 0 5px rgba(var(--mana-rgb), 0.5);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(var(--mana-rgb), 0.8);
-  }
+  0%, 100% { box-shadow: 0 0 5px rgba(var(--manargb), 0.5); }
+  50% { box-shadow: 0 0 20px rgba(var(--manargb), 0.8); }
 }
 
 .animate-float {
@@ -425,14 +326,9 @@
 
 /* Utility classes for transitions */
 .transition-tinted {
-  transition:
-    background-color 0.3s ease,
-    border-color 0.3s ease,
-    box-shadow 0.3s ease,
-    color 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease,
+              box-shadow 0.3s ease, color 0.3s ease;
 }
-
-/* Tinted Design System - Unified visual language */
 
 /* ===========================
    Base Tinted Backgrounds
@@ -443,6 +339,7 @@
 
 .tinted-card {
   background: var(--card-tinted);
+  border: 1px solid var(--border-tinted);
 }
 
 .tinted-accent {
@@ -455,70 +352,71 @@
 .glass-tinted {
   background: linear-gradient(
     135deg,
-    rgba(var(--glass-base-rgb), 0.08),
-    rgba(var(--glass-base-rgb), 0.04)
+    rgba(var(--manargb), 0.08),
+    rgba(var(--manargb), 0.04)
   );
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-tinted);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border: 1px solid rgba(var(--manargb), 0.2);
+  box-shadow: 0 8px 32px rgba(var(--manargb), 0.1);
 }
 
 .glass-tinted-subtle {
   background: linear-gradient(
     135deg,
-    rgba(var(--glass-base-rgb), 0.04),
-    rgba(var(--glass-base-rgb), 0.02)
+    rgba(var(--manargb), 0.04),
+    rgba(var(--manargb), 0.02)
   );
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(var(--glass-border-rgb), 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(var(--manargb), 0.12);
 }
 
 .glass-tinted-strong {
   background: linear-gradient(
     135deg,
-    rgba(var(--glass-base-rgb), 0.12),
-    rgba(var(--glass-base-rgb), 0.08)
+    rgba(var(--manargb), 0.15),
+    rgba(var(--manargb), 0.08)
   );
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-tinted);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid rgba(var(--manargb), 0.3);
+  box-shadow: 0 12px 48px rgba(var(--manargb), 0.15);
 }
 
 /* ===========================
    Tinted Borders
    =========================== */
 .border-tinted {
-  border-color: var(--border-tinted);
+  border-color: rgba(var(--manargb), 0.25);
 }
 
 .border-tinted-strong {
-  border-color: rgba(var(--glass-border-rgb), 0.25);
+  border-color: rgba(var(--manargb), 0.4);
 }
 
 .border-tinted-subtle {
-  border-color: rgba(var(--glass-border-rgb), 0.08);
+  border-color: rgba(var(--manargb), 0.15);
 }
 
 /* ===========================
    Tinted Shadows
    =========================== */
 .shadow-tinted {
-  box-shadow: 0 4px 16px 0 rgba(var(--glass-shadow-rgb), 0.1);
+  box-shadow: 0 4px 16px 0 rgba(var(--manargb), 0.15);
 }
 
 .shadow-tinted-lg {
-  box-shadow: 0 8px 32px 0 rgba(var(--glass-shadow-rgb), 0.15);
+  box-shadow: 0 8px 32px 0 rgba(var(--manargb), 0.2);
 }
 
 .shadow-tinted-xl {
-  box-shadow: 0 16px 48px 0 rgba(var(--glass-shadow-rgb), 0.2);
+  box-shadow: 0 16px 48px 0 rgba(var(--manargb), 0.25);
 }
 
 .shadow-tinted-glow {
-  box-shadow:
-    0 0 20px rgba(var(--mana-rgb), 0.15),
-    0 8px 32px rgba(var(--glass-shadow-rgb), 0.1);
+  box-shadow: 0 0 20px rgba(var(--manargb), 0.25),
+              0 8px 32px rgba(var(--manargb), 0.15);
 }
 
 /* ===========================
@@ -529,12 +427,13 @@
 }
 
 .text-tinted-subtle {
-  color: rgba(var(--mana-rgb), 0.7);
+  color: var(--mana-color);
+  opacity: 0.8;
 }
 
 .text-tinted-strong {
   color: var(--mana-color);
-  filter: brightness(1.2);
+  filter: brightness(1.2) saturate(1.2);
 }
 
 /* ===========================
@@ -545,7 +444,11 @@
 }
 
 .gradient-tinted-radial {
-  background: radial-gradient(circle at center, rgba(var(--mana-rgb), 0.15), transparent 70%);
+  background: radial-gradient(
+    circle at center,
+    rgba(var(--manargb), 0.2),
+    transparent 70%
+  );
 }
 
 .gradient-tinted-text {
@@ -553,6 +456,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  text-emphasis-color: transparent;
 }
 
 /* ===========================
@@ -563,9 +467,9 @@
 }
 
 .hover-tinted:hover {
-  background: var(--accent-tinted);
-  border-color: var(--border-tinted);
-  box-shadow: 0 4px 16px rgba(var(--mana-rgb), 0.1);
+  background: rgba(var(--manargb), 0.12);
+  border-color: rgba(var(--manargb), 0.3);
+  box-shadow: 0 4px 16px rgba(var(--manargb), 0.15);
 }
 
 .focus-tinted {
@@ -575,9 +479,8 @@
 .focus-tinted:focus {
   outline: none;
   border-color: var(--mana-color);
-  box-shadow:
-    0 0 0 3px rgba(var(--mana-rgb), 0.1),
-    0 0 20px rgba(var(--mana-rgb), 0.05);
+  box-shadow: 0 0 0 3px rgba(var(--manargb), 0.15),
+              0 0 20px rgba(var(--manargb), 0.08);
 }
 
 .active-tinted:active {
@@ -590,86 +493,116 @@
 
 /* Cards */
 .card-tinted {
-  background: var(--card-tinted);
-  border: 1px solid var(--border-tinted);
-  box-shadow: 0 4px 16px rgba(var(--glass-shadow-rgb), 0.08);
+  background: var(--card);
+  border: 1px solid rgba(var(--manargb), 0.15);
+  box-shadow: 0 4px 16px rgba(var(--manargb), 0.08);
+}
+
+.card-tinted-filled {
+  background: rgba(var(--manargb), 0.08);
+  border: 1px solid rgba(var(--manargb), 0.2);
+  box-shadow: 0 4px 16px rgba(var(--manargb), 0.1);
 }
 
 .card-tinted-glass {
   background: linear-gradient(
     135deg,
-    rgba(var(--glass-base-rgb), 0.08),
-    rgba(var(--glass-base-rgb), 0.04)
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 255, 255, 0.7)
   );
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-tinted);
-  box-shadow: 0 8px 32px rgba(var(--glass-shadow-rgb), 0.1);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border: 1px solid rgba(var(--manargb), 0.2);
+  box-shadow: 0 8px 32px rgba(var(--manargb), 0.12);
+}
+
+.dark .card-tinted-glass {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
 }
 
 /* Buttons */
 .btn-tinted {
-  background: var(--accent-tinted);
-  border: 1px solid var(--border-tinted);
-  color: var(--foreground);
+  background: rgba(var(--manargb), 0.1);
+  border: 1px solid rgba(var(--manargb), 0.25);
+  color: var(--mana-color);
   transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .btn-tinted:hover {
-  background: rgba(var(--mana-rgb), 0.15);
-  border-color: rgba(var(--mana-rgb), 0.3);
-  box-shadow: 0 4px 12px rgba(var(--mana-rgb), 0.15);
-}
-
-.btn-tinted-primary {
-  background: hsl(217.2 32.6% 17.5%);
-  color: white;
-  border: none;
-  transition: all 0.3s ease;
-}
-
-.btn-tinted-primary:hover {
-  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  background: rgba(var(--manargb), 0.18);
+  border-color: rgba(var(--manargb), 0.35);
+  box-shadow: 0 4px 12px rgba(var(--manargb), 0.2);
   transform: translateY(-1px);
 }
 
-.btn-tinted-outline {
-  background: hsl(217.2 32.6% 17.5%);
+.btn-tinted-primary {
+  background: var(--mana-color);
   color: white;
-  border: 2px solid hsl(217.2 32.6% 17.5%);
+  border: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(var(--manargb), 0.25);
+}
+
+.btn-tinted-primary:hover {
+  filter: brightness(1.1) saturate(1.1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(var(--manargb), 0.3);
+}
+
+.btn-tinted-outline {
+  background: transparent;
+  color: var(--mana-color);
+  border: 2px solid var(--mana-color);
   transition: all 0.3s ease;
 }
 
 .btn-tinted-outline:hover {
-  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  background: rgba(var(--manargb), 0.1);
   border-color: var(--mana-color);
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(var(--manargb), 0.15);
 }
 
 /* Inputs */
 .input-tinted {
-  background: rgba(var(--glass-base-rgb), 0.05);
-  border: 1px solid var(--border-tinted);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(var(--manargb), 0.2);
   transition: all 0.3s ease;
 }
 
+.dark .input-tinted {
+  background: rgba(255, 255, 255, 0.05);
+}
+
 .input-tinted:focus {
-  background: rgba(var(--glass-base-rgb), 0.08);
+  background: rgba(255, 255, 255, 1);
   border-color: var(--mana-color);
-  box-shadow: 0 0 0 3px rgba(var(--mana-rgb), 0.08);
+  box-shadow: 0 0 0 3px rgba(var(--manargb), 0.1);
+  outline: none;
+}
+
+.dark .input-tinted:focus {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* Badges */
 .badge-tinted {
-  background: var(--accent-tinted);
-  border: 1px solid var(--border-tinted);
-  color: var(--foreground);
+  background: rgba(var(--manargb), 0.1);
+  border: 1px solid rgba(var(--manargb), 0.25);
+  color: var(--mana-color);
+  font-weight: 500;
 }
 
 .badge-tinted-primary {
-  background: rgba(var(--mana-rgb), 0.15);
-  border: 1px solid rgba(var(--mana-rgb), 0.3);
-  color: var(--mana-color);
+  background: var(--mana-color);
+  border: none;
+  color: white;
+  font-weight: 600;
 }
 
 /* ===========================
@@ -683,8 +616,13 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(var(--mana-rgb), 0.05), transparent);
+  background: linear-gradient(
+    135deg,
+    rgba(var(--manargb), 0.08),
+    transparent
+  );
   pointer-events: none;
+  border-radius: inherit;
 }
 
 /* ===========================
@@ -695,12 +633,11 @@
 }
 
 @keyframes pulse-tinted {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(var(--mana-rgb), 0.4);
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(var(--manargb), 0.4);
   }
   50% {
-    box-shadow: 0 0 0 10px rgba(var(--mana-rgb), 0);
+    box-shadow: 0 0 0 10px rgba(var(--manargb), 0);
   }
 }
 
@@ -716,7 +653,12 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: linear-gradient(45deg, transparent, rgba(var(--mana-rgb), 0.1), transparent);
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(var(--manargb), 0.15),
+    transparent
+  );
   transform: translateX(-100%) translateY(-100%);
   animation: shimmer 3s infinite;
 }
@@ -726,6 +668,66 @@
     transform: translateX(100%) translateY(100%);
   }
 }
+
+/* ===========================
+   Mana-specific Enhancements
+   =========================== */
+.mana-glow {
+  box-shadow: 0 0 30px rgba(var(--manargb), 0.3),
+              0 0 60px rgba(var(--manargb), 0.15);
+}
+
+.mana-border-gradient {
+  position: relative;
+  background: var(--card);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+
+.mana-border-gradient::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  margin: -2px;
+  border-radius: inherit;
+  background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+}
+
+/* Mana-colored focus rings */
+input:focus,
+textarea:focus,
+select:focus,
+button:focus-visible {
+  outline: 2px solid var(--mana-color);
+  outline-offset: 2px;
+}
+
+/* Mana-colored links */
+a {
+  color: var(--mana-color);
+  transition: all 0.2s ease;
+}
+
+a:hover {
+  color: var(--gradient-end);
+  text-decoration-color: var(--mana-color);
+}
+
+/* Improved contrast for disabled states */
+:disabled,
+[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Better visual hierarchy with proper elevation */
+.elevation-0 { box-shadow: none; }
+.elevation-1 { box-shadow: var(--shadow-sm); }
+.elevation-2 { box-shadow: var(--shadow); }
+.elevation-3 { box-shadow: var(--shadow-md); }
+.elevation-4 { box-shadow: var(--shadow-lg); }
+.elevation-5 { box-shadow: var(--shadow-xl); }
 
 /* ===========================
    Responsive Tinted Utilities
@@ -785,51 +787,51 @@ button[style*="--glow-color"]::before {
    Mana Font Symbol Colors
    =========================== */
 /* Light mode - darker colors for visibility */
-.ms-w {
+.ms-mana-w {
   color: #f4b731;
 }
 
-.ms-u {
+.ms--mana-u {
   color: #0e68ab;
 }
 
-.ms-b {
+.ms-mana-b {
   color: #6b21a8;
 }
 
-.ms-r {
+.ms-mana-r {
   color: #d3202a;
 }
 
-.ms-g {
+.ms-mana-g {
   color: #00733e;
 }
 
-.ms-c {
-  color: #888;
+.ms-mana-c {
+  color: #eee;
 }
 
 /* Dark mode - brighter colors for visibility */
-.dark .ms-w {
-  color: #fffbd5;
+.dark .ms-mana-w {
+  color: #ffe702;
 }
 
-.dark .ms-u {
-  color: #2e9fd9;
+.dark .ms-mana-u {
+  color: #00a9ff;
 }
 
-.dark .ms-b {
-  color: #a855f7;
+.dark .ms-mana-b {
+  color: #8000fa;
 }
 
-.dark .ms-r {
-  color: #f87171;
+.dark .ms-mana-r {
+  color: #ff0000;
 }
 
-.dark .ms-g {
-  color: #22c55e;
+.dark .ms-mana-g {
+  color: #009400;
 }
 
-.dark .ms-c {
-  color: #ccc;
+.dark .ms-mana-c {
+  color: #eee;
 }
