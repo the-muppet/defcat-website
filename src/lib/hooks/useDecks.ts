@@ -8,7 +8,6 @@
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import type { Deck, DeckCard } from '@/types/core'
-import type { Boards, CardEntry } from '@/types/moxfield'
 
 const DECKS_PER_PAGE = 50
 

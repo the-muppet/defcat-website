@@ -1,3 +1,5 @@
+/** biome-ignore-all lint/suspicious/noAssignInExpressions: <explanation> */
+/** biome-ignore-all lint/suspicious/noImplicitAnyLet: <explanation> */
 'use client'
 
 import { createContext, useContext, type ReactNode } from 'react'
@@ -6,17 +8,22 @@ import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 import type { PatreonTier } from '@/types/core'
 
-interface AuthState {
+export type UserRole = 'user' | 'member' | 'moderator' | 'admin' | 'developer'
+
+export interface AuthState {
   user: User | null
   profile: {
-    tier: PatreonTier | string // Now accepts any tier from DB
-    role: 'user' | 'admin' | 'moderator' | 'developer'
+    tier: PatreonTier | string
+    role: UserRole
   }
   credits: Record<string, number> // Dynamic credits: { roast: 5, deck: 3, review: 2 }
   eligibility: Record<string, boolean> // Dynamic eligibility based on credits
   tierBenefits: Record<string, number> // What this tier should get monthly
   isLoading: boolean
   isAuthenticated: boolean
+  isAdmin: boolean
+  isModerator: boolean
+  isDeveloper: boolean
 }
 
 const AuthContext = createContext<AuthState | undefined>(undefined)
@@ -27,9 +34,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryFn: async (): Promise<AuthState> => {
       const supabase = createClient()
 
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
+      // Get user - suppress OAuth validation errors for custom Patreon OAuth
+      let session
+      try {
+        const { data: sessionData } = await supabase.auth.getSession()
+        session = sessionData.session
+      } catch (err: any) {
+        // Suppress "missing destination name oauth_client_id" errors
+        // These occur because we use custom Patreon OAuth, not Supabase native OAuth
+        if (err?.code === 'unexpected_failure' && err?.message?.includes('oauth_client_id')) {
+          console.warn('Custom OAuth in use, skipping native OAuth validation')
+        } else {
+          console.error('Error getting session:', err)
+        }
+      }
 
       const user = session?.user ?? null
 
@@ -42,6 +60,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           tierBenefits: {},
           isLoading: false,
           isAuthenticated: false,
+          isAdmin: false,
+          isModerator: false,
+          isDeveloper: false,
         }
       }
 
@@ -50,10 +71,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .from('profiles')
         .select('patreon_tier, role')
         .eq('id', user.id)
-        .single()
+        .single<{
+          patreon_tier: string | null
+          role: string | null
+        }>()
 
       const tier = profile?.patreon_tier || 'Citizen'
-      const role = (profile?.role as 'user' | 'admin' | 'moderator' | 'developer') || 'user'
+      const role = (profile?.role as UserRole) || 'user'
 
       // Get user's current credits (dynamic)
       const { data: userCredits } = await supabase
@@ -76,11 +100,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .eq('tier_id', tier.toLowerCase())
 
       // Build credits object
-      let credits: Record<string, number> = userCredits?.credits || {}
+      const credits: Record<string, number> = userCredits?.credits || {}
 
       // Build tier benefits map
       const benefits: Record<string, number> = {}
-      tierBenefits?.forEach(tb => {
+      tierBenefits?.forEach((tb) => {
         if (tb.credit_type_id) {
           benefits[tb.credit_type_id] = tb.amount
         }
@@ -88,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Build eligibility map (has credits > 0)
       const eligibility: Record<string, boolean> = {}
-      Object.keys(credits).forEach(creditType => {
+      Object.keys(credits).forEach((creditType) => {
         eligibility[creditType] = credits[creditType] > 0
       })
 
@@ -100,10 +124,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         tierBenefits: benefits,
         isLoading: false,
         isAuthenticated: true,
+        isAdmin: role === 'admin' || role === 'developer',
+        isModerator: role === 'moderator' || role === 'admin' || role === 'developer',
+        isDeveloper: role === 'developer',
       }
     },
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
   })
 
   const value: AuthState = data || {
@@ -114,11 +141,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     tierBenefits: {},
     isLoading,
     isAuthenticated: false,
+    isAdmin: false,
+    isModerator: false,
+    isDeveloper: false,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
+/**
+ * Main auth hook - provides complete auth state
+ */
 export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) {
@@ -127,7 +160,34 @@ export function useAuth() {
   return context
 }
 
-// Helper hooks for backward compatibility
+/**
+ * Simplified auth hook for components that only need basic user info
+ * Backward compatible with old useAuth.ts
+ */
+export function useAuthUser() {
+  const { user, profile, isLoading, isAuthenticated, isAdmin } = useAuth()
+
+  return {
+    user: user
+      ? {
+          id: user.id,
+          email: user.email!,
+          patreonId: user.user_metadata?.patreon_id || null,
+          patreonTier: profile.tier,
+          role: profile.role,
+        }
+      : null,
+    tier: profile.tier,
+    role: profile.role,
+    isLoading,
+    isAuthenticated,
+    isAdmin,
+  }
+}
+
+/**
+ * Hook for roast eligibility (backward compatible)
+ */
 export function useRoastEligibility() {
   const { credits, eligibility, isLoading } = useAuth()
   return {
@@ -137,6 +197,9 @@ export function useRoastEligibility() {
   }
 }
 
+/**
+ * Hook for deck submission eligibility (backward compatible)
+ */
 export function useSubmissionEligibility() {
   const { credits, eligibility, tierBenefits, isLoading } = useAuth()
   return {
@@ -147,13 +210,33 @@ export function useSubmissionEligibility() {
   }
 }
 
-// Generic hook for any credit type
+/**
+ * Generic hook for any credit type
+ * @param creditType - The credit type ID (e.g., 'roast', 'deck', 'review')
+ */
 export function useCreditType(creditType: string) {
-  const { credits, eligibility, tierBenefits, profile } = useAuth()
-  
+  const { credits, eligibility, tierBenefits } = useAuth()
+
   return {
     credits: credits[creditType] || 0,
     isEligible: eligibility[creditType] || false,
-    monthlyAllowance: tierBenefits[creditType] || 0
+    monthlyAllowance: tierBenefits[creditType] || 0,
+  }
+}
+
+/**
+ * Hook for role-based access control
+ */
+export function useRoleAccess() {
+  const { profile, isAdmin, isModerator, isDeveloper } = useAuth()
+
+  return {
+    role: profile.role,
+    isAdmin,
+    isModerator,
+    isDeveloper,
+    isMember: ['member', 'moderator', 'admin', 'developer'].includes(profile.role),
+    canModerate: isModerator,
+    canAdmin: isAdmin,
   }
 }

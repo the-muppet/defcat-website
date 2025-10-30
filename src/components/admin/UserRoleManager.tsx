@@ -23,6 +23,10 @@ interface User {
   role: string
   patreon_tier: string | null
   created_at: string
+  deck_credits?: number
+  roast_credits?: number
+  submission_count?: number
+  patreon_since?: string | null
 }
 
 interface UserRoleManagerProps {
@@ -34,6 +38,8 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
+  const [searching, setSearching] = useState(false)
+  const [searchResults, setSearchResults] = useState<User[] | null>(null)
   const [message, setMessage] = useState<{
     type: 'success' | 'error'
     text: string
@@ -52,14 +58,44 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
 
   const loadUsers = useCallback(async () => {
     try {
-      const { data, error } = await supabase
+      const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, email, role, patreon_tier, created_at')
+        .select('id, email, role, patreon_tier, patreon_id, created_at')
         .order('created_at', { ascending: false })
         .limit(50)
 
-      if (error) throw error
-      setUsers(data || [])
+      if (profilesError) throw profilesError
+
+      const enrichedUsers = await Promise.all(
+        (profilesData || []).map(async (profile) => {
+          const [creditsResult, submissionsResult] = await Promise.all([
+            supabase
+              .from('user_credits')
+              .select('credits')
+              .eq('user_id', profile.id)
+              .maybeSingle(),
+            supabase
+              .from('deck_submissions')
+              .select('id', { count: 'exact', head: true })
+              .eq('user_id', profile.id),
+          ])
+
+          const credits = creditsResult.data?.credits as { deck?: number; roast?: number } | null
+          const deckCredits = credits?.deck ?? 0
+          const roastCredits = credits?.roast ?? 0
+          const submissionCount = submissionsResult.count ?? 0
+
+          return {
+            ...profile,
+            deck_credits: deckCredits,
+            roast_credits: roastCredits,
+            submission_count: submissionCount,
+            patreon_since: profile.created_at,
+          }
+        })
+      )
+
+      setUsers(enrichedUsers)
     } catch (err) {
       console.error('Failed to load users:', err)
     } finally {
@@ -71,6 +107,86 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
     loadUsers()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const handleSearch = async () => {
+    if (!searchTerm.trim()) {
+      setSearchResults(null)
+      return
+    }
+
+    setSearching(true)
+    setMessage(null)
+
+    try {
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, email, role, patreon_tier, patreon_id, created_at')
+        .ilike('email', `%${searchTerm.trim()}%`)
+        .order('created_at', { ascending: false })
+        .limit(20)
+
+      if (profilesError) throw profilesError
+
+      if (!profilesData || profilesData.length === 0) {
+        setSearchResults([])
+        setMessage({ type: 'error', text: 'No users found matching your search' })
+        return
+      }
+
+      const enrichedUsers = await Promise.all(
+        profilesData.map(async (profile) => {
+          const [creditsResult, submissionsResult] = await Promise.all([
+            supabase
+              .from('user_credits')
+              .select('credits')
+              .eq('user_id', profile.id)
+              .maybeSingle(),
+            supabase
+              .from('deck_submissions')
+              .select('id', { count: 'exact', head: true })
+              .eq('user_id', profile.id),
+            supabase
+              .from('patreon_subscriptions')
+              .select('created_at')
+              .eq('patreon_id', profile.patreon_id)
+              .order('created_at', { ascending: true })
+              .limit(1)
+              .single(),
+          ])
+
+          const credits = creditsResult.data?.credits as { deck?: number; roast?: number } | null
+          const deckCredits = credits?.deck ?? 0
+          const roastCredits = credits?.roast ?? 0
+          const submissionCount = submissionsResult.count ?? 0
+          const patreonSince = patreonSubResult.data?.created_at ?? profile.created_at
+
+          return {
+            ...profile,
+            deck_credits: deckCredits,
+            roast_credits: roastCredits,
+            submission_count: submissionCount,
+            patreon_since: profile.created_at,
+          }
+        })
+      )
+
+      setSearchResults(enrichedUsers)
+    } catch (err) {
+      console.error('Search failed:', err)
+      setMessage({
+        type: 'error',
+        text: err instanceof Error ? err.message : 'Search failed',
+      })
+    } finally {
+      setSearching(false)
+    }
+  }
+
+  const handleClearSearch = () => {
+    setSearchTerm('')
+    setSearchResults(null)
+    setMessage(null)
+  }
 
   const handleUpdateRole = async (userId: string, newRole: string) => {
     setUpdating(true)
@@ -169,34 +285,29 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
     }
   }
 
-  const filteredUsers = users.filter((user) =>
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const displayUsers = searchResults !== null ? searchResults : users
+
+  const getSubscriptionDuration = (patreonSince: string | null | undefined): string => {
+    if (!patreonSince) return 'Unknown'
+
+    const start = new Date(patreonSince)
+    const now = new Date()
+    const months = Math.floor((now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 30))
+
+    if (months < 1) return 'Less than 1 month'
+    if (months === 1) return '1 month'
+    if (months < 12) return `${months} months`
+
+    const years = Math.floor(months / 12)
+    const remainingMonths = months % 12
+    if (remainingMonths === 0) return years === 1 ? '1 year' : `${years} years`
+    return `${years} year${years > 1 ? 's' : ''}, ${remainingMonths} month${remainingMonths > 1 ? 's' : ''}`
+  }
 
   return (
-    <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3">
-      <GlowingEffect
-        blur={0}
-        borderWidth={3}
-        spread={80}
-        glow={true}
-        disabled={false}
-        proximity={64}
-        inactiveZone={0.01}
-      />
-      <Card className="card-glass border-0 relative">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Shield className="h-5 w-5" />
-          User Role Management
-        </CardTitle>
-        <CardDescription>
-          {isDeveloper
-            ? 'Manage user roles and permissions (all roles available)'
-            : 'Manage user roles and permissions (cannot assign developer role)'}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="space-y-4">
+      {/* Search and Controls */}
+      <div className="space-y-4">
         {message && (
           <div
             className={`p-3 rounded-lg flex items-start gap-2 ${
@@ -219,13 +330,36 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
         )}
 
         <div className="flex items-center gap-2">
-          <Search className="h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search users by email..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1"
-          />
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search users by email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearch()
+                }
+              }}
+              className="pl-9"
+            />
+          </div>
+          <Button
+            onClick={handleSearch}
+            disabled={searching || !searchTerm.trim()}
+            variant="outline"
+          >
+            {searching ? (
+              <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            ) : (
+              'Search'
+            )}
+          </Button>
+          {searchResults !== null && (
+            <Button onClick={handleClearSearch} variant="outline">
+              <X className="h-4 w-4" />
+            </Button>
+          )}
           <Button
             onClick={() => {
               if (!showAddUser && searchTerm.trim()) {
@@ -249,136 +383,200 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
           </Button>
         </div>
 
-        {showAddUser && (
-          <Card className="border-tinted bg-card-tinted">
-            <CardContent className="pt-6 space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="new-user-email">Email</Label>
-                <Input
-                  id="new-user-email"
-                  type="email"
-                  placeholder="user@example.com"
-                  value={newUserEmail}
-                  onChange={(e) => setNewUserEmail(e.target.value)}
-                />
-              </div>
+      </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="new-user-role">Role</Label>
-                <Select value={newUserRole} onValueChange={setNewUserRole}>
-                  <SelectTrigger id="new-user-role">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableRoles.map((role) => (
-                      <SelectItem key={role} value={role}>
-                        {role.charAt(0).toUpperCase() + role.slice(1)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+      {showAddUser && (
+        <Card className="border-tinted bg-card-tinted">
+          <CardContent className="pt-6 space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="new-user-email">Email</Label>
+              <Input
+                id="new-user-email"
+                type="email"
+                placeholder="user@example.com"
+                value={newUserEmail}
+                onChange={(e) => setNewUserEmail(e.target.value)}
+              />
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="new-user-tier">Patreon Tier (Optional)</Label>
-                <Select
-                  value={newUserTier || 'none'}
-                  onValueChange={(val) => setNewUserTier(val === 'none' ? '' : val)}
-                >
-                  <SelectTrigger id="new-user-tier">
-                    <SelectValue placeholder="None" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    {PATREON_TIERS.map((tier) => (
-                      <SelectItem key={tier} value={tier}>
-                        {tier}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="new-user-role">Role</Label>
+              <Select value={newUserRole} onValueChange={setNewUserRole}>
+                <SelectTrigger id="new-user-role">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableRoles.map((role) => (
+                    <SelectItem key={role} value={role}>
+                      {role.charAt(0).toUpperCase() + role.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-              <Button
-                onClick={handleAddUser}
-                disabled={adding || !newUserEmail.trim()}
-                className="w-full btn-tinted-primary"
+            <div className="space-y-2">
+              <Label htmlFor="new-user-tier">Patreon Tier (Optional)</Label>
+              <Select
+                value={newUserTier || 'none'}
+                onValueChange={(val) => setNewUserTier(val === 'none' ? '' : val)}
               >
-                {adding ? (
-                  <>
-                    <div className="h-4 w-4 mr-2 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                    Adding User...
-                  </>
-                ) : (
-                  <>
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Add User
-                  </>
-                )}
-              </Button>
-            </CardContent>
+                <SelectTrigger id="new-user-tier">
+                  <SelectValue placeholder="None" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {PATREON_TIERS.map((tier) => (
+                    <SelectItem key={tier} value={tier}>
+                      {tier}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button
+              onClick={handleAddUser}
+              disabled={adding || !newUserEmail.trim()}
+              className="w-full btn-tinted-primary"
+            >
+              {adding ? (
+                <>
+                  <div className="h-4 w-4 mr-2 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  Adding User...
+                </>
+              ) : (
+                <>
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Add User
+                </>
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {searchResults !== null && (
+        <p className="text-sm text-muted-foreground">
+          Found {searchResults.length} of {users.length} users
+        </p>
+      )}
+
+      {loading ? (
+        <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3">
+          <GlowingEffect
+            blur={0}
+            borderWidth={3}
+            spread={80}
+            glow={true}
+            disabled={false}
+            proximity={64}
+            inactiveZone={0.01}
+          />
+          <Card className="card-glass border-0 p-8 relative">
+            <div className="text-center text-muted-foreground">Loading users...</div>
           </Card>
-        )}
-
-        {loading ? (
-          <div className="text-center py-8 text-muted-foreground">Loading users...</div>
-        ) : (
-          <div className="space-y-2">
-            {filteredUsers.map((user) => (
-              <div
-                key={user.id}
-                className="flex items-center justify-between p-3 rounded-lg border border-tinted bg-card-tinted"
-              >
-                <div className="flex-1">
-                  <p className="font-medium">{user.email}</p>
-                  <p className="text-xs text-muted-foreground">
-                    Tier: {user.patreon_tier || 'None'} • Joined{' '}
-                    {new Date(user.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Select
-                    value={user.role}
-                    onValueChange={(newRole) => handleUpdateRole(user.id, newRole)}
-                    disabled={updating}
-                  >
-                    <SelectTrigger className="w-[140px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableRoles.map((role) => (
-                        <SelectItem key={role} value={role}>
-                          {role.charAt(0).toUpperCase() + role.slice(1)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            ))}
-
-            {filteredUsers.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground">No users found</div>
-            )}
-          </div>
-        )}
-
-        <div className="p-3 bg-muted/30 rounded-lg">
-          <p className="text-xs text-muted-foreground">
-            <strong>Role Permissions:</strong>
-            <br />• <strong>User:</strong> Basic access
-            <br />• <strong>Admin:</strong> Content management (client access)
-            <br />• <strong>Moderator:</strong> Content management + moderation
-            <br />
-            {isDeveloper && (
-              <>
-                • <strong>Developer:</strong> Full system access (database, SQL queries)
-              </>
-            )}
-          </p>
         </div>
-      </CardContent>
-    </Card>
+      ) : displayUsers.length === 0 ? (
+        <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3">
+          <GlowingEffect
+            blur={0}
+            borderWidth={3}
+            spread={80}
+            glow={true}
+            disabled={false}
+            proximity={64}
+            inactiveZone={0.01}
+          />
+          <Card className="card-glass border-0 p-8 relative">
+            <div className="text-center text-muted-foreground">
+              {searchResults !== null ? 'No users found matching your search' : 'No users found'}
+            </div>
+          </Card>
+        </div>
+      ) : (
+        displayUsers.map((user) => (
+          <div key={user.id} className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3">
+            <GlowingEffect
+              blur={0}
+              borderWidth={3}
+              spread={80}
+              glow={true}
+              disabled={false}
+              proximity={64}
+              inactiveZone={0.01}
+            />
+            <Card className="card-glass border-0 relative">
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between gap-4 mb-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{user.email}</p>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-muted-foreground">
+                      <span>
+                        <strong>Tier:</strong> {user.patreon_tier || 'None'}
+                      </span>
+                      <span>
+                        <strong>Subscriber:</strong> {getSubscriptionDuration(user.patreon_since)}
+                      </span>
+                      <span>
+                        <strong>Joined:</strong> {new Date(user.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Select
+                      value={user.role}
+                      onValueChange={(newRole) => handleUpdateRole(user.id, newRole)}
+                      disabled={updating}
+                    >
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableRoles.map((role) => (
+                          <SelectItem key={role} value={role}>
+                            {role.charAt(0).toUpperCase() + role.slice(1)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 pt-3 border-t border-border/50 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground">Deck Credits:</span>
+                    <span className="font-medium tabular-nums">{user.deck_credits ?? 0}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground">Roast Credits:</span>
+                    <span className="font-medium tabular-nums">{user.roast_credits ?? 0}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground">Submissions:</span>
+                    <span className="font-medium tabular-nums">{user.submission_count ?? 0}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        ))
+      )}
+
+      <div className="p-3 bg-muted/30 rounded-lg">
+        <p className="text-xs text-muted-foreground">
+          <strong>Role Permissions:</strong>
+          <br />• <strong>User:</strong> Basic access
+          <br />• <strong>Admin:</strong> Content management (client access)
+          <br />• <strong>Moderator:</strong> Content management + moderation
+          <br />
+          {isDeveloper && (
+            <>
+              • <strong>Developer:</strong> Full system access (database, SQL queries)
+            </>
+          )}
+        </p>
+      </div>
     </div>
   )
 }

@@ -180,39 +180,10 @@ export const ColorIdentity = {
   getLabel: (colors: string[] | string): string => {
     const normalized = typeof colors === 'string' ? colors : ColorIdentity.normalize(colors)
 
-
-    // Guild names (two colors)
-    const guildNames: Record<string, string> = {
-      WU: 'Azorius',
-      WB: 'Orzhov',
-      RW: 'Boros',
-      GW: 'Selesnya',
-      UB: 'Dimir',
-      UR: 'Izzet',
-      BU: 'Simic',
-      BR: 'Rakdos',
-      BG: 'Golgari',
-      RG: 'Gruul',
-    }
-
-    // Shard/Wedge names (three colors)
-    const triNames: Record<string, string> = {
-      WUB: 'Esper',
-      WUR: 'Jeskai',
-      WUG: 'Bant',
-      WBR: 'Mardu',
-      WBG: 'Abzan',
-      WRG: 'Naya',
-      UBR: 'Grixis',
-      UBG: 'Sultai',
-      URG: 'Temur',
-      BRG: 'Jund',
-    }
-
     if (normalized.length === 1) {
       return ColorMapping[normalized]?.name || 'Colorless'
     }
-
+ 
     // Return color names instead of guild/clan names
     return normalized
       .split('')
