@@ -138,7 +138,6 @@ export interface DeckCard {
     mana_cost: string | null
     type_line: string | null
     cmc: number | null
-    image_url: string | null
     scryfall_id: string | null
     cached_image_url: string | null
   } | null

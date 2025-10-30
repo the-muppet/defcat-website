@@ -10,6 +10,7 @@ import {
   ArrowLeft,
   BarChart3,
   Calendar,
+  ChartNoAxesColumn,
   Check,
   Copy,
   ExternalLink,
@@ -21,7 +22,8 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { use, useEffect, useState } from 'react'
+import { use, useEffect, useRef, useState } from 'react'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import { CardPreview, ColorDistribution, ManaCurve, TypeDistribution } from '@/components/decks'
 import { RoastButton } from '@/components/decks/RoastButton'
 import { Button } from '@/components/ui/button'
@@ -32,6 +34,27 @@ interface PageProps {
   params: Promise<{ id: string }>
 }
 
+function CardTypeSection({ type, typeCards }: { type: string; typeCards: any[] }) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-3 pb-2 border-b-2 border-primary/20">
+        <h3 className="text-xl md:text-2xl font-bold text-foreground flex items-center gap-2">
+          <span className="text-primary">{type}s</span>
+        </h3>
+        <span className="text-xs md:text-sm font-semibold text-primary bg-primary/10 px-2 md:px-3 py-1 rounded-full">
+          {typeCards.reduce((sum, dc) => sum + dc.quantity, 0)} cards
+        </span>
+      </div>
+
+      <div className="space-y-1">
+        {typeCards.map((dc, idx) => (
+          <CardPreview key={`${dc.cards?.name || 'unknown'}-${idx}`} card={dc.cards} quantity={dc.quantity} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function DeckDetailPage({ params }: PageProps) {
   const { id } = use(params)
   const { data: deck, cards: deckCards, isLoading, error } = useDeck(id)
@@ -39,6 +62,27 @@ export default function DeckDetailPage({ params }: PageProps) {
   const [copied, setCopied] = useState(false)
   const [selectedType, setSelectedType] = useState<string | null>(null)
   const [isDark, setIsDark] = useState(false)
+  const [flippedCards, setFlippedCards] = useState<Set<string>>(new Set())
+  const [columns, setColumns] = useState(4) // Number of columns in visual grid
+  const listContainerRef = useRef<HTMLDivElement>(null)
+  const visualGridRef = useRef<HTMLDivElement>(null)
+
+  const toggleCardFlip = (cardName: string) => {
+    setFlippedCards((prev) => {
+      const newSet = new Set(prev)
+      if (newSet.has(cardName)) {
+        newSet.delete(cardName)
+      } else {
+        newSet.add(cardName)
+      }
+      return newSet
+    })
+  }
+
+  // Clear manual flips when filter changes
+  useEffect(() => {
+    setFlippedCards(new Set())
+  }, [selectedType])
 
   useEffect(() => {
     const checkDarkMode = () => {
@@ -55,6 +99,47 @@ export default function DeckDetailPage({ params }: PageProps) {
 
     return () => observer.disconnect()
   }, [])
+
+  // Responsive column detection for visual grid
+  useEffect(() => {
+    const updateColumns = () => {
+      const width = window.innerWidth
+      if (width < 640) setColumns(2) // mobile
+      else if (width < 768) setColumns(3) // tablet
+      else setColumns(4) // desktop
+    }
+
+    updateColumns()
+    window.addEventListener('resize', updateColumns)
+    return () => window.removeEventListener('resize', updateColumns)
+  }, [])
+
+  // Prepare cards for visual grid virtualization (must be called before early returns)
+  const cards = deckCards || []
+  const visualCards = cards
+    .filter((dc) => !selectedType || dc.cards?.type_line?.includes(selectedType))
+    .filter((dc) => {
+      const frontImageUrl =
+        dc.cards?.cached_image_url ||
+        (dc.cards?.scryfall_id
+          ? `https://cards.scryfall.io/normal/front/${dc.cards.scryfall_id[0]}/${dc.cards.scryfall_id[1]}/${dc.cards.scryfall_id}.jpg`
+          : null)
+      return frontImageUrl !== null
+    })
+
+  // Group cards into rows for virtualization
+  const cardRows: typeof visualCards[] = []
+  for (let i = 0; i < visualCards.length; i += columns) {
+    cardRows.push(visualCards.slice(i, i + columns))
+  }
+
+  // Virtual grid setup (always called to maintain hook order)
+  const rowVirtualizer = useVirtualizer({
+    count: cardRows.length,
+    getScrollElement: () => visualGridRef.current,
+    estimateSize: () => 400,
+    overscan: 2,
+  })
 
   const moxfieldIcon = isDark
     ? 'https://assets.moxfield.net/assets/images/logo-text.svg'
@@ -112,7 +197,6 @@ export default function DeckDetailPage({ params }: PageProps) {
     notFound()
   }
 
-  const cards = deckCards || []
   const mainboardCards = cards.filter((dc) => dc.board === 'mainboard')
   const commanderCards = cards.filter((dc) => dc.board === 'commanders')
 
@@ -172,7 +256,7 @@ export default function DeckDetailPage({ params }: PageProps) {
           {/* Main Content - Left Side (2/3) */}
           <div className="lg:col-span-2 space-y-6">
             {/* Hero Card */}
-            <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3">
+            <div className="relative rounded-2xl border-3 md:rounded-2xl">
               <GlowingEffect
                 blur={0}
                 borderWidth={3}
@@ -358,25 +442,17 @@ export default function DeckDetailPage({ params }: PageProps) {
                           )}
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
-                          <button
-                            onClick={() => setSelectedType(null)}
-                            className={`px-3 py-1.5 rounded-lg border transition-all ${
-                              selectedType === null
-                                ? 'bg-primary text-primary-foreground border-primary shadow-md'
-                                : 'bg-accent/50 text-foreground border-border hover:bg-accent hover:border-primary/50'
-                            }`}
-                          >
-                            <span className="text-sm font-bold">All</span>
-                          </button>
                           {[
-                            'Creature',
-                            'Instant',
-                            'Sorcery',
-                            'Artifact',
-                            'Enchantment',
-                            'Planeswalker',
-                            'Land',
-                          ].map((type) => {
+                            { type: 'Creature', icon: 'ms-creature', color: 'text-green-500', glowColor: 'rgba(34, 197, 94, 0.3)', bgGlow: 'bg-green-500/10' },
+                            { type: 'Instant', icon: 'ms-instant', color: 'text-blue-500', glowColor: 'rgba(59, 130, 246, 0.3)', bgGlow: 'bg-blue-500/10' },
+                            { type: 'Sorcery', icon: 'ms-sorcery', color: 'text-red-500', glowColor: 'rgba(239, 68, 68, 0.3)', bgGlow: 'bg-red-500/10' },
+                            { type: 'Artifact', icon: 'ms-artifact', color: 'text-gray-500', glowColor: 'rgba(107, 114, 128, 0.3)', bgGlow: 'bg-gray-500/10' },
+                            { type: 'Enchantment', icon: 'ms-enchantment', color: 'text-purple-500', glowColor: 'rgba(168, 85, 247, 0.3)', bgGlow: 'bg-purple-500/10' },
+                            { type: 'Planeswalker', icon: 'ms-planeswalker', color: 'text-indigo-500', glowColor: 'rgba(99, 102, 241, 0.3)', bgGlow: 'bg-indigo-500/10' },
+                            { type: 'Battle', icon: 'ms-battle', color: 'text-orange-500', glowColor: 'rgba(249, 115, 22, 0.3)', bgGlow: 'bg-orange-500/10' },
+                            { type: 'Tribal', icon: 'ms-tribal', color: 'text-pink-500', glowColor: 'rgba(236, 72, 153, 0.3)', bgGlow: 'bg-pink-500/10' },
+                            { type: 'Land', icon: 'ms-land', color: 'text-amber-500', glowColor: 'rgba(245, 158, 11, 0.3)', bgGlow: 'bg-amber-500/10' },
+                          ].map(({ type, icon, color, glowColor, bgGlow }) => {
                             const typeCards = cards.filter((dc) =>
                               dc.cards?.type_line?.includes(type)
                             )
@@ -388,29 +464,29 @@ export default function DeckDetailPage({ params }: PageProps) {
                               <button
                                 key={type}
                                 onClick={() => toggleTypeFilter(type)}
-                                className={`group flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all shadow-sm ${
+                                title={`${type}s (${count})`}
+                                className={`group relative flex flex-col items-center justify-center gap-1 px-4 py-2 rounded-lg border transition-all min-w-[80px] min-h-[50px] ${
                                   isActive
-                                    ? 'bg-primary text-primary-foreground border-primary shadow-md scale-105'
+                                    ? `${bgGlow} border-current scale-105`
                                     : 'bg-accent/50 hover:bg-primary/20 border-border hover:border-primary hover:shadow-md'
                                 }`}
+                                style={isActive ? {
+                                  boxShadow: `inset 0 0 30px ${glowColor}, inset 0 0 15px ${glowColor}`,
+                                  background: `radial-gradient(circle at 50% 50%, ${glowColor.replace('0.3', '0.2')}, transparent 75%)`
+                                } : {}}
                               >
+                                <i
+                                  className={`ms ${icon} ${color}`}
+                                  style={{ fontSize: '24px', filter: isActive ? 'drop-shadow(0 0 8px currentColor)' : 'none' }}
+                                />
                                 <span
-                                  className={`text-sm font-bold transition-colors ${
+                                  className={`text-[10px] font-bold ${
                                     isActive
-                                      ? 'text-primary-foreground'
-                                      : 'text-foreground group-hover:text-primary'
+                                      ? 'text-foreground'
+                                      : 'text-muted-foreground group-hover:text-primary'
                                   }`}
                                 >
                                   {type}s
-                                </span>
-                                <span
-                                  className={`text-xs font-bold transition-colors px-2 py-0.5 rounded-full ${
-                                    isActive
-                                      ? 'bg-primary-foreground/20 text-primary-foreground'
-                                      : 'bg-background/60 text-muted-foreground group-hover:text-primary'
-                                  }`}
-                                >
-                                  {count}
                                 </span>
                               </button>
                             )
@@ -419,7 +495,7 @@ export default function DeckDetailPage({ params }: PageProps) {
                       </div>
 
                       {/* Card Type Sections - Filtered */}
-                      <div className="space-y-8">
+                      <div className="space-y-8 max-h-[400px] sm:max-h-[500px] md:max-h-[600px] lg:max-h-[700px] overflow-y-auto">
                         {[
                           'Creature',
                           'Instant',
@@ -427,6 +503,8 @@ export default function DeckDetailPage({ params }: PageProps) {
                           'Artifact',
                           'Enchantment',
                           'Planeswalker',
+                          'Battle',
+                          'Tribal',
                           'Land',
                         ].map((type) => {
                           const typeCards = cards.filter((dc) =>
@@ -438,22 +516,11 @@ export default function DeckDetailPage({ params }: PageProps) {
                           if (selectedType && selectedType !== type) return null
 
                           return (
-                            <div key={type}>
-                              <div className="flex items-center justify-between mb-3 pb-2 border-b-2 border-primary/20">
-                                <h3 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                                  <span className="text-primary">{type}s</span>
-                                </h3>
-                                <span className="text-sm font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
-                                  {typeCards.reduce((sum, dc) => sum + dc.quantity, 0)} cards
-                                </span>
-                              </div>
-
-                              <div className="space-y-1">
-                                {typeCards.map((dc, idx) => (
-                                  <CardPreview key={idx} card={dc.cards} quantity={dc.quantity} />
-                                ))}
-                              </div>
-                            </div>
+                            <CardTypeSection
+                              key={type}
+                              type={type}
+                              typeCards={typeCards}
+                            />
                           )
                         })}
                       </div>
@@ -485,25 +552,17 @@ export default function DeckDetailPage({ params }: PageProps) {
                           )}
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
-                          <button
-                            onClick={() => setSelectedType(null)}
-                            className={`px-3 py-1.5 rounded-lg border transition-all ${
-                              selectedType === null
-                                ? 'bg-primary text-primary-foreground border-primary shadow-md'
-                                : 'bg-accent/50 text-foreground border-border hover:bg-accent hover:border-primary/50'
-                            }`}
-                          >
-                            <span className="text-sm font-bold">All</span>
-                          </button>
                           {[
-                            'Creature',
-                            'Instant',
-                            'Sorcery',
-                            'Artifact',
-                            'Enchantment',
-                            'Planeswalker',
-                            'Land',
-                          ].map((type) => {
+                            { type: 'Creature', icon: 'ms-creature', color: 'text-green-500', glowColor: 'rgba(34, 197, 94, 0.3)', bgGlow: 'bg-green-500/10' },
+                            { type: 'Instant', icon: 'ms-instant', color: 'text-blue-500', glowColor: 'rgba(59, 130, 246, 0.3)', bgGlow: 'bg-blue-500/10' },
+                            { type: 'Sorcery', icon: 'ms-sorcery', color: 'text-red-500', glowColor: 'rgba(239, 68, 68, 0.3)', bgGlow: 'bg-red-500/10' },
+                            { type: 'Artifact', icon: 'ms-artifact', color: 'text-gray-500', glowColor: 'rgba(107, 114, 128, 0.3)', bgGlow: 'bg-gray-500/10' },
+                            { type: 'Enchantment', icon: 'ms-enchantment', color: 'text-purple-500', glowColor: 'rgba(168, 85, 247, 0.3)', bgGlow: 'bg-purple-500/10' },
+                            { type: 'Planeswalker', icon: 'ms-planeswalker', color: 'text-indigo-500', glowColor: 'rgba(99, 102, 241, 0.3)', bgGlow: 'bg-indigo-500/10' },
+                            { type: 'Battle', icon: 'ms-battle', color: 'text-orange-500', glowColor: 'rgba(249, 115, 22, 0.3)', bgGlow: 'bg-orange-500/10' },
+                            { type: 'Tribal', icon: 'ms-tribal', color: 'text-pink-500', glowColor: 'rgba(236, 72, 153, 0.3)', bgGlow: 'bg-pink-500/10' },
+                            { type: 'Land', icon: 'ms-land', color: 'text-amber-500', glowColor: 'rgba(245, 158, 11, 0.3)', bgGlow: 'bg-amber-500/10' },
+                          ].map(({ type, icon, color, glowColor, bgGlow }) => {
                             const typeCards = cards.filter((dc) =>
                               dc.cards?.type_line?.includes(type)
                             )
@@ -515,29 +574,29 @@ export default function DeckDetailPage({ params }: PageProps) {
                               <button
                                 key={type}
                                 onClick={() => toggleTypeFilter(type)}
-                                className={`group flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all shadow-sm ${
+                                title={`${type}s (${count})`}
+                                className={`group relative flex flex-col items-center justify-center gap-1 px-4 py-2 rounded-lg border transition-all min-w-[80px] min-h-[50px] ${
                                   isActive
-                                    ? 'bg-primary text-primary-foreground border-primary shadow-md scale-105'
+                                    ? `${bgGlow} border-current scale-105`
                                     : 'bg-accent/50 hover:bg-primary/20 border-border hover:border-primary hover:shadow-md'
                                 }`}
+                                style={isActive ? {
+                                  boxShadow: `inset 0 0 30px ${glowColor}, inset 0 0 15px ${glowColor}`,
+                                  background: `radial-gradient(circle at 50% 50%, ${glowColor.replace('0.3', '0.2')}, transparent 75%)`
+                                } : {}}
                               >
+                                <i
+                                  className={`ms ${icon} ${color}`}
+                                  style={{ fontSize: '24px', filter: isActive ? 'drop-shadow(0 0 8px currentColor)' : 'none' }}
+                                />
                                 <span
-                                  className={`text-sm font-bold transition-colors ${
+                                  className={`text-[10px] font-bold ${
                                     isActive
-                                      ? 'text-primary-foreground'
-                                      : 'text-foreground group-hover:text-primary'
+                                      ? 'text-foreground'
+                                      : 'text-muted-foreground group-hover:text-primary'
                                   }`}
                                 >
                                   {type}s
-                                </span>
-                                <span
-                                  className={`text-xs font-bold transition-colors px-2 py-0.5 rounded-full ${
-                                    isActive
-                                      ? 'bg-primary-foreground/20 text-primary-foreground'
-                                      : 'bg-background/60 text-muted-foreground group-hover:text-primary'
-                                  }`}
-                                >
-                                  {count}
                                 </span>
                               </button>
                             )
@@ -545,36 +604,139 @@ export default function DeckDetailPage({ params }: PageProps) {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                        {cards
-                          .filter(
-                            (dc) => !selectedType || dc.cards?.type_line?.includes(selectedType)
-                          )
-                          .map((dc, idx) => {
-                            // Prefer cached image, fallback to Scryfall
-                            const imageUrl =
+                      {/* Virtualized Grid Container */}
+                      <div ref={visualGridRef} className="h-[600px] overflow-auto">
+                        <div
+                          style={{
+                            height: `${rowVirtualizer.getTotalSize()}px`,
+                            width: '100%',
+                            position: 'relative',
+                          }}
+                        >
+                          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                            const row = cardRows[virtualRow.index]
+                            return (
+                              <div
+                                key={virtualRow.index}
+                                style={{
+                                  position: 'absolute',
+                                  top: 0,
+                                  left: 0,
+                                  width: '100%',
+                                  transform: `translateY(${virtualRow.start}px)`,
+                                }}
+                              >
+                                <div
+                                  className="gap-4 px-1"
+                                  style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+                                  }}
+                                >
+                                  {row.map((dc, idx) => {
+                            const isDFC = dc.cards?.type_line?.includes('//')
+                            const cardName = dc.cards?.name || ''
+                            const typeLine = dc.cards?.type_line || ''
+
+                            // Auto-flip based on filter for DFCs
+                            let autoFlip = false
+                            if (isDFC && selectedType) {
+                              const [frontType, backType] = typeLine.split('//').map(t => t.trim())
+                              // If filtering by a type that's on the back face but not the front, auto-flip
+                              if (backType.includes(selectedType) && !frontType.includes(selectedType)) {
+                                autoFlip = true
+                              }
+                            }
+
+                            // Manual flip state overrides auto-flip
+                            const manuallyFlipped = flippedCards.has(cardName)
+                            const isFlipped = autoFlip ? !manuallyFlipped : manuallyFlipped
+
+                            // Image URLs for both faces
+                            const frontImageUrl =
                               dc.cards?.cached_image_url ||
                               (dc.cards?.scryfall_id
                                 ? `https://cards.scryfall.io/normal/front/${dc.cards.scryfall_id[0]}/${dc.cards.scryfall_id[1]}/${dc.cards.scryfall_id}.jpg`
                                 : null)
 
-                            return imageUrl ? (
-                              <div key={idx} className="relative group">
-                                <div className="relative overflow-hidden rounded-lg border-2 border-border hover:border-primary transition-all shadow-lg">
-                                  <img
-                                    src={imageUrl}
-                                    alt={dc.cards?.name || ''}
-                                    className="w-full h-auto"
-                                  />
-                                  {dc.quantity > 1 && (
-                                    <div className="absolute top-2 right-2 bg-primary text-primary-foreground font-bold text-sm rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
-                                      {dc.quantity}
+                            const backImageUrl = dc.cards?.scryfall_id
+                              ? `https://cards.scryfall.io/normal/back/${dc.cards.scryfall_id[0]}/${dc.cards.scryfall_id[1]}/${dc.cards.scryfall_id}.jpg`
+                              : null
+
+                            return frontImageUrl ? (
+                              <div key={idx} className="relative group" style={{ perspective: '1000px' }}>
+                                <div
+                                  className="relative rounded-lg border-2 border-border hover:border-primary shadow-lg transition-all duration-600"
+                                  style={{
+                                    transformStyle: 'preserve-3d',
+                                    transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                                    transition: 'transform 0.6s',
+                                  }}
+                                >
+                                  {/* Front Face */}
+                                  <div
+                                    className="relative w-full"
+                                    style={{
+                                      backfaceVisibility: 'hidden',
+                                      WebkitBackfaceVisibility: 'hidden',
+                                    }}
+                                  >
+                                    <img
+                                      src={frontImageUrl}
+                                      alt={dc.cards?.name || ''}
+                                      className="w-full h-auto rounded-lg"
+                                    />
+                                    {/* Quantity Badge - Front */}
+                                    {dc.quantity > 1 && (
+                                      <div className="absolute top-2 right-2 bg-primary text-primary-foreground font-bold text-sm rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
+                                        {dc.quantity}
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* Back Face */}
+                                  {isDFC && backImageUrl && (
+                                    <div
+                                      className="absolute top-0 left-0 w-full h-full"
+                                      style={{
+                                        backfaceVisibility: 'hidden',
+                                        WebkitBackfaceVisibility: 'hidden',
+                                        transform: 'rotateY(180deg)',
+                                      }}
+                                    >
+                                      <img
+                                        src={backImageUrl}
+                                        alt={`${dc.cards?.name || ''} (back)`}
+                                        className="w-full h-auto rounded-lg"
+                                      />
+                                      {/* Quantity Badge - Back */}
+                                      {dc.quantity > 1 && (
+                                        <div className="absolute top-2 right-2 bg-primary text-primary-foreground font-bold text-sm rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
+                                          {dc.quantity}
+                                        </div>
+                                      )}
                                     </div>
                                   )}
                                 </div>
+
+                                {/* DFC Flip Button - Outside the rotating container */}
+                                {isDFC && (
+                                  <button
+                                    onClick={() => toggleCardFlip(cardName)}
+                                    className="absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-full w-7 h-7 flex items-center justify-center shadow-lg hover:bg-black/90 transition-colors cursor-pointer z-20"
+                                    title={isFlipped ? 'Show front face' : 'Show back face'}
+                                  >
+                                    <i className="ms ms-ability-duels-dfc text-white" style={{ fontSize: '16px' }} />
+                                  </button>
+                                )}
                               </div>
                             ) : null
+                                  })}
+                                </div>
+                              </div>
+                            )
                           })}
+                        </div>
                       </div>
                     </>
                   ) : activeTab === 'stats' && cards.length > 0 ? (
@@ -604,25 +766,17 @@ export default function DeckDetailPage({ params }: PageProps) {
                           )}
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
-                          <button
-                            onClick={() => setSelectedType(null)}
-                            className={`px-3 py-1.5 rounded-lg border transition-all ${
-                              selectedType === null
-                                ? 'bg-primary text-primary-foreground border-primary shadow-md'
-                                : 'bg-accent/50 text-foreground border-border hover:bg-accent hover:border-primary/50'
-                            }`}
-                          >
-                            <span className="text-sm font-bold">All</span>
-                          </button>
                           {[
-                            'Creature',
-                            'Instant',
-                            'Sorcery',
-                            'Artifact',
-                            'Enchantment',
-                            'Planeswalker',
-                            'Land',
-                          ].map((type) => {
+                            { type: 'Creature', icon: 'ms-creature', color: 'text-green-500', glowColor: 'rgba(34, 197, 94, 0.3)', bgGlow: 'bg-green-500/10' },
+                            { type: 'Instant', icon: 'ms-instant', color: 'text-blue-500', glowColor: 'rgba(59, 130, 246, 0.3)', bgGlow: 'bg-blue-500/10' },
+                            { type: 'Sorcery', icon: 'ms-sorcery', color: 'text-red-500', glowColor: 'rgba(239, 68, 68, 0.3)', bgGlow: 'bg-red-500/10' },
+                            { type: 'Artifact', icon: 'ms-artifact', color: 'text-gray-500', glowColor: 'rgba(107, 114, 128, 0.3)', bgGlow: 'bg-gray-500/10' },
+                            { type: 'Enchantment', icon: 'ms-enchantment', color: 'text-purple-500', glowColor: 'rgba(168, 85, 247, 0.3)', bgGlow: 'bg-purple-500/10' },
+                            { type: 'Planeswalker', icon: 'ms-planeswalker', color: 'text-indigo-500', glowColor: 'rgba(99, 102, 241, 0.3)', bgGlow: 'bg-indigo-500/10' },
+                            { type: 'Battle', icon: 'ms-battle', color: 'text-orange-500', glowColor: 'rgba(249, 115, 22, 0.3)', bgGlow: 'bg-orange-500/10' },
+                            { type: 'Tribal', icon: 'ms-tribal', color: 'text-pink-500', glowColor: 'rgba(236, 72, 153, 0.3)', bgGlow: 'bg-pink-500/10' },
+                            { type: 'Land', icon: 'ms-land', color: 'text-amber-500', glowColor: 'rgba(245, 158, 11, 0.3)', bgGlow: 'bg-amber-500/10' },
+                          ].map(({ type, icon, color, glowColor, bgGlow }) => {
                             const typeCards = cards.filter((dc) =>
                               dc.cards?.type_line?.includes(type)
                             )
@@ -634,29 +788,29 @@ export default function DeckDetailPage({ params }: PageProps) {
                               <button
                                 key={type}
                                 onClick={() => toggleTypeFilter(type)}
-                                className={`group flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all shadow-sm ${
+                                title={`${type}s (${count})`}
+                                className={`group relative flex flex-col items-center justify-center gap-1 px-4 py-2 rounded-lg border transition-all min-w-[80px] min-h-[50px] ${
                                   isActive
-                                    ? 'bg-primary text-primary-foreground border-primary shadow-md scale-105'
+                                    ? `${bgGlow} border-current scale-105`
                                     : 'bg-accent/50 hover:bg-primary/20 border-border hover:border-primary hover:shadow-md'
                                 }`}
+                                style={isActive ? {
+                                  boxShadow: `inset 0 0 30px ${glowColor}, inset 0 0 15px ${glowColor}`,
+                                  background: `radial-gradient(circle at 50% 50%, ${glowColor.replace('0.3', '0.2')}, transparent 75%)`
+                                } : {}}
                               >
+                                <i
+                                  className={`ms ${icon} ${color}`}
+                                  style={{ fontSize: '24px', filter: isActive ? 'drop-shadow(0 0 8px currentColor)' : 'none' }}
+                                />
                                 <span
-                                  className={`text-sm font-bold transition-colors ${
+                                  className={`text-[10px] font-bold ${
                                     isActive
-                                      ? 'text-primary-foreground'
-                                      : 'text-foreground group-hover:text-primary'
+                                      ? 'text-foreground'
+                                      : 'text-muted-foreground group-hover:text-primary'
                                   }`}
                                 >
                                   {type}s
-                                </span>
-                                <span
-                                  className={`text-xs font-bold transition-colors px-2 py-0.5 rounded-full ${
-                                    isActive
-                                      ? 'bg-primary-foreground/20 text-primary-foreground'
-                                      : 'bg-background/60 text-muted-foreground group-hover:text-primary'
-                                  }`}
-                                >
-                                  {count}
                                 </span>
                               </button>
                             )
@@ -669,7 +823,7 @@ export default function DeckDetailPage({ params }: PageProps) {
                         <div>
                           <h3 className="text-xl font-bold text-foreground mb-4">Mana Curve</h3>
                           <ManaCurve
-                            cards={cards.filter(
+                            cards={mainboardCards.filter(
                               (dc) => !selectedType || dc.cards?.type_line?.includes(selectedType)
                             )}
                           />
@@ -681,7 +835,7 @@ export default function DeckDetailPage({ params }: PageProps) {
                             Type Distribution
                           </h3>
                           <TypeDistribution
-                            deckCards={cards.filter(
+                            deckCards={mainboardCards.filter(
                               (dc) => !selectedType || dc.cards?.type_line?.includes(selectedType)
                             )}
                           />
@@ -728,7 +882,7 @@ export default function DeckDetailPage({ params }: PageProps) {
 
           {/* Sidebar - Right Side (1/3) */}
           <div className="space-y-6">
-            {/* Quick Stats Card */}
+            {/* Stats & Engagement Card */}
             <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3">
               <GlowingEffect
                 blur={0}
@@ -740,82 +894,91 @@ export default function DeckDetailPage({ params }: PageProps) {
                 inactiveZone={0.01}
               />
               <div className="bg-card border-0 rounded-2xl p-5 shadow-xl relative">
-                <h2 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
-                  <BarChart3 className="h-4 w-4 text-primary" />
-                  Quick Stats
+                <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4 text-tinted" />
+                  Deck Stats
                 </h2>
 
-                <div className="space-y-3">
-                  <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg p-3 border border-primary/20">
-                    <div className="text-xs text-muted-foreground mb-1">Total Cards</div>
-                    <div className="text-2xl font-bold text-foreground">{totalCards}</div>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 rounded-lg p-3 border border-blue-500/20">
-                    <div className="text-xs text-muted-foreground mb-1">Unique Cards</div>
-                    <div className="text-2xl font-bold text-foreground">{uniqueCards}</div>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 rounded-lg p-3 border border-purple-500/20">
-                    <div className="text-xs text-muted-foreground mb-1">Avg. CMC</div>
-                    <div className="text-2xl font-bold text-foreground">{avgCMC}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Engagement Stats Card */}
-            <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3">
-              <GlowingEffect
-                blur={0}
-                borderWidth={3}
-                spread={80}
-                glow={true}
-                disabled={false}
-                proximity={64}
-                inactiveZone={0.01}
-              />
-              <div className="bg-card border-0 rounded-2xl p-5 shadow-xl relative">
-                <h2 className="text-lg font-bold text-foreground mb-3">Engagement</h2>
-
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-accent/30 rounded-lg border border-border hover:bg-accent/50 transition-colors">
-                    <div className="flex items-center gap-2">
-                      <div className="bg-primary/10 rounded-full p-1.5">
-                        <Eye className="h-4 w-4 text-primary" />
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Left Column - Quick Stats */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-accent/30 rounded-lg border border-border hover:bg-accent/50 transition-colors">
+                      <div className="flex items-center gap-2">
+                        <div className="bg-primary/10 rounded-full p-1.5">
+                          <BarChart3 className="h-4 w-4 text-amber-500" />
+                        </div>
+                        <div>
+                          <div className="text-xs text-muted-foreground">Total Cards</div>
+                          <div className="text-xl font-bold text-foreground">{totalCards}</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground">Views</div>
-                        <div className="text-xl font-bold text-foreground">
-                          {deck.view_count?.toLocaleString() || 0}
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-accent/30 rounded-lg border border-border hover:bg-accent/50 transition-colors">
+                      <div className="flex items-center gap-2">
+                        <div className="bg-cyan-500/10 rounded-full p-1.5">
+                          <Grid3x3 className="h-4 w-4 text-cyan-500" />
+                        </div>
+                        <div>
+                          <div className="text-xs text-muted-foreground">Unique Cards</div>
+                          <div className="text-xl font-bold text-foreground">{uniqueCards}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-accent/30 rounded-lg border border-border hover:bg-accent/50 transition-colors">
+                      <div className="flex items-center gap-2">
+                        <div className="bg-purple-500/10 rounded-full p-1.5">
+                          <ChartNoAxesColumn className="h-4 w-4 text-pink-500" />
+                        </div>
+                        <div>
+                          <div className="text-xs text-muted-foreground">Avg. CMC</div>
+                          <div className="text-xl font-bold text-foreground">{avgCMC}</div>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 bg-accent/30 rounded-lg border border-border hover:bg-accent/50 transition-colors">
-                    <div className="flex items-center gap-2">
-                      <div className="bg-red-500/10 rounded-full p-1.5">
-                        <Heart className="h-4 w-4 text-red-500" />
-                      </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground">Likes</div>
-                        <div className="text-xl font-bold text-foreground">
-                          {deck.like_count?.toLocaleString() || 0}
+                  {/* Right Column - Engagement */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-accent/30 rounded-lg border border-border hover:bg-accent/50 transition-colors">
+                      <div className="flex items-center gap-2">
+                        <div className="bg-teal-500/10 rounded-full p-1.5">
+                          <Eye className="h-4 w-4 text-emerald-500" />
+                        </div>
+                        <div>
+                          <div className="text-xs text-muted-foreground">Views</div>
+                          <div className="text-xl font-bold text-foreground">
+                            {deck.view_count?.toLocaleString() || 0}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex items-center justify-between p-3 bg-accent/30 rounded-lg border border-border">
-                    <div className="flex items-center gap-2">
-                      <div className="bg-blue-500/10 rounded-full p-1.5">
-                        <Calendar className="h-4 w-4 text-blue-500" />
+                    <div className="flex items-center justify-between p-3 bg-accent/30 rounded-lg border border-border hover:bg-accent/50 transition-colors">
+                      <div className="flex items-center gap-2">
+                        <div className="bg-red-500/10 rounded-full p-1.5">
+                          <Heart className="h-4 w-4 text-red-500" />
+                        </div>
+                        <div>
+                          <div className="text-xs text-muted-foreground">Likes</div>
+                          <div className="text-xl font-bold text-foreground">
+                            {deck.like_count?.toLocaleString() || 0}
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground">Updated</div>
-                        <div className="text-sm font-semibold text-foreground">
-                          {deck.updated_at ? new Date(deck.updated_at).toLocaleDateString() : 'N/A'}
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-accent/30 rounded-lg border border-border hover:bg-accent/50 transition-colors">
+                      <div className="flex items-center gap-2">
+                        <div className="bg-blue-500/10 rounded-full p-1.5">
+                          <Calendar className="h-4 w-4 text-blue-500" />
+                        </div>
+                        <div>
+                          <div className="text-xs text-muted-foreground">Updated</div>
+                          <div className="text-xl font-bold text-foreground">
+                            {deck.updated_at ? new Date(deck.updated_at).toLocaleDateString() : 'N/A'}
+                          </div>
                         </div>
                       </div>
                     </div>

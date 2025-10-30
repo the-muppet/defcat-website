@@ -264,6 +264,8 @@ export interface DeckStats {
     enchantments: number
     planeswalkers: number
     lands: number
+    battles: number
+    tribal: number
   }
   manaCurve: { [cmc: number]: number }
 }

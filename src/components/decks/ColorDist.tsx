@@ -39,16 +39,22 @@ export function ColorDistribution({
   const colorCounts = filteredCards.reduce(
     (acc, dc) => {
       const manaCost = dc.cards?.mana_cost || ''
+      const typeLine = dc.cards?.type_line || ''
       const quantity = dc.quantity
 
-      // Count each color symbol
+      // Count each color symbol (including Phyrexian mana like {W/P})
       if (manaCost.includes('{W}')) acc.W = (acc.W || 0) + quantity
       if (manaCost.includes('{U}')) acc.U = (acc.U || 0) + quantity
       if (manaCost.includes('{B}')) acc.B = (acc.B || 0) + quantity
       if (manaCost.includes('{R}')) acc.R = (acc.R || 0) + quantity
       if (manaCost.includes('{G}')) acc.G = (acc.G || 0) + quantity
-      if (!manaCost || manaCost === '' || /^{\d+}$/.test(manaCost)) {
-        acc.C = (acc.C || 0) + quantity // Colorless
+
+      // Only count as colorless if it has a mana cost that's purely generic (like {3})
+      // Exclude lands (which typically have no mana cost) and cards with colored mana (including Phyrexian)
+      const isLand = typeLine.includes('Land')
+      const hasColoredMana = /\{[WUBRG](\/(P|[WUBRG]))?\}/.test(manaCost)
+      if (manaCost && manaCost !== '' && /^(\{\d+\})+$/.test(manaCost) && !isLand && !hasColoredMana) {
+        acc.C = (acc.C || 0) + quantity // Colorless (only generic mana like {3})
       }
 
       return acc
@@ -95,9 +101,6 @@ export function ColorDistribution({
               const percentage = (count / totalSymbols) * 100
               const isHovered = hoveredColor === colorLetter
               const colorInfo = ColorIdentity.getColorInfo(colorLetter)
-              console.log(`colorInfo returned: ${colorInfo.color}`)
-              const colorClass = ColorIdentity.getClassName(colorInfo.color)
-              console.log(`colorClass returned: ${colorClass}`)
               return (
                 <div
                   key={colorLetter}
@@ -115,9 +118,9 @@ export function ColorDistribution({
                   {isHovered && (
                     <div className="absolute left-1/2 -translate-x-1/2 -top-14 bg-popover text-popover-foreground px-3 py-2 rounded-md text-sm font-medium shadow-lg border whitespace-nowrap z-10">
                       <div className="flex items-center gap-2">
-                        <i className={`ms ${colorClass}`}/>
+                        <i className={colorInfo.className}/>
                         <span>
-                          : {count} ({percentage.toFixed(1)}%)
+                          {colorInfo.name}: {count} ({percentage.toFixed(1)}%)
                         </span>
                       </div>
                       <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-popover" />
@@ -160,7 +163,7 @@ export function ColorDistribution({
                 >
                   <div className="flex items-center gap-2">
                     {combo.length === 2 ? (
-                      <i className={ColorIdentity.getClassName(combo, true)} />
+                      <i className={ColorIdentity.getClassName(combo)} />
                     ) : (
                       <div className="flex gap-0.5">
                         {Array.from(combo).map((color, idx) => (

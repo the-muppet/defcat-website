@@ -2,12 +2,11 @@
 /** biome-ignore-all lint/a11y/noLabelWithoutControl: <explanation> */
 'use client'
 
-import { ChevronDown, ChevronUp, ExternalLink, Filter, Loader2, X } from 'lucide-react'
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { ChevronDown, ChevronUp, ExternalLink, Filter, X } from 'lucide-react'
+import { memo, useMemo, useState } from 'react'
 import { ManaSymbols } from '@/components/decks/ManaSymbols'
 import { RoastButton } from '@/components/decks/RoastButton'
-import { GlowingEffect } from '@/components/ui/glowEffect'
-import { useDecksInfinite } from '@/lib/hooks/useDecks'
+import { useDecks } from '@/lib/hooks/useDecks'
 import { cn } from '@/lib/utils'
 import { ColorIdentity } from '@/types/colors'
 import type { Deck } from '@/types/core'
@@ -67,15 +66,7 @@ const DeckRow = memo(function DeckRow({ deck }: { deck: Deck }) {
 })
 
 export default function TableLayout() {
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading: loading,
-    error
-  } = useDecksInfinite()
-
+  const { data: decks = [], isLoading: loading, error } = useDecks()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedColors, setSelectedColors] = useState<string[]>([])
   const [sortBy, setSortBy] = useState<
@@ -83,44 +74,6 @@ export default function TableLayout() {
   >('view_count')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const [showFilters, setShowFilters] = useState(true)
-  const loadMoreRef = useRef<HTMLDivElement>(null)
-
-  const decks = useMemo(() => {
-    return data?.pages.flatMap(page => page.decks) ?? []
-  }, [data])
-
-  const totalCount = data?.pages[0]?.total ?? 0
-
-  const handleObserver = useCallback((entries: IntersectionObserverEntry[]) => {
-    const [target] = entries
-    if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage()
-    }
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage])
-
-  useEffect(() => {
-    const element = loadMoreRef.current
-    if (!element) return
-
-    const observer = new IntersectionObserver(handleObserver, {
-      root: null,
-      rootMargin: '200px',
-      threshold: 0.1,
-    })
-
-    observer.observe(element)
-    return () => observer.disconnect()
-  }, [handleObserver])
-
-  const _colorOptions = [
-    { code: 'W', name: 'White' },
-    { code: 'U', name: 'Blue' },
-    { code: 'B', name: 'Black' },
-    { code: 'R', name: 'Red' },
-    { code: 'G', name: 'Green' },
-    { code: 'C', name: 'Colorless' },
-    { code: 'WUBRG', name: 'WUBRG' },
-  ]
 
   const filteredDecks = useMemo(() => {
     let filtered = [...decks]
@@ -368,7 +321,7 @@ export default function TableLayout() {
               <h1 className="text-2xl font-bold">Decklist Database</h1>
             </div>
             <div className="text-sm text-muted-foreground">
-              {filteredDecks.length} / {totalCount} decks {decks.length < totalCount && `(${decks.length} loaded)`}
+              {filteredDecks.length} / {decks.length} decks
             </div>
           </div>
         </header>
@@ -381,16 +334,6 @@ export default function TableLayout() {
             <div className="text-center text-destructive py-20">Error loading decks</div>
           ) : (
             <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3 overflow-hidden">
-              <GlowingEffect
-                blur={0}
-                borderWidth={3}
-                spread={80}
-                glow={true}
-                disabled={false}
-                proximity={64}
-                inactiveZone={0.01}
-              />
-              <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-tinted">
@@ -499,25 +442,9 @@ export default function TableLayout() {
                   </tbody>
                 </table>
               </div>
-
-              {/* Infinite scroll trigger */}
-              <div ref={loadMoreRef} className="flex justify-center items-center py-6 mt-4">
-                {isFetchingNextPage && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    <span className="text-sm">Loading more decks...</span>
-                  </div>
-                )}
-                {!hasNextPage && decks.length > 0 && (
-                  <div className="text-sm text-muted-foreground">
-                    All {totalCount} decks loaded
-                  </div>
-                )}
-              </div>
-            </div>
           )}
         </div>
       </main>
     </div>
-  )
-}
+    )
+  }

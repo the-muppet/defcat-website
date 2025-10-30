@@ -7,7 +7,8 @@
 
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
-import type { Deck } from '@/types/core'
+import type { Deck, DeckCard } from '@/types/core'
+import type { Boards, CardEntry } from '@/types/moxfield'
 
 const DECKS_PER_PAGE = 50
 
@@ -144,19 +145,6 @@ export function useDeckInfo(id: string) {
     staleTime: Infinity,
     gcTime: 1000 * 60 * 60 * 24 * 7,
   })
-}
-
-interface DeckCard {
-  quantity: number
-  board: string
-  cards: {
-    name: string
-    mana_cost: string | null
-    type_line: string | null
-    cmc: number | null
-    image_url: string | null
-    scryfall_id: string | null
-  } | null
 }
 
 /**

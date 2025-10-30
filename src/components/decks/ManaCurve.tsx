@@ -12,15 +12,26 @@ interface DeckCard {
 }
 
 export function ManaCurve({ cards }: { cards: DeckCard[] }) {
-  const curveCounts = cards.reduce(
-    (acc, dc) => {
-      const cmc = dc.cards?.cmc || 0
-      const bucket = cmc >= 7 ? '7+' : cmc.toString()
-      acc[bucket] = (acc[bucket] || 0) + dc.quantity
-      return acc
-    },
-    {} as Record<string, number>
-  )
+  const curveCounts = cards
+    .filter((dc) => {
+      const typeLine = dc.cards?.type_line || ''
+      const manaCost = dc.cards?.mana_cost
+
+      // Exclude lands unless they have a mana cost (DFCs with castable back side)
+      if (typeLine.includes('Land')) {
+        return manaCost && manaCost.trim() !== ''
+      }
+      return true
+    })
+    .reduce(
+      (acc, dc) => {
+        const cmc = dc.cards?.cmc || 0
+        const bucket = cmc >= 7 ? '7+' : cmc.toString()
+        acc[bucket] = (acc[bucket] || 0) + dc.quantity
+        return acc
+      },
+      {} as Record<string, number>
+    )
 
   const buckets = ['0', '1', '2', '3', '4', '5', '6', '7+']
   const maxCount = Math.max(...buckets.map((b) => curveCounts[b] || 0), 1)

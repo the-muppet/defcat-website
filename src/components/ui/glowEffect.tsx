@@ -20,15 +20,15 @@ interface GlowingEffectProps {
 
 const GlowingEffect = memo(
   ({
-    blur = 0,
-    inactiveZone = 0.7,
-    proximity = 48,  // Reduced from default
-    spread = 15,     // Reduced from 20
+    blur = 1,
+    inactiveZone = 0.1,
+    proximity = 44,  // Reduced from default
+    spread = 45, 
     variant = "default",
     glow = false,
-    className,
-    movementDuration = 2,
-    borderWidth = 1,
+    className = "will-change: auto",
+    movementDuration = 2.5,
+    borderWidth = 2,
     disabled = true,
   }: GlowingEffectProps) => {
     const containerRef = useRef<HTMLDivElement>(null);

@@ -185,11 +185,11 @@ export const ColorIdentity = {
     const guildNames: Record<string, string> = {
       WU: 'Azorius',
       WB: 'Orzhov',
-      WR: 'Boros',
-      WG: 'Selesnya',
+      RW: 'Boros',
+      GW: 'Selesnya',
       UB: 'Dimir',
       UR: 'Izzet',
-      UG: 'Simic',
+      BU: 'Simic',
       BR: 'Rakdos',
       BG: 'Golgari',
       RG: 'Gruul',
@@ -218,6 +218,80 @@ export const ColorIdentity = {
       .split('')
       .map((c) => ColorMapping[c]?.name)
       .join('/')
+  },
+
+  /**
+   * Parse mana cost string into individual symbols
+   * "{2}{W}{U}" -> ['2', 'w', 'u']
+   * "{W/G}" -> ['gw'] (normalized hybrid)
+   * "{B/P}" -> ['bp'] (Phyrexian)
+   */
+  parseManaCost: (manaCost: string): string[] => {
+    if (!manaCost || !manaCost.includes('{')) return []
+
+    return manaCost.match(/\{([^}]+)\}/g)?.map((s) => {
+      const inner = s.slice(1, -1)
+      return ColorIdentity.normalizeHybridMana(inner)
+    }) || []
+  },
+
+  /**
+   * Normalize hybrid mana order per Mana Font conventions
+   * "W/G" -> "wg" (W comes before G in WUBRG, so keep order)
+   * "G/W" -> "gw" (G comes after W, so G goes first)
+   * "W/P" -> "wp" (Phyrexian mana keeps color first)
+   *
+   * Rule: The color that comes LATER in WUBRG goes FIRST in the class name
+   */
+  normalizeHybridMana: (symbol: string): string => {
+    if (!symbol.includes('/')) return symbol.toLowerCase()
+
+    const [first, second] = symbol.split('/')
+    const colorOrder: Record<string, number> = { W: 0, U: 1, B: 2, R: 3, G: 4 }
+
+    if (second === 'P' || first === 'P') {
+      return symbol.replace('/', '').toLowerCase()
+    }
+
+    const firstOrder = colorOrder[first.toUpperCase()]
+    const secondOrder = colorOrder[second.toUpperCase()]
+
+    if (firstOrder !== undefined && secondOrder !== undefined) {
+      return secondOrder > firstOrder
+        ? `${first}${second}`.toLowerCase()
+        : `${second}${first}`.toLowerCase()
+    }
+
+    return symbol.replace('/', '').toLowerCase()
+  },
+
+  /**
+   * Check if a symbol is hybrid mana (2+ color letters)
+   * "ub" -> true
+   * "wp" -> true (Phyrexian)
+   * "w" -> false
+   * "2" -> false
+   */
+  isHybridMana: (symbol: string): boolean => {
+    return symbol.length >= 2 && /^[wubrgcp]+$/.test(symbol.toLowerCase())
+  },
+
+  /**
+   * Check if a symbol is Phyrexian mana (contains P)
+   * "wp" -> true
+   * "bp" -> true
+   * "w" -> false
+   */
+  isPhyrexianMana: (symbol: string): boolean => {
+    return symbol.toLowerCase().includes('p')
+  },
+
+  /**
+   * Determine if ms-cost class should be applied
+   * Only hybrid and Phyrexian mana symbols need ms-cost
+   */
+  shouldApplyCostClass: (symbol: string): boolean => {
+    return ColorIdentity.isHybridMana(symbol) || ColorIdentity.isPhyrexianMana(symbol)
   },
 }
 

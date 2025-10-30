@@ -21,21 +21,31 @@ export function TypeDistribution({ deckCards }: TypeDistributionProps) {
       const typeLine = dc.cards?.type_line || ''
       let primaryType = 'Other'
 
-      if (typeLine.includes('Creature')) primaryType = 'Creature'
-      else if (typeLine.includes('Instant')) primaryType = 'Instant'
-      else if (typeLine.includes('Sorcery')) primaryType = 'Sorcery'
-      else if (typeLine.includes('Artifact')) primaryType = 'Artifact'
-      else if (typeLine.includes('Enchantment')) primaryType = 'Enchantment'
-      else if (typeLine.includes('Planeswalker')) primaryType = 'Planeswalker'
+      // For DFCs (e.g., "Artifact // Land"), split and check front face first
+      const frontFaceType = typeLine.split('//')[0].trim()
+
+      if (frontFaceType.includes('Creature') || typeLine.includes('Creature')) primaryType = 'Creature'
+      else if (frontFaceType.includes('Instant') || typeLine.includes('Instant')) primaryType = 'Instant'
+      else if (frontFaceType.includes('Sorcery') || typeLine.includes('Sorcery')) primaryType = 'Sorcery'
+      else if (frontFaceType.includes('Artifact') || typeLine.includes('Artifact')) primaryType = 'Artifact'
+      else if (frontFaceType.includes('Enchantment') || typeLine.includes('Enchantment')) primaryType = 'Enchantment'
+      else if (frontFaceType.includes('Planeswalker') || typeLine.includes('Planeswalker')) primaryType = 'Planeswalker'
+      else if (frontFaceType.includes('Battle') || typeLine.includes('Battle')) primaryType = 'Battle'
+      else if (frontFaceType.includes('Tribal') || typeLine.includes('Tribal')) primaryType = 'Tribal'
       else if (typeLine.includes('Land')) primaryType = 'Land'
 
-      acc[primaryType] = (acc[primaryType] || 0) + dc.quantity
+      acc[primaryType] = (acc[primaryType] || 0) + (dc.quantity || 0)
       return acc
     },
     {} as Record<string, number>
   )
 
-  const totalCards = deckCards.reduce((sum, dc) => sum + dc.quantity, 0)
+  const totalCards = deckCards.reduce((sum, dc) => sum + (dc.quantity || 0), 0)
+
+  // Safety check
+  if (totalCards === 0) {
+    return <div className="text-center text-muted-foreground py-4">No cards to display</div>
+  }
 
   const typeColors: Record<string, string> = {
     Creature: 'from-green-400 to-green-600',
@@ -43,7 +53,9 @@ export function TypeDistribution({ deckCards }: TypeDistributionProps) {
     Sorcery: 'from-red-400 to-red-600',
     Artifact: 'from-gray-400 to-gray-600',
     Enchantment: 'from-purple-400 to-purple-600',
-    Planeswalker: 'from-yellow-400 to-yellow-600',
+    Planeswalker: 'from-indigo-400 to-indigo-600',
+    Battle: 'from-orange-400 to-orange-600',
+    Tribal: 'from-pink-400 to-pink-600',
     Land: 'from-amber-400 to-amber-600',
     Other: 'from-slate-400 to-slate-600',
   }
@@ -71,10 +83,7 @@ export function TypeDistribution({ deckCards }: TypeDistributionProps) {
                       opacity: 0.9,
                     }}
                   >
-                    <div className="absolute inset-0 flex items-center justify-between px-4 pointer-events-none">
-                      <span className="text-sm font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                        {count}
-                      </span>
+                    <div className="absolute inset-0 flex items-center justify-end px-4 pointer-events-none">
                       <span className="text-sm font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                         {percentage}%
                       </span>

@@ -787,7 +787,7 @@ button[style*="--glow-color"]::before {
    Mana Font Symbol Colors
    =========================== */
 /* Light mode - darker colors for visibility */
-.ms-mana-w {
+.ms-w {
   color: #f4b731;
 }
 
@@ -795,43 +795,43 @@ button[style*="--glow-color"]::before {
   color: #0e68ab;
 }
 
-.ms-mana-b {
+.ms-b {
   color: #6b21a8;
 }
 
-.ms-mana-r {
+.ms-r {
   color: #d3202a;
 }
 
-.ms-mana-g {
+.ms-g {
   color: #00733e;
 }
 
-.ms-mana-c {
+.ms-c {
   color: #eee;
 }
 
 /* Dark mode - brighter colors for visibility */
-.dark .ms-mana-w {
+.dark .ms-w {
   color: #ffe702;
 }
 
-.dark .ms-mana-u {
+.dark .ms-u {
   color: #00a9ff;
 }
 
-.dark .ms-mana-b {
+.dark .ms-b {
   color: #8000fa;
 }
 
-.dark .ms-mana-r {
+.dark .ms-r {
   color: #ff0000;
 }
 
-.dark .ms-mana-g {
+.dark .ms-g {
   color: #009400;
 }
 
-.dark .ms-mana-c {
+.dark .ms-c {
   color: #eee;
 }

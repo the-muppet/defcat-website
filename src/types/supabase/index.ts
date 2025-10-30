@@ -12,6 +12,8 @@ export type DecklistCard = Database['public']['Tables']['decklist_cards']['Row']
 export type DecklistCardInsert = Database['public']['Tables']['decklist_cards']['Insert']
 export type DecklistCardUpdate = Database['public']['Tables']['decklist_cards']['Update']
 
+export type FullCard = Database['public']['Views']['deck_list_view']['Row']
+
 export type DeckWithCards = Deck & {
   decklist_cards: (DecklistCard & {
     cards: Card | null

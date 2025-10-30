@@ -60,22 +60,21 @@ export function ManaSymbols({
     '6x': 'ms-6x',
   }
 
-  // Parse the mana input
+  // Parse the mana input using ColorIdentity utilities
   let symbols: string[]
 
   if (typeof mana === 'string') {
     // Check if it's a mana cost string like "{2}{W}{U}"
     if (mana.includes('{')) {
-      // Parse mana cost: "{2}{W}{U}" -> ['2', 'W', 'U']
-      // For hybrid mana like {W/U}, remove the slash: {W/U} -> 'WU'
-      symbols = mana.match(/\{([^}]+)\}/g)?.map((s) => s.slice(1, -1).replace('/', '')) || []
+      // Parse and normalize using ColorIdentity utility
+      symbols = ColorIdentity.parseManaCost(mana)
     } else {
       // Single color: "W"
-      symbols = [mana]
+      symbols = [mana.toLowerCase()]
     }
   } else {
     // Array of colors: ['W', 'U', 'B']
-    symbols = mana
+    symbols = mana.map((s) => s.toLowerCase())
   }
 
   if (symbols.length === 0) {
@@ -120,8 +119,7 @@ export function ManaSymbols({
             className={cn(
               'ms',
               `ms-${code}`,
-              cost,
-              shadow,
+              ColorIdentity.shouldApplyCostClass(code) && 'ms-cost',
               fixedWidth && 'ms-fw',
               sizeClasses[size],
               'transition-all duration-200 hover:scale-110'

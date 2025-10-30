@@ -1,12 +1,9 @@
 // app/admin/credits/page.tsx
 import { Coins, Plus } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { requireAdmin } from '@/lib/auth/auth-guards'
-import { TierBenefitsMatrix } from '@/components/admin/TierBenefitsMatrix'
-import { CreditTypesList } from '@/components/admin/CreditTypesList'
-import { TiersList } from '@/components/admin/TiersList'
+import { TierBenefitsMatrix } from '@/components/admin/CreditMatrix'
+import { CreditTypesList } from '@/components/admin/CreditList'
 import { DistributionManager } from '@/components/admin/DistributionManager'
 
 export const dynamic = 'force-dynamic'
@@ -43,10 +40,6 @@ export default async function AdminCreditsPage() {
 
           <TabsContent value="credits">
             <CreditTypesList />
-          </TabsContent>
-
-          <TabsContent value="tiers">
-            <TiersList />
           </TabsContent>
 
           <TabsContent value="distribution">
