@@ -66,7 +66,7 @@
     ".next\\dev/types/**/*.ts",
     ".next\\dev/types/**/*.ts",
     ".next/dev/types/**/*.ts"
-  ],
+, "src/app/decks/[id]/page.tsx.bck"  ],
   "exclude": [
     "node_modules"
   ]

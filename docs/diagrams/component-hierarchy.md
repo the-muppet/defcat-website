@@ -1,487 +1,440 @@
-# DefCat DeckVault - Component Hierarchy
+# Component Hierarchy & Structure
 
-## Component Organization
+This document shows the React component hierarchy and organization in DefCat's DeckVault.
+
+## App-Level Component Structure
 
 ```mermaid
 graph TB
-    subgraph "Root Layout"
-        RootLayout[layout.tsx<br/>Providers + Theme + Nav]
+    RootLayout[RootLayout<br/>app/layout.tsx]
+
+    RootLayout --> Providers[Providers<br/>Context Providers]
+    RootLayout --> HeaderWrapper[HeaderWrapper<br/>Layout Header]
+    RootLayout --> MainContent[Main Content Area<br/>children]
+    RootLayout --> Footer[Footer<br/>Layout Footer]
+
+    subgraph "Context Providers"
+        Providers --> ThemeProvider[ThemeProvider<br/>Dark/Light Mode]
+        Providers --> AuthProvider[AuthProvider<br/>User Session]
+        Providers --> TanStackProvider[QueryClientProvider<br/>TanStack Query]
     end
 
-    subgraph "Page Components - app/"
-        HomePage[page.tsx<br/>Landing page]
-        AboutPage[about/page.tsx]
-
-        subgraph "Deck Pages"
-            DecksPage[decks/page.tsx<br/>Deck browser]
-            DeckDetailPage[decks/[id]/page.tsx<br/>Single deck view]
-            SubmissionPage[decks/submission/page.tsx<br/>Submit deck request]
-            RoastPage[decks/roast-submission/page.tsx]
-        end
-
-        subgraph "Auth Pages"
-            LoginPage[auth/login/page.tsx]
-            VerifyPage[auth/verify/page.tsx]
-            CallbackPage[auth/callback-success/page.tsx]
-        end
-
-        subgraph "Admin Pages"
-            AdminDashboard[admin/page.tsx]
-            AdminUsers[admin/users/page.tsx]
-            AdminDecks[admin/decks/page.tsx]
-            AdminProducts[admin/products/page.tsx]
-            AdminDatabase[admin/database/page.tsx]
-        end
-
-        ProfilePage[profile/page.tsx]
+    subgraph "Header Components"
+        HeaderWrapper --> Header[Header<br/>Navigation Bar]
+        Header --> NavigationHeader[NavigationHeader<br/>Main Nav]
+        Header --> UserMenu[UserMenu<br/>User Dropdown]
+        Header --> LoginButton[LoginButton]
+        Header --> LogoutButton[LogoutButton]
     end
 
-    subgraph "Feature Components - components/"
-        subgraph "Auth Components"
-            LoginForm[auth/LoginForm.tsx<br/>Client Component]
-            PatreonButton[auth/PatreonButton.tsx]
-            AuthGuard[auth/AuthGuard.tsx]
-        end
-
-        subgraph "Deck Components"
-            DeckGrid[decks/DeckGrid.tsx<br/>Deck card grid]
-            DeckCard[decks/DeckCard.tsx<br/>Single deck preview]
-            DeckDetail[decks/DeckDetail.tsx<br/>Full deck display]
-            DeckForm[decks/DeckForm.tsx<br/>Submission form]
-            CommanderList[decks/CommanderList.tsx]
-            ColorIdentityBadge[decks/ColorIdentityBadge.tsx]
-        end
-
-        subgraph "Admin Components"
-            UserTable[admin/UserTable.tsx<br/>User management grid]
-            DeckTable[admin/DeckTable.tsx<br/>Deck management grid]
-            ProductForm[admin/ProductForm.tsx]
-            DatabaseQuery[admin/DatabaseQueryTool.tsx]
-            ImportDeckForm[admin/ImportDeckForm.tsx]
-        end
-
-        subgraph "Profile Components"
-            ProfilePanel[profile/ProfilePanel.tsx<br/>User info display]
-            SubmissionHistory[profile/SubmissionHistory.tsx]
-            TierDisplay[profile/TierDisplay.tsx]
-        end
-
-        subgraph "Layout Components"
-            Navbar[layout/Navbar.tsx<br/>Top navigation]
-            Footer[layout/Footer.tsx]
-            Sidebar[layout/Sidebar.tsx<br/>Admin sidebar]
-        end
-
-        subgraph "Magic UI Components"
-            ManaSymbol[magicui/ManaSymbol.tsx<br/>Renders mana icons]
-            CardImage[magicui/CardImage.tsx<br/>MTG card display]
-            ColorPill[magicui/ColorPill.tsx<br/>Color identity pills]
-            DeckStats[magicui/DeckStats.tsx<br/>CMC curve, colors]
-        end
+    subgraph "Main Content Routes"
+        MainContent --> HomePage["/ - Home Page"]
+        MainContent --> DecksPage["/decks - Deck Browser"]
+        MainContent --> DeckDetailPage["/decks/:id - Deck Detail"]
+        MainContent --> ProfilePage["/profile - User Profile"]
+        MainContent --> AdminPage["/admin - Admin Dashboard"]
+        MainContent --> AuthPages["/auth/* - Auth Pages"]
     end
 
-    subgraph "Base UI Components - components/ui/"
-        Button[Button.tsx<br/>shadcn/ui]
-        Input[Input.tsx]
-        Card[Card.tsx]
-        Dialog[Dialog.tsx]
-        Table[Table.tsx]
-        Select[Select.tsx]
-        Tabs[Tabs.tsx]
-        Badge[Badge.tsx]
-        Tooltip[Tooltip.tsx]
+    %% Styling
+    classDef layout fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef provider fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef navigation fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef page fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+
+    class RootLayout,HeaderWrapper,Header,Footer layout
+    class Providers,ThemeProvider,AuthProvider,TanStackProvider provider
+    class NavigationHeader,UserMenu,LoginButton,LogoutButton navigation
+    class HomePage,DecksPage,DeckDetailPage,ProfilePage,AdminPage,AuthPages page
+```
+
+## Page-Specific Component Trees
+
+### Home Page Components
+
+```mermaid
+graph TB
+    HomePage[Home Page<br/>app/page.tsx]
+
+    HomePage --> FeaturedVideo[FeaturedVideo<br/>Hero Section]
+    HomePage --> FeaturedDeckCard[FeaturedDeckCard<br/>Showcase Deck]
+    HomePage --> RotatingAds[RotatingAds<br/>Product Carousel]
+    HomePage --> SocialMediaLinks[SocialMediaLinks<br/>Social Footer]
+
+    FeaturedVideo --> VideoPlayer[VideoPlayer<br/>Embedded Video]
+    FeaturedDeckCard --> DeckCard[DeckCard<br/>Reusable Card]
+    RotatingAds --> ProductCards[Product Cards<br/>Carousel Items]
+
+    %% Styling
+    classDef page fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef feature fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef component fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+
+    class HomePage page
+    class FeaturedVideo,FeaturedDeckCard,RotatingAds,SocialMediaLinks feature
+    class VideoPlayer,DeckCard,ProductCards component
+```
+
+### Deck Browser Components
+
+```mermaid
+graph TB
+    DecksPage[Decks Page<br/>app/decks/page.tsx]
+
+    DecksPage --> DeckFilters[Deck Filters<br/>Search & Filter UI]
+    DecksPage --> DeckGrid[Deck Grid<br/>Results Display]
+    DecksPage --> Pagination[Pagination<br/>Page Controls]
+
+    DeckFilters --> ColorFilter[Color Filter<br/>Mana Symbols]
+    DeckFilters --> FormatFilter[Format Filter<br/>Commander/cEDH]
+    DeckFilters --> SearchInput[Search Input<br/>Text Search]
+
+    DeckGrid --> DeckCard1[DeckCard]
+    DeckGrid --> DeckCard2[DeckCard]
+    DeckGrid --> DeckCard3[DeckCard]
+    DeckGrid --> MoreDecks[...]
+
+    DeckCard1 --> Commander[Commander<br/>Card Display]
+    DeckCard1 --> ManaSymbols[ManaSymbols<br/>Color Identity]
+    DeckCard1 --> DeckStats[Deck Stats<br/>Views/Likes]
+
+    %% Styling
+    classDef page fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef section fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef component fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef detail fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+
+    class DecksPage page
+    class DeckFilters,DeckGrid,Pagination section
+    class ColorFilter,FormatFilter,SearchInput,DeckCard1,DeckCard2,DeckCard3 component
+    class Commander,ManaSymbols,DeckStats detail
+```
+
+### Deck Detail Page Components
+
+```mermaid
+graph TB
+    DeckDetail["Deck Detail Page<br/>app/decks/:id/page.tsx"]
+
+    DeckDetail --> DeckHeader[Deck Header<br/>Title & Metadata]
+    DeckDetail --> CommanderDisplay[Commander Display<br/>Commander Images]
+    DeckDetail --> DeckTabs[Deck Tabs<br/>Different Views]
+    DeckDetail --> DeckSidebar[Deck Sidebar<br/>Stats Panel]
+
+    DeckHeader --> TitleSection[Title Section]
+    DeckHeader --> AuthorInfo[Author Info]
+    DeckHeader --> ActionButtons[Action Buttons<br/>View/Export]
+
+    CommanderDisplay --> CommanderImage1[CommanderImage]
+    CommanderDisplay --> CommanderImage2[CommanderImage]
+
+    DeckTabs --> StatsTab[Stats Tab]
+    DeckTabs --> CardListTab[Card List Tab]
+    DeckTabs --> AnalyticsTab[Analytics Tab]
+
+    StatsTab --> ManaCurve[ManaCurve<br/>CMC Distribution]
+    StatsTab --> ColorDist[ColorDist<br/>Color Distribution]
+    StatsTab --> Cardtypes[Cardtypes<br/>Type Breakdown]
+
+    CardListTab --> CardSection1[Commanders Section]
+    CardListTab --> CardSection2[Mainboard Section]
+    CardListTab --> CardSection3[Sideboard Section]
+
+    CardSection2 --> CardPreview1[CardPreview]
+    CardSection2 --> CardPreview2[CardPreview]
+    CardSection2 --> CardPreview3[CardPreview]
+
+    DeckSidebar --> DeckStatsView[DeckStatsView<br/>Numeric Stats]
+    DeckSidebar --> ManaAnalysisCard[ManaAnalysisCard<br/>Mana Analysis]
+    DeckSidebar --> RoastButton[RoastButton<br/>Submit for Roast]
+
+    %% Styling
+    classDef page fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef section fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef component fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef detail fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+
+    class DeckDetail page
+    class DeckHeader,CommanderDisplay,DeckTabs,DeckSidebar section
+    class TitleSection,AuthorInfo,ActionButtons,StatsTab,CardListTab,AnalyticsTab component
+    class ManaCurve,ColorDist,Cardtypes,CardPreview1,CardPreview2,CardPreview3,DeckStatsView,ManaAnalysisCard,RoastButton detail
+```
+
+### Profile Page Components
+
+```mermaid
+graph TB
+    ProfilePage[Profile Page<br/>app/profile/page.tsx]
+
+    ProfilePage --> ProfilePanel[ProfilePanel<br/>User Info]
+    ProfilePage --> TierCreditsCard[TierCreditsCard<br/>Tier & Credits]
+    ProfilePage --> MySubmissions[MySubmissions<br/>Submission History]
+    ProfilePage --> UserDecks[UserDecks<br/>User's Decks]
+    ProfilePage --> MyDrafts[MyDrafts<br/>Draft Submissions]
+
+    ProfilePanel --> ProfileEditForm[ProfileEditForm<br/>Edit Profile]
+    ProfilePanel --> PatreonStatus[Patreon Status<br/>Tier Display]
+
+    TierCreditsCard --> TierBadge[TierBadge<br/>Tier Icon]
+    TierCreditsCard --> CreditDisplay[Credit Display<br/>Remaining Credits]
+
+    MySubmissions --> SubmissionList[Submission List]
+    SubmissionList --> SubmissionCard1[Submission Card]
+    SubmissionList --> SubmissionCard2[Submission Card]
+
+    UserDecks --> DeckCard1[DeckCard]
+    UserDecks --> DeckCard2[DeckCard]
+
+    %% Styling
+    classDef page fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef section fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef component fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+
+    class ProfilePage page
+    class ProfilePanel,TierCreditsCard,MySubmissions,UserDecks,MyDrafts section
+    class ProfileEditForm,PatreonStatus,TierBadge,CreditDisplay,SubmissionList,SubmissionCard1,SubmissionCard2,DeckCard1,DeckCard2 component
+```
+
+### Admin Dashboard Components
+
+```mermaid
+graph TB
+    AdminPage[Admin Dashboard<br/>app/admin/page.tsx]
+
+    AdminPage --> AdminTabs[Admin Tabs<br/>Navigation]
+
+    AdminTabs --> DecksTab[Decks Tab]
+    AdminTabs --> SubmissionsTab[Submissions Tab]
+    AdminTabs --> UsersTab[Users Tab]
+    AdminTabs --> ProductsTab[Products Tab]
+    AdminTabs --> CreditsTab[Credits Tab]
+    AdminTabs --> SettingsTab[Settings Tab]
+    AdminTabs --> DocsTab[Docs Tab]
+
+    DecksTab --> DecksList[DecksList<br/>All Decks]
+    DecksTab --> ImportButton[ImportAllDecksButton]
+    DecksTab --> UpdateButton[UpdateAllDecksButton]
+
+    DecksList --> DeckEditForm[DeckEditForm<br/>Edit Deck]
+    DecksList --> DeckImportForm[DeckImportForm<br/>Import Single]
+
+    SubmissionsTab --> PendingSubmissions[PendingSubmissions<br/>Review Queue]
+    PendingSubmissions --> SubmissionCard[Submission Card]
+
+    UsersTab --> UserRoleManager[UserRoleManager<br/>Role Management]
+    UserRoleManager --> UserList[User List]
+    UserList --> RoleSelector[Role Selector]
+
+    ProductsTab --> ProductsPanel[ProductsPanel<br/>Product CRUD]
+    ProductsPanel --> ProductForm[Product Form]
+
+    CreditsTab --> CreditMatrix[CreditMatrix<br/>Tier Benefits]
+    CreditsTab --> DistributionManager[DistributionManager<br/>Credit Distribution]
+    CreditsTab --> CreditList[CreditList<br/>User Credits]
+
+    SettingsTab --> SiteConfigForm[SiteConfigForm<br/>Config Editor]
+
+    DocsTab --> DocumentationView[DocumentationView<br/>API Docs]
+
+    %% Styling
+    classDef page fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef tab fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef section fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef component fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+
+    class AdminPage page
+    class AdminTabs,DecksTab,SubmissionsTab,UsersTab,ProductsTab,CreditsTab,SettingsTab,DocsTab tab
+    class DecksList,PendingSubmissions,UserRoleManager,ProductsPanel,CreditMatrix,DistributionManager,CreditList,SiteConfigForm,DocumentationView section
+    class ImportButton,UpdateButton,DeckEditForm,DeckImportForm,SubmissionCard,UserList,RoleSelector,ProductForm component
+```
+
+## Shared/Reusable Components
+
+```mermaid
+graph TB
+    subgraph "UI Components - shadcn/ui"
+        Button[Button]
+        Card[Card]
+        Dialog[Dialog]
+        Input[Input]
+        Select[Select]
+        Tabs[Tabs]
+        Badge[Badge]
+        Avatar[Avatar]
+        Dropdown[DropdownMenu]
+        Tooltip[Tooltip]
     end
 
-    subgraph "Providers & Contexts"
-        QueryProvider[QueryClientProvider<br/>TanStack Query]
-        ThemeProvider[ThemeProvider<br/>next-themes]
-        AuthContext[AuthContext<br/>User session]
+    subgraph "Custom Shared Components"
+        DeckCard[DeckCard<br/>Deck Display]
+        Commander[Commander<br/>Commander Info]
+        CommanderImage[CommanderImage<br/>Card Image]
+        ManaSymbols[ManaSymbols<br/>Mana Display]
+        TierBadge[TierBadge<br/>Tier Icon]
+        CardPreview[CardPreview<br/>Card Hover]
     end
 
-    RootLayout --> QueryProvider
-    RootLayout --> ThemeProvider
-    RootLayout --> AuthContext
-    RootLayout --> Navbar
+    subgraph "Form Components"
+        CommanderDeckForm[CommanderDeckForm<br/>Deck Submission]
+        RoastSubmissionForm[RoastSubmissionForm<br/>Roast Request]
+        ProfileEditForm2[ProfileEditForm<br/>Profile Update]
+        DeckEditForm2[DeckEditForm<br/>Deck Editor]
+        DeckImportForm2[DeckImportForm<br/>Deck Import]
+        SiteConfigForm2[SiteConfigForm<br/>Config Editor]
+    end
 
-    HomePage --> DeckGrid
-    DecksPage --> DeckGrid
-    DeckDetailPage --> DeckDetail
+    subgraph "Analytics Components"
+        ManaCurve2[ManaCurve<br/>CMC Chart]
+        ColorDist2[ColorDist<br/>Color Pie]
+        Cardtypes2[Cardtypes<br/>Type Chart]
+        ManaAnalysisCard2[ManaAnalysisCard<br/>Mana Stats]
+        ManaHealthBadge[ManaHealthBadge<br/>Health Indicator]
+    end
 
-    DeckGrid --> DeckCard
-    DeckCard --> ColorIdentityBadge
-    DeckCard --> ManaSymbol
-    DeckCard --> Card
+    subgraph "Auth Components"
+        LoginButton2[LoginButton<br/>Login CTA]
+        LogoutButton2[LogoutButton<br/>Logout]
+        AuthLoadingModal[AuthLoadingModal<br/>Auth State]
+    end
 
-    DeckDetail --> CommanderList
-    DeckDetail --> CardImage
-    DeckDetail --> DeckStats
-    DeckDetail --> ColorPill
+    %% Styling
+    classDef ui fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef custom fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef form fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef analytics fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef auth fill:#fce4ec,stroke:#c2185b,stroke-width:2px
 
-    SubmissionPage --> DeckForm
-    DeckForm --> Input
-    DeckForm --> Select
-    DeckForm --> Button
-
-    LoginPage --> LoginForm
-    LoginForm --> PatreonButton
-    PatreonButton --> Button
-
-    AdminDashboard --> Sidebar
-    AdminUsers --> UserTable
-    UserTable --> Table
-    UserTable --> Dialog
-
-    AdminDecks --> DeckTable
-    AdminDecks --> ImportDeckForm
-    DeckTable --> Table
-    DeckTable --> Badge
-
-    ProfilePage --> ProfilePanel
-    ProfilePanel --> TierDisplay
-    ProfilePanel --> SubmissionHistory
-
-    ManaSymbol -.-> |uses Mana Font| Button
-    ColorPill --> Badge
-
-    style RootLayout fill:#e3f2fd
-    style QueryProvider fill:#c8e6c9
-    style ThemeProvider fill:#c8e6c9
-    style AuthContext fill:#c8e6c9
-
-    style HomePage fill:#fff9c4
-    style DecksPage fill:#fff9c4
-    style AdminDashboard fill:#ffccbc
-
-    style DeckGrid fill:#e1bee7
-    style DeckCard fill:#e1bee7
-    style DeckDetail fill:#e1bee7
-
-    style Button fill:#f8bbd0
-    style Input fill:#f8bbd0
-    style Card fill:#f8bbd0
+    class Button,Card,Dialog,Input,Select,Tabs,Badge,Avatar,Dropdown,Tooltip ui
+    class DeckCard,Commander,CommanderImage,ManaSymbols,TierBadge,CardPreview custom
+    class CommanderDeckForm,RoastSubmissionForm,ProfileEditForm2,DeckEditForm2,DeckImportForm2,SiteConfigForm2 form
+    class ManaCurve2,ColorDist2,Cardtypes2,ManaAnalysisCard2,ManaHealthBadge analytics
+    class LoginButton2,LogoutButton2,AuthLoadingModal auth
 ```
 
-## Component Categories
+## Component Type Breakdown
 
-### 1. Layout Components
-**Purpose**: Application-wide structure and navigation
+### Server Components (RSC)
+- Default in Next.js 16 App Router
+- Can fetch data directly
+- No client-side interactivity
+- Examples: Page components, layout components
 
-- **RootLayout** (`app/layout.tsx`)
-  - Server Component
-  - Wraps entire app
-  - Provides global providers
-  - Loads Mana Font
-
-- **Navbar** (`components/layout/Navbar.tsx`)
-  - Client Component (interactive)
-  - Conditional rendering based on auth state
-  - Mobile responsive hamburger menu
-
-- **Footer** (`components/layout/Footer.tsx`)
-  - Server Component
-  - Static content
-
-- **Sidebar** (`components/layout/Sidebar.tsx`)
-  - Client Component
-  - Admin-only navigation
-
----
-
-### 2. Page Components
-**Purpose**: Route-level components (App Router)
-
-**Convention**:
-- `page.tsx` = route component
-- `loading.tsx` = loading state
-- `error.tsx` = error boundary
-
-**Types**:
-- **Server Components** (default): Data fetching, SEO
-- **Client Components** (`'use client'`): Interactivity
-
----
-
-### 3. Feature Components
-**Purpose**: Domain-specific business logic
-
-#### Auth Components
-- **LoginForm**: Patreon OAuth initiation
-- **AuthGuard**: Route protection HOC
-- **PatreonButton**: Branded OAuth button
-
-#### Deck Components
-- **DeckGrid**: Responsive deck card grid
-- **DeckCard**: Preview card with hover effects
-- **DeckDetail**: Full deck view with card list
-- **DeckForm**: Multi-step submission form
-- **CommanderList**: Commander card display
-- **ColorIdentityBadge**: WUBRG color pills
-
-#### Admin Components
-- **UserTable**: User management with inline editing
-- **DeckTable**: Deck moderation queue
-- **ProductForm**: Tier configuration
-- **ImportDeckForm**: Moxfield import interface
-- **DatabaseQueryTool**: Raw SQL executor
-
-#### Profile Components
-- **ProfilePanel**: User info and settings
-- **SubmissionHistory**: Past deck requests
-- **TierDisplay**: Current Patreon tier badge
-
----
-
-### 4. Magic UI Components
-**Purpose**: MTG-specific visual elements
-
-- **ManaSymbol** (`magicui/ManaSymbol.tsx`)
-  - Renders `{W}{U}{B}{R}{G}` as icons
-  - Uses Mana Font library
-  - Props: `symbol: string, size?: 'sm' | 'md' | 'lg'`
-
-- **CardImage** (`magicui/CardImage.tsx`)
-  - Lazy-loaded card images
-  - Scryfall image proxy
-  - Hover zoom effect
-
-- **ColorPill** (`magicui/ColorPill.tsx`)
-  - Color identity badges
-  - WUBRG color coding
-  - Interactive filters
-
-- **DeckStats** (`magicui/DeckStats.tsx`)
-  - CMC curve chart
-  - Color distribution pie chart
-  - Card type breakdown
-
----
-
-### 5. Base UI Components
-**Purpose**: Reusable primitives (shadcn/ui pattern)
-
-Built on **Radix UI** primitives:
-- Accessible by default
-- Keyboard navigation
-- Focus management
-- ARIA attributes
-
-**Common Components**:
-- Button, Input, Select, Checkbox
-- Dialog, Sheet, Popover, Tooltip
-- Card, Badge, Avatar, Separator
-- Table, Tabs, Accordion
-
-**Usage Pattern**:
-```tsx
-import { Button } from '@/components/ui/Button'
-import { cn } from '@/lib/utils'
-
-<Button variant="primary" size="lg" className={cn('custom-class')}>
-  Click me
-</Button>
-```
-
----
-
-## Component Communication Patterns
-
-### 1. Props Drilling (Shallow Hierarchies)
-```
-DeckGrid → DeckCard → ColorIdentityBadge
-         ↓ decks prop
-```
-
-### 2. React Context (Cross-Cutting Concerns)
-```
-AuthContext provides user session
-  → Navbar consumes
-  → ProfilePanel consumes
-  → AuthGuard consumes
-```
-
-### 3. TanStack Query (Server State)
-```
-useQuery('decks') in DeckGrid
-useQuery('deck', id) in DeckDetail
-useMutation('submit-deck') in DeckForm
-```
-
-### 4. URL State (Filters & Pagination)
-```
-useSearchParams() in DeckGrid
-  → Color filter in URL: /decks?color=WU
-  → Page in URL: /decks?page=2
-```
-
----
-
-## Component Types by Rendering
-
-### Server Components (Default)
-- Initial page load
-- SEO-optimized
-- Direct database access
-- No JavaScript sent to client
-
-**Examples**:
+**Files:**
+- `app/page.tsx`
 - `app/decks/page.tsx`
+- `app/decks/[id]/page.tsx`
+- `app/profile/page.tsx`
 - `app/admin/page.tsx`
-- `components/layout/Footer.tsx`
 
-### Client Components (`'use client'`)
-- Interactive UI
-- Event handlers
-- Browser APIs
-- React hooks (useState, useEffect)
+### Client Components
+- Marked with `'use client'` directive
+- Can use hooks, state, events
+- Required for interactivity
+- Examples: Forms, interactive UI
 
-**Examples**:
-- `components/auth/LoginForm.tsx`
-- `components/decks/DeckForm.tsx`
-- `components/admin/UserTable.tsx`
+**Files:**
+- `components/auth/login-button.tsx`
+- `components/forms/CommanderDeckForm.tsx`
+- `components/profile/UserMenu.tsx`
+- `components/decks/DeckCard.tsx` (with interactions)
 
----
+### Hybrid Pattern
+- Server Component wrapper
+- Client Component for interactive parts
+- Optimizes performance
 
-## Styling Approach
+**Example:**
+```typescript
+// Server Component (default)
+export default async function DeckPage({ params }) {
+  const deck = await fetchDeck(params.id) // Server-side fetch
+  return <DeckClientView deck={deck} />
+}
 
-### Tailwind CSS Utilities
-```tsx
-<div className="flex items-center gap-4 p-6 rounded-lg bg-card">
-  <Badge variant="outline">Commander</Badge>
-</div>
-```
-
-### CSS Variables (Theme)
-```css
-:root {
-  --primary: 222 47% 11%;
-  --mana-white: #f0f2c0;
-  --mana-blue: #0e68ab;
-  --mana-black: #150b00;
-  --mana-red: #d3202a;
-  --mana-green: #00733e;
+// Client Component
+'use client'
+function DeckClientView({ deck }) {
+  // Interactive features
+  const [showDetails, setShowDetails] = useState(false)
+  return <div>...</div>
 }
 ```
 
-### Class Merging with `cn()`
-```tsx
-import { cn } from '@/lib/utils'
+## Component File Organization
 
-<Button className={cn(
-  'base-styles',
-  isActive && 'active-styles',
-  props.className
-)} />
+```
+src/components/
+├── ui/                     # shadcn/ui base components
+│   ├── button.tsx
+│   ├── card.tsx
+│   ├── dialog.tsx
+│   └── ...
+├── layout/                 # Layout components
+│   ├── Header.tsx
+│   ├── HeaderWrapper.tsx
+│   ├── Footer.tsx
+│   └── Navigation.tsx
+├── auth/                   # Authentication UI
+│   ├── login-button.tsx
+│   ├── logout-button.tsx
+│   └── auth-loading-modal.tsx
+├── decks/                  # Deck-related components
+│   ├── DeckCard.tsx
+│   ├── Commander.tsx
+│   ├── CommanderImage.tsx
+│   ├── ManaSymbols.tsx
+│   ├── CardPreview.tsx
+│   ├── ManaCurve.tsx
+│   ├── ColorDist.tsx
+│   ├── Cardtypes.tsx
+│   └── details/
+│       ├── DeckSidebar.tsx
+│       ├── DeckStatsView.tsx
+│       └── DeckEmptyState.tsx
+├── profile/                # Profile components
+│   ├── ProfilePanel.tsx
+│   ├── ProfileEditForm.tsx
+│   ├── TierCreditsCard.tsx
+│   ├── UserMenu.tsx
+│   ├── MySubmissions.tsx
+│   ├── MyDrafts.tsx
+│   └── UserDecks.tsx
+├── admin/                  # Admin panel components
+│   ├── DecksList.tsx
+│   ├── ImportAllDecksButton.tsx
+│   ├── UpdateAllDecksButton.tsx
+│   ├── PendingSubmissions.tsx
+│   ├── UserRoleManager.tsx
+│   ├── ProductsPanel.tsx
+│   ├── CreditMatrix.tsx
+│   ├── DistributionManager.tsx
+│   ├── CreditList.tsx
+│   └── DocumentationView.tsx
+├── forms/                  # Form components
+│   ├── CommanderDeckForm.tsx
+│   ├── RoastSubmissionForm.tsx
+│   ├── DeckEditForm.tsx
+│   ├── DeckImportForm.tsx
+│   └── SiteConfigForm.tsx
+├── tier/                   # Tier-related
+│   └── TierBadge.tsx
+├── home/                   # Home page specific
+│   ├── FeaturedVideo.tsx
+│   ├── FeaturedDeckCard.tsx
+│   ├── RotatingAds.tsx
+│   └── SocialMediaLinks.tsx
+└── analytics/              # Analytics & charts
+    └── mana/
+        ├── ManaAnalysisCard.tsx
+        └── ManaHealthBadge.tsx
 ```
 
----
+## Key Patterns
 
-## Component Testing Strategy
-
-### Unit Tests (Vitest + React Testing Library)
-```typescript
-describe('DeckCard', () => {
-  it('renders commander names', () => {
-    render(<DeckCard deck={mockDeck} />)
-    expect(screen.getByText('Atraxa')).toBeInTheDocument()
-  })
-})
-```
-
-### Integration Tests
-```typescript
-describe('DeckForm submission', () => {
-  it('submits deck and shows confirmation', async () => {
-    render(<DeckForm />)
-    await userEvent.type(screen.getByLabelText('Deck Name'), 'My Deck')
-    await userEvent.click(screen.getByRole('button', { name: 'Submit' }))
-    expect(await screen.findByText('Success')).toBeInTheDocument()
-  })
-})
-```
-
-### E2E Tests (Playwright - Planned)
-```typescript
-test('user can submit deck request', async ({ page }) => {
-  await page.goto('/decks/submission')
-  await page.fill('[name="deckName"]', 'Test Deck')
-  await page.click('button[type="submit"]')
-  await expect(page.locator('.success-message')).toBeVisible()
-})
-```
-
----
-
-## Component Performance Optimization
-
-### 1. Code Splitting
-```tsx
-import dynamic from 'next/dynamic'
-
-const DeckDetail = dynamic(() => import('./DeckDetail'), {
-  loading: () => <DeckSkeleton />,
-  ssr: false // Client-only component
-})
-```
-
-### 2. React.memo for Expensive Components
-```tsx
-export const DeckCard = memo(function DeckCard({ deck }: Props) {
-  // Expensive rendering logic
-}, (prev, next) => prev.deck.id === next.deck.id)
-```
-
-### 3. Virtual Scrolling (Planned)
-```tsx
-import { useVirtualizer } from '@tanstack/react-virtual'
-
-// For long deck lists
-const virtualizer = useVirtualizer({
-  count: decks.length,
-  getScrollElement: () => parentRef.current,
-  estimateSize: () => 200
-})
-```
-
-### 4. Image Optimization
-```tsx
-import Image from 'next/image'
-
-<Image
-  src={card.image_url}
-  alt={card.name}
-  width={200}
-  height={280}
-  loading="lazy"
-  placeholder="blur"
-/>
-```
-
----
-
-## Component Documentation
-
-Each feature component should include:
-```tsx
-/**
- * DeckCard - Preview card for a Commander deck
- *
- * @example
- * <DeckCard
- *   deck={deck}
- *   onClick={() => router.push(`/decks/${deck.id}`)}
- * />
- */
-export function DeckCard({ deck, onClick }: DeckCardProps) {
-  // Implementation
-}
-```
-
----
-
-## Future Component Architecture
-
-1. **Compound Components** for complex forms
-2. **Headless UI** abstractions for reusability
-3. **Storybook** for component documentation
-4. **Chromatic** for visual regression testing
-5. **Component library** package for multi-app reuse
+1. **Server-First**: Default to server components, use client only when needed
+2. **Composition**: Small, focused components that compose together
+3. **Reusability**: Shared components in common directories
+4. **Type Safety**: TypeScript types for all props
+5. **Accessibility**: ARIA labels, keyboard navigation
+6. **Responsive**: Mobile-first Tailwind CSS
+7. **Performance**: Code splitting, lazy loading, memoization where needed

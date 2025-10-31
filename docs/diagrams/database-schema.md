@@ -1,352 +1,222 @@
-# DefCat DeckVault - Database Schema
+# Database Schema (Entity Relationship Diagram)
 
-## Entity Relationship Diagram
+This diagram shows the complete database schema for DefCat's DeckVault, including all tables, relationships, and key fields.
 
 ```mermaid
 erDiagram
     profiles ||--o{ deck_submissions : "submits"
+    profiles ||--o| user_credits : "has"
     profiles {
-        uuid id PK
-        string patreon_id UK
-        string email
-        string full_name
-        string avatar_url
-        uuid tier_id FK
-        string role
-        jsonb moxfield_credentials
-        timestamp created_at
-        timestamp updated_at
+        text id PK
+        text email UK
+        text patreon_id UK
+        patreon_tier patreon_tier
+        text moxfield_username
+        text role "default: user"
+        timestamptz created_at
+        timestamptz updated_at
     }
 
-    products ||--o{ profiles : "has tier"
-    products {
-        uuid id PK
-        string patreon_product_id UK
-        string name
-        string description
-        decimal price
-        string currency
-        int deck_request_limit
-        int priority_level
-        boolean is_active
-        timestamp created_at
-        timestamp updated_at
-    }
-
-    decks ||--o{ deck_cards : "contains"
-    decks {
-        uuid id PK
-        string name
-        string description
-        text_array commanders
-        string color_identity
-        string theme
+    moxfield_decks ||--o{ decklist_cards : "contains"
+    moxfield_decks {
+        serial id PK
+        text moxfield_id UK
+        text name
+        text author_name
+        text author_username
+        text format
+        text visibility
+        int commanders_count
+        int mainboard_count
+        int sideboard_count
         int view_count
-        boolean is_public
-        uuid created_by_user_id FK
-        timestamp created_at
-        timestamp updated_at
-        string moxfield_id
-        string moxfield_url
+        int like_count
+        int comment_count
+        jsonb raw_data
+        timestamptz created_at
+        timestamptz fetched_at
+        timestamptz cards_fetched_at
+        timestamptz last_updated_at
     }
 
-    cards ||--o{ deck_cards : "used in"
+    cards ||--o{ decklist_cards : "used_in"
     cards {
-        uuid id PK
-        string name UK
-        string scryfall_id UK
-        string type_line
-        text_array colors
-        text_array color_identity
-        string mana_cost
-        decimal cmc
+        text id PK
+        text name
+        text scryfall_id
+        text mana_cost
+        numeric cmc
+        text type_line
         text oracle_text
-        string image_url
-        string image_url_small
+        text[] colors
+        text[] color_identity
+        text rarity
+        text set_code
+        text set_name
+        text image_url
+        text cached_image_url
+        int cache_attempts
+        text cache_error
+        timestamptz last_cache_attempt_at
         jsonb prices
-        jsonb legalities
-        timestamp created_at
-        timestamp updated_at
+        timestamptz created_at
     }
 
-    deck_cards {
-        uuid id PK
-        uuid deck_id FK
-        uuid card_id FK
+    decklist_cards {
+        serial id PK
+        text moxfield_deck_id FK
+        text card_id FK
+        text card_name
+        text board "mainboard/sideboard/commanders"
         int quantity
-        string category
-        timestamp created_at
+        jsonb card_data
+        timestamptz fetched_at
     }
 
     deck_submissions {
-        uuid id PK
-        uuid user_id FK
-        string status
-        string patreon_tier
-        string deck_name
-        string deck_description
-        text_array commanders
-        string color_identity
-        string theme
-        text additional_notes
-        string moxfield_url
-        timestamp submitted_at
-        timestamp reviewed_at
-        uuid reviewed_by FK
-        text review_notes
-        int submission_month
-        int submission_year
+        text id PK
+        text user_id FK
+        text patreon_id
+        text patreon_username
+        text patreon_tier
+        text email
+        text discord_username
+        text moxfield_username
+        submission_type submission_type "deck/roast"
+        boolean mystery_deck
+        text commander
+        text color_preference
+        text theme
+        text bracket
+        text budget
+        text ideal_date
+        text deck_list_url
+        text coffee_preference
+        text notes
+        text status "pending/in_progress/completed"
+        text submission_month
+        timestamptz created_at
+        timestamptz updated_at
     }
 
-    profiles ||--o{ deck_submissions : "reviews"
-    profiles ||--o{ decks : "creates"
+    user_credits {
+        text user_id PK,FK
+        jsonb credits "structured credit data"
+        jsonb last_granted "last grant metadata"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    tiers ||--o{ tier_benefits : "provides"
+    tiers {
+        text id PK
+        text display_name
+        int sort_order
+        boolean is_active
+        timestamptz created_at
+    }
+
+    credit_types ||--o{ tier_benefits : "assigned_to"
+    credit_types {
+        text id PK
+        text display_name
+        text description
+        boolean is_active
+        timestamptz created_at
+    }
+
+    tier_benefits {
+        text tier_id PK,FK
+        text credit_type_id PK,FK
+        int amount
+    }
+
+    products {
+        text id PK
+        text key UK
+        text name
+        text description
+        text link
+        text image_url
+        text category
+        int sort_order
+        boolean is_active
+        timestamptz created_at
+        timestamptz updated_at
+    }
 
     site_config {
-        string key PK
-        jsonb value
-        string description
-        timestamp updated_at
-        string updated_by
+        text id PK
+        text key UK
+        text value
+        text category
+        text description
+        boolean is_sensitive
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    update_logs {
+        text id PK
+        text operation_type
+        text status
+        int total_items
+        int processed_count
+        int success_count
+        int failed_count
+        int skipped_count
+        text error_message
+        jsonb error_details
+        jsonb metadata
+        int duration_ms
+        text triggered_by
+        timestamptz started_at
+        timestamptz completed_at
+    }
+
+    bookmark_sync_logs {
+        text id PK
+        text bookmark_id
+        text status
+        int total_decks
+        int inserted_decks
+        int updated_decks
+        int unchanged_decks
+        int duration_ms
+        text error_message
+        timestamptz started_at
+        timestamptz completed_at
     }
 ```
 
-## Table Descriptions
+## Key Relationships
 
-### profiles
-**Purpose**: User accounts with Patreon integration
+1. **profiles** → **deck_submissions**: One-to-many relationship for user submissions
+2. **profiles** → **user_credits**: One-to-one relationship for credit tracking
+3. **moxfield_decks** → **decklist_cards**: One-to-many for deck composition
+4. **cards** → **decklist_cards**: One-to-many for card usage across decks
+5. **tiers** → **tier_benefits**: One-to-many for tier-specific credit allocations
+6. **credit_types** → **tier_benefits**: One-to-many for credit type assignments
 
-**Key Fields**:
-- `patreon_id`: Unique identifier from Patreon OAuth
-- `tier_id`: References products table for subscription tier
-- `role`: Access level (user, moderator, admin)
-- `moxfield_credentials`: Encrypted Moxfield API tokens
+## Enums
 
-**Indexes**:
-- `patreon_id` (unique)
-- `email` (unique)
-- `tier_id` (foreign key)
+- **patreon_tier**: Citizen, Knight, Emissary, Duke, Wizard, ArchMage
+- **submission_type**: deck, roast
+- **user_role**: user, member, moderator, administrator, developer
 
-**RLS Policies**:
-- Users can read their own profile
-- Admins can read all profiles
-- Users can update their own non-role fields
+## Special Features
 
----
-
-### products
-**Purpose**: Patreon tier definitions
-
-**Key Fields**:
-- `patreon_product_id`: Synced from Patreon API
-- `deck_request_limit`: Monthly submission quota per tier
-- `priority_level`: Queue priority (higher = faster processing)
-
-**Indexes**:
-- `patreon_product_id` (unique)
-- `is_active`
-
-**RLS Policies**:
-- Public read access
-- Admin-only write access
-
----
-
-### decks
-**Purpose**: Commander deck metadata
-
-**Key Fields**:
-- `commanders`: Array of commander card names
-- `color_identity`: Normalized WUBRG format
-- `moxfield_id`: Link to Moxfield deck
-- `view_count`: Popularity metric
-
-**Indexes**:
-- `color_identity` (for filtering)
-- `created_by_user_id` (foreign key)
-- `moxfield_id` (unique, nullable)
-- `is_public`
-
-**RLS Policies**:
-- Public read for `is_public = true`
-- Creator can read their own private decks
-- Admin can read all decks
-
----
-
-### cards
-**Purpose**: MTG card cache from Scryfall
-
-**Key Fields**:
-- `scryfall_id`: Unique Scryfall identifier
-- `color_identity`: Normalized for commander legality
-- `prices`: JSONB with market pricing data
-- `legalities`: JSONB with format legality
-
-**Indexes**:
-- `name` (unique, case-insensitive)
-- `scryfall_id` (unique)
-- `color_identity` (GIN index for array queries)
-
-**RLS Policies**:
-- Public read access
-- Admin-only write access
-
----
-
-### deck_cards
-**Purpose**: Many-to-many relationship between decks and cards
-
-**Key Fields**:
-- `quantity`: Number of copies (typically 1 for Commander)
-- `category`: Card role (commander, creature, instant, etc.)
-
-**Indexes**:
-- `deck_id` (foreign key)
-- `card_id` (foreign key)
-- Composite unique: `(deck_id, card_id)`
-
-**RLS Policies**:
-- Inherits from decks table
-- Read access matches deck access
-
----
-
-### deck_submissions
-**Purpose**: User deck submission requests
-
-**Key Fields**:
-- `status`: pending, approved, rejected, completed
-- `submission_month/year`: For monthly limit tracking
-- `reviewed_by`: Admin who processed the submission
-
-**Indexes**:
-- `user_id` (foreign key)
-- `status`
-- Composite: `(user_id, submission_month, submission_year)`
-
-**RLS Policies**:
-- Users can read their own submissions
-- Users can create submissions (with rate limiting)
-- Admins can read/update all submissions
-
----
-
-### site_config
-**Purpose**: Application configuration key-value store
-
-**Key Fields**:
-- `key`: Configuration identifier
-- `value`: JSONB flexible value storage
-- `updated_by`: Audit trail
-
-**Indexes**:
-- `key` (primary key)
-
-**RLS Policies**:
-- Public read access
-- Admin-only write access
-
-## Relationships
-
-### One-to-Many
-1. **products → profiles**: Each user has one tier
-2. **profiles → deck_submissions**: Users submit multiple requests
-3. **profiles → decks**: Users create multiple decks
-4. **decks → deck_cards**: Decks contain many cards
-
-### Many-to-Many
-1. **decks ↔ cards**: Through `deck_cards` join table
-
-### Self-Referencing
-1. **profiles → deck_submissions**: `reviewed_by` field
-
-## Data Integrity
-
-### Foreign Key Constraints
-```sql
-deck_submissions.user_id → profiles.id (ON DELETE CASCADE)
-deck_submissions.reviewed_by → profiles.id (ON DELETE SET NULL)
-deck_cards.deck_id → decks.id (ON DELETE CASCADE)
-deck_cards.card_id → cards.id (ON DELETE RESTRICT)
-profiles.tier_id → products.id (ON DELETE SET NULL)
-decks.created_by_user_id → profiles.id (ON DELETE SET NULL)
-```
-
-### Unique Constraints
-- `profiles.patreon_id`
-- `profiles.email`
-- `products.patreon_product_id`
-- `cards.name` (case-insensitive)
-- `cards.scryfall_id`
-- `deck_cards(deck_id, card_id)` composite
-
-### Check Constraints
-- `deck_submissions.status` IN ('pending', 'approved', 'rejected', 'completed')
-- `profiles.role` IN ('user', 'moderator', 'admin')
-- `deck_cards.quantity` > 0
-
-## Migration Strategy
-
-All schema changes are managed through Supabase migrations:
-- Location: `supabase/migrations/`
-- Naming: `YYYYMMDDHHMMSS_description.sql`
-- Applied sequentially in timestamp order
-
-## Query Optimization
-
-### Common Query Patterns
-
-**1. Get user's deck with cards**
-```sql
-SELECT
-    d.*,
-    json_agg(json_build_object(
-        'card', c,
-        'quantity', dc.quantity,
-        'category', dc.category
-    )) as cards
-FROM decks d
-JOIN deck_cards dc ON d.id = dc.deck_id
-JOIN cards c ON dc.card_id = c.id
-WHERE d.id = $1
-GROUP BY d.id;
-```
-*Indexes used*: `decks.id`, `deck_cards.deck_id`, `deck_cards.card_id`
-
-**2. Check monthly submission limit**
-```sql
-SELECT COUNT(*)
-FROM deck_submissions
-WHERE user_id = $1
-    AND submission_month = $2
-    AND submission_year = $3
-    AND status != 'rejected';
-```
-*Indexes used*: `(user_id, submission_month, submission_year)` composite
-
-**3. Filter decks by color identity**
-```sql
-SELECT * FROM decks
-WHERE color_identity = 'BRG'
-    AND is_public = true
-ORDER BY view_count DESC
-LIMIT 20;
-```
-*Indexes used*: `color_identity`, `is_public`, `view_count`
-
-## Backup and Recovery
-
-- **Automated backups**: Daily at 2 AM UTC
-- **Point-in-time recovery**: 7-day window
-- **Backup location**: Supabase managed storage
-- **Recovery time objective (RTO)**: < 1 hour
-- **Recovery point objective (RPO)**: < 24 hours
-
-## Future Schema Enhancements
-
-1. **deck_versions**: Track deck evolution over time
-2. **card_tags**: Custom tags for organization
-3. **deck_comments**: Community feedback system
-4. **deck_favorites**: User bookmarks
-5. **deck_stats**: Cached analytics (avg CMC, color distribution)
-6. **webhook_logs**: Patreon webhook processing audit
+1. **Row Level Security (RLS)**: Enabled on all tables with policies for user/admin access
+2. **Triggers**: Auto-update timestamps on profiles, decks, submissions, products, site_config
+3. **Views**:
+   - `deck_list_view`: Simplified deck browsing
+   - `unified_deck_view`: Comprehensive deck data with analytics
+   - `user_credit_details`: Expanded credit information
+   - `submission_stats`: Aggregated submission statistics
+   - `tier_benefit_matrix`: Credit benefits by tier
+4. **Functions**:
+   - `use_credit()`: Deduct credits from user
+   - `refund_credit()`: Return credits to user
+   - `refresh_user_credits()`: Reset monthly credits
+   - `distribute_monthly_credits()`: Batch credit distribution
+   - `import_deck_from_jsonb()`: Bulk deck import

@@ -29,11 +29,6 @@ const ROLE_HIERARCHY: Record<UserRole, number> = {
 }
 
 /**
- * TEMPORARY: Hardcoded admin bypass for development
- */
-const ADMIN_BYPASS_EMAILS = ['elmo@bdwinc.org']
-
-/**
  * Internal helper to get user with complete profile info
  */
 async function getUserWithRole(): Promise<AuthResult | null> {
@@ -43,16 +38,6 @@ async function getUserWithRole(): Promise<AuthResult | null> {
   } = await supabase.auth.getUser()
 
   if (!user) return null
-
-  // TEMPORARY: Hardcoded admin bypass for development
-  if (ADMIN_BYPASS_EMAILS.includes(user.email || '')) {
-    return {
-      user,
-      role: 'admin',
-      patreonTier: null,
-      patreonId: null,
-    }
-  }
 
   const { data: profile } = await supabase
     .from('profiles')
