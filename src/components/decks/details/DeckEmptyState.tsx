@@ -20,7 +20,7 @@ export function DeckEmptyState({ deck, moxfieldIcon }: DeckEmptyStateProps) {
       </p>
       {deck.public_url && (
         <Button asChild size="lg">
-          
+          <a
             href={deck.public_url}
             target="_blank"
             rel="noopener noreferrer"

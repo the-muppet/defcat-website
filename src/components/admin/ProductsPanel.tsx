@@ -56,7 +56,6 @@ export function ProductsPanel() {
 
       setProducts(data || [])
     } catch (err) {
-      console.error('Error loading products:', err)
       setError(err instanceof Error ? err.message : 'Failed to load products')
     } finally {
       setLoading(false)
@@ -156,7 +155,6 @@ export function ProductsPanel() {
         setTimeout(() => setSuccessMessage(null), 3000)
       }
     } catch (err) {
-      console.error('Save error:', err)
       setError(err instanceof Error ? err.message : 'Failed to save product')
     } finally {
       setSaving(false)
@@ -188,7 +186,6 @@ export function ProductsPanel() {
 
       setProducts(products.filter((p) => p.id !== id))
     } catch (err) {
-      console.error('Delete error:', err)
       setError(err instanceof Error ? err.message : 'Failed to delete product')
     }
   }

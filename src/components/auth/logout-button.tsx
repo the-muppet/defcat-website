@@ -1,43 +1,20 @@
 // components/auth/logout-button.tsx
 'use client'
 
-import { LogOut } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { logout } from '@/app/actions/auth'
 import { Button } from '@/components/ui/button'
 
 export function LogoutButton() {
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
 
   async function handleLogout() {
     setIsLoading(true)
-    try {
-      const response = await fetch('/auth/logout', {
-        method: 'POST',
-      })
-
-      if (response.ok) {
-        router.push('/')
-        router.refresh()
-      } else {
-        console.error('Logout failed')
-        setIsLoading(false)
-      }
-    } catch (error) {
-      console.error('Logout error:', error)
-      setIsLoading(false)
-    }
+    await logout()
   }
 
   return (
-    <Button
-      onClick={handleLogout}
-      variant="ghost"
-      disabled={isLoading}
-      className="w-full justify-start hover:bg-accent-tinted"
-    >
-      <LogOut className="h-4 w-4 mr-2" />
+    <Button onClick={handleLogout} disabled={isLoading}>
       {isLoading ? 'Signing out...' : 'Sign Out'}
     </Button>
   )

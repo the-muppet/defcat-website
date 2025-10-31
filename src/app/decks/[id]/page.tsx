@@ -4,9 +4,10 @@
 import { use } from 'react'
 import { notFound } from 'next/navigation'
 import { useDeck } from '@/lib/hooks/useDecks'
-import { DeckDetailLayout } from '@/components/decks/detail/DeckDetailLayout'
-import { DeckDetailLoading } from '@/components/decks/detail/DeckDetailLoading'
-import { DeckDetailError } from '@/components/decks/detail/DeckDetailError'
+import { DeckDetailLayout } from '@/components/decks/details/DeckDetailLayout'
+import { DeckDetailLoading } from '@/components/decks/details/DeckDetailLoading'
+import { DeckDetailError } from '@/components/decks/details/DeckDetailError'
+import { DecklistCardWithCard, DeckWithCards } from '@/types/supabase'
 
 interface PageProps {
   params: Promise<{ id: string }>

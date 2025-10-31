@@ -4,7 +4,6 @@ import { createClient } from '@supabase/supabase-js'
 import { type NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { DeckSubmissionEmail } from '@/emails'
-import { ColorIdentity } from '@/types/colors'
 import type { DeckSubmissionFormData, SubmissionResponse } from '@/types/form'
 import { logger } from '@/lib/observability/logger'
 import { trackRequestDuration, deckSubmissions } from '@/lib/observability/metrics'
@@ -300,15 +299,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Get submission number (count of all submissions up to this one)
+    const { count } = await supabase
+      .from('deck_submissions')
+      .select('*', { count: 'exact', head: true })
+
+    const submissionNumber = count || 1
+
     // Skip emails for drafts
     if (!isDraft) {
-      // Get submission number (count of all submissions up to this one)
-      const { count } = await supabase
-        .from('deck_submissions')
-        .select('*', { count: 'exact', head: true })
-
-      const submissionNumber = count || 1
-
       // Send confirmation email
       try {
         const resend = getResendClient()
@@ -319,7 +318,7 @@ export async function POST(request: NextRequest) {
           react: DeckSubmissionEmail({
             patreonUsername: body.patreonUsername,
             submissionNumber,
-            colorPreference: ColorIdentity.getName(body.colorPreference),
+            colorPreference: body.colorPreference, // Pass raw value, not .getName()
             commander: body.commander || undefined,
             bracket: body.bracket,
             mysteryDeck,
@@ -364,7 +363,7 @@ export async function POST(request: NextRequest) {
             <p><strong>Email:</strong> ${body.email}</p>
             <p><strong>Mystery Deck:</strong> ${mysteryDeck ? 'Yes' : 'No'}</p>
             ${body.commander ? `<p><strong>Commander:</strong> ${body.commander}</p>` : ''}
-            <p><strong>Color Preference:</strong> ${ColorIdentity.getName(body.colorPreference)}</p>
+            <p><strong>Color Preference:</strong> ${body.colorPreference}</p>
             ${body.theme ? `<p><strong>Theme:</strong> ${body.theme}</p>` : ''}
             <p><strong>Bracket:</strong> ${body.bracket}</p>
             <p><strong>Budget:</strong> ${body.budget}</p>

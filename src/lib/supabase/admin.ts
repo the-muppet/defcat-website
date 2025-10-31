@@ -5,7 +5,6 @@
  */
 
 import { createClient } from '@supabase/supabase-js'
-import type { db } from '@/types/supabase'
 
 export function createAdminClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -15,7 +14,7 @@ export function createAdminClient() {
     throw new Error('Missing Supabase admin credentials')
   }
 
-  return createClient<db>(supabaseUrl, supabaseServiceKey, {
+  return createClient(supabaseUrl, supabaseServiceKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,

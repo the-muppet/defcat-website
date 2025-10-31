@@ -1,3 +1,4 @@
+/** biome-ignore-all assist/source/organizeImports: <explanation> */
 'use client'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -5,7 +6,7 @@ import { ThemeProvider } from 'next-themes'
 import { useState } from 'react'
 import { Toaster } from '@/components/ui/toaster'
 import { ManaColorProvider } from './ManaColorContext'
-import { AuthProvider } from './AuthContext'
+import { AuthProvider } from '../auth/client-auth'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(

@@ -8,7 +8,7 @@ import { CreditTypesList } from '@/components/admin/CreditList'
 import { TierBenefitsMatrix } from '@/components/admin/CreditMatrix'
 import { DistributionManager } from '@/components/admin/DistributionManager'
 import { SiteConfigForm } from '@/components/forms/SiteConfigForm'
-import { requireAdmin } from '@/lib/auth/auth-guards'
+import { requireAdmin } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'

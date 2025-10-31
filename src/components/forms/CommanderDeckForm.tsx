@@ -26,7 +26,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { useAuth, useSubmissionEligibility } from '@/lib/contexts/AuthContext'
+import { useAuth, useSubmissionEligibility } from '@/lib/auth/client-auth'
 import { createClient } from '@/lib/supabase/client'
 import { ColorIdentity } from '@/types/colors'
 import { bracketOptions } from '@/types/core'

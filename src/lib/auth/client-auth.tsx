@@ -100,7 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .eq('tier_id', tier.toLowerCase())
 
       // Build credits object
-      const credits: Record<string, number> = userCredits?.credits || {}
+      const credits: Record<string, number> = (userCredits?.credits as Record<string, number>) || {}
 
       // Build tier benefits map
       const benefits: Record<string, number> = {}

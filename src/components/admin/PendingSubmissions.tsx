@@ -61,7 +61,6 @@ export function PendingSubmissions() {
     } = await supabase.auth.getSession()
 
     if (!session) {
-      console.error('No session found')
       setUpdating(null)
       return
     }
@@ -79,8 +78,7 @@ export function PendingSubmissions() {
     if (response.ok) {
       await loadSubmissions()
     } else {
-      const error = await response.json()
-      console.error('Failed to update submission:', error)
+      // Error - could add toast notification here if needed
     }
 
     setUpdating(null)

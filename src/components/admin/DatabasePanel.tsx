@@ -58,7 +58,6 @@ export function DatabasePanel() {
 
       setResult(data)
     } catch (err) {
-      console.error('Query error:', err)
       setError(err instanceof Error ? err.message : 'Failed to execute query')
     } finally {
       setLoading(false)

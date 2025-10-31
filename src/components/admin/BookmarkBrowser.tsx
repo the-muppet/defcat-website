@@ -87,7 +87,6 @@ export function DeckURLSelector({
 
       setDecks(transformedDecks)
     } catch (err) {
-      console.error('Error fetching decks:', err)
       setError(err instanceof Error ? err.message : 'Failed to load decks')
     } finally {
       setLoading(false)

@@ -18,7 +18,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { GlowingEffect } from '@/components/ui/glowEffect'
-import { requireAdmin } from '@/lib/auth/auth-guards'
+import { requireAdmin } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function AdminDashboard() {

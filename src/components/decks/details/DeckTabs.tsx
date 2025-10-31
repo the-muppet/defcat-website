@@ -1,4 +1,5 @@
 // components/decks/detail/DeckTabs.tsx
+/** biome-ignore-all lint/a11y/useButtonType: <explanation> */
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -9,10 +10,10 @@ import { DeckListView } from './DeckListView'
 import { DeckVisualView } from './DeckVisualView'
 import { DeckStatsView } from './DeckStatsView'
 import { DeckEmptyState } from './DeckEmptyState'
-import type { DecklistCardWithCard, Deck, DeckInfo } from '@/types/supabase'
+import type { DecklistCardWithCard, Deck } from '@/types/supabase'
 
 interface DeckTabsProps {
-  deck: Deck & Partial<DeckInfo>
+  deck: Deck & Partial<any>
   cards: DecklistCardWithCard[]
 }
 
@@ -86,7 +87,7 @@ export function DeckTabs({ deck, cards }: DeckTabsProps) {
 
             <div className="flex items-center gap-2">
               {deck.public_url && (
-                
+                <a
                   href={deck.public_url}
                   target="_blank"
                   rel="noopener noreferrer"

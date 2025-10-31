@@ -26,7 +26,7 @@ const GlowingEffect = memo(
     spread = 45, 
     variant = "default",
     glow = false,
-    className = "will-change: auto",
+    className = "will-change: transition-opacity",
     movementDuration = 2.5,
     borderWidth = 2,
     disabled = true,
@@ -124,7 +124,7 @@ const GlowingEffect = memo(
       <>
         <div
           className={cn(
-            "pointer-events-none absolute -inset-px hidden rounded-[inherit] border opacity-0 transition-opacity",
+            "pointer-events-none absolute -inset-px hidden rounded-[inherit] border opacity-0 transition-opacity transform-gpu transform-y(0)",
             glow && "opacity-100",
             variant === "white" && "border-white",
             disabled && "!block"
@@ -139,11 +139,11 @@ const GlowingEffect = memo(
               "--start": "0",
               "--active": "0",
               "--glowingeffect-border-width": `${borderWidth}px`,
-              "--repeating-conic-gradient-times": "6",
+              "--repeating-conic-gradient-times": "3",
               "--gradient":
                 variant === "white"
                   ? `repeating-conic-gradient(
-                  from 236.84deg at 50% 50%,
+                  from 236deg at 50% 50%,
                   var(--black),
                   var(--black) calc(25% / var(--repeating-conic-gradient-times))
                 )`

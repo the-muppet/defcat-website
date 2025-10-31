@@ -125,6 +125,36 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_grant_history: {
+        Row: {
+          amount: number
+          created_at: string | null
+          credit_type: string
+          id: string
+          notes: string | null
+          tier: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          credit_type: string
+          id?: string
+          notes?: string | null
+          tier?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          credit_type?: string
+          id?: string
+          notes?: string | null
+          tier?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       credit_types: {
         Row: {
           created_at: string | null
@@ -158,7 +188,7 @@ export type Database = {
           commander: string | null
           created_at: string | null
           deck_list_url: string | null
-          discord_username: string
+          discord_username: string | null
           email: string
           id: string
           ideal_date: string | null
@@ -183,7 +213,7 @@ export type Database = {
           commander?: string | null
           created_at?: string | null
           deck_list_url?: string | null
-          discord_username: string
+          discord_username?: string | null
           email: string
           id?: string
           ideal_date?: string | null
@@ -210,7 +240,7 @@ export type Database = {
           commander?: string | null
           created_at?: string | null
           deck_list_url?: string | null
-          discord_username?: string
+          discord_username?: string | null
           email?: string
           id?: string
           ideal_date?: string | null
@@ -271,6 +301,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "decklist_cards_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards_with_dashes"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "decklist_cards_moxfield_deck_id_fkey"
             columns: ["moxfield_deck_id"]
             isOneToOne: false
@@ -281,17 +318,48 @@ export type Database = {
             foreignKeyName: "decklist_cards_moxfield_deck_id_fkey"
             columns: ["moxfield_deck_id"]
             isOneToOne: false
-            referencedRelation: "moxfield_decks"
+            referencedRelation: "decks_parsed"
             referencedColumns: ["moxfield_id"]
           },
           {
             foreignKeyName: "decklist_cards_moxfield_deck_id_fkey"
             columns: ["moxfield_deck_id"]
             isOneToOne: false
-            referencedRelation: "unified_deck_view"
+            referencedRelation: "mox_decks"
+            referencedColumns: ["moxfield_id"]
+          },
+          {
+            foreignKeyName: "decklist_cards_moxfield_deck_id_fkey"
+            columns: ["moxfield_deck_id"]
+            isOneToOne: false
+            referencedRelation: "moxfield_decks"
             referencedColumns: ["moxfield_id"]
           },
         ]
+      }
+      edgecases: {
+        Row: {
+          added_by: string | null
+          date_added: string | null
+          id: number
+          preserve_as: string
+          string_to_preserve: string
+        }
+        Insert: {
+          added_by?: string | null
+          date_added?: string | null
+          id?: number
+          preserve_as: string
+          string_to_preserve: string
+        }
+        Update: {
+          added_by?: string | null
+          date_added?: string | null
+          id?: number
+          preserve_as?: string
+          string_to_preserve?: string
+        }
+        Relationships: []
       }
       moxfield_decks: {
         Row: {
@@ -414,7 +482,7 @@ export type Database = {
           id: string
           moxfield_username: string | null
           patreon_id: string | null
-          patreon_tier: Database["public"]["Enums"]["patreon_tier"] | null
+          patreon_tier: string | null
           role: string | null
           updated_at: string | null
         }
@@ -424,7 +492,7 @@ export type Database = {
           id: string
           moxfield_username?: string | null
           patreon_id?: string | null
-          patreon_tier?: Database["public"]["Enums"]["patreon_tier"] | null
+          patreon_tier?: string | null
           role?: string | null
           updated_at?: string | null
         }
@@ -434,7 +502,7 @@ export type Database = {
           id?: string
           moxfield_username?: string | null
           patreon_id?: string | null
-          patreon_tier?: Database["public"]["Enums"]["patreon_tier"] | null
+          patreon_tier?: string | null
           role?: string | null
           updated_at?: string | null
         }
@@ -639,43 +707,31 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_credits_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_credits_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "user_credit_details"
-            referencedColumns: ["user_id"]
-          },
-        ]
-      }
-      user_roles: {
-        Row: {
-          created_at: string | null
-          id: number
-          role: Database["public"]["Enums"]["user_role"] | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: number
-          role?: Database["public"]["Enums"]["user_role"] | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: number
-          role?: Database["public"]["Enums"]["user_role"] | null
-        }
         Relationships: []
       }
     }
     Views: {
+      cards_with_dashes: {
+        Row: {
+          id: string | null
+          name: string | null
+          rarity: string | null
+          type_line: string | null
+        }
+        Insert: {
+          id?: string | null
+          name?: string | null
+          rarity?: string | null
+          type_line?: string | null
+        }
+        Update: {
+          id?: string | null
+          name?: string | null
+          rarity?: string | null
+          type_line?: string | null
+        }
+        Relationships: []
+      }
       deck_list_view: {
         Row: {
           author_username: string | null
@@ -688,7 +744,6 @@ export type Database = {
           mainboard_count: number | null
           moxfield_id: string | null
           name: string | null
-          price_category: string | null
           primary_commander: string | null
           public_id: string | null
           public_url: string | null
@@ -706,7 +761,6 @@ export type Database = {
           mainboard_count?: number | null
           moxfield_id?: string | null
           name?: string | null
-          price_category?: never
           primary_commander?: never
           public_id?: string | null
           public_url?: string | null
@@ -724,7 +778,6 @@ export type Database = {
           mainboard_count?: number | null
           moxfield_id?: string | null
           name?: string | null
-          price_category?: never
           primary_commander?: never
           public_id?: string | null
           public_url?: string | null
@@ -733,19 +786,61 @@ export type Database = {
         }
         Relationships: []
       }
-      submission_stats: {
+      decks_parsed: {
         Row: {
-          archmage_submissions: number | null
-          completed_count: number | null
-          duke_submissions: number | null
-          in_progress_count: number | null
-          mystery_deck_count: number | null
-          pending_count: number | null
-          total_submissions: number | null
-          unique_brackets: number | null
-          unique_color_combinations: number | null
-          unique_users: number | null
-          wizard_submissions: number | null
+          author_name: string | null
+          author_username: string | null
+          cards_fetched_at: string | null
+          commanders_count: number | null
+          comment_count: number | null
+          created_at: string | null
+          deck_title: string | null
+          event_date: string | null
+          event_date_std: string | null
+          fetched_at: string | null
+          format: string | null
+          id: number | null
+          is_legal: boolean | null
+          last_updated_at: string | null
+          like_count: number | null
+          mainboard_count: number | null
+          moxfield_id: string | null
+          original_name: string | null
+          player_username: string | null
+          public_id: string | null
+          public_url: string | null
+          sideboard_count: number | null
+          view_count: number | null
+          visibility: string | null
+        }
+        Relationships: []
+      }
+      mox_decks: {
+        Row: {
+          author_name: string | null
+          author_username: string | null
+          cards_fetched_at: string | null
+          commanders_count: number | null
+          comment_count: number | null
+          created_at: string | null
+          deck_title: string | null
+          event_date: string | null
+          event_date_std: string | null
+          fetched_at: string | null
+          format: string | null
+          id: number | null
+          is_legal: boolean | null
+          last_updated_at: string | null
+          like_count: number | null
+          mainboard_count: number | null
+          moxfield_id: string | null
+          original_name: string | null
+          player_username: string | null
+          public_id: string | null
+          public_url: string | null
+          sideboard_count: number | null
+          view_count: number | null
+          visibility: string | null
         }
         Relationships: []
       }
@@ -754,84 +849,6 @@ export type Database = {
           benefits: Json | null
           sort_order: number | null
           tier: string | null
-        }
-        Relationships: []
-      }
-      unified_deck_view: {
-        Row: {
-          are_comments_enabled: boolean | null
-          author_name: string | null
-          author_username: string | null
-          avg_cmc: number | null
-          card_type_distribution: Json | null
-          cards_fetched_at: string | null
-          color_identity: string[] | null
-          color_identity_json: Json | null
-          color_identity_string: string | null
-          color_string: string | null
-          colors: string[] | null
-          colors_json: Json | null
-          commander_cards: number | null
-          commander_names: string[] | null
-          commanders_count: number | null
-          commanders_json: Json | null
-          comment_count: number | null
-          companion_id: Json | null
-          created_at: string | null
-          created_date: string | null
-          days_since_fetch: number | null
-          days_since_update: number | null
-          deck_age_days: number | null
-          description: string | null
-          engagement_rate: number | null
-          fetched_at: string | null
-          format: string | null
-          has_card_data: boolean | null
-          has_price_data: boolean | null
-          has_primer: boolean | null
-          hub_names: string[] | null
-          hubs_json: Json | null
-          id: number | null
-          is_commander_deck: boolean | null
-          is_complete_deck: boolean | null
-          is_legal: boolean | null
-          last_updated_at: string | null
-          like_count: number | null
-          mainboard_cards: number | null
-          mainboard_count: number | null
-          mainboard_value: number | null
-          moxfield_id: string | null
-          name: string | null
-          price_tier: string | null
-          primary_commander: string | null
-          public_id: string | null
-          public_url: string | null
-          rarity_distribution: Json | null
-          raw_format: string | null
-          sideboard_cards: number | null
-          sideboard_count: number | null
-          signature_spells: Json | null
-          sync_status: string | null
-          tokens_json: Json | null
-          total_card_count: number | null
-          total_cards_with_qty: number | null
-          total_deck_value: number | null
-          total_price: number | null
-          unique_cards: number | null
-          updated_date: string | null
-          view_count: number | null
-          visibility: string | null
-        }
-        Relationships: []
-      }
-      user_credit_details: {
-        Row: {
-          credits: Json | null
-          credits_expanded: Json | null
-          email: string | null
-          last_granted: Json | null
-          patreon_tier: Database["public"]["Enums"]["patreon_tier"] | null
-          user_id: string | null
         }
         Relationships: []
       }
@@ -880,6 +897,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      exec_sql: { Args: { query: string }; Returns: Json }
       get_tier_monthly_credits: {
         Args: { tier: string }
         Returns: {
@@ -894,6 +912,84 @@ export type Database = {
       increment_cache_attempts: {
         Args: { attempt_time: string; card_id: string; error_msg: string }
         Returns: undefined
+      }
+      parse_date: { Args: { p_text: string }; Returns: string }
+      parse_date_from_string: { Args: { p_text: string }; Returns: string }
+      parse_date_string: { Args: { p_text: string }; Returns: string }
+      parse_deck: {
+        Args: { p_name: string }
+        Returns: {
+          drop_date: string
+          parsed_deck: string
+          parsed_user: string
+        }[]
+      }
+      parse_deck_name: {
+        Args: { deck_name: string }
+        Returns: {
+          deck_title: string
+          parsed_date: string
+          username: string
+        }[]
+      }
+      parse_deck_name_final: {
+        Args: { p_name: string }
+        Returns: {
+          drop_date: string
+          parsed_deck: string
+          parsed_user: string
+        }[]
+      }
+      parse_deck_name_final2: {
+        Args: { p_name: string }
+        Returns: {
+          drop_date: string
+          parsed_deck: string
+          parsed_user: string
+        }[]
+      }
+      parse_decks: {
+        Args: { deck_name: string }
+        Returns: {
+          deck_title: string
+          parsed_date: string
+          standardized_date: string
+          username: string
+        }[]
+      }
+      parse_title: {
+        Args: { p_name: string }
+        Returns: {
+          drop_date: string
+          parsed_deck: string
+          parsed_user: string
+        }[]
+      }
+      parse7: {
+        Args: { deck_name: string }
+        Returns: {
+          deck_title: string
+          parsed_date: string
+          username: string
+        }[]
+      }
+      parse8: {
+        Args: { deck_name: string }
+        Returns: {
+          deck_title: string
+          parsed_date: string
+          standardized_date: string
+          username: string
+        }[]
+      }
+      parse9: {
+        Args: { deck_name: string }
+        Returns: {
+          deck_title: string
+          parsed_date: string
+          standardized_date: string
+          username: string
+        }[]
       }
       refresh_user_credits: {
         Args: { p_patreon_tier: string; p_user_id: string }

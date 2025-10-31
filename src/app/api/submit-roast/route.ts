@@ -39,8 +39,8 @@ function validateRoastSubmission(data: any): boolean {
     }
   }
 
-  // Validate Moxfield URL
-  if (!data.moxfieldLink.includes('moxfield.com')) {
+  // Validate Moxfield URL - check for proper domain
+  if (!data.moxfieldLink.includes('://moxfield.com/') && !data.moxfieldLink.includes('://www.moxfield.com/')) {
     return false
   }
 
@@ -219,7 +219,7 @@ export async function POST(request: NextRequest) {
       patreon_username: body.preferredName?.trim() || null,
       email: profile.email || null,
       discord_username: null,
-      submission_type: 'roast',
+      submission_type: 'roast' as const,
       mystery_deck: false,
       commander: null,
       color_preference: null,
@@ -228,8 +228,8 @@ export async function POST(request: NextRequest) {
       budget: null,
       coffee_preference: null,
       ideal_date: null,
-      moxfield_link: body.moxfieldLink?.trim() || null,
-      art_choices_intentional: body.artChoicesIntentional || null,
+      deck_list_url: body.moxfieldLink?.trim() || null,
+      notes: body.artChoicesIntentional ? `Art choices intentional: ${body.artChoicesIntentional}` : null,
       status: 'pending' as const,
     }
 

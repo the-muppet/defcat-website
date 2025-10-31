@@ -9,11 +9,11 @@ import { RoastButton } from '@/components/decks/RoastButton'
 import { DeckHeader } from './DeckHeader'
 import { DeckTabs } from './DeckTabs'
 import { DeckSidebar } from './DeckSidebar'
-import type { DecklistCardWithCard, Deck, DeckInfo } from '@/types/supabase'
+import type { DeckWithCards, Deck } from '@/types/supabase'
 
 interface DeckDetailLayoutProps {
-  deck: Deck & Partial<DeckInfo>
-  cards: DecklistCardWithCard[]
+  deck: Deck
+  cards: DeckWithCards[]
 }
 
 export function DeckDetailLayout({ deck, cards }: DeckDetailLayoutProps) {

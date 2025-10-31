@@ -4,7 +4,7 @@ import { Flame } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { useRoastEligibility } from '@/context/AuthContext'
+import { useRoastEligibility } from '@/lib/auth/client-auth'
 import { cn } from '@/lib/utils'
 
 interface RoastButtonProps {

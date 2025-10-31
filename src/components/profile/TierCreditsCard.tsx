@@ -3,7 +3,7 @@
 import { Flame, Loader2, Sparkles } from 'lucide-react'
 import { TierBadge } from '@/components/tier/TierBadge'
 import { Card, CardContent } from '@/components/ui/card'
-import { useSubmissionEligibility, useRoastEligibility } from '@/lib/contexts/AuthContext'
+import { useSubmissionEligibility, useRoastEligibility } from '@/lib/auth/client-auth'
 import type { PatreonTier } from '@/types/core'
 
 interface TierCreditsCardProps {
@@ -15,12 +15,11 @@ export function TierCreditsCard({ tier }: TierCreditsCardProps) {
   const { roastCredits, isLoading: roastLoading } = useRoastEligibility()
 
   return (
-    <Card className="glass-panel border-0 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-[var(--mana-color)]/10 via-transparent to-transparent" />
+    <Card className="glass-panel border-2xl rounded-2xl md:rounded-2xl">
       <CardContent className="relative p-4 space-y-4">
         {/* Tier Badge */}
         <div className="flex justify-center">
-          <TierBadge tier={tier} showTooltip={true} />
+          <TierBadge tier={tier} showTooltip={false} />
         </div>
 
         {/* Credits Display */}

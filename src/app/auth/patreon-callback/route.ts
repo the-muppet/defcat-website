@@ -2,6 +2,8 @@
  * New Patreon OAuth Callback Route
  * Handles Patreon OAuth and creates proper Supabase sessions
  */
+/** biome-ignore-all assist/source/organizeImports: <explanation> */
+/** biome-ignore-all lint/complexity/noExcessiveCognitiveComplexity: Its not that complex, chill out */
 
 import { NextResponse } from 'next/server'
 import { exchangeCodeForToken, fetchPatreonMembership } from '@/lib/api/patreon'
@@ -22,7 +24,6 @@ export async function GET(request: Request) {
   }
 
   try {
-    // Determine the redirect URI that was used (must match what was sent to Patreon)
     const isLocalhost = origin.includes('localhost') || origin.includes('127.0.0.1')
     const redirectUri = isLocalhost
       ? `${origin}/auth/patreon-callback`
@@ -30,14 +31,9 @@ export async function GET(request: Request) {
 
     logger.debug('OAuth redirect URI determined', { redirectUri, isLocalhost })
 
-    // Exchange code for Patreon access token
-    logger.info('Exchanging authorization code for Patreon access token')
     const patreonAccessToken = await exchangeCodeForToken(code, redirectUri)
-
-    // Fetch user data from Patreon
     const { tier, patreonId } = await fetchPatreonMembership(patreonAccessToken)
 
-    // Fetch Patreon user email
     const patreonUserResponse = await fetch(
       'https://www.patreon.com/api/oauth2/v2/identity?fields%5Buser%5D=email,full_name',
       {
@@ -55,15 +51,11 @@ export async function GET(request: Request) {
       return NextResponse.redirect(`${origin}/auth/login?error=no_email`)
     }
 
-    // TEMPORARY: Auto-accept site owner
     const isSiteOwner = email.toLowerCase() === 'jaynatale@defcat.net'
-
-    // Use admin client to create/update user
     const adminClient = createAdminClient()
 
     let userId: string
 
-    // Try to create new user - if they exist, we'll get their ID from auth
     const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({
       email,
       email_confirm: true,
@@ -74,30 +66,42 @@ export async function GET(request: Request) {
     })
 
     if (createError) {
-      // User already exists, list all users and find by email
-      logger.info('User already exists, searching by email', { email: logger.redact(['email'], { email }).email })
+      logger.info('User already exists, checking profiles table')
 
-      const { data: listData, error: listError } =
-        await adminClient.auth.admin.listUsers()
+      // Try profiles table first (more reliable than listUsers)
+      const { data: profile, error: profileError } = await adminClient
+        .from('profiles')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle()
 
-      if (listError) {
-        logger.error('Failed to list users during lookup', listError)
+      if (profileError) {
+        logger.error('Database error checking profiles', profileError)
         return NextResponse.redirect(
-          `${origin}/auth/login?error=user_lookup_failed&details=${encodeURIComponent(listError.message)}`
+          `${origin}/auth/login?error=lookup_failed&details=${encodeURIComponent(profileError.message)}`
         )
       }
 
-      const existingUser = listData.users.find((u) => u.email?.toLowerCase() === email.toLowerCase())
-
-      if (!existingUser) {
-        logger.error('User not found in auth.users table after Patreon authentication')
-        return NextResponse.redirect(
-          `${origin}/auth/login?error=user_lookup_failed&details=${encodeURIComponent('User not found')}`
-        )
+      if (!profile) {
+        // User exists in auth but not in profiles - recover using generateLink
+        logger.warn('User exists in auth but not in profiles - attempting recovery')
+        
+        const { data: linkData, error: linkError } = await adminClient.auth.admin.generateLink({
+          type: 'magiclink',
+          email: email,
+        })
+        
+        if (linkError || !linkData?.user?.id) {
+          logger.error('Failed to recover user ID', linkError || undefined)
+          return NextResponse.redirect(`${origin}/auth/login?error=recovery_failed`)
+        }
+        
+        userId = linkData.user.id
+        logger.info('Recovered user ID via generateLink', { userId })
+      } else {
+        userId = profile.id
+        logger.info('Found existing user in profiles', { userId })
       }
-
-      userId = existingUser.id
-      logger.info('Found existing user', { userId })
     } else if (newUser.user) {
       userId = newUser.user.id
       logger.info('Created new user', { userId })
@@ -106,38 +110,37 @@ export async function GET(request: Request) {
       return NextResponse.redirect(`${origin}/auth/login?error=user_creation_failed`)
     }
 
-    // Check if profile already exists
+    // Check if profile already exists to preserve role
     const { data: existingProfile } = await adminClient
       .from('profiles')
       .select('role')
       .eq('id', userId)
-      .single()
+      .maybeSingle()
 
-    // Determine role - site owner gets admin role automatically
     let userRole = existingProfile?.role || 'user'
     if (isSiteOwner && userRole === 'user') {
       userRole = 'admin'
       logger.info('Site owner detected - granting admin access', { userId })
     }
 
-    // Update/create profile, preserving existing role if present
-    const { error: profileError } = await adminClient.from('profiles').upsert({
+    // Update/create profile
+    const { error: upsertError } = await adminClient.from('profiles').upsert({
       id: userId,
       email,
-      patreon_id: isSiteOwner ? null : patreonId, // Don't link site owner to Patreon
-      patreon_tier: isSiteOwner ? 'ArchMage' : tier, // Give site owner highest tier
+      patreon_id: isSiteOwner ? null : patreonId,
+      patreon_tier: isSiteOwner ? 'ArchMage' : tier,
       role: userRole,
       updated_at: new Date().toISOString(),
     })
 
-    if (profileError) {
-      logger.error('Failed to update user profile', profileError, { userId })
+    if (upsertError) {
+      logger.error('Failed to update user profile', upsertError, { userId })
       return NextResponse.redirect(
-        `${origin}/auth/login?error=profile_update_failed&details=${encodeURIComponent(profileError.message)}`
+        `${origin}/auth/login?error=profile_update_failed&details=${encodeURIComponent(upsertError.message)}`
       )
     }
 
-    // Set a password for the user (they'll never need to know it)
+    // Set a password for the user
     const userPassword = `patreon_${userId}_${Date.now()}_${Math.random().toString(36)}`
 
     const { error: passwordError } = await adminClient.auth.admin.updateUserById(userId, {
@@ -156,13 +159,12 @@ export async function GET(request: Request) {
     })
 
     if (signInError || !sessionData.session) {
-      logger.error('Sign-in failed after password setup', signInError, { userId })
+      logger.error('Sign-in failed after password setup', signInError || undefined, { userId })
       return NextResponse.redirect(`${origin}/auth/login?error=signin_failed`)
     }
 
     logger.info('Session created successfully', { userId, tier, role: userRole })
 
-    // Track metrics for successful login and tier sync
     userLogins.add(1, {
       tier,
       role: userRole,
@@ -174,7 +176,6 @@ export async function GET(request: Request) {
       status: 'success',
     })
 
-    // Redirect with session tokens in URL hash for client-side session setup
     const redirectUrl = new URL(`${origin}/auth/callback-success`)
     redirectUrl.hash = `access_token=${sessionData.session.access_token}&refresh_token=${sessionData.session.refresh_token}`
 

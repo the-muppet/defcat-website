@@ -26,7 +26,7 @@ function CardTypeSection({ type, typeCards }: { type: string; typeCards: Decklis
           <CardPreview
             key={`${dc.cards?.name || 'unknown'}-${idx}`}
             card={dc.cards}
-            quantity={dc.quantity}
+            quantity={dc.quantity || 0}
           />
         ))}
       </div>

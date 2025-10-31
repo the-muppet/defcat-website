@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { useRoastEligibility } from '@/context/AuthContext'
+import { useRoastEligibility } from '@/lib/auth/client-auth'
 import { createClient } from '@/lib/supabase/client'
 import '../../styles/form.css'
 

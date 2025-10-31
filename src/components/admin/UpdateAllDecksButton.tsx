@@ -43,7 +43,6 @@ export function UpdateAllDecksButton() {
         window.location.reload()
       }, 5000)
     } catch (error) {
-      console.error('Update error:', error)
       toast.error('Failed to start update', {
         description: error instanceof Error ? error.message : 'An unknown error occurred',
         duration: 5000,

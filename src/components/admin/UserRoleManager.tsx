@@ -97,7 +97,7 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
 
       setUsers(enrichedUsers)
     } catch (err) {
-      console.error('Failed to load users:', err)
+      // Error will be shown in UI via error state
     } finally {
       setLoading(false)
     }
@@ -172,7 +172,6 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
 
       setSearchResults(enrichedUsers)
     } catch (err) {
-      console.error('Search failed:', err)
       setMessage({
         type: 'error',
         text: err instanceof Error ? err.message : 'Search failed',
@@ -218,7 +217,6 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
       setMessage({ type: 'success', text: 'Role updated successfully' })
       await loadUsers()
     } catch (err) {
-      console.error('Failed to update role:', err)
       setMessage({
         type: 'error',
         text: err instanceof Error ? err.message : 'Failed to update role',
@@ -275,7 +273,6 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
       setShowAddUser(false)
       await loadUsers()
     } catch (err) {
-      console.error('Failed to add user:', err)
       setMessage({
         type: 'error',
         text: err instanceof Error ? err.message : 'Failed to add user',

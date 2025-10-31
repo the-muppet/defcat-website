@@ -73,7 +73,7 @@ const PROTECTED_ROUTES: Array<{
 const PUBLIC_ROUTES = [
   '/',
   '/auth/login',
-  '/auth/callback',
+  '/auth/patreon-callback',
   '/auth/signup',
   '/about',
   '/pricing',

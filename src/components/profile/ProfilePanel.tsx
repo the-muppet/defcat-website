@@ -82,26 +82,27 @@ export default function ProfilePanel() {
     : 'Unknown'
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+    <div className="">
       <div className="mx-auto py-8 w-[90%] sm:w-[85%] md:w-[80%] lg:w-[75%] xl:w-[70%]">
         <div className="flex flex-col gap-6">
           {/* Top Row: Profile Settings & Mana Selector */}
-          <div className="relative rounded-2xl border">
+          <div className="relative rounded-2xl border-2xl
+          ">
             <GlowingEffect
-              blur={1}
-              borderWidth={3}
-              spread={40}
+              blur={0.1}
+              borderWidth={5}
+              spread={60}
               glow={true}
               disabled={false}
-              proximity={25}
-              inactiveZone={0.2}
+              proximity={64}
+              inactiveZone={0.1}
             />
-            <Card className="glass-panel border-0 relative">
+            <Card className="glass-panel border-3 relative">
               <CardContent className="p-0 m-0">
                 <div className="flex items-center justify-between">
                   {/* Profile Settings Title */}
                   <div className="flex items-center gap-3">
-                    <User className="h-12 w-12" style={{ color: 'var(--mana-color)' }} />
+                    <User className="h-12 w-12" stroke="var(--mana-color)" />
                     <div>
                       <h1 className="text-2xl mana-color">Profile Settings</h1>
                       <p className="text-sm text-muted-foreground">Manage your account</p>
@@ -122,11 +123,11 @@ export default function ProfilePanel() {
             {/* LEFT COLUMN */}
             <div className="space-y-4 flex flex-col">
               {/* Tier + Credits Card (15-20% height) */}
-              <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3">
+              <div className="relative rounded-2xl border-2xl">
                 <GlowingEffect
                   blur={0}
-                  borderWidth={3}
-                  spread={80}
+                  borderWidth={5}
+                  spread={60}
                   glow={true}
                   disabled={false}
                   proximity={64}
@@ -136,25 +137,25 @@ export default function ProfilePanel() {
               </div>
 
               {/* Account & Profile Form */}
-              <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3 flex-1">
+              <div className="relative rounded-3xl border-3xl md:rounded-2xl flex-1">
                 <GlowingEffect
                   blur={0}
-                  borderWidth={3}
-                  spread={80}
+                  borderWidth={5}
+                  spread={60}
                   glow={true}
                   disabled={false}
                   proximity={64}
                   inactiveZone={0.01}
                 />
-                <Card className="glass-panel border-0 relative">
+                <Card className="glass-panel border-2xl min-h-full relative">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <User className="h-5 w-5" />
+                      <User className="h-5 w-5" stroke="var(--mana-color)"/>
                       Account Information
                     </CardTitle>
                     <CardDescription>Update your profile details</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-6">
+                  <CardContent className="space-y-6 min-h-fit">
                     {/* Editable fields */}
                     <ProfileEditForm
                       userId={user.id}
@@ -180,22 +181,22 @@ export default function ProfilePanel() {
             <div className="space-y-4 flex flex-col">
               {/* My Decks */}
               <Collapsible defaultOpen={true} className="flex-1 flex flex-col">
-                <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3 flex flex-col flex-1">
+                <div className="relative rounded-3xl border-3xl flex flex-col flex-1">
                   <GlowingEffect
                     blur={0}
-                    borderWidth={3}
-                    spread={80}
+                    borderWidth={5}
+                    spread={60}
                     glow={true}
                     disabled={false}
                     proximity={64}
                     inactiveZone={0.01}
                   />
-                  <Card className="glass-panel border-0 relative flex flex-col flex-1">
+                  <Card className="glass-panel border-3xl rounded-2xl flex-col flex-1">
                     <CollapsibleTrigger className="w-full">
-                      <CardHeader className="cursor-pointer hover:bg-accent/50 transition-colors">
+                      <CardHeader className="cursor-pointer transition-colors">
                         <CardTitle className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <Library className="h-5 w-5" />
+                            <Library className="h-5 w-5" stroke="var(--mana-color)" />
                             My Decks
                           </div>
                           <ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-180" />
@@ -213,22 +214,22 @@ export default function ProfilePanel() {
 
               {/* My Drafts */}
               <Collapsible defaultOpen={true} className="flex-1 flex flex-col">
-                <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3 flex flex-col flex-1">
+                <div className="relative border-3xl rounded-3xl flex flex-col flex-1">
                   <GlowingEffect
                     blur={0}
-                    borderWidth={3}
-                    spread={80}
+                    borderWidth={5}
+                    spread={60}
                     glow={true}
                     disabled={false}
                     proximity={64}
                     inactiveZone={0.01}
                   />
-                  <Card className="glass-panel border-0 relative flex flex-col flex-1">
+                  <Card className="glass-panel border-3xl rounded-2xl flex-col flex-1">
                     <CollapsibleTrigger className="w-full">
-                      <CardHeader className="cursor-pointer hover:bg-accent/50 transition-colors">
+                      <CardHeader className="cursor-pointer transition-colors">
                         <CardTitle className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <FileText className="h-5 w-5" />
+                            <FileText className="h-5 w-5" stroke="var(--mana-color)"/>
                             My Drafts
                           </div>
                           <ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-180" />
@@ -246,22 +247,22 @@ export default function ProfilePanel() {
 
               {/* My Submissions */}
               <Collapsible defaultOpen={true} className="flex-1 flex flex-col">
-                <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3 flex flex-col flex-1">
+                <div className="relative border border-3xl rounded-3xl flex flex-col flex-1">
                   <GlowingEffect
                     blur={0}
-                    borderWidth={3}
-                    spread={80}
+                    borderWidth={5}
+                    spread={60}
                     glow={true}
                     disabled={false}
                     proximity={64}
                     inactiveZone={0.01}
                   />
-                  <Card className="glass-panel border-0 relative flex flex-col flex-1">
+                  <Card className="glass-panel border-3xl rounded-2xl flex-col flex-1">
                     <CollapsibleTrigger className="w-full">
-                      <CardHeader className="cursor-pointer hover:bg-accent/50 transition-colors">
+                      <CardHeader className="cursor-pointer transition-colors">
                         <CardTitle className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <Package className="h-5 w-5" />
+                            <Package className="h-5 w-5" stroke="var(--mana-color)" />
                             My Submissions
                           </div>
                           <ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-180" />

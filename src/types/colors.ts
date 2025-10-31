@@ -10,18 +10,18 @@ enum ManaSymbol {
 const ManaColorMap = {
   W: 'oklch(0.90 0.40 100)',
   U: 'oklch(0.35 0.40 270)',
-  B: 'oklch(0.32 0.16 330)',
+  B: 'oklch(0.32 0.36 330.58)',
   R: 'oklch(0.35 0.40 50)',
   G: 'oklch(0.40 0.40 150)',
-  C: 'oklch(0.5 0 0)',
+  C: 'oklch(0.8 0 0/1)',
 
   // Aliases for convenience
   WHITE: 'oklch(0.90 0.40 100)',
   BLUE: 'oklch(0.35 0.40 270)',
-  BLACK: 'oklch(0.32 0.16 333.58)',
+  BLACK: 'oklch(0.30 0.36 333.58)',
   RED: 'oklch(0.35 0.40 50)',
   GREEN: 'oklch(0.40 0.40 150)',
-  COLORLESS: 'oklch(0.5 0 0)',
+  COLORLESS: 'oklch(0.8 0 0/1)',
 } as const
 
 type ColorInfo = {
@@ -112,6 +112,7 @@ export const ColorIdentity = {
     if (manaCost.includes('B')) colors.push('B')
     if (manaCost.includes('R')) colors.push('R')
     if (manaCost.includes('G')) colors.push('G')
+    if (manaCost.includes('P')) colors.push('P')
 
     // If no colors found or only generic mana, return colorless
     return colors.length > 0 ? colors : ['C']

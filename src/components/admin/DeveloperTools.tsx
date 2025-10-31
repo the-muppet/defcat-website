@@ -61,7 +61,6 @@ export function DeveloperTools() {
         text: `Tier spoofed to ${spoofedTier}. Refresh the page to see changes.`,
       })
     } catch (err) {
-      console.error('Failed to spoof tier:', err)
       setMessage({
         type: 'error',
         text: err instanceof Error ? err.message : 'Failed to spoof tier',
@@ -102,7 +101,6 @@ export function DeveloperTools() {
       })
       setSpoofedTier('')
     } catch (err) {
-      console.error('Failed to reset tier:', err)
       setMessage({
         type: 'error',
         text: err instanceof Error ? err.message : 'Failed to reset tier',
