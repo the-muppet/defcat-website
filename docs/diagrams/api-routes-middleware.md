@@ -201,28 +201,28 @@ flowchart TD
 ```mermaid
 graph LR
     subgraph "Public Routes - No Auth"
-        P1[/api/health]
-        P2[/api/metrics]
-        P3[/api/card-image]
+        P1["/api/health"]
+        P2["/api/metrics"]
+        P3["/api/card-image"]
     end
 
     subgraph "Member Routes - requireMemberApi"
-        M1[/api/submit-deck]
-        M2[/api/submit-roast]
+        M1["/api/submit-deck"]
+        M2["/api/submit-roast"]
     end
 
     subgraph "Admin Routes - requireAdminApi"
-        A1[/api/admin/decks/*]
-        A2[/api/admin/products/*]
-        A3[/api/admin/site-config/*]
-        A4[/api/admin/submissions/*]
-        A5[/api/admin/users/*]
-        A6[/api/admin/moxfield]
+        A1["/api/admin/decks/*"]
+        A2["/api/admin/products/*"]
+        A3["/api/admin/site-config/*"]
+        A4["/api/admin/submissions/*"]
+        A5["/api/admin/users/*"]
+        A6["/api/admin/moxfield"]
     end
 
     subgraph "Developer Routes - requireDeveloperApi"
-        D1[/api/admin/developer/spoof-tier]
-        D2[/api/admin/developer/reset-tier]
+        D1["/api/admin/developer/spoof-tier"]
+        D2["/api/admin/developer/reset-tier"]
     end
 
     subgraph "Auth Guards"
