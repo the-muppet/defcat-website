@@ -1,0 +1,12 @@
+// components/decks/detail/index.ts
+export { DeckDetailLayout } from './DeckDetailLayout'
+export { DeckDetailLoading } from './DeckDetailLoading'
+export { DeckDetailError } from './DeckDetailError'
+export { DeckHeader } from './DeckHeader'
+export { DeckTabs } from './DeckTabs'
+export { DeckListView } from './DeckListView'
+export { DeckVisualView } from './DeckVisualView'
+export { DeckStatsView } from './DeckStatsView'
+export { DeckSidebar } from './DeckSidebar'
+export { DeckEmptyState } from './DeckEmptyState'
+export { TypeFilterBar } from './TypeFilterBar'
