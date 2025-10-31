@@ -7,6 +7,7 @@ import { DeckSubmissionEmail } from '@/emails'
 import { ColorIdentity } from '@/types/colors'
 import type { DeckSubmissionFormData, SubmissionResponse } from '@/types/form'
 import { logger } from '@/lib/observability/logger'
+import { trackRequestDuration, deckSubmissions } from '@/lib/observability/metrics'
 
 // Force dynamic rendering to avoid build-time errors
 export const dynamic = 'force-dynamic'
@@ -62,6 +63,9 @@ function validateSubmission(data: any): data is DeckSubmissionFormData {
 // Get color identity name for email
 
 export async function POST(request: NextRequest) {
+  const startTime = Date.now()
+  let statusCode = 500
+
   try {
     const supabase = getSupabaseClient()
 
@@ -378,8 +382,17 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Track metrics for successful submission
+    if (!isDraft) {
+      deckSubmissions.add(1, {
+        tier: profile.patreon_tier,
+        status: 'success',
+      })
+    }
+
     // Return success response
-    return NextResponse.json<SubmissionResponse>(
+    statusCode = 201
+    const response = NextResponse.json<SubmissionResponse>(
       {
         success: true,
         data: {
@@ -389,9 +402,14 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     )
+
+    // Track request metrics
+    trackRequestDuration('POST', '/api/submit-deck', statusCode, Date.now() - startTime)
+    return response
   } catch (error) {
     logger.error('Unexpected error in deck submission endpoint', error instanceof Error ? error : undefined)
-    return NextResponse.json<SubmissionResponse>(
+    statusCode = 500
+    const response = NextResponse.json<SubmissionResponse>(
       {
         success: false,
         error: {
@@ -401,6 +419,10 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     )
+
+    // Track request metrics even on error
+    trackRequestDuration('POST', '/api/submit-deck', statusCode, Date.now() - startTime)
+    return response
   }
 }
 

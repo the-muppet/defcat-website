@@ -7,6 +7,7 @@ import { NextResponse } from 'next/server'
 import { exchangeCodeForToken, fetchPatreonMembership } from '@/lib/api/patreon'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { logger } from '@/lib/observability/logger'
+import { userLogins, patreonSyncs } from '@/lib/observability/metrics'
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
@@ -160,6 +161,18 @@ export async function GET(request: Request) {
     }
 
     logger.info('Session created successfully', { userId, tier, role: userRole })
+
+    // Track metrics for successful login and tier sync
+    userLogins.add(1, {
+      tier,
+      role: userRole,
+      isNewUser: !!newUser?.user,
+    })
+
+    patreonSyncs.add(1, {
+      tier,
+      status: 'success',
+    })
 
     // Redirect with session tokens in URL hash for client-side session setup
     const redirectUrl = new URL(`${origin}/auth/callback-success`)

@@ -11,8 +11,16 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
+import { logger } from '@/lib/observability/logger'
 
 type UserRole = 'user' | 'member' | 'moderator' | 'admin' | 'developer'
+
+/**
+ * Generate a unique request ID for tracing
+ */
+function generateRequestId(): string {
+  return `req-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+}
 
 /**
  * Role hierarchy levels
@@ -115,12 +123,19 @@ function isProtectedRoute(pathname: string): {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  // Generate request ID for tracking
+  const requestId = generateRequestId()
+
   // Check if route needs protection
   const routeCheck = isProtectedRoute(pathname)
-  
+
   if (!routeCheck.protected) {
-    return NextResponse.next()
+    const response = NextResponse.next()
+    response.headers.set('X-Request-ID', requestId)
+    return response
   }
+
+  logger.debug('Processing protected route', { requestId, pathname, minimumRole: routeCheck.minimumRole })
 
   // Create Supabase client for Edge Runtime
   let response = NextResponse.next({
@@ -159,10 +174,13 @@ export async function proxy(request: NextRequest) {
 
   // Redirect to login if not authenticated
   if (!user) {
+    logger.info('Unauthenticated user redirected to login', { requestId, pathname })
     const loginUrl = new URL('/auth/login', request.url)
     loginUrl.searchParams.set('error', 'auth_required')
     loginUrl.searchParams.set('redirect', pathname)
-    return NextResponse.redirect(loginUrl)
+    const redirectResponse = NextResponse.redirect(loginUrl)
+    redirectResponse.headers.set('X-Request-ID', requestId)
+    return redirectResponse
   }
 
   // If route requires specific role, check it
@@ -185,12 +203,25 @@ export async function proxy(request: NextRequest) {
 
     // Check if user has minimum required role
     if (!hasMinimumRole(userRole, routeCheck.minimumRole)) {
+      logger.warn('User lacks required role for route', {
+        requestId,
+        pathname,
+        userRole,
+        requiredRole: routeCheck.minimumRole,
+        userId: user.id
+      })
       const homeUrl = new URL('/', request.url)
       homeUrl.searchParams.set('error', 'unauthorized')
-      return NextResponse.redirect(homeUrl)
+      const redirectResponse = NextResponse.redirect(homeUrl)
+      redirectResponse.headers.set('X-Request-ID', requestId)
+      return redirectResponse
     }
+
+    logger.debug('User authorized for protected route', { requestId, pathname, userRole, userId: user.id })
   }
 
+  // Add request ID to response headers
+  response.headers.set('X-Request-ID', requestId)
   return response
 }
 

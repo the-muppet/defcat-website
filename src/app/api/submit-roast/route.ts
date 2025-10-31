@@ -5,6 +5,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import type { SubmissionResponse } from '@/types/form'
 import { logger } from '@/lib/observability/logger'
+import { trackRequestDuration } from '@/lib/observability/metrics'
 
 // Force dynamic rendering to avoid build-time errors
 export const dynamic = 'force-dynamic'
@@ -47,6 +48,9 @@ function validateRoastSubmission(data: any): boolean {
 }
 
 export async function POST(request: NextRequest) {
+  const startTime = Date.now()
+  let statusCode = 500
+
   try {
     const supabase = getSupabaseClient()
 
@@ -333,7 +337,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Return success response
-    return NextResponse.json<SubmissionResponse>(
+    statusCode = 201
+    const response = NextResponse.json<SubmissionResponse>(
       {
         success: true,
         data: {
@@ -343,9 +348,14 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     )
+
+    // Track request metrics
+    trackRequestDuration('POST', '/api/submit-roast', statusCode, Date.now() - startTime)
+    return response
   } catch (error) {
     logger.error('Unexpected error in roast submission endpoint', error instanceof Error ? error : undefined)
-    return NextResponse.json<SubmissionResponse>(
+    statusCode = 500
+    const response = NextResponse.json<SubmissionResponse>(
       {
         success: false,
         error: {
@@ -355,6 +365,10 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     )
+
+    // Track request metrics even on error
+    trackRequestDuration('POST', '/api/submit-roast', statusCode, Date.now() - startTime)
+    return response
   }
 }
 
