@@ -6,18 +6,17 @@
 import { NextResponse } from 'next/server'
 import { exchangeCodeForToken, fetchPatreonMembership } from '@/lib/api/patreon'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { logger } from '@/lib/observability/logger'
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
   const origin = requestUrl.origin
 
-  console.log('🔐 OAuth callback initiated')
-  console.log('Origin:', origin)
-  console.log('Code present:', !!code)
+  logger.info('OAuth callback initiated', { origin, codePresent: !!code })
 
   if (!code) {
-    console.error('No authorization code provided')
+    logger.error('OAuth callback failed: no authorization code provided')
     return NextResponse.redirect(`${origin}/auth/login?error=no_code`)
   }
 
@@ -28,10 +27,10 @@ export async function GET(request: Request) {
       ? `${origin}/auth/patreon-callback`
       : process.env.PATREON_REDIRECT_URI!
 
-    console.log('Determined redirect URI:', redirectUri)
+    logger.debug('OAuth redirect URI determined', { redirectUri, isLocalhost })
 
     // Exchange code for Patreon access token
-    console.log('Exchanging code for Patreon access token...')
+    logger.info('Exchanging authorization code for Patreon access token')
     const patreonAccessToken = await exchangeCodeForToken(code, redirectUri)
 
     // Fetch user data from Patreon
@@ -75,13 +74,13 @@ export async function GET(request: Request) {
 
     if (createError) {
       // User already exists, list all users and find by email
-      console.log('User already exists, searching for user by email:', email)
+      logger.info('User already exists, searching by email', { email: logger.redact(['email'], { email }).email })
 
       const { data: listData, error: listError } =
         await adminClient.auth.admin.listUsers()
 
       if (listError) {
-        console.error('Error listing users:', listError)
+        logger.error('Failed to list users during lookup', listError)
         return NextResponse.redirect(
           `${origin}/auth/login?error=user_lookup_failed&details=${encodeURIComponent(listError.message)}`
         )
@@ -90,19 +89,19 @@ export async function GET(request: Request) {
       const existingUser = listData.users.find((u) => u.email?.toLowerCase() === email.toLowerCase())
 
       if (!existingUser) {
-        console.error('User not found in auth.users table')
+        logger.error('User not found in auth.users table after Patreon authentication')
         return NextResponse.redirect(
           `${origin}/auth/login?error=user_lookup_failed&details=${encodeURIComponent('User not found')}`
         )
       }
 
       userId = existingUser.id
-      console.log('Found existing user:', userId)
+      logger.info('Found existing user', { userId })
     } else if (newUser.user) {
       userId = newUser.user.id
-      console.log('Created new user:', userId)
+      logger.info('Created new user', { userId })
     } else {
-      console.error('Unexpected error: no user returned from createUser')
+      logger.error('Unexpected error: no user returned from createUser call')
       return NextResponse.redirect(`${origin}/auth/login?error=user_creation_failed`)
     }
 
@@ -117,7 +116,7 @@ export async function GET(request: Request) {
     let userRole = existingProfile?.role || 'user'
     if (isSiteOwner && userRole === 'user') {
       userRole = 'admin'
-      console.log('🔑 Site owner detected - granting admin access')
+      logger.info('Site owner detected - granting admin access', { userId })
     }
 
     // Update/create profile, preserving existing role if present
@@ -131,7 +130,7 @@ export async function GET(request: Request) {
     })
 
     if (profileError) {
-      console.error('Profile update error:', profileError)
+      logger.error('Failed to update user profile', profileError, { userId })
       return NextResponse.redirect(
         `${origin}/auth/login?error=profile_update_failed&details=${encodeURIComponent(profileError.message)}`
       )
@@ -145,7 +144,7 @@ export async function GET(request: Request) {
     })
 
     if (passwordError) {
-      console.error('Failed to set password:', passwordError)
+      logger.error('Failed to set user password', passwordError, { userId })
       return NextResponse.redirect(`${origin}/auth/login?error=password_setup_failed`)
     }
 
@@ -156,11 +155,11 @@ export async function GET(request: Request) {
     })
 
     if (signInError || !sessionData.session) {
-      console.error('Sign-in failed:', signInError)
+      logger.error('Sign-in failed after password setup', signInError, { userId })
       return NextResponse.redirect(`${origin}/auth/login?error=signin_failed`)
     }
 
-    console.log('✓ Session created successfully for:', email)
+    logger.info('Session created successfully', { userId, tier, role: userRole })
 
     // Redirect with session tokens in URL hash for client-side session setup
     const redirectUrl = new URL(`${origin}/auth/callback-success`)
@@ -168,7 +167,9 @@ export async function GET(request: Request) {
 
     return NextResponse.redirect(redirectUrl.toString())
   } catch (error) {
-    console.error('OAuth callback error:', error)
+    logger.error('OAuth callback failed', error instanceof Error ? error : undefined, {
+      origin,
+    })
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.redirect(
       `${origin}/auth/login?error=callback_failed&details=${encodeURIComponent(errorMessage)}`

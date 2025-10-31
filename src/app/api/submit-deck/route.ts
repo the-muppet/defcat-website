@@ -6,6 +6,7 @@ import { Resend } from 'resend'
 import { DeckSubmissionEmail } from '@/emails'
 import { ColorIdentity } from '@/types/colors'
 import type { DeckSubmissionFormData, SubmissionResponse } from '@/types/form'
+import { logger } from '@/lib/observability/logger'
 
 // Force dynamic rendering to avoid build-time errors
 export const dynamic = 'force-dynamic'
@@ -155,7 +156,7 @@ export async function POST(request: NextRequest) {
         .single()
 
       if (creditsError && creditsError.code !== 'PGRST116') {
-        console.error('Error checking credits:', creditsError)
+        logger.error('Failed to check user deck credits', creditsError, { userId: user.id })
         return NextResponse.json<SubmissionResponse>(
           {
             success: false,
@@ -194,7 +195,7 @@ export async function POST(request: NextRequest) {
         .eq('credits_month', monthString)
 
       if (deductError) {
-        console.error('Error deducting credit:', deductError)
+        logger.error('Failed to deduct deck credit', deductError, { userId: user.id, creditsRemaining: deckCredits - 1 })
         return NextResponse.json<SubmissionResponse>(
           {
             success: false,
@@ -253,7 +254,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (dbError) {
-      console.error('Supabase error:', dbError)
+      logger.error('Failed to insert deck submission', dbError, { userId: user.id, isDraft, tier: profile.patreon_tier })
 
       // If credit was deducted, try to refund it
       if (!isDraft && !isPrivileged) {
@@ -321,7 +322,11 @@ export async function POST(request: NextRequest) {
           }),
         })
       } catch (emailError) {
-        console.error('Email error:', emailError)
+        logger.error('Failed to send submission confirmation email', emailError instanceof Error ? emailError : undefined, {
+          userId: user.id,
+          email: body.email,
+          submissionId: submission.id
+        })
         // Don't fail the request if email fails
         // The submission is already saved
       }
@@ -366,7 +371,9 @@ export async function POST(request: NextRequest) {
           `,
         })
       } catch (adminEmailError) {
-        console.error('Admin notification error:', adminEmailError)
+        logger.error('Failed to send admin notification email', adminEmailError instanceof Error ? adminEmailError : undefined, {
+          submissionId: submission.id
+        })
         // Don't fail the request
       }
     }
@@ -383,7 +390,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('Unexpected error:', error)
+    logger.error('Unexpected error in deck submission endpoint', error instanceof Error ? error : undefined)
     return NextResponse.json<SubmissionResponse>(
       {
         success: false,

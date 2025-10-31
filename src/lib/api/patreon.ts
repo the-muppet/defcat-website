@@ -4,6 +4,7 @@
  */
 
 import type { PatreonTier } from '@/types/core'
+import { logger } from '@/lib/observability/logger'
 
 interface PatreonMember {
   data: {
@@ -59,12 +60,18 @@ export async function fetchPatreonMembership(
 
   if (!response.ok) {
     const errorText = await response.text()
-    console.error('Patreon API error response:', errorText)
-    throw new Error(`Patreon API error: ${response.statusText} - ${errorText}`)
+    logger.error('Patreon API request failed', undefined, {
+      status: response.status,
+      statusText: response.statusText,
+    })
+    throw new Error(`Patreon API error: ${response.statusText}`)
   }
 
   const data: PatreonMember = await response.json()
-  console.log('Patreon API response:', JSON.stringify(data, null, 2))
+  logger.debug('Patreon membership data retrieved', {
+    patreonId: data.data.id,
+    patronStatus: data.included?.[0]?.attributes.patron_status,
+  })
 
   // Extract user ID
   const patreonId = data.data.id
@@ -106,11 +113,14 @@ export async function exchangeCodeForToken(code: string, redirectUri: string): P
 
   if (!response.ok) {
     const errorText = await response.text()
-    console.error('Patreon token exchange error:', errorText)
-    throw new Error(`Patreon token exchange failed: ${response.statusText} - ${errorText}`)
+    logger.error('Patreon token exchange failed', undefined, {
+      status: response.status,
+      statusText: response.statusText,
+    })
+    throw new Error(`Patreon token exchange failed: ${response.statusText}`)
   }
 
   const data = await response.json()
-  console.log('Patreon token exchange successful, access_token length:', data.access_token?.length)
+  logger.info('Patreon token exchange successful')
   return data.access_token
 }
