@@ -100,6 +100,7 @@ export const ColorIdentity = {
    * Extract color letters from a mana cost string
    * "{2}{W}{U}" -> ['W', 'U']
    * "{W/U}" -> ['W', 'U']
+   * "{W/P}" -> ['W'] (Phyrexian white is still white)
    */
   extractColorsFromManaCost: (manaCost: string | null | undefined): string[] => {
     if (!manaCost) return ['C']
@@ -107,12 +108,12 @@ export const ColorIdentity = {
     const colors: string[] = []
 
     // Check for each color (including hybrid mana)
+    // Note: P (Phyrexian) is not a color itself, just a cost modifier
     if (manaCost.includes('W')) colors.push('W')
     if (manaCost.includes('U')) colors.push('U')
     if (manaCost.includes('B')) colors.push('B')
     if (manaCost.includes('R')) colors.push('R')
     if (manaCost.includes('G')) colors.push('G')
-    if (manaCost.includes('P')) colors.push('P')
 
     // If no colors found or only generic mana, return colorless
     return colors.length > 0 ? colors : ['C']

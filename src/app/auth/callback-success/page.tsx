@@ -45,8 +45,9 @@ export default function CallbackSuccessPage() {
 
       console.log('✓ Session set successfully')
 
-      // Redirect to decks
+      // Redirect to decks and refresh layout to update header
       router.push('/decks')
+      router.refresh()
     }
 
     setSession()

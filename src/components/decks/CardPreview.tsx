@@ -42,6 +42,14 @@ export function CardPreview({ card, quantity }: { card: DeckCard['cards']; quant
   // Get the proper image URL - cached first, then Scryfall
   const imageUrl = getCardImageUrl(card)
 
+  // Determine what to display for mana cost
+  // If card has mana_cost, use it; otherwise construct from CMC
+  const displayCost = card?.mana_cost && card.mana_cost.trim() !== ''
+    ? card.mana_cost
+    : card?.cmc
+      ? `{${Math.floor(card.cmc)}}`
+      : null
+
   return (
     <div
       className="relative"
@@ -55,9 +63,9 @@ export function CardPreview({ card, quantity }: { card: DeckCard['cards']; quant
         <span className="flex-1 text-foreground font-medium group-hover:text-primary transition-colors">
           {card?.name}
         </span>
-        {card?.mana_cost && (
+        {displayCost && (
           <div className="flex-shrink-0">
-            <ManaCost cost={card.mana_cost} />
+            <ManaCost cost={displayCost} />
           </div>
         )}
       </div>

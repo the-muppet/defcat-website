@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { createClient } from '@/lib/supabase/client'
 
 export function ImportAllDecksButton() {
   const [importing, setImporting] = useState(false)
@@ -13,21 +14,17 @@ export function ImportAllDecksButton() {
     setImporting(true)
 
     try {
-      const response = await fetch(
-        'https://paerhoqoypdezkqhzimk.supabase.co/functions/v1/moxfield-scraper',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      )
+      const supabase = createClient()
 
-      if (!response.ok) {
-        throw new Error('Failed to trigger import')
+      const { data, error } = await supabase.functions.invoke('fetch-decks', {
+        body: {},
+      })
+
+      if (error) {
+        throw new Error(error.message || 'Failed to trigger import')
       }
 
-      const _result = await response.json()
+      const _result = data
 
       toast.success('Import started successfully!', {
         description: 'The Moxfield scraper is now running. This may take a few minutes.',

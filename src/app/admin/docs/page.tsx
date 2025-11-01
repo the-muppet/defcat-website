@@ -1,9 +1,9 @@
-import { requireAdmin } from '@/lib/auth/auth-guards'
+import { requireAdminAccess } from '@/lib/auth'
 import { BookOpen } from 'lucide-react'
 import { DocumentationView } from '@/components/admin/DocumentationView'
 
 export default async function AdminDocsPage() {
-  await requireAdmin()
+  await requireAdminAccess()
 
   return (
     <div className="container mx-auto px-4 py-8" data-page="admin-docs">

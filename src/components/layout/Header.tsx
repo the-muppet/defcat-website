@@ -35,12 +35,14 @@ export function Header({
   initialUserRole,
   initialPendingCount,
 }: HeaderProps) {
-  const [user] = useState<User | null>(initialUser)
-  const [userTier] = useState<PatreonTier>(initialUserTier)
-  const [userRole] = useState<string>(initialUserRole)
+  // Use props directly instead of state to ensure updates after login
+  const user = initialUser
+  const userTier = initialUserTier
+  const userRole = initialUserRole
+  const pendingCount = initialPendingCount
+
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [showLogoutModal, setShowLogoutModal] = useState(false)
-  const [pendingCount] = useState<number>(initialPendingCount)
   const [showBadge, setShowBadge] = useState(true)
   const pathname = usePathname()
   const {

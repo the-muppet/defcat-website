@@ -160,6 +160,7 @@ export function useDecklist(id: string) {
       const supabase = createClient()
 
       // Query decklist_cards directly using moxfield_id
+      // Only fetch mainboard and commanders, exclude sideboard and maybeboard
       const { data, error } = await supabase
         .from('decklist_cards')
         .select(`
@@ -175,6 +176,7 @@ export function useDecklist(id: string) {
           )
         `)
         .eq('moxfield_deck_id', id)
+        .in('board', ['mainboard', 'commanders'])
 
       if (error) throw error
       return (data as DeckCard[]) || []

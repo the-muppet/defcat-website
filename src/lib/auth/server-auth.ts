@@ -6,13 +6,12 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import type { User } from '@supabase/supabase-js'
-
-export type UserRole = 'user' | 'member' | 'moderator' | 'admin' | 'developer'
+import type { UserRole, PatreonTier } from '@/types/core'
 
 export interface AuthResult {
   user: User
   role: UserRole
-  patreonTier: string | null
+  patreonTier: PatreonTier | null
   patreonId: string | null
 }
 
@@ -26,6 +25,19 @@ const ROLE_HIERARCHY: Record<UserRole, number> = {
   moderator: 2,
   admin: 3,
   developer: 4, // Highest level
+}
+
+/**
+ * Patreon tier hierarchy for access control
+ * Higher tiers inherit access from lower tiers
+ */
+export const TIER_RANKS: Record<PatreonTier, number> = {
+  Citizen: 0,
+  Knight: 1,
+  Emissary: 2,
+  Duke: 3,
+  Wizard: 4,
+  ArchMage: 5, // Highest tier
 }
 
 /**
@@ -52,8 +64,8 @@ async function getUserWithRole(): Promise<AuthResult | null> {
   return {
     user,
     role: (profile?.role as UserRole) || 'user',
-    patreonTier: profile?.patreon_tier || null,
-    patreonId: profile?.patreon_id || null,
+    patreonTier: (profile?.patreon_tier as PatreonTier) ?? null,
+    patreonId: profile?.patreon_id ?? null,
   }
 }
 
@@ -63,6 +75,15 @@ async function getUserWithRole(): Promise<AuthResult | null> {
  */
 function hasMinimumRole(userRole: UserRole, minimumRole: UserRole): boolean {
   return ROLE_HIERARCHY[userRole] >= ROLE_HIERARCHY[minimumRole]
+}
+
+/**
+ * Check if a Patreon tier meets the minimum required tier
+ * Uses tier hierarchy - higher tiers automatically satisfy lower tier requirements
+ */
+function hasMinimumTier(userTier: PatreonTier | null, minimumTier: PatreonTier): boolean {
+  if (!userTier) return false
+  return TIER_RANKS[userTier] >= TIER_RANKS[minimumTier]
 }
 
 /**
@@ -98,10 +119,30 @@ export async function requireRole(minimumRole: UserRole): Promise<AuthResult> {
 }
 
 /**
+ * Require user with specific minimum Patreon tier
+ * Uses tier hierarchy - ArchMage can access Knight routes, etc.
+ * @param minimumTier - Minimum Patreon tier required
+ * @returns Complete auth result with user and tier
+ */
+export async function requireTier(minimumTier: PatreonTier): Promise<AuthResult> {
+  const result = await getUserWithRole()
+  
+  if (!result) {
+    redirect('/auth/login?error=auth_required')
+  }
+
+  if (!hasMinimumTier(result.patreonTier, minimumTier)) {
+    redirect('/?error=tier_required')
+  }
+
+  return result
+}
+
+/**
  * Require member role or higher
  * Allows: member, moderator, admin, developer
  */
-export async function requireMember(): Promise<AuthResult> {
+export async function requireMemberAccess(): Promise<AuthResult> {
   return requireRole('member')
 }
 
@@ -109,7 +150,7 @@ export async function requireMember(): Promise<AuthResult> {
  * Require moderator role or higher
  * Allows: moderator, admin, developer
  */
-export async function requireModerator(): Promise<AuthResult> {
+export async function requireModeratorAccess(): Promise<AuthResult> {
   return requireRole('moderator')
 }
 
@@ -117,7 +158,7 @@ export async function requireModerator(): Promise<AuthResult> {
  * Require admin role or higher
  * Allows: admin, developer
  */
-export async function requireAdmin(): Promise<AuthResult> {
+export async function requireAdminAccess(): Promise<AuthResult> {
   return requireRole('admin')
 }
 
@@ -125,8 +166,56 @@ export async function requireAdmin(): Promise<AuthResult> {
  * Require developer role (highest level)
  * Only allows: developer
  */
-export async function requireDeveloper(): Promise<AuthResult> {
+export async function requireDeveloperAccess(): Promise<AuthResult> {
   return requireRole('developer')
+}
+
+/**
+ * Require Citizen tier or higher (any patron)
+ * Allows: Citizen, Knight, Emissary, Duke, Wizard, ArchMage
+ */
+export async function requireCitizenAccess(): Promise<AuthResult> {
+  return requireTier('Citizen')
+}
+
+/**
+ * Require Knight tier or higher
+ * Allows: Knight, Emissary, Duke, Wizard, ArchMage
+ */
+export async function requireKnightAccess(): Promise<AuthResult> {
+  return requireTier('Knight')
+}
+
+/**
+ * Require Emissary tier or higher
+ * Allows: Emissary, Duke, Wizard, ArchMage
+ */
+export async function requireEmissaryAccess(): Promise<AuthResult> {
+  return requireTier('Emissary')
+}
+
+/**
+ * Require Duke tier or higher
+ * Allows: Duke, Wizard, ArchMage
+ */
+export async function requireDukeAccess(): Promise<AuthResult> {
+  return requireTier('Duke')
+}
+
+/**
+ * Require Wizard tier or higher
+ * Allows: Wizard, ArchMage
+ */
+export async function requireWizardAccess(): Promise<AuthResult> {
+  return requireTier('Wizard')
+}
+
+/**
+ * Require ArchMage tier (highest tier)
+ * Only allows: ArchMage
+ */
+export async function requireArchMageAccess(): Promise<AuthResult> {
+  return requireTier('ArchMage')
 }
 
 /**
@@ -157,4 +246,35 @@ export async function hasRole(minimumRole: UserRole): Promise<boolean> {
 export async function hasExactRole(exactRole: UserRole): Promise<boolean> {
   const result = await getUserWithRole()
   return result?.role === exactRole
+}
+
+/**
+ * Check if current user has a specific minimum Patreon tier (non-redirecting)
+ * @param minimumTier - Minimum tier to check
+ * @returns true if user has tier or higher, false otherwise
+ */
+export async function hasTier(minimumTier: PatreonTier): Promise<boolean> {
+  const result = await getUserWithRole()
+  if (!result) return false
+  return hasMinimumTier(result.patreonTier, minimumTier)
+}
+
+/**
+ * Check if current user has exact Patreon tier (non-redirecting)
+ * Does not use hierarchy - only returns true for exact match
+ * @param exactTier - Exact tier to check
+ * @returns true if user has exact tier, false otherwise
+ */
+export async function hasExactTier(exactTier: PatreonTier): Promise<boolean> {
+  const result = await getUserWithRole()
+  return result?.patreonTier === exactTier
+}
+
+/**
+ * Check if current user is a patron (has any tier) (non-redirecting)
+ * @returns true if user has any Patreon tier, false otherwise
+ */
+export async function isPatron(): Promise<boolean> {
+  const result = await getUserWithRole()
+  return result?.patreonTier !== null
 }

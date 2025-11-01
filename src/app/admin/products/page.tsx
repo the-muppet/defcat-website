@@ -1,11 +1,11 @@
 import { Package } from 'lucide-react'
 import { ProductsPanel } from '@/components/admin/ProductsPanel'
-import { requireAdmin } from '@/lib/auth/require-admin'
+import { requireAdminAccess } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminProductsPage() {
-  await requireAdmin()
+  await requireAdminAccess()
 
   return (
     <div className="container mx-auto px-4 py-8">

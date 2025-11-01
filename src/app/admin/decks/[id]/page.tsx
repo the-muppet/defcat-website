@@ -3,13 +3,13 @@
  * Edit individual deck metadata
  */
 
-import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import { DeckEditForm } from '@/components/forms/DeckEditForm'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { requireAdmin } from '@/lib/auth/auth-guards'
+import { requireModeratorAccess } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
@@ -21,7 +21,7 @@ interface PageProps {
 }
 
 export default async function AdminDeckEditPage({ params }: PageProps) {
-  await requireAdmin()
+  await requireModeratorAccess()
 
   const { id } = await params
   const supabase = await createClient()

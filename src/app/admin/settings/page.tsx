@@ -8,30 +8,15 @@ import { CreditTypesList } from '@/components/admin/CreditList'
 import { TierBenefitsMatrix } from '@/components/admin/CreditMatrix'
 import { DistributionManager } from '@/components/admin/DistributionManager'
 import { SiteConfigForm } from '@/components/forms/SiteConfigForm'
-import { requireAdmin } from '@/lib/auth'
+import { requireModeratorAccess, hasRole } from '@/lib/auth/'
 import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminSettingsPage() {
-  await requireAdmin()
+  await requireModeratorAccess()
 
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    throw new Error('User not found')
-  }
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  const isAdminOrDeveloper = profile?.role === 'admin' || profile?.role === 'developer'
+  const canManageCredits = await hasRole('admin')
 
   return (
     <div className="px-4 py-8">
@@ -52,7 +37,7 @@ export default async function AdminSettingsPage() {
               <Settings className="h-4 w-4 mr-2" />
               Site Settings
             </TabsTrigger>
-            {isAdminOrDeveloper && (
+            {canManageCredits && (
               <TabsTrigger value="credits">
                 <Coins className="h-4 w-4 mr-2" />
                 Credits
@@ -64,7 +49,7 @@ export default async function AdminSettingsPage() {
         <SiteConfigForm />
           </TabsContent>
 
-          {isAdminOrDeveloper && (
+          {canManageCredits && (
             <TabsContent value="credits" className="mt-6 space-y-6">
               <CreditTypesList />
               <TierBenefitsMatrix />

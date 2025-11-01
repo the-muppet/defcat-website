@@ -10,14 +10,13 @@ import { ImportAllDecksButton } from '@/components/admin/ImportAllDecksButton'
 import { UpdateAllDecksButton } from '@/components/admin/UpdateAllDecksButton'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { requireAdmin } from '@/lib/auth/auth-guards'
+import { requireAdminAccess } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminDecksPage() {
-  // Require admin role - will redirect if not admin
-  await requireAdmin()
+  await requireAdminAccess()
 
   const supabase = await createClient()
 
@@ -32,15 +31,20 @@ export default async function AdminDecksPage() {
   }
 
   // Transform the data to extract commanders and color_identity from raw_data
-  const decks = rawDecks?.map((deck) => ({
-    id: deck.id,
-    moxfield_id: deck.moxfield_id,
-    name: deck.name,
-    commanders: deck.raw_data?.commanders?.map((c: any) => c.name).filter(Boolean) || [],
-    color_identity: deck.raw_data?.colorIdentity || [],
-    created_at: deck.created_at,
-    view_count: deck.view_count,
-  }))
+  const decks = rawDecks?.map((deck) => {
+    const commanders = deck.raw_data?.commanders?.map((c: any) => c.name).filter(Boolean)
+    const colorIdentity = deck.raw_data?.colorIdentity
+
+    return {
+      id: deck.id,
+      moxfield_id: deck.moxfield_id || '',
+      name: deck.name || 'Untitled Deck',
+      commanders: commanders && commanders.length > 0 ? commanders : null,
+      color_identity: colorIdentity && colorIdentity.length > 0 ? colorIdentity : null,
+      created_at: deck.created_at || new Date().toISOString(),
+      view_count: deck.view_count,
+    }
+  })
 
   return (
     <div className="container mx-auto px-4 py-8" data-page="admin-decks">

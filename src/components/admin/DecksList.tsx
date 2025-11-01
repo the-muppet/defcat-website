@@ -141,7 +141,7 @@ export function DecksList({ decks }: DecksListProps) {
                   {/* Actions */}
                   <div className="flex gap-2 shrink-0">
                     <Button asChild variant="outline" size="sm">
-                      <Link href={`/decks/${deck.id}`} target="_blank">
+                      <Link href={`/decks/${deck.moxfield_id}`} target="_blank">
                         <ExternalLink className="h-4 w-4" />
                       </Link>
                     </Button>

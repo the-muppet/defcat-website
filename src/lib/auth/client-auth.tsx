@@ -6,9 +6,7 @@ import { createContext, useContext, type ReactNode } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
-import type { PatreonTier } from '@/types/core'
-
-export type UserRole = 'user' | 'member' | 'moderator' | 'admin' | 'developer'
+import type { UserRole, PatreonTier } from '@/types/core'
 
 export interface AuthState {
   user: User | null
@@ -24,6 +22,27 @@ export interface AuthState {
   isAdmin: boolean
   isModerator: boolean
   isDeveloper: boolean
+}
+
+/**
+ * Patreon tier hierarchy for access control
+ * Higher tiers inherit access from lower tiers
+ */
+export const TIER_RANKS: Record<PatreonTier, number> = {
+  Citizen: 0,
+  Knight: 1,
+  Emissary: 2,
+  Duke: 3,
+  Wizard: 4,
+  ArchMage: 5,
+}
+
+/**
+ * Check if a tier meets the minimum required tier
+ */
+function hasMinimumTier(userTier: PatreonTier | string, minimumTier: PatreonTier): boolean {
+  if (!userTier || !(userTier in TIER_RANKS)) return false
+  return TIER_RANKS[userTier as PatreonTier] >= TIER_RANKS[minimumTier]
 }
 
 const AuthContext = createContext<AuthState | undefined>(undefined)
@@ -238,5 +257,56 @@ export function useRoleAccess() {
     isMember: ['member', 'moderator', 'admin', 'developer'].includes(profile.role),
     canModerate: isModerator,
     canAdmin: isAdmin,
+  }
+}
+
+/**
+ * Hook for Patreon tier-based access control
+ */
+export function useTierAccess() {
+  const { profile, isLoading } = useAuth()
+  const tier = profile.tier
+
+  return {
+    tier,
+    tierRank: tier in TIER_RANKS ? TIER_RANKS[tier as PatreonTier] : 0,
+    isLoading,
+    
+    // Tier checks (minimum tier or higher)
+    hasCitizen: hasMinimumTier(tier, 'Citizen'),
+    hasKnight: hasMinimumTier(tier, 'Knight'),
+    hasEmissary: hasMinimumTier(tier, 'Emissary'),
+    hasDuke: hasMinimumTier(tier, 'Duke'),
+    hasWizard: hasMinimumTier(tier, 'Wizard'),
+    hasArchMage: hasMinimumTier(tier, 'ArchMage'),
+    
+    // Exact tier checks
+    isCitizen: tier === 'Citizen',
+    isKnight: tier === 'Knight',
+    isEmissary: tier === 'Emissary',
+    isDuke: tier === 'Duke',
+    isWizard: tier === 'Wizard',
+    isArchMage: tier === 'ArchMage',
+    
+    // Patron status
+    isPatron: tier in TIER_RANKS,
+    
+    // Generic tier checker
+    hasTier: (minimumTier: PatreonTier) => hasMinimumTier(tier, minimumTier),
+    hasExactTier: (exactTier: PatreonTier) => tier === exactTier,
+  }
+}
+
+/**
+ * Combined hook for both role and tier access
+ * Useful for features that gate on either/both
+ */
+export function useAccess() {
+  const roleAccess = useRoleAccess()
+  const tierAccess = useTierAccess()
+
+  return {
+    ...roleAccess,
+    ...tierAccess,
   }
 }

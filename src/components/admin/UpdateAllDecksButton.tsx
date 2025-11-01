@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { createClient } from '@/lib/supabase/client'
 
 export function UpdateAllDecksButton() {
   const [updating, setUpdating] = useState(false)
@@ -13,25 +14,20 @@ export function UpdateAllDecksButton() {
     setUpdating(true)
 
     try {
-      const response = await fetch(
-        'https://paerhoqoypdezkqhzimk.supabase.co/functions/v1/sync-bookmark',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            bookmarkId: 'xpGzQ',
-            forceRescrape: true,
-          }),
-        }
-      )
+      const supabase = createClient()
 
-      if (!response.ok) {
-        throw new Error('Failed to trigger update')
+      const { data, error } = await supabase.functions.invoke('sync-bookmark', {
+        body: {
+          bookmarkId: 'xpGzQ',
+          forceRescrape: true,
+        },
+      })
+
+      if (error) {
+        throw new Error(error.message || 'Failed to trigger update')
       }
 
-      const _result = await response.json()
+      const _result = data
 
       toast.success('Update started successfully!', {
         description: 'All decks are being rescraped from Moxfield. This may take several minutes.',

@@ -1,7 +1,7 @@
 // app/admin/credits/page.tsx
 import { Coins, Plus } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { requireAdmin } from '@/lib/auth/auth-guards'
+import { requireAdminAccess } from '@/lib/auth'
 import { TierBenefitsMatrix } from '@/components/admin/CreditMatrix'
 import { CreditTypesList } from '@/components/admin/CreditList'
 import { DistributionManager } from '@/components/admin/DistributionManager'
@@ -9,7 +9,7 @@ import { DistributionManager } from '@/components/admin/DistributionManager'
 export const dynamic = 'force-dynamic'
 
 export default async function AdminCreditsPage() {
-  await requireAdmin()
+  await requireAdminAccess()
 
   return (
     <div className="px-4 py-8">

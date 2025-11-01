@@ -1,10 +1,20 @@
 'use client'
 
-import { AlertCircle, Globe, Loader2, LucideVideo, Save, Users } from 'lucide-react'
+import { AlertCircle, Globe, Loader2, LucideVideo, Plus, Save, Trash2, Users } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { createClient } from '@/lib/supabase/client'
 
@@ -22,6 +32,14 @@ export function SiteConfigForm() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [showAddDialog, setShowAddDialog] = useState(false)
+  const [addDialogCategory, setAddDialogCategory] = useState<string>('videos')
+  const [newConfigItem, setNewConfigItem] = useState({
+    key: '',
+    value: '',
+    description: '',
+    is_sensitive: false,
+  })
   const supabase = createClient()
 
   const loadConfig = useCallback(async () => {
@@ -128,6 +146,96 @@ export function SiteConfigForm() {
     }
   }
 
+  const handleAddNew = (category: string) => {
+    setAddDialogCategory(category)
+    setNewConfigItem({
+      key: '',
+      value: '',
+      description: '',
+      is_sensitive: false,
+    })
+    setShowAddDialog(true)
+  }
+
+  const handleCreateConfigItem = async () => {
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      if (!session) {
+        throw new Error('Not authenticated')
+      }
+
+      const response = await fetch('/api/admin/site-config/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          key: newConfigItem.key,
+          value: newConfigItem.value,
+          category: addDialogCategory,
+          description: newConfigItem.description,
+          is_sensitive: newConfigItem.is_sensitive,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Failed to create configuration item')
+      }
+
+      setShowAddDialog(false)
+      setSuccess(true)
+      setTimeout(() => setSuccess(false), 3000)
+      await loadConfig()
+    } catch (err) {
+      console.error('Failed to create config item:', err)
+      setError(
+        `Failed to create configuration item: ${err instanceof Error ? err.message : 'Unknown error'}`
+      )
+    }
+  }
+
+  const handleDeleteConfigItem = async (key: string) => {
+    if (!confirm(`Are you sure you want to delete "${key}"?`)) {
+      return
+    }
+
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      if (!session) {
+        throw new Error('Not authenticated')
+      }
+
+      const response = await fetch(`/api/admin/site-config/${encodeURIComponent(key)}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      })
+
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Failed to delete configuration item')
+      }
+
+      setSuccess(true)
+      setTimeout(() => setSuccess(false), 3000)
+      await loadConfig()
+    } catch (err) {
+      console.error('Failed to delete config item:', err)
+      setError(
+        `Failed to delete configuration item: ${err instanceof Error ? err.message : 'Unknown error'}`
+      )
+    }
+  }
+
   const _getConfigValue = (key: string) => {
     return config.find((item) => item.key === key)?.value || ''
   }
@@ -136,15 +244,27 @@ export function SiteConfigForm() {
     return config.find((item) => item.key === key)
   }
 
-  const renderConfigInput = (key: string, label: string, placeholder?: string) => {
+  const renderConfigInput = (key: string, label: string, placeholder?: string, canDelete = false) => {
     const item = getConfigItem(key)
     if (!item) return null
 
     return (
       <div className="space-y-2">
-        <label htmlFor={key} className="text-sm font-medium">
-          {label}
-        </label>
+        <div className="flex items-center justify-between">
+          <label htmlFor={key} className="text-sm font-medium">
+            {label}
+          </label>
+          {canDelete && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleDeleteConfigItem(key)}
+              className="h-8 px-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
         {item.description && <p className="text-xs text-muted-foreground">{item.description}</p>}
         <Input
           id={key}
@@ -156,6 +276,12 @@ export function SiteConfigForm() {
         />
       </div>
     )
+  }
+
+  const renderCategoryItems = (category: string) => {
+    return config
+      .filter((item) => item.category === category)
+      .map((item) => renderConfigInput(item.key, item.key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()), '', true))
   }
 
   if (loading) {
@@ -215,18 +341,26 @@ export function SiteConfigForm() {
         <TabsContent value="videos" className="space-y-6">
           <Card className="glass-panel">
             <CardHeader>
-              <CardTitle>Video Configuration</CardTitle>
-              <CardDescription>
-                Configure YouTube video IDs for featured videos across the site
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Video Configuration</CardTitle>
+                  <CardDescription>
+                    Configure YouTube video IDs for featured videos across the site
+                  </CardDescription>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleAddNew('videos')}
+                  className="shrink-0"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Video Link
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {renderConfigInput(
-                'college_video_id',
-                'Commander College Video',
-                'e.g., dQw4w9WgXcQ'
-              )}
-              {renderConfigInput('featured_video_id', 'Featured Video (Home)', 'e.g., dQw4w9WgXcQ')}
+              {renderCategoryItems('videos')}
               <div className="mt-4 p-4 bg-muted rounded-lg">
                 <p className="text-xs text-muted-foreground">
                   <strong>Tip:</strong> The video ID is the part after <code>?v=</code> in YouTube
@@ -243,14 +377,24 @@ export function SiteConfigForm() {
         <TabsContent value="social" className="space-y-6">
           <Card className="glass-panel">
             <CardHeader>
-              <CardTitle>Social Media Links</CardTitle>
-              <CardDescription>Configure social media profile URLs</CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Social Media Links</CardTitle>
+                  <CardDescription>Configure social media profile URLs</CardDescription>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleAddNew('social')}
+                  className="shrink-0"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Social Link
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {renderConfigInput('youtube_url', 'YouTube Channel', 'https://youtube.com/@defcat')}
-              {renderConfigInput('twitter_url', 'Twitter/X Profile', 'https://twitter.com/defcat')}
-              {renderConfigInput('discord_url', 'Discord Server', 'https://discord.gg/defcat')}
-              {renderConfigInput('patreon_url', 'Patreon Page', 'https://patreon.com/defcat')}
+              {renderCategoryItems('social')}
             </CardContent>
           </Card>
         </TabsContent>
@@ -258,45 +402,24 @@ export function SiteConfigForm() {
         <TabsContent value="general" className="space-y-6">
           <Card className="glass-panel">
             <CardHeader>
-              <CardTitle>General Settings</CardTitle>
-              <CardDescription>Site metadata and general configuration</CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>General Settings</CardTitle>
+                  <CardDescription>Site metadata and general configuration</CardDescription>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleAddNew('general')}
+                  className="shrink-0"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Config Value
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {renderConfigInput('site_title', 'Site Title')}
-              {renderConfigInput('site_description', 'Site Description')}
-              {renderConfigInput('admin_email', 'Admin Email')}
-            </CardContent>
-          </Card>
-
-          <Card className="glass-panel border-yellow-500/20 bg-yellow-500/5">
-            <CardHeader>
-              <CardTitle className="text-yellow-500">API Keys & Secrets</CardTitle>
-              <CardDescription>
-                Sensitive API keys are managed through environment variables
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <p className="text-sm text-muted-foreground">
-                For security, API keys and secrets are stored in your{' '}
-                <code className="bg-background px-1 py-0.5 rounded">.env.local</code> file:
-              </p>
-              <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-2">
-                <li>
-                  <code>RESEND_API_KEY</code> - Email service API key
-                </li>
-                <li>
-                  <code>PATREON_CLIENT_ID</code> - Patreon OAuth client ID
-                </li>
-                <li>
-                  <code>PATREON_CLIENT_SECRET</code> - Patreon OAuth secret
-                </li>
-                <li>
-                  <code>SUPABASE_SERVICE_ROLE_KEY</code> - Supabase admin key
-                </li>
-              </ul>
-              <p className="text-xs text-yellow-500 mt-4">
-                Never commit <code>.env.local</code> to version control!
-              </p>
+              {renderCategoryItems('general')}
             </CardContent>
           </Card>
         </TabsContent>
@@ -322,6 +445,72 @@ export function SiteConfigForm() {
           )}
         </Button>
       </div>
+
+      {/* Add New Config Item Dialog */}
+      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Add New Configuration Item</DialogTitle>
+            <DialogDescription>
+              Create a new configuration item in the{' '}
+              <strong className="capitalize">{addDialogCategory}</strong> category
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="new-key">Key *</Label>
+              <Input
+                id="new-key"
+                value={newConfigItem.key}
+                onChange={(e) =>
+                  setNewConfigItem((prev) => ({ ...prev, key: e.target.value }))
+                }
+                placeholder="e.g., youtube_url or featured_video_id"
+                className="font-mono"
+              />
+              <p className="text-xs text-muted-foreground">
+                Use lowercase with underscores (snake_case)
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="new-value">Value</Label>
+              <Input
+                id="new-value"
+                value={newConfigItem.value}
+                onChange={(e) =>
+                  setNewConfigItem((prev) => ({ ...prev, value: e.target.value }))
+                }
+                placeholder="e.g., https://youtube.com/@defcat"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="new-description">Description (optional)</Label>
+              <Textarea
+                id="new-description"
+                value={newConfigItem.description}
+                onChange={(e) =>
+                  setNewConfigItem((prev) => ({ ...prev, description: e.target.value }))
+                }
+                placeholder="Brief description of what this config item does"
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddDialog(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCreateConfigItem}
+              disabled={!newConfigItem.key.trim()}
+              className="btn-tinted-primary"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Create
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

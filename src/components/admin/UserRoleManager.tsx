@@ -15,14 +15,14 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
-import { PATREON_TIERS } from '@/types/core'
+import { PATREON_TIERS, UserRole } from '@/types/core'
 
 interface User {
   id: string
   email: string
-  role: string
+  role: string | null
   patreon_tier: string | null
-  created_at: string
+  created_at: string | null
   deck_credits?: number
   roast_credits?: number
   submission_count?: number
@@ -30,7 +30,7 @@ interface User {
 }
 
 interface UserRoleManagerProps {
-  currentUserRole: 'admin' | 'moderator' | 'developer'
+  currentUserRole: UserRole
 }
 
 export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
@@ -145,20 +145,12 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
               .from('deck_submissions')
               .select('id', { count: 'exact', head: true })
               .eq('user_id', profile.id),
-            supabase
-              .from('patreon_subscriptions')
-              .select('created_at')
-              .eq('patreon_id', profile.patreon_id)
-              .order('created_at', { ascending: true })
-              .limit(1)
-              .single(),
           ])
 
           const credits = creditsResult.data?.credits as { deck?: number; roast?: number } | null
           const deckCredits = credits?.deck ?? 0
           const roastCredits = credits?.roast ?? 0
           const submissionCount = submissionsResult.count ?? 0
-          const patreonSince = patreonSubResult.data?.created_at ?? profile.created_at
 
           return {
             ...profile,
@@ -516,13 +508,13 @@ export function UserRoleManager({ currentUserRole }: UserRoleManagerProps) {
                         <strong>Subscriber:</strong> {getSubscriptionDuration(user.patreon_since)}
                       </span>
                       <span>
-                        <strong>Joined:</strong> {new Date(user.created_at).toLocaleDateString()}
+                        <strong>Joined:</strong> {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'Unknown'}
                       </span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <Select
-                      value={user.role}
+                      value={user.role || 'user'}
                       onValueChange={(newRole) => handleUpdateRole(user.id, newRole)}
                       disabled={updating}
                     >

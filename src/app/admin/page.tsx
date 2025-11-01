@@ -18,30 +18,13 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { GlowingEffect } from '@/components/ui/glowEffect'
-import { requireAdmin } from '@/lib/auth'
+import { requireAdminAccess, requireModeratorAccess } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function AdminDashboard() {
-  await requireAdmin()
+  await requireModeratorAccess()
 
   const supabase = await createClient()
-
-  // Get current user's profile to check role
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    throw new Error('User not found')
-  }
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  const isDeveloper = profile?.role === 'developer'
 
   const [{ count: deckCount }, { count: userCount }, { count: pendingCount }] = await Promise.all([
     supabase.from('moxfield_decks').select('id', { count: 'exact', head: true }),
@@ -331,39 +314,6 @@ export default async function AdminDashboard() {
             </CardContent>
           </Card>
           </div>
-
-          {isDeveloper && (
-            <div className="relative rounded-2xl border border-purple-500/20 p-2 md:rounded-3xl md:p-3">
-              <GlowingEffect
-                blur={0}
-                borderWidth={3}
-                spread={80}
-                glow={true}
-                disabled={false}
-                proximity={64}
-                inactiveZone={0.01}
-              />
-              <Card className="card-tinted border-0 hover:shadow-tinted-lg transition-all bg-purple-500/5 relative">
-              <CardHeader>
-                <Database className="h-8 w-8 mb-2 text-purple-500" />
-                <CardTitle className="text-foreground flex items-center gap-2">
-                  Database Panel
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400">
-                    Developer
-                  </span>
-                </CardTitle>
-                <CardDescription className="text-muted-foreground">
-                  Execute SQL queries and inspect database tables
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button asChild className="w-full bg-purple-600 hover:bg-purple-700 text-white">
-                  <Link href="/admin/database">Open Database Panel</Link>
-                </Button>
-              </CardContent>
-            </Card>
-            </div>
-          )}
         </div>
       </div>
     </div>

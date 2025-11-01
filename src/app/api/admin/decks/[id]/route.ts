@@ -5,7 +5,7 @@
  */
 
 import { type NextRequest, NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth/auth-guards'
+import { requireAdmin } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
 
 interface RouteContext {

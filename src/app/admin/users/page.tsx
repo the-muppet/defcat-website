@@ -1,29 +1,12 @@
 import { Users } from 'lucide-react'
-import { DeveloperTools } from '@/components/admin/DeveloperTools'
 import { UserRoleManager } from '@/components/admin/UserRoleManager'
-import { requireAdmin } from '@/lib/auth/require-admin'
-import { createClient } from '@/lib/supabase/server'
+import { requireAdminAccess } from '@/lib/auth'
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
 
 export default async function AdminUsersPage() {
-  await requireAdmin()
-
-  const supabase = await createClient()
-
-  // Get current user's role
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user?.id)
-    .single()
-
-  const userRole = profile?.role as 'admin' | 'moderator' | 'developer'
-  const isDeveloper = userRole === 'developer'
+  const { role } = await requireAdminAccess()
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -37,9 +20,7 @@ export default async function AdminUsersPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <UserRoleManager currentUserRole={userRole} />
-
-          {isDeveloper && <DeveloperTools />}
+          <UserRoleManager currentUserRole={role} />
         </div>
       </div>
     </div>

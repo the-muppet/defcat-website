@@ -8,13 +8,11 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import type { User } from '@supabase/supabase-js'
-
-export type UserRole = 'user' | 'member' | 'moderator' | 'admin' | 'developer'
-
+import type { UserRole, PatreonTier } from '@/types/core'
 export interface AuthResult {
   user: User
   role: UserRole
-  patreonTier: string | null
+  patreonTier: PatreonTier | null
   patreonId: string | null
 }
 
@@ -27,6 +25,18 @@ const ROLE_HIERARCHY: Record<UserRole, number> = {
   moderator: 2,
   admin: 3,
   developer: 4,
+}
+
+/**
+ * Patreon tier hierarchy for access control
+ */
+export const TIER_RANKS: Record<PatreonTier, number> = {
+  Citizen: 0,
+  Knight: 1,
+  Emissary: 2,
+  Duke: 3,
+  Wizard: 4,
+  ArchMage: 5,
 }
 
 /**
@@ -53,8 +63,8 @@ async function getUserWithRole(): Promise<AuthResult | null> {
   return {
     user,
     role: (profile?.role as UserRole) || 'user',
-    patreonTier: profile?.patreon_tier || null,
-    patreonId: profile?.patreon_id || null,
+    patreonTier: (profile?.patreon_tier as PatreonTier) ?? null,
+    patreonId: profile?.patreon_id ?? null,
   }
 }
 
@@ -66,11 +76,17 @@ function hasMinimumRole(userRole: UserRole, minimumRole: UserRole): boolean {
 }
 
 /**
+ * Check if a Patreon tier meets the minimum required tier
+ */
+function hasMinimumTier(userTier: PatreonTier | null, minimumTier: PatreonTier): boolean {
+  if (!userTier) return false
+  return TIER_RANKS[userTier] >= TIER_RANKS[minimumTier]
+}
+
+/**
  * API guard result - either auth data or error response
  */
-export type ApiGuardResult<T = AuthResult> =
-  | { success: true; data: T }
-  | { success: false; response: NextResponse }
+export type ApiGuardResult<T = AuthResult> = { success: true; data: T } | { success: false; response: NextResponse }
 
 /**
  * Require any authenticated user (API version)
@@ -129,6 +145,42 @@ export async function requireRoleApi(minimumRole: UserRole): Promise<ApiGuardRes
 }
 
 /**
+ * Require user with specific minimum Patreon tier (API version)
+ * @param minimumTier - Minimum Patreon tier required
+ * @returns Either auth result or error response
+ */
+export async function requireTierApi(minimumTier: PatreonTier): Promise<ApiGuardResult> {
+  const result = await getUserWithRole()
+
+  if (!result) {
+    return {
+      success: false,
+      response: NextResponse.json(
+        { error: 'Authentication required', code: 'AUTH_REQUIRED' },
+        { status: 401 }
+      ),
+    }
+  }
+
+  if (!hasMinimumTier(result.patreonTier, minimumTier)) {
+    return {
+      success: false,
+      response: NextResponse.json(
+        {
+          error: 'Patreon tier required',
+          code: 'TIER_REQUIRED',
+          required: minimumTier,
+          current: result.patreonTier,
+        },
+        { status: 403 }
+      ),
+    }
+  }
+
+  return { success: true, data: result }
+}
+
+/**
  * Require member role or higher (API version)
  */
 export async function requireMemberApi(): Promise<ApiGuardResult> {
@@ -154,6 +206,48 @@ export async function requireAdminApi(): Promise<ApiGuardResult> {
  */
 export async function requireDeveloperApi(): Promise<ApiGuardResult> {
   return requireRoleApi('developer')
+}
+
+/**
+ * Require Citizen tier or higher (API version)
+ */
+export async function requireCitizenApi(): Promise<ApiGuardResult> {
+  return requireTierApi('Citizen')
+}
+
+/**
+ * Require Knight tier or higher (API version)
+ */
+export async function requireKnightApi(): Promise<ApiGuardResult> {
+  return requireTierApi('Knight')
+}
+
+/**
+ * Require Emissary tier or higher (API version)
+ */
+export async function requireEmissaryApi(): Promise<ApiGuardResult> {
+  return requireTierApi('Emissary')
+}
+
+/**
+ * Require Duke tier or higher (API version)
+ */
+export async function requireDukeApi(): Promise<ApiGuardResult> {
+  return requireTierApi('Duke')
+}
+
+/**
+ * Require Wizard tier or higher (API version)
+ */
+export async function requireWizardApi(): Promise<ApiGuardResult> {
+  return requireTierApi('Wizard')
+}
+
+/**
+ * Require ArchMage tier (API version)
+ */
+export async function requireArchMageApi(): Promise<ApiGuardResult> {
+  return requireTierApi('ArchMage')
 }
 
 /**
@@ -186,6 +280,36 @@ export async function hasExactRoleApi(exactRole: UserRole): Promise<boolean> {
 }
 
 /**
+ * Check if current user has a specific minimum Patreon tier (API version, non-throwing)
+ * @param minimumTier - Minimum tier to check
+ * @returns true if user has tier or higher, false otherwise
+ */
+export async function hasTierApi(minimumTier: PatreonTier): Promise<boolean> {
+  const result = await getUserWithRole()
+  if (!result) return false
+  return hasMinimumTier(result.patreonTier, minimumTier)
+}
+
+/**
+ * Check if current user has exact Patreon tier (API version, non-throwing)
+ * @param exactTier - Exact tier to check
+ * @returns true if user has exact tier, false otherwise
+ */
+export async function hasExactTierApi(exactTier: PatreonTier): Promise<boolean> {
+  const result = await getUserWithRole()
+  return result?.patreonTier === exactTier
+}
+
+/**
+ * Check if current user is a patron (API version, non-throwing)
+ * @returns true if user has any Patreon tier, false otherwise
+ */
+export async function isPatronApi(): Promise<boolean> {
+  const result = await getUserWithRole()
+  return result?.patreonTier !== null
+}
+
+/**
  * Helper to create standard error responses
  */
 export const ApiErrors = {
@@ -194,6 +318,17 @@ export const ApiErrors = {
 
   forbidden: (message = 'Insufficient permissions') =>
     NextResponse.json({ error: message, code: 'FORBIDDEN' }, { status: 403 }),
+
+  tierRequired: (tier: PatreonTier, current: PatreonTier | null = null) =>
+    NextResponse.json(
+      {
+        error: 'Patreon tier required',
+        code: 'TIER_REQUIRED',
+        required: tier,
+        current,
+      },
+      { status: 403 }
+    ),
 
   notFound: (message = 'Resource not found') =>
     NextResponse.json({ error: message, code: 'NOT_FOUND' }, { status: 404 }),
