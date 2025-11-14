@@ -2,7 +2,7 @@
 'use client'
 
 import type { User } from '@supabase/supabase-js'
-import { ClipboardList, LogIn, Sparkles } from 'lucide-react'
+import { ClipboardList, LogIn, Sparkles, Menu, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
@@ -44,6 +44,7 @@ export function Header({
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [showLogoutModal, setShowLogoutModal] = useState(false)
   const [showBadge, setShowBadge] = useState(true)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
   const {
     isEligible,
@@ -196,6 +197,15 @@ export function Header({
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-3">
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden hover-tinted rounded-lg p-2 transition-all"
+              aria-label="Toggle mobile menu"
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+
             {/* Theme Toggle */}
             <AnimatedThemeToggler
               animationType={ThemeAnimationType.MANA}
@@ -256,6 +266,77 @@ export function Header({
             )}
           </div>
         </div>
+
+        {/* Mobile Menu Drawer */}
+        {mobileMenuOpen && (
+          <div className="md:hidden glass-tinted-strong border-t border-tinted">
+            <nav className="px-6 py-4 space-y-2">
+              <Link
+                href="/decks"
+                onClick={() => setMobileMenuOpen(false)}
+                className={cn(
+                  'block px-4 py-3 rounded-lg hover-tinted transition-all',
+                  pathname === '/decks' && 'tinted-accent border border-tinted'
+                )}
+              >
+                The Vault
+              </Link>
+              <Link
+                href="/pivot/home"
+                onClick={() => setMobileMenuOpen(false)}
+                className={cn(
+                  'block px-4 py-3 rounded-lg hover-tinted transition-all',
+                  pathname === '/pivot/home' && 'tinted-accent border border-tinted'
+                )}
+              >
+                Home
+              </Link>
+              <Link
+                href="/pivot/college"
+                onClick={() => setMobileMenuOpen(false)}
+                className={cn(
+                  'block px-4 py-3 rounded-lg hover-tinted transition-all',
+                  pathname === '/pivot/college' && 'tinted-accent border border-tinted'
+                )}
+              >
+                College
+              </Link>
+              <Link
+                href="/pivot/store"
+                onClick={() => setMobileMenuOpen(false)}
+                className={cn(
+                  'block px-4 py-3 rounded-lg hover-tinted transition-all',
+                  pathname === '/pivot/store' && 'tinted-accent border border-tinted'
+                )}
+              >
+                Store
+              </Link>
+              <Link
+                href="/about"
+                onClick={() => setMobileMenuOpen(false)}
+                className={cn(
+                  'block px-4 py-3 rounded-lg hover-tinted transition-all',
+                  pathname === '/about' && 'tinted-accent border border-tinted'
+                )}
+              >
+                About
+              </Link>
+              {(['Duke', 'Wizard', 'ArchMage'].includes(userTier) ||
+                ['admin', 'moderator', 'developer'].includes(userRole)) && (
+                <Link
+                  href="/decks/submission"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={cn(
+                    'block px-4 py-3 rounded-lg hover-tinted transition-all',
+                    pathname === '/decks/submission' && 'tinted-accent border border-tinted'
+                  )}
+                >
+                  Submit Deck
+                </Link>
+              )}
+            </nav>
+          </div>
+        )}
       </header>
     </>
   )

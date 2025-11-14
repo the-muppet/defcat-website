@@ -4,7 +4,6 @@ import {
   DollarSign,
   Facebook,
   Globe,
-  Instagram,
   Linkedin,
   Music,
   Twitch,
@@ -44,12 +43,6 @@ const socialLinks: SocialLink[] = [
     icon: <Twitter className="h-6 w-6" />,
     url: 'https://twitter.com/defcatofficial',
     color: '#1DA1F2',
-  },
-  {
-    name: 'Instagram',
-    icon: <Instagram className="h-6 w-6" />,
-    url: 'https://instagram.com/defcatofficial',
-    color: '#E4405F',
   },
   {
     name: 'Facebook',

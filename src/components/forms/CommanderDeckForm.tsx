@@ -29,7 +29,7 @@ import { toast } from 'sonner'
 import { useAuth, useSubmissionEligibility } from '@/lib/auth/client-auth'
 import { createClient } from '@/lib/supabase/client'
 import { ColorIdentity } from '@/types/colors'
-import { bracketOptions } from '@/types/core'
+import { defCatBracketOptions } from '@/types/core'
 
 export default function PagedDeckForm() {
   const auth = useAuth()
@@ -745,7 +745,7 @@ export default function PagedDeckForm() {
                 Bracket Selection <span className="required">*</span>
               </label>
               <div className="bracket-grid">
-                {bracketOptions.map((bracket) => (
+                {defCatBracketOptions.map((bracket) => (
                   <label
                     key={bracket.value}
                     className={`bracket-option ${formData.bracket === bracket.value ? 'selected' : ''}`}
@@ -937,7 +937,7 @@ export default function PagedDeckForm() {
                 <div className="review-item">
                   <span className="review-label">Bracket:</span>
                   <span className="review-value">
-                    {bracketOptions.find((b) => b.value === formData.bracket)?.label ||
+                    {defCatBracketOptions.find((b) => b.value === formData.bracket)?.label ||
                       'Not selected'}
                   </span>
                 </div>

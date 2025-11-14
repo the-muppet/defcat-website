@@ -22,19 +22,9 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-foreground transition-all"
+                title="Join our Patreon for exclusive content and Discord access!"
               >
-                Patreon
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://patreon.com/defcat"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-foreground transition-all"
-                title="Discord access is available to Patreon members. Click to join on Patreon!"
-              >
-                Discord
+                Patreon + Discord
               </a>
             </li>
           </ul>

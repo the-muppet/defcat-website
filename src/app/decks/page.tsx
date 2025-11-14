@@ -2,13 +2,14 @@
 /** biome-ignore-all lint/a11y/noLabelWithoutControl: <explanation> */
 'use client'
 
-import { ChevronDown, ChevronUp, ExternalLink, Filter, X } from 'lucide-react'
+import { ChevronDown, ChevronUp, ExternalLink, Filter, X, Shuffle } from 'lucide-react'
 import { memo, useMemo, useState } from 'react'
 import { ManaSymbols } from '@/components/decks/ManaSymbols'
 import { RoastButton } from '@/components/decks/RoastButton'
 import { useDecks } from '@/lib/hooks/useDecks'
 import { cn } from '@/lib/utils'
 import { ColorIdentity } from '@/types/colors'
+import { bracketOptions } from '@/types/core'
 import type { Deck } from '@/types/core'
 
 // Memoized deck row component
@@ -69,6 +70,8 @@ export default function TableLayout() {
   const { data: decks = [], isLoading: loading, error } = useDecks()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedColors, setSelectedColors] = useState<string[]>([])
+  const [invertColors, setInvertColors] = useState(false)
+  const [selectedBracket, setSelectedBracket] = useState<string>('')
   const [sortBy, setSortBy] = useState<
     'name' | 'commanders' | 'color_identity' | 'view_count' | 'like_count' | 'updated_at'
   >('view_count')
@@ -86,16 +89,43 @@ export default function TableLayout() {
           (deck.description || null)?.toLowerCase().includes(query)
       )
     }
+
+    // Color filter with exact match and inversion
     if (selectedColors.length > 0) {
       filtered = filtered.filter((deck) => {
-        return selectedColors.every((color) => {
-          // Special handling for WUBRG
-          if (color === 'WUBRG') {
-            return ['W', 'U', 'B', 'R', 'G'].every((c) => deck.color_identity?.includes(c))
+        // Treat null, undefined, or empty array as colorless ['C']
+        let deckColors = deck.color_identity || []
+        if (deckColors.length === 0) {
+          deckColors = ['C']
+        }
+
+        // Build the target color set (handle WUBRG special case)
+        let targetColors = [...selectedColors]
+        if (targetColors.includes('WUBRG')) {
+          // Replace WUBRG with actual 5 colors
+          targetColors = targetColors.filter(c => c !== 'WUBRG')
+          targetColors.push('W', 'U', 'B', 'R', 'G')
+        }
+
+        if (invertColors) {
+          // Inversion: show decks that do NOT contain ANY of the selected colors
+          // Special case: if selecting C with inversion, show all colored decks
+          if (targetColors.includes('C')) {
+            return deckColors.length > 0 && !deckColors.includes('C')
           }
-          return deck.color_identity?.includes(color)
-        })
+          return !targetColors.some(color => deckColors.includes(color))
+        } else {
+          // Exact match: deck must have exactly these colors (in any order)
+          const sortedDeck = [...deckColors].sort().join('')
+          const sortedTarget = [...targetColors].sort().join('')
+          return sortedDeck === sortedTarget
+        }
       })
+    }
+
+    // Bracket filter
+    if (selectedBracket) {
+      filtered = filtered.filter((deck) => deck.bracket === selectedBracket)
     }
 
     filtered.sort((a, b) => {
@@ -122,7 +152,7 @@ export default function TableLayout() {
       return sortOrder === 'asc' ? (aVal || 0) - (bVal || 0) : (bVal || 0) - (aVal || 0)
     })
     return filtered
-  }, [decks, searchQuery, selectedColors, sortBy, sortOrder])
+  }, [decks, searchQuery, selectedColors, invertColors, selectedBracket, sortBy, sortOrder])
 
   const toggleColor = (color: string) => {
     setSelectedColors((prev) =>
@@ -153,7 +183,7 @@ export default function TableLayout() {
   }
 
   return (
-    <div className="flex h-screen">
+    <div className="flex min-h-screen">
       {/* Sidebar with tinted styling */}
       <aside
         className={cn(
@@ -190,19 +220,35 @@ export default function TableLayout() {
               <label className="block text-sm font-medium text-muted-foreground">
                 Color Identity
               </label>
-              <button
-                type="button"
-                onClick={() => {
-                  if (selectedColors.length === 7) {
-                    setSelectedColors([])
-                  } else {
-                    setSelectedColors(['W', 'U', 'B', 'R', 'G', 'C', 'WUBRG'])
-                  }
-                }}
-                className="text-xs text-[var(--mana-color)] hover:brightness-110 transition-all"
-              >
-                {selectedColors.length === 7 ? 'Clear All' : 'Select All'}
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setInvertColors(!invertColors)}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium transition-all",
+                    invertColors
+                      ? "bg-[var(--mana-color)]/20 text-[var(--mana-color)] ring-1 ring-[var(--mana-color)]"
+                      : "bg-accent-tinted text-muted-foreground hover:text-foreground"
+                  )}
+                  title={invertColors ? "Showing decks WITHOUT selected colors" : "Showing decks WITH exact selected colors"}
+                >
+                  <Shuffle className="h-3 w-3" />
+                  {invertColors ? 'Inverted' : 'Invert'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (selectedColors.length === 7) {
+                      setSelectedColors([])
+                    } else {
+                      setSelectedColors(['W', 'U', 'B', 'R', 'G', 'C', 'WUBRG'])
+                    }
+                  }}
+                  className="text-xs text-[var(--mana-color)] hover:brightness-110 transition-all"
+                >
+                  {selectedColors.length === 7 ? 'Clear' : 'All'}
+                </button>
+              </div>
             </div>
             <div className="flex flex-col gap-2">
               {ColorIdentity.ORDER.map((letter) => {
@@ -286,17 +332,44 @@ export default function TableLayout() {
             </div>
           </div>
 
+          {/* Bracket Filter */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-muted-foreground mb-3">
+              Bracket
+            </label>
+            <div className="flex flex-col gap-2">
+              {bracketOptions.map((bracket) => (
+                <button
+                  key={bracket.value}
+                  type="button"
+                  onClick={() => setSelectedBracket(selectedBracket === bracket.value ? '' : bracket.value)}
+                  className={cn(
+                    'flex flex-col items-start gap-1 p-3 rounded-lg transition-all duration-200 text-left',
+                    selectedBracket === bracket.value
+                      ? 'bg-[var(--mana-color)]/10 ring-2 ring-[var(--mana-color)] scale-100'
+                      : 'bg-accent-tinted/50 hover:bg-accent-tinted scale-95 opacity-70 hover:opacity-100'
+                  )}
+                >
+                  <span className="font-medium text-sm">{bracket.label}</span>
+                  <span className="text-xs text-muted-foreground">{bracket.description}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Active Filters */}
-          {(searchQuery || selectedColors.length > 0) && (
+          {(searchQuery || selectedColors.length > 0 || selectedBracket) && (
             <div className="pt-4 border-t border-tinted">
               <button
                 onClick={() => {
                   setSearchQuery('')
                   setSelectedColors([])
+                  setInvertColors(false)
+                  setSelectedBracket('')
                 }}
-                className="text-sm text-[var(--mana-color)] hover:brightness-110 transition-all"
+                className="w-full px-4 py-2 rounded-lg bg-[var(--mana-color)]/10 hover:bg-[var(--mana-color)]/20 text-[var(--mana-color)] font-medium transition-all"
               >
-                Clear all filters
+                Show All Decks
               </button>
             </div>
           )}
@@ -333,8 +406,8 @@ export default function TableLayout() {
           ) : error ? (
             <div className="text-center text-destructive py-20">Error loading decks</div>
           ) : (
-            <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3 overflow-hidden">
-                <table className="w-full">
+            <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3 overflow-x-auto">
+                <table className="w-full min-w-[800px]">
                   <thead>
                     <tr className="border-b border-tinted">
                       <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">

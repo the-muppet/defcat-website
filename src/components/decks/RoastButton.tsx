@@ -4,22 +4,29 @@ import { Flame } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { useRoastEligibility } from '@/lib/auth/client-auth'
+import { useRoastEligibility, useAuth } from '@/lib/auth/client-auth'
 import { cn } from '@/lib/utils'
 
 interface RoastButtonProps {
   moxfieldUrl: string
   variant?: 'default' | 'compact' | 'icon-only'
   className?: string
+  deckOwnerId?: string | null
 }
 
-export function RoastButton({ moxfieldUrl, variant = 'default', className }: RoastButtonProps) {
+export function RoastButton({ moxfieldUrl, variant = 'default', className, deckOwnerId }: RoastButtonProps) {
   const { isEligible, roastCredits, isLoading } = useRoastEligibility()
+  const { user } = useAuth()
 
   const roastUrl = `/decks/roast-submission?deckUrl=${encodeURIComponent(moxfieldUrl)}`
 
   // Don't show anything while loading or if user is not eligible
   if (isLoading || !isEligible) {
+    return null
+  }
+
+  // If deckOwnerId is provided, only show button if current user owns the deck
+  if (deckOwnerId && user?.id !== deckOwnerId) {
     return null
   }
 

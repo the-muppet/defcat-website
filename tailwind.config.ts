@@ -137,6 +137,7 @@ const config: Config = {
         ring: 'hsl(var(--ring))',
         mana: 'var(--mana-color)',
         manargb: 'rgba(var(--mana-rgb), <alpha-value>)',
+        ms: 'font-size: var(--ms)',
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',
@@ -432,10 +433,6 @@ const config: Config = {
 
         // Special handling for white mana (yellow) text contrast
         '[data-mana="white"] .btn-tinted-primary': {
-          color: '#1a1a1a !important',
-          textShadow: 'none !important',
-        },
-        'html[data-mana="white"] .btn-tinted-primary': {
           color: '#1a1a1a !important',
           textShadow: 'none !important',
         },

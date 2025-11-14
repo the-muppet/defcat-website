@@ -1,3 +1,5 @@
+import { Description } from "@radix-ui/react-dialog"
+
 // Database Types
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
@@ -144,6 +146,14 @@ export interface DeckCard {
 }
 
 export const bracketOptions = [
+  { value: 'bracket1', label: 'Bracket 1', description: 'Casual, precon level' },
+  { value: 'bracket2', label: 'Bracket 2', description: 'Focused casual' },
+  { value: 'bracket3', label: 'Bracket 3', description: 'Optimized casual' },
+  { value: 'bracket4', label: 'Bracket 4', description: 'High power' },
+  { value: 'bracket5', label: 'Bracket 5', description: 'Fringe competitive' }
+]
+
+export const defCatBracketOptions = [
   { value: 'bracket1', label: 'Bracket 1', description: 'Casual, precon level' },
   { value: 'bracket2', label: 'Bracket 2', description: 'Focused casual' },
   { value: 'bracket3', label: 'Bracket 3', description: 'Optimized casual' },

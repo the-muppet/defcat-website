@@ -1,5 +1,5 @@
 // components/decks/detail/DeckSidebar.tsx
-import { BarChart3, Eye, Heart, Calendar, Grid3x3, ChartNoAxesColumn } from 'lucide-react'
+import { BarChart3, Eye, Heart, Calendar, ChartNoAxesColumn } from 'lucide-react'
 import { GlowingEffect } from '@/components/ui/glowEffect'
 import { ColorDistribution } from '@/components/decks'
 import type { DecklistCardWithCard, Deck, DeckInfo } from '@/types/supabase'
@@ -7,18 +7,17 @@ import type { DecklistCardWithCard, Deck, DeckInfo } from '@/types/supabase'
 interface DeckSidebarProps {
   deck: Deck & Partial<DeckInfo>
   cards: DecklistCardWithCard[]
-  selectedType: string | null  // Add this
+  selectedType: string | null
 }
 
 export function DeckSidebar({ deck, cards, selectedType }: DeckSidebarProps) {
   const mainboardCards = cards.filter((dc) => dc.board === 'mainboard')
 
-  const totalCards = cards.reduce((sum, dc) => sum + dc.quantity, 0)
-  const uniqueCards = cards.length
+  const totalCards = cards.reduce((sum, dc) => sum + (dc.quantity ?? 0), 0)
   const avgCMC =
     mainboardCards.length > 0
       ? (
-          mainboardCards.reduce((sum, dc) => sum + (dc.cards?.cmc || 0) * dc.quantity, 0) /
+          mainboardCards.reduce((sum, dc) => sum + (dc.cards?.cmc || 0) * (dc.quantity ?? 0), 0) /
           totalCards
         ).toFixed(2)
       : '0'
@@ -26,7 +25,7 @@ export function DeckSidebar({ deck, cards, selectedType }: DeckSidebarProps) {
   return (
     <div className="space-y-6">
       {/* Stats & Engagement Card */}
-      <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3">
+      <div className="relative rounded-2xl border md:rounded-2xl">
         <GlowingEffect
           blur={0}
           borderWidth={3}
@@ -42,58 +41,39 @@ export function DeckSidebar({ deck, cards, selectedType }: DeckSidebarProps) {
             Deck Stats
           </h2>
 
-          <div className="grid grid-cols-2 gap-4">
-            {/* Left Column - Quick Stats */}
-            <div className="space-y-3">
-              <StatCard
-                icon={BarChart3}
-                label="Total Cards"
-                value={totalCards}
-                color="amber"
-              />
-              <StatCard
-                icon={Grid3x3}
-                label="Unique Cards"
-                value={uniqueCards}
-                color="cyan"
-              />
-              <StatCard
-                icon={ChartNoAxesColumn}
-                label="Avg. CMC"
-                value={avgCMC}
-                color="pink"
-              />
-            </div>
-
-            {/* Right Column - Engagement */}
-            <div className="space-y-3">
-              <StatCard
-                icon={Eye}
-                label="Views"
-                value={deck.view_count?.toLocaleString() || 0}
-                color="emerald"
-              />
-              <StatCard
-                icon={Heart}
-                label="Likes"
-                value={deck.like_count?.toLocaleString() || 0}
-                color="red"
-              />
-              <StatCard
-                icon={Calendar}
-                label="Updated"
-                value={deck.last_updated_at ? new Date(deck.last_updated_at).toLocaleDateString() : 'N/A'}
-                color="blue"
-                small
-              />
-            </div>
+          <div className="space-y-3">
+            <StatCard
+              icon={ChartNoAxesColumn}
+              label="Avg. CMC"
+              value={avgCMC}
+              color="pink"
+            />
+            <StatCard
+              icon={Eye}
+              label="Views"
+              value={deck.view_count?.toLocaleString() || 0}
+              color="emerald"
+            />
+            <StatCard
+              icon={Heart}
+              label="Likes"
+              value={deck.like_count?.toLocaleString() || 0}
+              color="red"
+            />
+            <StatCard
+              icon={Calendar}
+              label="Updated"
+              value={deck.last_updated_at ? new Date(deck.last_updated_at).toLocaleDateString() : 'N/A'}
+              color="blue"
+              small
+            />
           </div>
         </div>
       </div>
 
       {/* Color Distribution Card */}
       {cards.length > 0 && (
-        <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3">
+        <div className="relative rounded-2xl border md:rounded-2xl">
           <GlowingEffect
             blur={0}
             borderWidth={3}
@@ -105,7 +85,10 @@ export function DeckSidebar({ deck, cards, selectedType }: DeckSidebarProps) {
           />
           <div className="bg-card border-0 rounded-2xl p-5 shadow-xl relative">
             <h2 className="text-lg font-bold text-foreground mb-3">Color Distribution</h2>
-            <ColorDistribution cards={cards} selectedType={selectedType} />
+            <ColorDistribution 
+              cards={cards.map((card) => ({ ...card, quantity: card.quantity ?? 0 }))} 
+              selectedType={selectedType} 
+            />
           </div>
         </div>
       )}

@@ -224,6 +224,10 @@
   }
 }
 
+.ms {
+  font-size: 14px !important;
+}
+
 /* Glass card styles */
 .glass {
   background: var(--glass-bg);
