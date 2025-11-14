@@ -533,7 +533,7 @@ export default function PagedDeckForm() {
                         className="sr-only"
                       />
                       <div
-                        className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.colorPreference.includes(colorId) ? 'bg-accent-tinted ring-2 ring-[var(--mana-color)]' : ''}`}
+                        className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.colorPreference.includes(colorId) ? 'bg-accent-tinted' : ''}`}
                       >
                         <i
                           className={`${colorInfo.className} ms-3x transition-all duration-200 hover:scale-110`}
@@ -557,7 +557,7 @@ export default function PagedDeckForm() {
                       className="sr-only"
                     />
                     <div
-                      className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.colorPreference.includes('C') ? 'bg-accent-tinted ring-2 ring-[var(--mana-color)]' : ''}`}
+                      className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.colorPreference.includes('C') ? 'bg-accent-tinted ' : ''}`}
                     >
                       <i
                         className={`${ColorIdentity.getColorInfo('C').className} ms-3x transition-all duration-200 hover:scale-110`}
@@ -580,7 +580,7 @@ export default function PagedDeckForm() {
                       className="sr-only"
                     />
                     <div
-                      className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.colorPreference.includes('WUBRG') ? 'bg-accent-tinted ring-2 ring-[var(--mana-color)]' : ''}`}
+                      className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.colorPreference.includes('WUBRG') ? 'bg-accent-tinted ' : ''}`}
                     >
                       {['W', 'U', 'B', 'R', 'G'].map((color) => (
                         <i
@@ -647,7 +647,7 @@ export default function PagedDeckForm() {
                             className="sr-only"
                           />
                           <div
-                            className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.backupColorPreference.includes(colorId) ? 'bg-accent-tinted ring-2 ring-[var(--mana-color)]' : ''}`}
+                            className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.backupColorPreference.includes(colorId) ? 'bg-accent-tinted ' : ''}`}
                           >
                             <i
                               className={`${colorInfo.className} ms-3x transition-all duration-200 hover:scale-110`}
@@ -671,7 +671,7 @@ export default function PagedDeckForm() {
                           className="sr-only"
                         />
                         <div
-                          className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.backupColorPreference.includes('C') ? 'bg-accent-tinted ring-2 ring-[var(--mana-color)]' : ''}`}
+                          className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.backupColorPreference.includes('C') ? 'bg-accent-tinted ' : ''}`}
                         >
                           <i
                             className={`${ColorIdentity.getColorInfo('C').className} ms-3x transition-all duration-200 hover:scale-110`}
@@ -694,7 +694,7 @@ export default function PagedDeckForm() {
                           className="sr-only"
                         />
                         <div
-                          className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.backupColorPreference.includes('WUBRG') ? 'bg-accent-tinted ring-2 ring-[var(--mana-color)]' : ''}`}
+                          className={`inline-flex gap-0.5 items-center p-2 rounded-lg transition-all hover:bg-accent-tinted ${formData.backupColorPreference.includes('WUBRG') ? 'bg-accent-tinted ' : ''}`}
                         >
                           {['W', 'U', 'B', 'R', 'G'].map((color) => (
                             <i

@@ -158,7 +158,25 @@ export const ColorIdentity = {
   ): string => {
     const normalized = typeof colors === 'string' ? colors : ColorIdentity.normalize(colors)
 
-    const base = `ms ms-${normalized.toLowerCase()}`
+    // For dual-color combinations, use proper Mana Font guild symbol order
+    let classBase = normalized.toLowerCase()
+    if (normalized.length === 2) {
+      const dualColorMap: Record<string, string> = {
+        'WU': 'wu', // Azorius
+        'UB': 'ub', // Dimir
+        'BR': 'br', // Rakdos
+        'RG': 'rg', // Gruul
+        'GW': 'gw', // Selesnya
+        'WB': 'wb', // Orzhov
+        'UR': 'ur', // Izzet
+        'BG': 'bg', // Golgari
+        'RW': 'rw', // Boros
+        'GU': 'gu', // Simic
+      }
+      classBase = dualColorMap[normalized] || classBase
+    }
+
+    const base = `ms ms-${classBase}`
     const mods = [cost ? 'ms-cost' : '', shadow ? 'ms-shadow' : ''].filter(Boolean)
 
     return [base, ...mods].join(' ')

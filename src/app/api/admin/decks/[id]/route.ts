@@ -5,7 +5,7 @@
  */
 
 import { type NextRequest, NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth'
+import { requireAdminAccess } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
 
 interface RouteContext {
@@ -21,7 +21,7 @@ interface RouteContext {
 export async function PATCH(request: NextRequest, context: RouteContext) {
   try {
     // Verify admin access
-    await requireAdmin()
+    await requireAdminAccess()
 
     const { id } = await context.params
     const body = await request.json()
@@ -71,7 +71,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 export async function DELETE(_request: NextRequest, context: RouteContext) {
   try {
     // Verify admin access
-    await requireAdmin()
+    await requireAdminAccess()
 
     const { id } = await context.params
     const supabase = await createClient()
@@ -100,7 +100,7 @@ export async function DELETE(_request: NextRequest, context: RouteContext) {
     }
 
     // Delete deck
-    const { error: deckError } = await supabase.from('decks').delete().eq('id', params.id)
+    const { error: deckError } = await supabase.from('moxfield_decks').delete().eq('moxfield_id', deck.moxfield_id)
 
     if (deckError) {
       console.error('Error deleting deck:', deckError)

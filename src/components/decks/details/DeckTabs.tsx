@@ -3,7 +3,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { List, Grid3x3, BarChart3, Copy } from 'lucide-react'
+import { List, Grid3x3, BarChart3 } from 'lucide-react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { GlowingEffect } from '@/components/ui/glowEffect'
 import { DeckListView } from './DeckListView'
@@ -15,11 +16,12 @@ import type { DecklistCardWithCard, Deck } from '@/types/supabase'
 interface DeckTabsProps {
   deck: Deck & Partial<any>
   cards: DecklistCardWithCard[]
+  selectedType: string | null        // Add this
+  onTypeSelect: (type: string) => void  // Add this
 }
 
-export function DeckTabs({ deck, cards }: DeckTabsProps) {
+export function DeckTabs({ deck, cards, selectedType, onTypeSelect }: DeckTabsProps) {
   const [activeTab, setActiveTab] = useState<'list' | 'visual' | 'stats'>('list')
-  const [selectedType, setSelectedType] = useState<string | null>(null)
   const [isDark, setIsDark] = useState(false)
 
   useEffect(() => {
@@ -37,10 +39,6 @@ export function DeckTabs({ deck, cards }: DeckTabsProps) {
 
     return () => observer.disconnect()
   }, [])
-
-  const toggleTypeFilter = (type: string) => {
-    setSelectedType(selectedType === type ? null : type)
-  }
 
   const moxfieldIcon = isDark
     ? 'https://assets.moxfield.net/assets/images/logo-text.svg'
@@ -94,19 +92,16 @@ export function DeckTabs({ deck, cards }: DeckTabsProps) {
                   className="hover:scale-105 transition-transform"
                   title="View on Moxfield"
                 >
-                  <img
+                  <Image
                     src={moxfieldIcon}
-                    alt="Moxfield"
-                    width={100}
-                    height={100}
-                    className="rounded"
+                    alt="View on Moxfield"
+                    width={120}
+                    height={30}
+                    className="h-8 w-auto"
+                    unoptimized
                   />
                 </a>
               )}
-              <Button size="sm" variant="outline">
-                <Copy className="h-3 w-3 mr-2" />
-                Export
-              </Button>
             </div>
           </div>
         </div>
@@ -121,21 +116,21 @@ export function DeckTabs({ deck, cards }: DeckTabsProps) {
                 <DeckListView
                   cards={cards}
                   selectedType={selectedType}
-                  onTypeSelect={toggleTypeFilter}
+                  onTypeSelect={onTypeSelect}
                 />
               )}
               {activeTab === 'visual' && (
                 <DeckVisualView
                   cards={cards}
                   selectedType={selectedType}
-                  onTypeSelect={toggleTypeFilter}
+                  onTypeSelect={onTypeSelect}
                 />
               )}
               {activeTab === 'stats' && (
                 <DeckStatsView
                   cards={cards}
                   selectedType={selectedType}
-                  onTypeSelect={toggleTypeFilter}
+                  onTypeSelect={onTypeSelect}
                 />
               )}
             </>

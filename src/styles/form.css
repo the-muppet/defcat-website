@@ -19,6 +19,36 @@
   pointer-events: none;
 }
 
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.5rem;
+  color: inherit;
+  transition: all 0.2s;
+}
+
+.form-input:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--mana-color);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(var(--mana-color-rgb), 0.1);
+}
+
+.form-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.form-input.error {
+  border-color: #ef4444;
+}
+
 .form-wrapper {
   max-width: 1400px;
   margin: 0 auto;
@@ -188,27 +218,6 @@
   color: var(--destructive);
 }
 
-.form-input {
-  padding: 0.75rem 1rem;
-  background: rgba(var(--glass-base-rgb), 0.05);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  color: var(--foreground);
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--mana-color);
-  background: rgba(var(--glass-base-rgb), 0.08);
-  box-shadow: 0 0 0 3px var(--focus-ring);
-}
-
-.form-input.error {
-  border-color: var(--destructive);
-}
-
 .error-message {
   color: var(--destructive);
   font-size: 0.875rem;
@@ -246,7 +255,29 @@
 .radio-card.selected {
   background: var(--accent-tinted);
   border-color: var(--mana-color);
-  box-shadow: 0 0 20px var(--focus-ring);
+  border-width: 3px;
+  box-shadow: 
+    0 0 20px var(--focus-ring),
+    inset 0 0 0 1px var(--mana-color);
+  transform: scale(1.02);
+}
+
+.radio-card.selected .radio-icon {
+  filter: brightness(1.3);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.radio-card.selected .radio-title {
+  color: var(--mana-color);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 .radio-card input[type="radio"] {

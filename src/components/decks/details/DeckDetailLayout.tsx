@@ -18,11 +18,16 @@ interface DeckDetailLayoutProps {
 
 export function DeckDetailLayout({ deck, cards }: DeckDetailLayoutProps) {
   const [copied, setCopied] = useState(false)
+  const [selectedType, setSelectedType] = useState<string | null>(null)
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  const toggleTypeFilter = (type: string) => {
+    setSelectedType(selectedType === type ? null : type)
   }
 
   return (
@@ -58,11 +63,20 @@ export function DeckDetailLayout({ deck, cards }: DeckDetailLayoutProps) {
           {/* Main Content - Left Side (2/3) */}
           <div className="lg:col-span-2 space-y-6">
             <DeckHeader deck={deck} cards={cards} />
-            <DeckTabs deck={deck} cards={cards} />
+            <DeckTabs 
+              deck={deck} 
+              cards={cards} 
+              selectedType={selectedType}
+              onTypeSelect={toggleTypeFilter}
+            />
           </div>
 
           {/* Sidebar - Right Side (1/3) */}
-          <DeckSidebar deck={deck} cards={cards} />
+          <DeckSidebar 
+            deck={deck} 
+            cards={cards}
+            selectedType={selectedType}
+          />
         </div>
       </div>
     </div>

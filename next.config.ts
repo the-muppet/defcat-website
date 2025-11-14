@@ -11,6 +11,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/storage/v1/object/public/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'assets.moxfield.net',
+        port: '',
+        pathname: '/assets/images/**',
+      },
     ],
   },
   typescript: {

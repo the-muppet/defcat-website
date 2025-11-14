@@ -7,9 +7,10 @@ import type { DecklistCardWithCard, Deck, DeckInfo } from '@/types/supabase'
 interface DeckSidebarProps {
   deck: Deck & Partial<DeckInfo>
   cards: DecklistCardWithCard[]
+  selectedType: string | null  // Add this
 }
 
-export function DeckSidebar({ deck, cards }: DeckSidebarProps) {
+export function DeckSidebar({ deck, cards, selectedType }: DeckSidebarProps) {
   const mainboardCards = cards.filter((dc) => dc.board === 'mainboard')
 
   const totalCards = cards.reduce((sum, dc) => sum + dc.quantity, 0)
@@ -104,7 +105,7 @@ export function DeckSidebar({ deck, cards }: DeckSidebarProps) {
           />
           <div className="bg-card border-0 rounded-2xl p-5 shadow-xl relative">
             <h2 className="text-lg font-bold text-foreground mb-3">Color Distribution</h2>
-            <ColorDistribution cards={cards} selectedType={null} />
+            <ColorDistribution cards={cards} selectedType={selectedType} />
           </div>
         </div>
       )}
