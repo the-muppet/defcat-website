@@ -224,5 +224,20 @@ graph TB
 ### Security Features
 - **Row Level Security**: Database-level access control
 - **Role-Based Auth**: user → member → moderator → admin → developer
+- **Tier-Based Auth**: Citizen → Knight → Emissary → Duke → Wizard → ArchMage
+- **Three-Module Auth**: `core.ts` (shared), `server.ts` (redirects), `api.ts` (returns responses)
 - **Auth Guards**: Separate guards for pages vs API routes
 - **Service Role**: Admin client for privileged operations
+- **Middleware Protection**: Route-level role requirements in `proxy.ts`
+
+### Type System Enhancements
+- **Colors Module** (`src/types/colors.ts`):
+  - Hybrid mana support (W/U, B/R, etc.)
+  - Phyrexian mana handling (W/P, B/P, etc.)
+  - Color identity parsing and normalization
+  - WUBRG ordering and comparison utilities
+  - Mana Font CSS class generation
+- **Moxfield Types** (`src/types/moxfield.ts`):
+  - `RawMoxData` interface for raw API responses
+  - `Commander` interface for commander card data
+  - Enhanced type definitions with detailed properties
