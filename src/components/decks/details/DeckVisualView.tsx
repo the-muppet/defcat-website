@@ -1,7 +1,7 @@
 // components/decks/detail/DeckVisualView.tsx
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, memo, useCallback } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { TypeFilterBar } from './TypeFilterBar'
 import type { DecklistCardWithCard } from '@/types/supabase'
@@ -12,12 +12,105 @@ interface DeckVisualViewProps {
   onTypeSelect: (type: string) => void
 }
 
+interface VirtualCardProps {
+  dc: DecklistCardWithCard
+  isFlipped: boolean
+  onToggleFlip: (cardName: string) => void
+}
+
+const VirtualCard = memo(function VirtualCard({ dc, isFlipped, onToggleFlip }: VirtualCardProps) {
+  const isDFC = dc.cards?.type_line?.includes('//')
+  const cardName = dc.cards?.name || ''
+
+  const frontImageUrl =
+    dc.cards?.cached_image_url ||
+    (dc.cards?.scryfall_id
+      ? `https://cards.scryfall.io/normal/front/${dc.cards.scryfall_id[0]}/${dc.cards.scryfall_id[1]}/${dc.cards.scryfall_id}.jpg`
+      : null)
+
+  const backImageUrl = dc.cards?.scryfall_id
+    ? `https://cards.scryfall.io/normal/back/${dc.cards.scryfall_id[0]}/${dc.cards.scryfall_id[1]}/${dc.cards.scryfall_id}.jpg`
+    : null
+
+  if (!frontImageUrl) return null
+
+  return (
+    <div className="relative group" style={{ perspective: '1000px' }}>
+      <div
+        className="relative rounded-lg border-2 border-border hover:border-primary shadow-lg transition-all duration-600"
+        style={{
+          transformStyle: 'preserve-3d',
+          transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+          transition: 'transform 0.6s',
+        }}
+      >
+        {/* Front Face */}
+        <div
+          className="relative w-full"
+          style={{
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+          }}
+        >
+          <img
+            src={frontImageUrl}
+            alt={dc.cards?.name || ''}
+            className="w-full h-auto rounded-lg"
+          />
+          {dc.quantity > 1 && (
+            <div className="absolute top-2 right-2 bg-primary text-primary-foreground font-bold text-sm rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
+              {dc.quantity}
+            </div>
+          )}
+        </div>
+
+        {/* Back Face */}
+        {isDFC && backImageUrl && (
+          <div
+            className="absolute top-0 left-0 w-full h-full"
+            style={{
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
+              transform: 'rotateY(180deg)',
+            }}
+          >
+            <img
+              src={backImageUrl}
+              alt={`${dc.cards?.name || ''} (back)`}
+              className="w-full h-auto rounded-lg"
+            />
+            {dc.quantity > 1 && (
+              <div className="absolute top-2 right-2 bg-primary text-primary-foreground font-bold text-sm rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
+                {dc.quantity}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* DFC Flip Button */}
+      {isDFC && (
+        <button
+          onClick={() => onToggleFlip(cardName)}
+          className="absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-full w-7 h-7 flex items-center justify-center shadow-lg hover:bg-black/90 transition-colors cursor-pointer z-20"
+          title={isFlipped ? 'Show front face' : 'Show back face'}
+        >
+          <i
+            className="ms ms-ability-duels-dfc text-white"
+            style={{ fontSize: '16px' }}
+          />
+        </button>
+      )}
+    </div>
+  )
+})
+
 export function DeckVisualView({ cards, selectedType, onTypeSelect }: DeckVisualViewProps) {
   const [flippedCards, setFlippedCards] = useState<Set<string>>(new Set())
   const [columns, setColumns] = useState(4)
   const visualGridRef = useRef<HTMLDivElement>(null)
 
-  const toggleCardFlip = (cardName: string) => {
+  const toggleCardFlip = useCallback((cardName: string) => {
     setFlippedCards((prev) => {
       const newSet = new Set(prev)
       if (newSet.has(cardName)) {
@@ -27,7 +120,7 @@ export function DeckVisualView({ cards, selectedType, onTypeSelect }: DeckVisual
       }
       return newSet
     })
-  }
+  }, [])
 
   // Clear manual flips when filter changes
   useEffect(() => {
@@ -66,11 +159,15 @@ export function DeckVisualView({ cards, selectedType, onTypeSelect }: DeckVisual
     cardRows.push(visualCards.slice(i, i + columns))
   }
 
-  // Virtual grid setup
+  // Virtual grid setup - responsive row height based on columns
+  // Magic cards have 63:88 aspect ratio (width:height)
+  // Estimate: 2 cols = ~280px, 3 cols = ~220px, 4 cols = ~180px per row
+  const estimatedRowHeight = columns === 2 ? 280 : columns === 3 ? 220 : 180
+
   const rowVirtualizer = useVirtualizer({
     count: cardRows.length,
     getScrollElement: () => visualGridRef.current,
-    estimateSize: () => 400,
+    estimateSize: () => estimatedRowHeight,
     overscan: 2,
   })
 
@@ -123,85 +220,14 @@ export function DeckVisualView({ cards, selectedType, onTypeSelect }: DeckVisual
                     const manuallyFlipped = flippedCards.has(cardName)
                     const isFlipped = autoFlip ? !manuallyFlipped : manuallyFlipped
 
-                    const frontImageUrl =
-                      dc.cards?.cached_image_url ||
-                      (dc.cards?.scryfall_id
-                        ? `https://cards.scryfall.io/normal/front/${dc.cards.scryfall_id[0]}/${dc.cards.scryfall_id[1]}/${dc.cards.scryfall_id}.jpg`
-                        : null)
-
-                    const backImageUrl = dc.cards?.scryfall_id
-                      ? `https://cards.scryfall.io/normal/back/${dc.cards.scryfall_id[0]}/${dc.cards.scryfall_id[1]}/${dc.cards.scryfall_id}.jpg`
-                      : null
-
-                    return frontImageUrl ? (
-                      <div key={idx} className="relative group" style={{ perspective: '1000px' }}>
-                        <div
-                          className="relative rounded-lg border-2 border-border hover:border-primary shadow-lg transition-all duration-600"
-                          style={{
-                            transformStyle: 'preserve-3d',
-                            transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                            transition: 'transform 0.6s',
-                          }}
-                        >
-                          {/* Front Face */}
-                          <div
-                            className="relative w-full"
-                            style={{
-                              backfaceVisibility: 'hidden',
-                              WebkitBackfaceVisibility: 'hidden',
-                            }}
-                          >
-                            <img
-                              src={frontImageUrl}
-                              alt={dc.cards?.name || ''}
-                              className="w-full h-auto rounded-lg"
-                            />
-                            {dc.quantity > 1 && (
-                              <div className="absolute top-2 right-2 bg-primary text-primary-foreground font-bold text-sm rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
-                                {dc.quantity}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Back Face */}
-                          {isDFC && backImageUrl && (
-                            <div
-                              className="absolute top-0 left-0 w-full h-full"
-                              style={{
-                                backfaceVisibility: 'hidden',
-                                WebkitBackfaceVisibility: 'hidden',
-                                transform: 'rotateY(180deg)',
-                              }}
-                            >
-                              <img
-                                src={backImageUrl}
-                                alt={`${dc.cards?.name || ''} (back)`}
-                                className="w-full h-auto rounded-lg"
-                              />
-                              {dc.quantity > 1 && (
-                                <div className="absolute top-2 right-2 bg-primary text-primary-foreground font-bold text-sm rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
-                                  {dc.quantity}
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* DFC Flip Button */}
-                        {isDFC && (
-                          <button
-                            onClick={() => toggleCardFlip(cardName)}
-                            className="absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-full w-7 h-7 flex items-center justify-center shadow-lg hover:bg-black/90 transition-colors cursor-pointer z-20"
-                            title={isFlipped ? 'Show front face' : 'Show back face'}
-                          >
-                            <i
-                              className="ms ms-ability-duels-dfc text-white"
-                              style={{ fontSize: '16px' }}
-                            />
-                          </button>
-                        )}
-                      </div>
-                    ) : null
+                    return (
+                      <VirtualCard
+                        key={idx}
+                        dc={dc}
+                        isFlipped={isFlipped}
+                        onToggleFlip={toggleCardFlip}
+                      />
+                    )
                   })}
                 </div>
               </div>

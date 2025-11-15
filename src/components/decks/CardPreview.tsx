@@ -2,7 +2,7 @@
 /** biome-ignore-all lint/performance/noImgElement: <explanation> */
 /** biome-ignore-all lint/style/useImportType: <explanation> */
 // biome-ignore assist/source/organizeImports: <explanation>
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { ManaCost } from '@/components/decks/ManaSymbols'
 import { DeckCard, ScryfallImageSize, cardFace } from '@/types/core'
 
@@ -36,7 +36,7 @@ function getCardImageUrl(card: DeckCard['cards']): string | null {
   return null
 }
 
-export function CardPreview({ card, quantity }: { card: DeckCard['cards']; quantity: number }) {
+export const CardPreview = memo(function CardPreview({ card, quantity }: { card: DeckCard['cards']; quantity: number }) {
   const [isHovered, setIsHovered] = useState(false)
 
   // Get the proper image URL - cached first, then Scryfall
@@ -80,4 +80,4 @@ export function CardPreview({ card, quantity }: { card: DeckCard['cards']; quant
       )}
     </div>
   )
-}
+})

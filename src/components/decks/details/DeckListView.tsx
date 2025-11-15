@@ -1,4 +1,5 @@
 // components/decks/detail/DeckListView.tsx
+import { memo } from 'react'
 import { TypeFilterBar } from './TypeFilterBar'
 import { CardPreview } from '@/components/decks'
 import type { DecklistCardWithCard } from '@/types/supabase'
@@ -9,7 +10,7 @@ interface DeckListViewProps {
   onTypeSelect: (type: string) => void
 }
 
-function CardTypeSection({ type, typeCards }: { type: string; typeCards: DecklistCardWithCard[] }) {
+const CardTypeSection = memo(function CardTypeSection({ type, typeCards }: { type: string; typeCards: DecklistCardWithCard[] }) {
   const cardCount = typeCards.reduce((sum, dc) => sum + dc.quantity, 0)
 
   // Special handling for Commander label - singular if 1, plural if multiple
@@ -37,7 +38,7 @@ function CardTypeSection({ type, typeCards }: { type: string; typeCards: Decklis
       </div>
     </div>
   )
-}
+})
 
 export function DeckListView({ cards, selectedType, onTypeSelect }: DeckListViewProps) {
   const CARD_TYPES = [
