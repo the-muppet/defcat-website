@@ -281,7 +281,11 @@ export function SiteConfigForm() {
   const renderCategoryItems = (category: string) => {
     return config
       .filter((item) => item.category === category)
-      .map((item) => renderConfigInput(item.key, item.key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()), '', true))
+      .map((item) => (
+        <div key={item.key}>
+          {renderConfigInput(item.key, item.key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()), '', true)}
+        </div>
+      ))
   }
 
   if (loading) {
