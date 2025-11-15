@@ -1,3 +1,5 @@
+import type { RawMoxData } from "../moxfield"
+
 export type Json =
   | string
   | number
@@ -380,7 +382,7 @@ export type Database = {
           name: string
           public_id: string | null
           public_url: string | null
-          raw_data: Json | null
+          raw_data: RawMoxData | null
           sideboard_count: number | null
           view_count: number | null
           visibility: string | null
