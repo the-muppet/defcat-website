@@ -9,6 +9,8 @@
     "fetch": "tsx scripts/bookmark.ts",
     "db:new": "bash scripts/migrate.sh new",
     "db:up": "bash scripts/migrate.sh up",
+    "db:types": "bash scripts/gen-types.sh",
+    "fix:mermaid": "bash scripts/fix-mermaid.sh",
     "lint": "biome check",
     "format": "biome format --write",
     "test": "vitest",
@@ -19,8 +21,7 @@
     "fetch:images": "tsx scripts/backfill-card-images.ts",
     "cleanup:phantom-cache": "tsx scripts/cleanup-phantom-cache.ts",
     "seed:config": "tsx scripts/seed-site-config.ts",
-    "create-test-user": "tsx scripts/create-test-user.ts",
-    "db:types": "bash scripts/gen-types.sh"
+    "create-test-user": "tsx scripts/create-test-user.ts"
   },
   "dependencies": {
     "@custom-react-hooks/use-media-query": "^1.5.1",
