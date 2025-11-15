@@ -94,58 +94,55 @@ graph TB
 ```mermaid
 sequenceDiagram
     participant Browser
-    participant NextMiddleware as Next.js Middleware
-    participant SupabaseMiddleware as updateSession
+    participant Proxy as proxy(request)<br/>src/proxy.ts
     participant Supabase as Supabase Auth
     participant RouteHandler as Route Handler
     participant Page as Page Component
 
-    Browser->>+NextMiddleware: HTTP Request<br/>(with cookies)
+    Browser->>+Proxy: HTTP Request<br/>(with cookies)
 
-    NextMiddleware->>NextMiddleware: Check pathname
+    Proxy->>Proxy: Generate request ID<br/>Check pathname against<br/>PROTECTED_ROUTES
 
-    alt Static Assets or _next routes
-        NextMiddleware-->>Browser: Skip middleware<br/>Return immediately
-    else API or Page Route
-        NextMiddleware->>+SupabaseMiddleware: updateSession(request)
+    alt Public Route
+        Proxy->>Proxy: isProtectedRoute() = false
+        Proxy-->>Browser: NextResponse.next()<br/>with X-Request-ID header
+    else Protected Route
+        Proxy->>Proxy: createServerClient<br/>with cookie handlers
 
-        SupabaseMiddleware->>SupabaseMiddleware: createServerClient<br/>with cookie handlers
+        Proxy->>Proxy: getAll cookies from request
+        Proxy->>+Supabase: getUser()
+        Supabase-->>-Proxy: User session
 
-        SupabaseMiddleware->>SupabaseMiddleware: getAll cookies from request
-        SupabaseMiddleware->>+Supabase: getUser()
-        Supabase-->>-SupabaseMiddleware: User session
+        Proxy->>Proxy: setAll updated cookies<br/>in response
 
-        SupabaseMiddleware->>SupabaseMiddleware: setAll updated cookies<br/>in response
+        alt User NOT authenticated
+            Proxy->>Proxy: Build redirect URL<br/>/auth/login?error=auth_required<br/>&redirect={pathname}
+            Proxy-->>-Browser: 302 Redirect to Login<br/>with X-Request-ID header
+        else User authenticated
+            Proxy->>Proxy: Query profiles table<br/>for user role
 
-        alt Admin Route (/admin/*)
-            SupabaseMiddleware->>SupabaseMiddleware: Check if user authenticated
+            alt Route has minimumRole requirement
+                Proxy->>Proxy: hasMinimumRole(userRole, minimumRole)<br/>using ROLE_HIERARCHY
 
-            alt User NOT authenticated
-                SupabaseMiddleware->>SupabaseMiddleware: Build redirect URL<br/>/auth/login?redirectTo={pathname}
-                SupabaseMiddleware-->>-NextMiddleware: NextResponse.redirect
-                NextMiddleware-->>-Browser: 302 Redirect to Login
-            else User authenticated
-                SupabaseMiddleware-->>-NextMiddleware: NextResponse with refreshed cookies
-                NextMiddleware->>Page: Continue to admin page
-                Page->>Page: requireAdmin()<br/>Check role
-                alt User has admin role
-                    Page-->>NextMiddleware: Render admin page
-                    NextMiddleware-->>-Browser: Admin page HTML
-                else User lacks admin role
-                    Page-->>NextMiddleware: redirect('/?error=unauthorized')
-                    NextMiddleware-->>-Browser: 302 Redirect to Home
+                alt User lacks required role
+                    Proxy->>Proxy: Build redirect URL<br/>/?error=unauthorized
+                    Proxy-->>-Browser: 302 Redirect to Home<br/>with X-Request-ID header
+                else User has required role
+                    Proxy->>Page: Continue to protected page
+                    Page->>Page: requireRole()<br/>Double-check in component
+                    Page-->>Proxy: Render page
+                    Proxy-->>-Browser: Page HTML<br/>with X-Request-ID header
                 end
+            else No role requirement (just auth)
+                Proxy->>RouteHandler: Continue to route handler
+                RouteHandler->>RouteHandler: Handle request
+                RouteHandler-->>Proxy: Response
+                Proxy-->>-Browser: Response with cookies<br/>and X-Request-ID header
             end
-        else Public or API Route
-            SupabaseMiddleware-->>-NextMiddleware: NextResponse with refreshed cookies
-            NextMiddleware->>RouteHandler: Continue to route handler
-            RouteHandler->>RouteHandler: Handle auth in route<br/>(if needed)
-            RouteHandler-->>NextMiddleware: Response
-            NextMiddleware-->>-Browser: Response with fresh cookies
         end
     end
 
-    Note over SupabaseMiddleware,Supabase: Critical: Cookie handling must be exact<br/>Session will break if cookies not returned properly
+    Note over Proxy,Supabase: Critical: Cookie handling must be exact<br/>Session will break if cookies not returned properly<br/>Request ID logged for debugging
 ```
 
 ## API Auth Guard Pattern
@@ -307,18 +304,64 @@ classDiagram
 
 ## Middleware Configuration
 
-Located at: `src/lib/supabase/middleware.ts`
+Located at: `src/proxy.ts`
 
 ### Key Responsibilities
 1. **Session Refresh**: Ensures Supabase session cookies are kept fresh
-2. **Admin Route Protection**: Redirects unauthenticated users from /admin/*
+2. **Route Protection**: Role-based access control for protected routes
 3. **Cookie Management**: Critical - must preserve all Supabase cookies exactly
+4. **Request ID Generation**: Adds unique request ID to all responses for debugging
+
+### Protected Routes Configuration
+```typescript
+const PROTECTED_ROUTES: Array<{
+  path: string
+  minimumRole: UserRole
+  exactMatch?: boolean
+}> = [
+  { path: '/admin', minimumRole: 'moderator' },
+  { path: '/dashboard', minimumRole: 'member' },
+  { path: '/profile', minimumRole: 'member' },
+  { path: '/submit', minimumRole: 'member' },
+]
+
+const PUBLIC_ROUTES = [
+  '/',
+  '/auth/login',
+  '/auth/patreon-callback',
+  '/auth/signup',
+  '/about',
+  '/pricing',
+  '/decks',
+  '/commanders',
+  '/api/webhooks',
+]
+```
+
+### Role Hierarchy Validation
+```typescript
+function hasMinimumRole(userRole: UserRole, minimumRole: UserRole): boolean {
+  return ROLE_HIERARCHY[userRole] >= ROLE_HIERARCHY[minimumRole]
+}
+
+// ROLE_HIERARCHY from types/core.ts:
+// { user: 0, member: 1, moderator: 2, admin: 3, developer: 4 }
+```
 
 ### Critical Code Pattern
 ```typescript
-// MUST return supabaseResponse with cookies intact
-export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request })
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl
+  const requestId = generateRequestId()
+
+  const routeCheck = isProtectedRoute(pathname)
+  if (!routeCheck.protected) {
+    const response = NextResponse.next()
+    response.headers.set('X-Request-ID', requestId)
+    return response
+  }
+
+  let response = NextResponse.next({ request: { headers: request.headers } })
 
   const supabase = createServerClient(URL, KEY, {
     cookies: {
@@ -328,18 +371,47 @@ export async function updateSession(request: NextRequest) {
         cookiesToSet.forEach(({ name, value }) =>
           request.cookies.set(name, value)
         )
-        supabaseResponse = NextResponse.next({ request })
+        response = NextResponse.next({ request })
         cookiesToSet.forEach(({ name, value, options }) =>
-          supabaseResponse.cookies.set(name, value, options)
+          response.cookies.set(name, value, options)
         )
       },
     },
   })
 
-  await supabase.auth.getUser() // Triggers session refresh
+  const { data: { user } } = await supabase.auth.getUser()
 
-  // MUST return this exact response
-  return supabaseResponse
+  if (!user) {
+    // Redirect to login
+    const loginUrl = new URL('/auth/login', request.url)
+    loginUrl.searchParams.set('error', 'auth_required')
+    loginUrl.searchParams.set('redirect', pathname)
+    const redirectResponse = NextResponse.redirect(loginUrl)
+    redirectResponse.headers.set('X-Request-ID', requestId)
+    return redirectResponse
+  }
+
+  if (routeCheck.minimumRole) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    const userRole = (profile?.role as UserRole) || 'user'
+
+    if (!hasMinimumRole(userRole, routeCheck.minimumRole)) {
+      // Redirect to home with error
+      const homeUrl = new URL('/', request.url)
+      homeUrl.searchParams.set('error', 'unauthorized')
+      const redirectResponse = NextResponse.redirect(homeUrl)
+      redirectResponse.headers.set('X-Request-ID', requestId)
+      return redirectResponse
+    }
+  }
+
+  response.headers.set('X-Request-ID', requestId)
+  return response
 }
 ```
 
