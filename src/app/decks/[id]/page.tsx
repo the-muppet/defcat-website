@@ -1,33 +1,18 @@
 // app/decks/[id]/page.tsx
 'use client'
 
-import { use } from 'react'
-import { notFound } from 'next/navigation'
-import { useDeck } from '@/lib/hooks/useDecks'
-import { DeckDetailLayout } from '@/components/decks/details/DeckDetailLayout'
-import { DeckDetailLoading } from '@/components/decks/details/DeckDetailLoading'
-import { DeckDetailError } from '@/components/decks/details/DeckDetailError'
-import { DecklistCardWithCard, DeckWithCards } from '@/types/supabase'
+import dynamic from 'next/dynamic'
+import { useMediaQuery } from '@/lib/hooks/useMediaQuery'
+
+const DesktopDeckDetailPage = dynamic(() => import('./page.desktop'), { ssr: false })
+const MobileDeckDetailPage = dynamic(() => import('./page.mobile'), { ssr: false })
 
 interface PageProps {
   params: Promise<{ id: string }>
 }
 
 export default function DeckDetailPage({ params }: PageProps) {
-  const { id } = use(params)
-  const { data: deck, cards, isLoading, error } = useDeck(id)
+  const { isMobile } = useMediaQuery()
 
-  if (isLoading) {
-    return <DeckDetailLoading />
-  }
-
-  if (error) {
-    return <DeckDetailError error={error} />
-  }
-
-  if (!deck) {
-    notFound()
-  }
-
-  return <DeckDetailLayout deck={deck} cards={cards || []} />
+  return isMobile ? <MobileDeckDetailPage params={params} /> : <DesktopDeckDetailPage params={params} />
 }
