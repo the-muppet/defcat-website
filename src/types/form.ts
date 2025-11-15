@@ -1,5 +1,3 @@
-// types/form.ts
-
 export type SubmissionType = 'deck' | 'roast'
 
 export interface DeckSubmissionFormData {

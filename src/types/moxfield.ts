@@ -1,4 +1,4 @@
-// types/moxfield.ts
+
 export interface MoxfieldDeck {
   id: string
   name: string
