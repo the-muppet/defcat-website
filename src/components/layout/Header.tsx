@@ -1,8 +1,11 @@
 // components/layout/header.tsx
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
+/** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
+/** biome-ignore-all lint/a11y/useButtonType: <explanation> */
 'use client'
 
 import type { User } from '@supabase/supabase-js'
-import { ClipboardList, LogIn, Sparkles, Menu, X } from 'lucide-react'
+import { ClipboardList, LogIn, Sparkles, Menu, X, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
@@ -16,11 +19,13 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu'
-import { useSubmissionEligibility } from '@/lib/auth/client-auth'
+import { useSubmissionEligibility } from '@/lib/auth/client'
+import { useNavigationHistory } from '@/lib/hooks/useNavigationHistory'
 import { ThemeAnimationType } from '@/lib/hooks/useModeAnimation'
 import { cn } from '@/lib/utils'
 import type { PatreonTier } from '@/types/core'
 import { AnimatedThemeToggler } from '../ui/animated-theme-toggler'
+import { TierBadge } from '../tier/TierBadge'
 
 interface HeaderProps {
   initialUser: User | null
@@ -46,6 +51,7 @@ export function Header({
   const [showBadge, setShowBadge] = useState(true)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
+  const { goBack, hasHistory } = useNavigationHistory()
   const {
     isEligible,
     remainingSubmissions,
@@ -78,21 +84,32 @@ export function Header({
       window.location.href = '/auth/login'
     }, 300)
   }, [])
-
+  
   return (
     <>
       <AuthLoadingModal isOpen={showLoginModal} type="login" />
 
       <header className="sticky top-0 w-full glass-tinted-strong shadow-tinted-lg z-50">
         <div className="px-8 md:px-16 lg:px-24 flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center space-x-2 group hover-tinted rounded-lg px-3 py-2 -ml-3 flex-shrink-0"
-          >
-            <Sparkles className="h-5 w-5 text-tinted transition-transform group-hover:rotate-12 group-hover:scale-110" />
-            <span className="font-bold text-xl gradient-tinted-text">DefCat's DeckVault</span>
-          </Link>
+          {/* Logo and Back Button */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {hasHistory() && (
+              <button
+                onClick={() => goBack('/decks')}
+                className="hover-tinted rounded-lg p-2 transition-all"
+                aria-label="Go back"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </button>
+            )}
+            <Link
+              href="/"
+              className="flex items-center space-x-2 group hover-tinted rounded-lg px-3 py-2 -ml-3"
+            >
+              <Sparkles className="h-5 w-5 text-tinted transition-transform group-hover:rotate-12 group-hover:scale-110" />
+              <span className="font-bold text-xl gradient-tinted-text">DefCat's DeckVault</span>
+            </Link>
+          </div>
 
           {/* Navigation Menu - centered with equal spacing */}
           <div className="absolute left-1/2 -translate-x-1/2">
@@ -256,9 +273,9 @@ export function Header({
               </div>
             ) : (
               <Button
-                size="lg"
-                onClick={handleLogin}
-                className="btn-tinted-primary shadow-tinted-glow"
+              size="lg"
+              onClick={handleLogin}
+              className="btn-tinted-primary shadow-tinted-glow"
               >
                 <LogIn className="mr-2" size={16} />
                 Login
@@ -267,10 +284,18 @@ export function Header({
           </div>
         </div>
 
-        {/* Mobile Menu Drawer */}
+        {/* Mobile Menu Overlay */}
         {mobileMenuOpen && (
-          <div className="md:hidden glass-tinted-strong border-t border-tinted">
-            <nav className="px-6 py-4 space-y-2">
+          <>
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden animate-in fade-in duration-200"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+
+            {/* Slide-out Menu */}
+            <div className="fixed inset-y-0 left-0 w-[280px] max-w-[85vw] z-50 md:hidden glass-tinted-strong border-r border-tinted elevation-5 animate-in slide-in-from-left duration-300">
+              <nav className="px-4 py-6 space-y-2 h-full overflow-y-auto">
               <Link
                 href="/decks"
                 onClick={() => setMobileMenuOpen(false)}
@@ -334,8 +359,9 @@ export function Header({
                   Submit Deck
                 </Link>
               )}
-            </nav>
-          </div>
+              </nav>
+            </div>
+          </>
         )}
       </header>
     </>
