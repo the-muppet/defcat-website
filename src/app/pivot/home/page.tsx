@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useDecks } from '@/lib/hooks/useDecks'
 import { createClient } from '@/lib/supabase/client'
+import { ColorIdentity } from '@/types/colors'
 
 export default function ExampleHomePage() {
   const [searchQuery, setSearchQuery] = useState('')
