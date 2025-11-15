@@ -177,7 +177,7 @@ export default function ExampleHomePage() {
                         : undefined
                     }
                   >
-                    <i className={`ms ms-${symbol.toLowerCase()}`} style={{ fontSize: '28px' }} />
+                    <i className={`ms ms-${symbol.toLowerCase()} text-2xl`} />
                   </button>
                 ))}
               </div>

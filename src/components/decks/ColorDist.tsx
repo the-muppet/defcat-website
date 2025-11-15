@@ -163,7 +163,7 @@ export function ColorDistribution({
                 >
                   <div className="flex items-center gap-2">
                     {combo.length === 2 ? (
-                      <i className={ColorIdentity.getClassName(combo, true)} />
+                      <i className={ColorIdentity.getHybridClass([combo])} />
                     ) : (
                       <div className="flex gap-0.5">
                         {Array.from(combo).map((color, idx) => (
