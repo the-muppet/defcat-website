@@ -60,7 +60,7 @@ Imported deck metadata from Moxfield API.
 | `view_count` | INTEGER | | Moxfield view count |
 | `like_count` | INTEGER | | Moxfield like count |
 | `comment_count` | INTEGER | | Moxfield comment count |
-| `raw_data` | JSONB | | Full Moxfield API response |
+| `raw_data` | JSONB | | Full Moxfield API response (RawMoxData format) |
 | `created_at` | TIMESTAMPTZ | DEFAULT NOW() | Import timestamp |
 | `fetched_at` | TIMESTAMPTZ | | Last fetch timestamp |
 | `cards_fetched_at` | TIMESTAMPTZ | | Last card list fetch |
@@ -368,6 +368,103 @@ Specific logs for Moxfield bookmark synchronization.
 | `started_at` | TIMESTAMPTZ | | Sync start time |
 | `completed_at` | TIMESTAMPTZ | | Sync completion time |
 | `created_at` | TIMESTAMPTZ | DEFAULT NOW() | Log creation |
+
+---
+
+## Type Definitions
+
+### RawMoxData
+
+Represents the raw Moxfield API response format stored in the `moxfield_decks.raw_data` JSONB column. This is the unmodified deck data from Moxfield's API.
+
+**TypeScript Definition:**
+```typescript
+interface RawMoxData {
+  id: string                           // Moxfield deck ID
+  name: string                         // Deck name
+  colors: string[]                     // Color array (W, U, B, R, G)
+  format: string                       // Deck format
+  authors: CreatedByUser[]             // Deck authors
+  bracket: number                      // Power bracket (1-5)
+  isLegal: boolean                     // Format legality status
+  hubNames: any[]                      // Associated hub names
+  isShared: boolean                    // Shared status
+  publicID: string                     // Public deck identifier
+  hasPrimer: boolean                   // Has primer/description
+  likeCount: number                    // Number of likes
+  publicURL: string                    // Public deck URL
+  viewCount: number                    // View count
+  commanders: Commander[]              // Commander cards
+  mainCardID: string                   // Main card display ID
+  visibility: string                   // Public/Private/Unlisted
+  autoBracket: number                  // Auto-calculated bracket
+  commentCount: number                 // Total comments
+  createdAtUTC: Date                   // Creation timestamp
+  bookmarkCount: number                // Bookmark count
+  colorIdentity: string[]              // Commander color identity
+  createdByUser: CreatedByUser         // Original author
+  authorsCanEdit: boolean              // Author edit permissions
+  ignoreBrackets: boolean              // Bracket opt-out flag
+  mainboardCount: number               // Mainboard card count
+  sideboardCount: number               // Sideboard card count
+  maybeboardCount: number              // Maybeboard card count
+  sfwCommentCount: number              // Safe-for-work comment count
+  colorPercentages: ColorPercentages   // Color distribution
+  lastUpdatedAtUTC: Date               // Last update timestamp
+  areCommentsEnabled: boolean          // Comments enabled flag
+  mainCardIDIsBackFace: boolean        // Main card face flag
+  mainCardIDIsCardFace: boolean        // Main card is card face
+  colorIdentityPercentages: ColorPercentages  // Color identity %
+}
+```
+
+**Storage:**
+- Column: `moxfield_decks.raw_data` (JSONB)
+- Purpose: Preserves complete Moxfield API response for future reference and processing
+- Usage: Source of truth for deck metadata and card lists
+
+### Commander
+
+Represents commander card data within the `RawMoxData` format.
+
+**TypeScript Definition:**
+```typescript
+interface Commander {
+  id: string                           // Commander card ID
+  name: string                         // Commander card name
+  imageCardID: string                  // Image card identifier
+  uniqueCardID: string                 // Unique Scryfall/Moxfield ID
+  imageCardIDIsCardFace: boolean       // Image is specific card face
+}
+```
+
+**Usage:**
+- Stored within `RawMoxData.commanders` array
+- Referenced for deck commander identification
+- Used for deck color identity calculation
+
+### Supporting Types
+
+**CreatedByUser:**
+```typescript
+interface CreatedByUser {
+  userName: string
+  displayName: string
+  profileImageUrl: string
+  badges: string[]
+}
+```
+
+**ColorPercentages:**
+```typescript
+interface ColorPercentages {
+  white: number
+  blue: number
+  black: number
+  red: number
+  green: number
+}
+```
 
 ---
 
