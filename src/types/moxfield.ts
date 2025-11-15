@@ -34,7 +34,6 @@ interface Board {
   cards: { [key: string]: CardEntry }
 }
 
-// Change enum to a type union
 type BoardType =
   | 'mainboard'
   | 'sideboard'
@@ -47,7 +46,6 @@ type BoardType =
   | 'planes'
   | 'schemes'
 
-// Use a mapped type combined with additional properties
 export interface Boards extends Record<BoardType, Board> {
   version: number
   tokens: Token[]
@@ -79,7 +77,6 @@ export interface Boards extends Record<BoardType, Board> {
   ignoreBrackets: boolean
 }
 
-// Rest of your interfaces remain the same...
 export interface Affiliates {
   ck: string
   tcg: string
@@ -251,7 +248,6 @@ export interface CardMappings {
   [key: string]: string[]
 }
 
-// Helper type for card statistics
 export interface DeckStats {
   totalCards: number
   averageCMC: number
@@ -270,7 +266,6 @@ export interface DeckStats {
   manaCurve: { [cmc: number]: number }
 }
 
-// app/types/moxfield-sync.ts
 export interface MoxfieldSyncParams {
   bookmarkId?: string
   fetchCards?: boolean
@@ -296,4 +291,50 @@ export interface SyncStatus {
   result: MoxfieldSyncResponse | null
   startTime?: Date
   endTime?: Date
+}
+
+export interface RawMoxData {
+    id:                       string;
+    name:                     string;
+    colors:                   string[];
+    format:                   string;
+    authors:                  CreatedByUser[];
+    bracket:                  number;
+    isLegal:                  boolean;
+    hubNames:                 any[];
+    isShared:                 boolean;
+    publicID:                 string;
+    hasPrimer:                boolean;
+    likeCount:                number;
+    publicURL:                string;
+    viewCount:                number;
+    commanders:               Commander[];
+    mainCardID:               string;
+    visibility:               string;
+    autoBracket:              number;
+    commentCount:             number;
+    createdAtUTC:             Date;
+    bookmarkCount:            number;
+    colorIdentity:            string[];
+    createdByUser:            CreatedByUser;
+    authorsCanEdit:           boolean;
+    ignoreBrackets:           boolean;
+    mainboardCount:           number;
+    sideboardCount:           number;
+    maybeboardCount:          number;
+    sfwCommentCount:          number;
+    colorPercentages:         ColorPercentages;
+    lastUpdatedAtUTC:         Date;
+    areCommentsEnabled:       boolean;
+    mainCardIDIsBackFace:     boolean;
+    mainCardIDIsCardFace:     boolean;
+    colorIdentityPercentages: ColorPercentages;
+}
+
+export interface Commander {
+    id:                    string;
+    name:                  string;
+    imageCardID:           string;
+    uniqueCardID:          string;
+    imageCardIDIsCardFace: boolean;
 }
