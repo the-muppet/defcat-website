@@ -69,29 +69,39 @@ graph TB
 
 ```mermaid
 flowchart TD
-    Start[Server Component Rendered] --> RequireAuth{requireAuth<br/>requireRole<br/>requireMember<br/>requireModerator<br/>requireAdmin<br/>requireDeveloper}
+    Start[Server Component Rendered] --> RequireAuth{Choose Guard<br/>requireAuth<br/>requireRole<br/>requireTier<br/>requireMember<br/>requireModerator<br/>requireAdmin<br/>requireDeveloper}
 
-    RequireAuth --> CreateClient[createClient<br/>server.ts]
+    RequireAuth --> CoreAuth[Call getUserWithRole<br/>from core.ts]
+    CoreAuth --> CreateClient[createClient<br/>server.ts]
     CreateClient --> GetUser[supabase.auth.getUser]
     GetUser --> UserExists{User<br/>Authenticated?}
 
     UserExists -->|No| RedirectLogin[redirect<br/>/auth/login?error=auth_required]
-    UserExists -->|Yes| FetchProfile[Fetch Profile from DB]
+    UserExists -->|Yes| FetchProfile[Query profiles table<br/>role, patreon_tier, patreon_id]
 
-    FetchProfile --> GetRole[Extract Role<br/>patreon_tier<br/>patreon_id]
-    GetRole --> CheckRole{Has Minimum<br/>Required Role?}
+    FetchProfile --> ReturnAuthResult[Return AuthResult<br/>user, role, patreonTier, patreonId]
+    ReturnAuthResult --> ValidateAccess{Validate<br/>Role/Tier?}
 
-    CheckRole -->|No| RedirectHome[redirect<br/>/?error=unauthorized]
-    CheckRole -->|Yes| ReturnAuthResult[Return AuthResult<br/>user, role, patreonTier, patreonId]
+    ValidateAccess -->|Role Check| CheckRole{hasMinimumRole<br/>from core.ts}
+    ValidateAccess -->|Tier Check| CheckTier{hasMinimumTier<br/>from core.ts}
+    ValidateAccess -->|Auth Only| Success[Return User]
 
-    ReturnAuthResult --> RenderPage[Render Protected Page]
+    CheckRole -->|Fail| RedirectHome[redirect<br/>/?error=unauthorized]
+    CheckRole -->|Pass| Success
+    CheckTier -->|Fail| RedirectTier[redirect<br/>/?error=tier_required]
+    CheckTier -->|Pass| Success
+
+    Success --> RenderPage[Render Protected Page]
     RedirectLogin --> ShowLogin[Show Login Page]
     RedirectHome --> ShowHome[Show Home with Error]
+    RedirectTier --> ShowHome
 
-    %% Role Hierarchy Note
+    %% Hierarchy Notes
     RoleHierarchy[Role Hierarchy<br/>user: 0<br/>member: 1<br/>moderator: 2<br/>admin: 3<br/>developer: 4]
+    TierHierarchy[Tier Hierarchy<br/>Citizen: 0<br/>Knight: 1<br/>Emissary: 2<br/>Duke: 3<br/>Wizard: 4<br/>ArchMage: 5]
 
-    CheckRole -.uses.-> RoleHierarchy
+    CheckRole -.uses ROLE_HIERARCHY.-> RoleHierarchy
+    CheckTier -.uses TIER_RANKS.-> TierHierarchy
 
     %% Styling
     classDef success fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
@@ -99,43 +109,54 @@ flowchart TD
     classDef process fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
     classDef decision fill:#fff3e0,stroke:#f57c00,stroke-width:2px
 
-    class RenderPage,ReturnAuthResult success
-    class RedirectLogin,RedirectHome error
-    class CreateClient,GetUser,FetchProfile,GetRole process
-    class UserExists,CheckRole decision
+    class RenderPage,ReturnAuthResult,Success success
+    class RedirectLogin,RedirectHome,RedirectTier error
+    class CreateClient,GetUser,FetchProfile,CoreAuth process
+    class UserExists,CheckRole,CheckTier,ValidateAccess decision
 ```
 
 ## 3. API Route Auth Guard Flow
 
 ```mermaid
 flowchart TD
-    Start[API Route Handler] --> RequireAuthAPI{requireAuthApi<br/>requireRoleApi<br/>requireMemberApi<br/>requireModeratorApi<br/>requireAdminApi<br/>requireDeveloperApi}
+    Start[API Route Handler] --> RequireAuthAPI{Choose Guard<br/>requireAuth<br/>requireRole<br/>requireTier<br/>requireMember<br/>requireAdmin<br/>requireDeveloper}
 
-    RequireAuthAPI --> CreateClient[createClient<br/>server.ts]
+    RequireAuthAPI --> CoreAuth[Call getUserWithRole<br/>from core.ts]
+    CoreAuth --> CreateClient[createClient<br/>server.ts]
     CreateClient --> GetUser[supabase.auth.getUser]
     GetUser --> UserExists{User<br/>Authenticated?}
 
-    UserExists -->|No| Return401[Return NextResponse<br/>401 Unauthorized<br/>AUTH_REQUIRED]
-    UserExists -->|Yes| FetchProfile[Fetch Profile from DB]
+    UserExists -->|No| Return401[Return ApiGuardResult<br/>ok: false<br/>401 AUTH_REQUIRED]
+    UserExists -->|Yes| FetchProfile[Query profiles table<br/>role, patreon_tier, patreon_id]
 
-    FetchProfile --> GetRole[Extract Role<br/>patreon_tier<br/>patreon_id]
-    GetRole --> CheckRole{Has Minimum<br/>Required Role?}
+    FetchProfile --> ReturnData[Got AuthResult<br/>user, role, patreonTier, patreonId]
+    ReturnData --> ValidateAccess{Validate<br/>Role/Tier?}
 
-    CheckRole -->|No| Return403[Return NextResponse<br/>403 Forbidden<br/>FORBIDDEN]
-    CheckRole -->|Yes| ReturnSuccess[Return Success<br/>success: true<br/>data: AuthResult]
+    ValidateAccess -->|Role Check| CheckRole{hasMinimumRole<br/>from core.ts}
+    ValidateAccess -->|Tier Check| CheckTier{hasMinimumTier<br/>from core.ts}
+    ValidateAccess -->|Auth Only| ReturnSuccess
 
-    ReturnSuccess --> ProcessRequest[Process API Request]
-    Return401 --> ClientHandles401[Client Handles Error]
-    Return403 --> ClientHandles403[Client Handles Error]
+    CheckRole -->|Fail| Return403Role[Return ApiGuardResult<br/>ok: false<br/>403 FORBIDDEN<br/>required/current role]
+    CheckRole -->|Pass| ReturnSuccess[Return ApiGuardResult<br/>ok: true<br/>data: AuthResult]
+    CheckTier -->|Fail| Return403Tier[Return ApiGuardResult<br/>ok: false<br/>403 TIER_REQUIRED<br/>required/current tier]
+    CheckTier -->|Pass| ReturnSuccess
+
+    ReturnSuccess --> UnpackResult[Handler unpacks result<br/>const authData = result.data]
+    UnpackResult --> ProcessRequest[Process API Request]
+
+    Return401 --> ClientHandles401[Client Handles 401]
+    Return403Role --> ClientHandles403[Client Handles 403]
+    Return403Tier --> ClientHandles403
 
     ProcessRequest --> SuccessResponse[Return 200 OK<br/>with Data]
 
     %% Guard Result Type
-    GuardResult["ApiGuardResult<br/>{success: true, data: AuthResult}<br/>OR<br/>{success: false, response: NextResponse}"]
+    GuardResult["ApiGuardResult Type<br/>{ok: true, data: AuthResult}<br/>OR<br/>{ok: false, response: NextResponse}"]
 
     ReturnSuccess -.returns.-> GuardResult
     Return401 -.returns.-> GuardResult
-    Return403 -.returns.-> GuardResult
+    Return403Role -.returns.-> GuardResult
+    Return403Tier -.returns.-> GuardResult
 
     %% Styling
     classDef success fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
@@ -143,10 +164,10 @@ flowchart TD
     classDef process fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
     classDef decision fill:#fff3e0,stroke:#f57c00,stroke-width:2px
 
-    class ProcessRequest,SuccessResponse,ReturnSuccess success
-    class Return401,Return403,ClientHandles401,ClientHandles403 error
-    class CreateClient,GetUser,FetchProfile,GetRole process
-    class UserExists,CheckRole decision
+    class ProcessRequest,SuccessResponse,ReturnSuccess,UnpackResult success
+    class Return401,Return403Role,Return403Tier,ClientHandles401,ClientHandles403 error
+    class CreateClient,GetUser,FetchProfile,CoreAuth,ReturnData process
+    class UserExists,CheckRole,CheckTier,ValidateAccess decision
 ```
 
 ## 4. Role-Based Access Control Hierarchy
@@ -226,11 +247,35 @@ sequenceDiagram
 
 ## Key Authentication Patterns
 
+### Three-Module Architecture
+
+The auth system is split into three modules:
+
+1. **`core.ts`** - Shared core logic
+   - `getUserWithRole()` - Fetches user with profile data
+   - `hasMinimumRole()` - Role hierarchy validation
+   - `hasMinimumTier()` - Tier hierarchy validation
+   - Uses `ROLE_HIERARCHY` and `TIER_RANKS` from `types/core.ts`
+
+2. **`server.ts`** - Server Component guards
+   - `requireAuth()`, `requireRole()`, `requireTier()`
+   - Convenience functions: `requireMember()`, `requireAdmin()`, etc.
+   - **Redirects** on auth failure using Next.js `redirect()`
+   - Non-redirecting helpers: `getCurrentUser()`, `hasRole()`, `hasTier()`
+
+3. **`api.ts`** - API Route guards
+   - Same function names as server.ts
+   - **Returns `NextResponse`** instead of redirecting
+   - Returns `ApiGuardResult` type: `{ok: true, data: AuthResult}` or `{ok: false, response: NextResponse}`
+   - Includes `ApiErrors` helper object for standard error responses
+
 ### Server Component Pattern
 ```typescript
 // src/app/admin/page.tsx
+import { requireAdmin } from '@/lib/auth/server'
+
 export default async function AdminPage() {
-  const { user, role } = await requireAdmin()
+  const { user, role, patreonTier } = await requireAdmin()
   const supabase = await createClient()
 
   // Fetch data with RLS applied
@@ -243,14 +288,32 @@ export default async function AdminPage() {
 ### API Route Pattern
 ```typescript
 // src/app/api/admin/users/route.ts
-export async function GET(request: Request) {
-  const authResult = await requireAdminApi()
-  if (!authResult.success) return authResult.response
+import { requireAdmin } from '@/lib/auth/api'
 
-  const { user, role } = authResult.data
+export async function GET(request: Request) {
+  const result = await requireAdmin()
+  if (!result.ok) return result.response
+
+  const { user, role, patreonTier } = result.data
 
   // Process request with authenticated user
   return NextResponse.json({ data })
+}
+```
+
+### Tier-Based Access Pattern
+```typescript
+// Require specific Patreon tier
+import { requireTier, requireWizard } from '@/lib/auth/server'
+
+export default async function PremiumPage() {
+  // Either specific tier
+  const { user, patreonTier } = await requireTier('Wizard')
+
+  // Or convenience function
+  const authData = await requireWizard()
+
+  return <PremiumContent />
 }
 ```
 
