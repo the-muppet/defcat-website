@@ -59,9 +59,9 @@ graph TB
         end
 
         subgraph "Supabase Client Architecture"
-            BrowserClient[Browser Client<br/>createBrowserClient]
-            ServerClient[Server Client<br/>createServerClient]
-            AdminClient[Admin Client<br/>Service Role]
+            BrowserClient[Browser Client<br>createBrowserClient]
+            ServerClient[Server Client<br>createServerClient]
+            AdminClient[Admin Client<br>Service Role]
         end
     end
 

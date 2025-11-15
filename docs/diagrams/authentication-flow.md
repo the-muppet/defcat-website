@@ -9,22 +9,22 @@ This document contains diagrams showing the authentication and authorization flo
 ```mermaid
 graph TB
     subgraph "Client Context - Browser"
-        ClientComp[Client Component<br/>'use client']
-        ClientHooks[React Hooks<br/>useState, useEffect]
-        BrowserClient[createBrowserClient<br/>@supabase/ssr]
+        ClientComp[Client Component<<br>>'use client']
+        ClientHooks[React Hooks<<br>>useState, useEffect]
+        BrowserClient[createBrowserClient<<br>>@supabase/ssr]
     end
 
     subgraph "Server Context - RSC/Actions"
-        ServerComp[Server Component<br/>async function]
-        ServerActions[Server Actions<br/>async function]
-        RouteHandlers[Route Handlers<br/>API Routes]
-        ServerClient[createServerClient<br/>@supabase/ssr<br/>+ cookies]
+        ServerComp[Server Component<<br>>async function]
+        ServerActions[Server Actions<<br>>async function]
+        RouteHandlers[Route Handlers<<br>>API Routes]
+        ServerClient[createServerClient<<br>>@supabase/ssr<<br>>+ cookies]
     end
 
     subgraph "Admin Context - Privileged"
         AdminScripts[Background Scripts]
         AdminOps[Admin Operations]
-        AdminClient[createAdminClient<br/>@supabase/supabase-js<br/>Service Role Key]
+        AdminClient[createAdminClient<<br>>@supabase/supabase-js<<br>>Service Role Key]
     end
 
     subgraph "Supabase Backend"
@@ -69,26 +69,26 @@ graph TB
 
 ```mermaid
 flowchart TD
-    Start[Server Component Rendered] --> RequireAuth{Choose Guard<br/>requireAuth<br/>requireRole<br/>requireTier<br/>requireMember<br/>requireModerator<br/>requireAdmin<br/>requireDeveloper}
+    Start[Server Component Rendered] --> RequireAuth{Choose Guard<<br>>requireAuth<<br>>requireRole<<br>>requireTier<<br>>requireMember<<br>>requireModerator<<br>>requireAdmin<<br>>requireDeveloper}
 
-    RequireAuth --> CoreAuth[Call getUserWithRole<br/>from core.ts]
-    CoreAuth --> CreateClient[createClient<br/>server.ts]
+    RequireAuth --> CoreAuth[Call getUserWithRole<<br>>from core.ts]
+    CoreAuth --> CreateClient[createClient<<br>>server.ts]
     CreateClient --> GetUser[supabase.auth.getUser]
-    GetUser --> UserExists{User<br/>Authenticated?}
+    GetUser --> UserExists{User<<br>>Authenticated?}
 
-    UserExists -->|No| RedirectLogin[redirect<br/>/auth/login?error=auth_required]
-    UserExists -->|Yes| FetchProfile[Query profiles table<br/>role, patreon_tier, patreon_id]
+    UserExists -->|No| RedirectLogin[redirect<<br>>/auth/login?error=auth_required]
+    UserExists -->|Yes| FetchProfile[Query profiles table<<br>>role, patreon_tier, patreon_id]
 
-    FetchProfile --> ReturnAuthResult[Return AuthResult<br/>user, role, patreonTier, patreonId]
-    ReturnAuthResult --> ValidateAccess{Validate<br/>Role/Tier?}
+    FetchProfile --> ReturnAuthResult[Return AuthResult<<br>>user, role, patreonTier, patreonId]
+    ReturnAuthResult --> ValidateAccess{Validate<<br>>Role/Tier?}
 
-    ValidateAccess -->|Role Check| CheckRole{hasMinimumRole<br/>from core.ts}
-    ValidateAccess -->|Tier Check| CheckTier{hasMinimumTier<br/>from core.ts}
+    ValidateAccess -->|Role Check| CheckRole{hasMinimumRole<<br>>from core.ts}
+    ValidateAccess -->|Tier Check| CheckTier{hasMinimumTier<<br>>from core.ts}
     ValidateAccess -->|Auth Only| Success[Return User]
 
-    CheckRole -->|Fail| RedirectHome[redirect<br/>/?error=unauthorized]
+    CheckRole -->|Fail| RedirectHome[redirect<<br>>/?error=unauthorized]
     CheckRole -->|Pass| Success
-    CheckTier -->|Fail| RedirectTier[redirect<br/>/?error=tier_required]
+    CheckTier -->|Fail| RedirectTier[redirect<<br>>/?error=tier_required]
     CheckTier -->|Pass| Success
 
     Success --> RenderPage[Render Protected Page]
@@ -97,8 +97,8 @@ flowchart TD
     RedirectTier --> ShowHome
 
     %% Hierarchy Notes
-    RoleHierarchy[Role Hierarchy<br/>user: 0<br/>member: 1<br/>moderator: 2<br/>admin: 3<br/>developer: 4]
-    TierHierarchy[Tier Hierarchy<br/>Citizen: 0<br/>Knight: 1<br/>Emissary: 2<br/>Duke: 3<br/>Wizard: 4<br/>ArchMage: 5]
+    RoleHierarchy[Role Hierarchy<<br>>user: 0<<br>>member: 1<<br>>moderator: 2<<br>>admin: 3<<br>>developer: 4]
+    TierHierarchy[Tier Hierarchy<<br>>Citizen: 0<<br>>Knight: 1<<br>>Emissary: 2<<br>>Duke: 3<<br>>Wizard: 4<<br>>ArchMage: 5]
 
     CheckRole -.uses ROLE_HIERARCHY.-> RoleHierarchy
     CheckTier -.uses TIER_RANKS.-> TierHierarchy
@@ -119,39 +119,39 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    Start[API Route Handler] --> RequireAuthAPI{Choose Guard<br/>requireAuth<br/>requireRole<br/>requireTier<br/>requireMember<br/>requireAdmin<br/>requireDeveloper}
+    Start[API Route Handler] --> RequireAuthAPI{Choose Guard<<br>>requireAuth<<br>>requireRole<<br>>requireTier<<br>>requireMember<<br>>requireAdmin<<br>>requireDeveloper}
 
-    RequireAuthAPI --> CoreAuth[Call getUserWithRole<br/>from core.ts]
-    CoreAuth --> CreateClient[createClient<br/>server.ts]
+    RequireAuthAPI --> CoreAuth[Call getUserWithRole<<br>>from core.ts]
+    CoreAuth --> CreateClient[createClient<<br>>server.ts]
     CreateClient --> GetUser[supabase.auth.getUser]
-    GetUser --> UserExists{User<br/>Authenticated?}
+    GetUser --> UserExists{User<<br>>Authenticated?}
 
-    UserExists -->|No| Return401[Return ApiGuardResult<br/>ok: false<br/>401 AUTH_REQUIRED]
-    UserExists -->|Yes| FetchProfile[Query profiles table<br/>role, patreon_tier, patreon_id]
+    UserExists -->|No| Return401[Return ApiGuardResult<<br>>ok: false<<br>>401 AUTH_REQUIRED]
+    UserExists -->|Yes| FetchProfile[Query profiles table<<br>>role, patreon_tier, patreon_id]
 
-    FetchProfile --> ReturnData[Got AuthResult<br/>user, role, patreonTier, patreonId]
-    ReturnData --> ValidateAccess{Validate<br/>Role/Tier?}
+    FetchProfile --> ReturnData[Got AuthResult<<br>>user, role, patreonTier, patreonId]
+    ReturnData --> ValidateAccess{Validate<<br>>Role/Tier?}
 
-    ValidateAccess -->|Role Check| CheckRole{hasMinimumRole<br/>from core.ts}
-    ValidateAccess -->|Tier Check| CheckTier{hasMinimumTier<br/>from core.ts}
+    ValidateAccess -->|Role Check| CheckRole{hasMinimumRole<<br>>from core.ts}
+    ValidateAccess -->|Tier Check| CheckTier{hasMinimumTier<<br>>from core.ts}
     ValidateAccess -->|Auth Only| ReturnSuccess
 
-    CheckRole -->|Fail| Return403Role[Return ApiGuardResult<br/>ok: false<br/>403 FORBIDDEN<br/>required/current role]
-    CheckRole -->|Pass| ReturnSuccess[Return ApiGuardResult<br/>ok: true<br/>data: AuthResult]
-    CheckTier -->|Fail| Return403Tier[Return ApiGuardResult<br/>ok: false<br/>403 TIER_REQUIRED<br/>required/current tier]
+    CheckRole -->|Fail| Return403Role[Return ApiGuardResult<<br>>ok: false<<br>>403 FORBIDDEN<<br>>required/current role]
+    CheckRole -->|Pass| ReturnSuccess[Return ApiGuardResult<<br>>ok: true<<br>>data: AuthResult]
+    CheckTier -->|Fail| Return403Tier[Return ApiGuardResult<<br>>ok: false<<br>>403 TIER_REQUIRED<<br>>required/current tier]
     CheckTier -->|Pass| ReturnSuccess
 
-    ReturnSuccess --> UnpackResult[Handler unpacks result<br/>const authData = result.data]
+    ReturnSuccess --> UnpackResult[Handler unpacks result<<br>>const authData = result.data]
     UnpackResult --> ProcessRequest[Process API Request]
 
     Return401 --> ClientHandles401[Client Handles 401]
     Return403Role --> ClientHandles403[Client Handles 403]
     Return403Tier --> ClientHandles403
 
-    ProcessRequest --> SuccessResponse[Return 200 OK<br/>with Data]
+    ProcessRequest --> SuccessResponse[Return 200 OK<<br>>with Data]
 
     %% Guard Result Type
-    GuardResult["ApiGuardResult Type<br/>{ok: true, data: AuthResult}<br/>OR<br/>{ok: false, response: NextResponse}"]
+    GuardResult["ApiGuardResult Type<<br>>{ok: true, data: AuthResult}<<br>>OR<<br>>{ok: false, response: NextResponse}"]
 
     ReturnSuccess -.returns.-> GuardResult
     Return401 -.returns.-> GuardResult
@@ -175,11 +175,11 @@ flowchart TD
 ```mermaid
 graph TB
     subgraph "Role Hierarchy - Inheritance Model"
-        Developer[Developer<br/>Level 4<br/>Highest Permissions]
-        Admin[Admin<br/>Level 3]
-        Moderator[Moderator<br/>Level 2]
-        Member[Member<br/>Level 1]
-        User[User<br/>Level 0<br/>Base Permissions]
+        Developer[Developer<<br>>Level 4<<br>>Highest Permissions]
+        Admin[Admin<<br>>Level 3]
+        Moderator[Moderator<<br>>Level 2]
+        Member[Member<<br>>Level 1]
+        User[User<<br>>Level 0<<br>>Base Permissions]
     end
 
     Developer -->|inherits| Admin
@@ -188,11 +188,11 @@ graph TB
     Member -->|inherits| User
 
     subgraph "Permission Examples"
-        DevPerms[Developer<br/>- System Configuration<br/>- Database Management<br/>- All Admin Features]
-        AdminPerms[Admin<br/>- User Management<br/>- Content Moderation<br/>- Site Configuration]
-        ModPerms[Moderator<br/>- Submission Review<br/>- Content Editing<br/>- User Support]
-        MemberPerms[Member<br/>- Deck Submissions<br/>- Roast Requests<br/>- Premium Content]
-        UserPerms[User<br/>- Browse Decks<br/>- View Content<br/>- Account Management]
+        DevPerms[Developer<<br>>- System Configuration<<br>>- Database Management<<br>>- All Admin Features]
+        AdminPerms[Admin<<br>>- User Management<<br>>- Content Moderation<<br>>- Site Configuration]
+        ModPerms[Moderator<<br>>- Submission Review<<br>>- Content Editing<<br>>- User Support]
+        MemberPerms[Member<<br>>- Deck Submissions<<br>>- Roast Requests<<br>>- Premium Content]
+        UserPerms[User<<br>>- Browse Decks<<br>>- View Content<<br>>- Account Management]
     end
 
     Developer -.has.-> DevPerms
@@ -227,7 +227,7 @@ sequenceDiagram
     Browser->>+Middleware: Request (with cookies)
     Middleware->>+SupabaseMiddleware: updateSession(request)
 
-    SupabaseMiddleware->>SupabaseMiddleware: createServerClient<br/>with cookie handlers
+    SupabaseMiddleware->>SupabaseMiddleware: createServerClient<<br>>with cookie handlers
 
     SupabaseMiddleware->>+Supabase: getUser()
     Supabase-->>-SupabaseMiddleware: User data
@@ -235,14 +235,14 @@ sequenceDiagram
     SupabaseMiddleware->>SupabaseMiddleware: Check if /admin route
 
     alt User not authenticated & /admin route
-        SupabaseMiddleware->>Browser: 302 Redirect<br/>/auth/login?redirectTo=/admin
+        SupabaseMiddleware->>Browser: 302 Redirect<<br>>/auth/login?redirectTo=/admin
     else Authenticated or public route
         SupabaseMiddleware->>SupabaseMiddleware: Refresh session cookies
         SupabaseMiddleware-->>-Middleware: NextResponse with updated cookies
         Middleware-->>-Browser: Response with fresh session
     end
 
-    Note over SupabaseMiddleware,Supabase: CRITICAL: Session cookies must<br/>be returned exactly as Supabase<br/>provides them
+    Note over SupabaseMiddleware,Supabase: CRITICAL: Session cookies must<<br>>be returned exactly as Supabase<<br>>provides them
 ```
 
 ## Key Authentication Patterns

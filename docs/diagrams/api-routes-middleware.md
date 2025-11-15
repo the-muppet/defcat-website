@@ -9,40 +9,40 @@ This document shows the complete API route structure and middleware flow in DefC
 ```mermaid
 graph TB
     subgraph "Public API Routes"
-        Health[/api/health<br/>GET - Health Check]
-        Metrics[/api/metrics<br/>GET - App Metrics]
-        CardImage[/api/card-image<br/>GET - Card Image Proxy]
-        SubmitDeck[/api/submit-deck<br/>POST - Submit Deck]
-        SubmitRoast[/api/submit-roast<br/>POST - Submit Roast]
+        Health[/api/health<br>GET - Health Check]
+        Metrics[/api/metrics<br>GET - App Metrics]
+        CardImage[/api/card-image<br>GET - Card Image Proxy]
+        SubmitDeck[/api/submit-deck<br>POST - Submit Deck]
+        SubmitRoast[/api/submit-roast<br>POST - Submit Roast]
     end
 
     subgraph "Auth API Routes"
-        PatreonAuth[/api/auth/patreon<br/>GET/POST - OAuth Init]
-        PatreonCallback[/api/auth/patreon-callback<br/>GET - OAuth Callback]
-        CallbackSuccess[/api/auth/callback-success<br/>GET - Session Setup]
-        Login[/api/auth/login<br/>GET - Login Page]
-        Verify[/api/auth/verify<br/>GET - Email Verify]
-        ResetPassword[/api/auth/reset-password<br/>GET - Password Reset]
+        PatreonAuth[/api/auth/patreon<br>GET/POST - OAuth Init]
+        PatreonCallback[/api/auth/patreon-callback<br>GET - OAuth Callback]
+        CallbackSuccess[/api/auth/callback-success<br>GET - Session Setup]
+        Login[/api/auth/login<br>GET - Login Page]
+        Verify[/api/auth/verify<br>GET - Email Verify]
+        ResetPassword[/api/auth/reset-password<br>GET - Password Reset]
     end
 
     subgraph "Admin API Routes - requireAdminApi"
-        AdminDecks["/api/admin/decks<br/>GET/POST - Deck Management"]
-        AdminDeckDetail["/api/admin/decks/:id<br/>GET/PATCH/DELETE - Deck Detail"]
-        AdminImport["/api/admin/decks/import<br/>POST - Import Decks"]
-        AdminMoxfield["/api/admin/moxfield<br/>POST - Sync Moxfield"]
-        AdminProducts["/api/admin/products<br/>GET/POST - Products"]
-        AdminProductDetail["/api/admin/products/:id<br/>PATCH/DELETE - Product Detail"]
-        AdminSiteConfig["/api/admin/site-config<br/>GET - Site Config"]
-        AdminSiteConfigAdd["/api/admin/site-config/add<br/>POST - Add Config"]
-        AdminSiteConfigKey["/api/admin/site-config/:key<br/>PATCH/DELETE - Config Detail"]
-        AdminSubmissions["/api/admin/submissions/:id<br/>PATCH/DELETE - Submissions"]
-        AdminUsers["/api/admin/users/add<br/>POST - Add User"]
-        AdminUserRole["/api/admin/users/update-role<br/>POST - Update Role"]
+        AdminDecks["/api/admin/decks<br>GET/POST - Deck Management"]
+        AdminDeckDetail["/api/admin/decks/:id<br>GET/PATCH/DELETE - Deck Detail"]
+        AdminImport["/api/admin/decks/import<br>POST - Import Decks"]
+        AdminMoxfield["/api/admin/moxfield<br>POST - Sync Moxfield"]
+        AdminProducts["/api/admin/products<br>GET/POST - Products"]
+        AdminProductDetail["/api/admin/products/:id<br>PATCH/DELETE - Product Detail"]
+        AdminSiteConfig["/api/admin/site-config<br>GET - Site Config"]
+        AdminSiteConfigAdd["/api/admin/site-config/add<br>POST - Add Config"]
+        AdminSiteConfigKey["/api/admin/site-config/:key<br>PATCH/DELETE - Config Detail"]
+        AdminSubmissions["/api/admin/submissions/:id<br>PATCH/DELETE - Submissions"]
+        AdminUsers["/api/admin/users/add<br>POST - Add User"]
+        AdminUserRole["/api/admin/users/update-role<br>POST - Update Role"]
     end
 
     subgraph "Developer API Routes - requireDeveloperApi"
-        DevSpoofTier[/api/admin/developer/spoof-tier<br/>POST - Spoof Tier (Dev)]
-        DevResetTier[/api/admin/developer/reset-tier<br/>POST - Reset Tier (Dev)]
+        DevSpoofTier[/api/admin/developer/spoof-tier<br>POST - Spoof Tier (Dev)]
+        DevResetTier[/api/admin/developer/reset-tier<br>POST - Reset Tier (Dev)]
     end
 
     %% Public route flows
@@ -94,64 +94,64 @@ graph TB
 ```mermaid
 sequenceDiagram
     participant Browser
-    participant Proxy as proxy(request)<br/>src/proxy.ts
+    participant Proxy as proxy(request)<br>src/proxy.ts
     participant Supabase as Supabase Auth
     participant RouteHandler as Route Handler
     participant Page as Page Component
 
-    Browser->>+Proxy: HTTP Request<br/>(with cookies)
+    Browser->>+Proxy: HTTP Request<br>(with cookies)
 
-    Proxy->>Proxy: Generate request ID<br/>Check pathname against<br/>PROTECTED_ROUTES
+    Proxy->>Proxy: Generate request ID<br>Check pathname against<br>PROTECTED_ROUTES
 
     alt Public Route
         Proxy->>Proxy: isProtectedRoute() = false
-        Proxy-->>Browser: NextResponse.next()<br/>with X-Request-ID header
+        Proxy-->>Browser: NextResponse.next()<br>with X-Request-ID header
     else Protected Route
-        Proxy->>Proxy: createServerClient<br/>with cookie handlers
+        Proxy->>Proxy: createServerClient<br>with cookie handlers
 
         Proxy->>Proxy: getAll cookies from request
         Proxy->>+Supabase: getUser()
         Supabase-->>-Proxy: User session
 
-        Proxy->>Proxy: setAll updated cookies<br/>in response
+        Proxy->>Proxy: setAll updated cookies<br>in response
 
         alt User NOT authenticated
-            Proxy->>Proxy: Build redirect URL<br/>/auth/login?error=auth_required<br/>&redirect={pathname}
-            Proxy-->>-Browser: 302 Redirect to Login<br/>with X-Request-ID header
+            Proxy->>Proxy: Build redirect URL<br>/auth/login?error=auth_required<br>&redirect={pathname}
+            Proxy-->>-Browser: 302 Redirect to Login<br>with X-Request-ID header
         else User authenticated
-            Proxy->>Proxy: Query profiles table<br/>for user role
+            Proxy->>Proxy: Query profiles table<br>for user role
 
             alt Route has minimumRole requirement
-                Proxy->>Proxy: hasMinimumRole(userRole, minimumRole)<br/>using ROLE_HIERARCHY
+                Proxy->>Proxy: hasMinimumRole(userRole, minimumRole)<br>using ROLE_HIERARCHY
 
                 alt User lacks required role
-                    Proxy->>Proxy: Build redirect URL<br/>/?error=unauthorized
-                    Proxy-->>-Browser: 302 Redirect to Home<br/>with X-Request-ID header
+                    Proxy->>Proxy: Build redirect URL<br>/?error=unauthorized
+                    Proxy-->>-Browser: 302 Redirect to Home<br>with X-Request-ID header
                 else User has required role
                     Proxy->>Page: Continue to protected page
-                    Page->>Page: requireRole()<br/>Double-check in component
+                    Page->>Page: requireRole()<br>Double-check in component
                     Page-->>Proxy: Render page
-                    Proxy-->>-Browser: Page HTML<br/>with X-Request-ID header
+                    Proxy-->>-Browser: Page HTML<br>with X-Request-ID header
                 end
             else No role requirement (just auth)
                 Proxy->>RouteHandler: Continue to route handler
                 RouteHandler->>RouteHandler: Handle request
                 RouteHandler-->>Proxy: Response
-                Proxy-->>-Browser: Response with cookies<br/>and X-Request-ID header
+                Proxy-->>-Browser: Response with cookies<br>and X-Request-ID header
             end
         end
     end
 
-    Note over Proxy,Supabase: Critical: Cookie handling must be exact<br/>Session will break if cookies not returned properly<br/>Request ID logged for debugging
+    Note over Proxy,Supabase: Critical: Cookie handling must be exact<br>Session will break if cookies not returned properly<br>Request ID logged for debugging
 ```
 
 ## API Auth Guard Pattern
 
 ```mermaid
 flowchart TD
-    Start[API Route Handler Invoked] --> DetermineGuard{Which Guard<br/>Needed?}
+    Start[API Route Handler Invoked] --> DetermineGuard{Which Guard<br>Needed?}
 
-    DetermineGuard -->|Public| NoGuard[No Guard<br/>Proceed Directly]
+    DetermineGuard -->|Public| NoGuard[No Guard<br>Proceed Directly]
     DetermineGuard -->|Member| CallMemberGuard[requireMemberApi]
     DetermineGuard -->|Admin| CallAdminGuard[requireAdminApi]
     DetermineGuard -->|Developer| CallDevGuard[requireDeveloperApi]
@@ -164,24 +164,24 @@ flowchart TD
     CreateClient --> GetUser[supabase.auth.getUser]
     GetUser --> CheckAuth{Authenticated?}
 
-    CheckAuth -->|No| Return401["Return {<br/>  success: false,<br/>  response: NextResponse<br/>    401 Unauthorized<br/>}"]
+    CheckAuth -->|No| Return401["Return {<br>  success: false,<br>  response: NextResponse<br>    401 Unauthorized<br>}"]
 
-    CheckAuth -->|Yes| FetchProfile[Query profiles table<br/>for role & tier]
-    FetchProfile --> CheckRole{Has Required<br/>Role?}
+    CheckAuth -->|Yes| FetchProfile[Query profiles table<br>for role & tier]
+    FetchProfile --> CheckRole{Has Required<br>Role?}
 
-    CheckRole -->|No| Return403["Return {<br/>  success: false,<br/>  response: NextResponse<br/>    403 Forbidden<br/>}"]
+    CheckRole -->|No| Return403["Return {<br>  success: false,<br>  response: NextResponse<br>    403 Forbidden<br>}"]
 
-    CheckRole -->|Yes| ReturnSuccess["Return {<br/>  success: true,<br/>  data: {<br/>    user,<br/>    role,<br/>    patreonTier,<br/>    patreonId<br/>  }<br/>}"]
+    CheckRole -->|Yes| ReturnSuccess["Return {<br>  success: true,<br>  data: {<br>    user,<br>    role,<br>    patreonTier,<br>    patreonId<br>  }<br>}"]
 
     NoGuard --> ProcessRequest[Process Request Logic]
     ReturnSuccess --> UnpackResult[Unpack AuthResult]
     UnpackResult --> ProcessRequest
 
-    Return401 --> ClientError[Return to Client<br/>401 Unauthorized]
-    Return403 --> ClientError[Return to Client<br/>403 Forbidden]
+    Return401 --> ClientError[Return to Client<br>401 Unauthorized]
+    Return403 --> ClientError[Return to Client<br>403 Forbidden]
 
-    ProcessRequest --> BuildResponse[Build Success Response<br/>NextResponse.json]
-    BuildResponse --> ReturnToClient[Return to Client<br/>200 OK]
+    ProcessRequest --> BuildResponse[Build Success Response<br>NextResponse.json]
+    BuildResponse --> ReturnToClient[Return to Client<br>200 OK]
 
     %% Styling
     classDef success fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
@@ -226,9 +226,9 @@ graph LR
 
     subgraph "Auth Guards"
         NoAuth[No Authentication]
-        MemberGuard[Member Level<br/>Role >= 1]
-        AdminGuard[Admin Level<br/>Role >= 3]
-        DevGuard[Developer Level<br/>Role = 4]
+        MemberGuard[Member Level<br>Role >= 1]
+        AdminGuard[Admin Level<br>Role >= 3]
+        DevGuard[Developer Level<br>Role = 4]
     end
 
     P1 --> NoAuth

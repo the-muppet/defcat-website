@@ -9,39 +9,39 @@ This document shows how data flows through DefCat's DeckVault using TanStack Que
 ```mermaid
 graph TB
     subgraph "Client Browser"
-        ClientComponents[Client Components<br/>'use client']
-        TanStackQuery[TanStack Query<br/>React Query]
-        BrowserState[Local Component State<br/>useState, useReducer]
-        ReactContext[React Contexts<br/>Auth, Theme]
+        ClientComponents[Client Components<br>'use client']
+        TanStackQuery[TanStack Query<br>React Query]
+        BrowserState[Local Component State<br>useState, useReducer]
+        ReactContext[React Contexts<br>Auth, Theme]
     end
 
     subgraph "Server Components"
-        ServerComponents[Server Components<br/>async functions]
-        ServerFetch[Direct Data Fetching<br/>await supabase.from...]
+        ServerComponents[Server Components<br>async functions]
+        ServerFetch[Direct Data Fetching<br>await supabase.from...]
     end
 
     subgraph "API Layer"
-        APIRoutes[API Routes<br/>/api/*]
-        RouteHandlers[Route Handlers<br/>GET/POST/PATCH/DELETE]
+        APIRoutes[API Routes<br>/api/*]
+        RouteHandlers[Route Handlers<br>GET/POST/PATCH/DELETE]
     end
 
     subgraph "Data Access Layer"
-        ServerClient[Server Supabase Client<br/>createClient - server.ts]
-        BrowserClient[Browser Supabase Client<br/>createClient - client.ts]
-        AdminClient[Admin Supabase Client<br/>createAdminClient]
+        ServerClient[Server Supabase Client<br>createClient - server.ts]
+        BrowserClient[Browser Supabase Client<br>createClient - client.ts]
+        AdminClient[Admin Supabase Client<br>createAdminClient]
     end
 
     subgraph "Backend - Supabase"
-        SupabaseAuth[Supabase Auth<br/>User Sessions]
-        SupabaseDB[(PostgreSQL<br/>Database)]
-        SupabaseStorage[Supabase Storage<br/>Card Images]
-        RLS[Row Level Security<br/>Policies]
+        SupabaseAuth[Supabase Auth<br>User Sessions]
+        SupabaseDB[(PostgreSQL<br>Database)]
+        SupabaseStorage[Supabase Storage<br>Card Images]
+        RLS[Row Level Security<br>Policies]
     end
 
     subgraph "External APIs"
-        Patreon[Patreon API<br/>OAuth & Tiers]
-        Moxfield[Moxfield API<br/>Deck Data]
-        Scryfall[Scryfall API<br/>Card Data]
+        Patreon[Patreon API<br>OAuth & Tiers]
+        Moxfield[Moxfield API<br>Deck Data]
+        Scryfall[Scryfall API<br>Card Data]
     end
 
     %% Client Component Flow
@@ -132,7 +132,7 @@ sequenceDiagram
         TanStack-->>Component: Render with fresh data
     end
 
-    Note over Component,DB: Automatic background refetching<br/>Stale-while-revalidate pattern<br/>Optimistic updates supported
+    Note over Component,DB: Automatic background refetching<br>Stale-while-revalidate pattern<br>Optimistic updates supported
 ```
 
 ## Server Component Data Fetching
@@ -149,14 +149,14 @@ sequenceDiagram
     Browser->>+NextJS: Request page
     NextJS->>+RSC: Render component
 
-    RSC->>RSC: await requireAuth()<br/>Check authentication
+    RSC->>RSC: await requireAuth()<br>Check authentication
 
     alt User Authenticated
         RSC->>+ServerClient: createClient()
-        ServerClient->>ServerClient: Load cookies<br/>(session tokens)
+        ServerClient->>ServerClient: Load cookies<br>(session tokens)
 
         RSC->>+Supabase: supabase.from('decks').select('*')
-        Supabase->>Supabase: Apply RLS policies<br/>based on session
+        Supabase->>Supabase: Apply RLS policies<br>based on session
         Supabase->>+DB: SELECT with user context
         DB-->>-Supabase: Filtered rows
         Supabase-->>-RSC: Data
@@ -165,7 +165,7 @@ sequenceDiagram
         RSC-->>-NextJS: HTML with data
         NextJS-->>-Browser: Rendered page
 
-        Note over Browser,DB: No client-side fetching<br/>Data embedded in HTML<br/>Instant page load
+        Note over Browser,DB: No client-side fetching<br>Data embedded in HTML<br>Instant page load
     else User Not Authenticated
         RSC->>Browser: redirect('/auth/login')
     end
@@ -183,7 +183,7 @@ sequenceDiagram
     participant API as API Route
     participant DB as Database
 
-    User->>Component: Submit form<br/>(e.g., submit deck)
+    User->>Component: Submit form<br>(e.g., submit deck)
 
     Component->>Mutation: mutate(data)
 
@@ -194,9 +194,9 @@ sequenceDiagram
         Component-->>User: Show success state
     end
 
-    Mutation->>+API: POST /api/submit-deck<br/>{deck data}
+    Mutation->>+API: POST /api/submit-deck<br>{deck data}
 
-    API->>API: requireMemberApi()<br/>Check auth & credits
+    API->>API: requireMemberApi()<br>Check auth & credits
 
     alt Auth Success
         API->>+DB: INSERT deck_submission
@@ -204,7 +204,7 @@ sequenceDiagram
 
         API-->>-Mutation: 200 OK
 
-        Mutation->>Cache: Invalidate related queries<br/>queryClient.invalidateQueries(['submissions'])
+        Mutation->>Cache: Invalidate related queries<br>queryClient.invalidateQueries(['submissions'])
 
         Cache->>API: Background refetch
         API->>DB: Fresh data
@@ -240,10 +240,10 @@ flowchart TD
     InvalidateProfile --> QueryClient
     InvalidateAll --> QueryClient
 
-    QueryClient --> CheckActive{Query<br/>Currently Active?}
+    QueryClient --> CheckActive{Query<br>Currently Active?}
 
     CheckActive -->|Yes| ImmediateRefetch[Immediate refetch]
-    CheckActive -->|No| MarkStale[Mark as stale<br/>Refetch on next mount]
+    CheckActive -->|No| MarkStale[Mark as stale<br>Refetch on next mount]
 
     ImmediateRefetch --> FetchAPI[Fetch from API]
     FetchAPI --> UpdateCache[Update cache]
@@ -268,9 +268,9 @@ flowchart TD
 
 ```mermaid
 graph LR
-    Page[Page Component<br/>Server Component] --> Auth[requireAuth]
-    Auth --> CreateClient[createClient<br/>server.ts]
-    CreateClient --> Fetch[supabase.from<br/>direct query]
+    Page[Page Component<br>Server Component] --> Auth[requireAuth]
+    Auth --> CreateClient[createClient<br>server.ts]
+    CreateClient --> Fetch[supabase.from<br>direct query]
     Fetch --> Render[Render with data]
 
     style Page fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
@@ -288,7 +288,7 @@ graph LR
 
 ```mermaid
 graph LR
-    Component[Client Component<br/>'use client'] --> UseQuery[useQuery<br/>queryKey, queryFn]
+    Component[Client Component<br>'use client'] --> UseQuery[useQuery<br>queryKey, queryFn]
     UseQuery --> CheckCache{Cache?}
     CheckCache -->|Hit| ReturnCached[Return cached]
     CheckCache -->|Miss| FetchAPI[Fetch API]
@@ -312,9 +312,9 @@ graph LR
 graph TB
     ServerComponent[Server Component] --> InitialFetch[Initial data fetch]
     InitialFetch --> PassProps[Pass as props]
-    PassProps --> ClientComponent[Client Component<br/>'use client']
+    PassProps --> ClientComponent[Client Component<br>'use client']
 
-    ClientComponent --> InitializeQuery[Initialize TanStack Query<br/>with initial data]
+    ClientComponent --> InitializeQuery[Initialize TanStack Query<br>with initial data]
     InitializeQuery --> BackgroundRefetch[Background refetch]
     BackgroundRefetch --> Updates[Handle updates]
 
@@ -334,21 +334,21 @@ graph TB
 ```mermaid
 graph TB
     subgraph "Query Key Structure"
-        AllDecks["('decks')<br/>All decks"]
-        DecksByFilter["('decks', filter)<br/>Filtered decks"]
-        SingleDeck["('decks', deckId)<br/>Single deck"]
+        AllDecks["('decks')<br>All decks"]
+        DecksByFilter["('decks', filter)<br>Filtered decks"]
+        SingleDeck["('decks', deckId)<br>Single deck"]
 
-        AllSubmissions["('submissions')<br/>All submissions"]
-        UserSubmissions["('submissions', userId)<br/>User submissions"]
+        AllSubmissions["('submissions')<br>All submissions"]
+        UserSubmissions["('submissions', userId)<br>User submissions"]
 
-        Profile["('profile')<br/>Current user profile"]
-        UserProfile["('profile', userId)<br/>Specific user"]
+        Profile["('profile')<br>Current user profile"]
+        UserProfile["('profile', userId)<br>Specific user"]
     end
 
     subgraph "Invalidation Hierarchy"
-        InvalidateAll["invalidateQueries(('decks'))<br/>Invalidates ALL deck queries"]
-        InvalidateFiltered["invalidateQueries(('decks', filter))<br/>Invalidates specific filter"]
-        InvalidateSingle["invalidateQueries(('decks', deckId))<br/>Invalidates single deck"]
+        InvalidateAll["invalidateQueries(('decks'))<br>Invalidates ALL deck queries"]
+        InvalidateFiltered["invalidateQueries(('decks', filter))<br>Invalidates specific filter"]
+        InvalidateSingle["invalidateQueries(('decks', deckId))<br>Invalidates single deck"]
     end
 
     InvalidateAll -.affects.-> AllDecks
@@ -372,20 +372,20 @@ graph TB
 ```mermaid
 graph TB
     subgraph "Global State - React Context"
-        AuthContext[AuthContext<br/>Current user session]
-        ThemeContext[ThemeContext<br/>Dark/Light mode]
+        AuthContext[AuthContext<br>Current user session]
+        ThemeContext[ThemeContext<br>Dark/Light mode]
     end
 
     subgraph "Server State - TanStack Query"
-        DecksQuery[Decks Query<br/>Cached deck data]
-        SubmissionsQuery[Submissions Query<br/>User submissions]
-        ProfileQuery[Profile Query<br/>User profile]
+        DecksQuery[Decks Query<br>Cached deck data]
+        SubmissionsQuery[Submissions Query<br>User submissions]
+        ProfileQuery[Profile Query<br>User profile]
     end
 
     subgraph "Local State - useState"
-        FormState[Form State<br/>Input values]
-        UIState[UI State<br/>Modals, dropdowns]
-        TempState[Temp State<br/>Filters, sorting]
+        FormState[Form State<br>Input values]
+        UIState[UI State<br>Modals, dropdowns]
+        TempState[Temp State<br>Filters, sorting]
     end
 
     AuthContext -.provides.-> Components[Components]
@@ -505,7 +505,7 @@ sequenceDiagram
         DB-->>-API: Success
     end
 
-    API-->>-Mutation: 200 OK<br/>{imported: 50, updated: 20}
+    API-->>-Mutation: 200 OK<br>{imported: 50, updated: 20}
 
     Mutation->>Cache: invalidateQueries(['decks'])
     Cache-->>Component: Refetch all deck queries

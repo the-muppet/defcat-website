@@ -8,23 +8,23 @@ This document shows the React component hierarchy and organization in DefCat's D
 
 ```mermaid
 graph TB
-    RootLayout[RootLayout<br/>app/layout.tsx]
+    RootLayout[RootLayout<br>app/layout.tsx]
 
-    RootLayout --> Providers[Providers<br/>Context Providers]
-    RootLayout --> HeaderWrapper[HeaderWrapper<br/>Layout Header]
-    RootLayout --> MainContent[Main Content Area<br/>children]
-    RootLayout --> Footer[Footer<br/>Layout Footer]
+    RootLayout --> Providers[Providers<br>Context Providers]
+    RootLayout --> HeaderWrapper[HeaderWrapper<br>Layout Header]
+    RootLayout --> MainContent[Main Content Area<br>children]
+    RootLayout --> Footer[Footer<br>Layout Footer]
 
     subgraph "Context Providers"
-        Providers --> ThemeProvider[ThemeProvider<br/>Dark/Light Mode]
-        Providers --> AuthProvider[AuthProvider<br/>User Session]
-        Providers --> TanStackProvider[QueryClientProvider<br/>TanStack Query]
+        Providers --> ThemeProvider[ThemeProvider<br>Dark/Light Mode]
+        Providers --> AuthProvider[AuthProvider<br>User Session]
+        Providers --> TanStackProvider[QueryClientProvider<br>TanStack Query]
     end
 
     subgraph "Header Components"
-        HeaderWrapper --> Header[Header<br/>Navigation Bar]
-        Header --> NavigationHeader[NavigationHeader<br/>Main Nav]
-        Header --> UserMenu[UserMenu<br/>User Dropdown]
+        HeaderWrapper --> Header[Header<br>Navigation Bar]
+        Header --> NavigationHeader[NavigationHeader<br>Main Nav]
+        Header --> UserMenu[UserMenu<br>User Dropdown]
         Header --> LoginButton[LoginButton]
         Header --> LogoutButton[LogoutButton]
     end
@@ -56,16 +56,16 @@ graph TB
 
 ```mermaid
 graph TB
-    HomePage[Home Page<br/>app/page.tsx]
+    HomePage[Home Page<br>app/page.tsx]
 
-    HomePage --> FeaturedVideo[FeaturedVideo<br/>Hero Section]
-    HomePage --> FeaturedDeckCard[FeaturedDeckCard<br/>Showcase Deck]
-    HomePage --> RotatingAds[RotatingAds<br/>Product Carousel]
-    HomePage --> SocialMediaLinks[SocialMediaLinks<br/>Social Footer]
+    HomePage --> FeaturedVideo[FeaturedVideo<br>Hero Section]
+    HomePage --> FeaturedDeckCard[FeaturedDeckCard<br>Showcase Deck]
+    HomePage --> RotatingAds[RotatingAds<br>Product Carousel]
+    HomePage --> SocialMediaLinks[SocialMediaLinks<br>Social Footer]
 
-    FeaturedVideo --> VideoPlayer[VideoPlayer<br/>Embedded Video]
-    FeaturedDeckCard --> DeckCard[DeckCard<br/>Reusable Card]
-    RotatingAds --> ProductCards[Product Cards<br/>Carousel Items]
+    FeaturedVideo --> VideoPlayer[VideoPlayer<br>Embedded Video]
+    FeaturedDeckCard --> DeckCard[DeckCard<br>Reusable Card]
+    RotatingAds --> ProductCards[Product Cards<br>Carousel Items]
 
     %% Styling
     classDef page fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
@@ -81,24 +81,24 @@ graph TB
 
 ```mermaid
 graph TB
-    DecksPage[Decks Page<br/>app/decks/page.tsx]
+    DecksPage[Decks Page<br>app/decks/page.tsx]
 
-    DecksPage --> DeckFilters[Deck Filters<br/>Search & Filter UI]
-    DecksPage --> DeckGrid[Deck Grid<br/>Results Display]
-    DecksPage --> Pagination[Pagination<br/>Page Controls]
+    DecksPage --> DeckFilters[Deck Filters<br>Search & Filter UI]
+    DecksPage --> DeckGrid[Deck Grid<br>Results Display]
+    DecksPage --> Pagination[Pagination<br>Page Controls]
 
-    DeckFilters --> ColorFilter[Color Filter<br/>Mana Symbols]
-    DeckFilters --> FormatFilter[Format Filter<br/>Commander/cEDH]
-    DeckFilters --> SearchInput[Search Input<br/>Text Search]
+    DeckFilters --> ColorFilter[Color Filter<br>Mana Symbols]
+    DeckFilters --> FormatFilter[Format Filter<br>Commander/cEDH]
+    DeckFilters --> SearchInput[Search Input<br>Text Search]
 
     DeckGrid --> DeckCard1[DeckCard]
     DeckGrid --> DeckCard2[DeckCard]
     DeckGrid --> DeckCard3[DeckCard]
     DeckGrid --> MoreDecks[...]
 
-    DeckCard1 --> Commander[Commander<br/>Card Display]
-    DeckCard1 --> ManaSymbols[ManaSymbols<br/>Color Identity]
-    DeckCard1 --> DeckStats[Deck Stats<br/>Views/Likes]
+    DeckCard1 --> Commander[Commander<br>Card Display]
+    DeckCard1 --> ManaSymbols[ManaSymbols<br>Color Identity]
+    DeckCard1 --> DeckStats[Deck Stats<br>Views/Likes]
 
     %% Styling
     classDef page fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
@@ -116,16 +116,16 @@ graph TB
 
 ```mermaid
 graph TB
-    DeckDetail["Deck Detail Page<br/>app/decks/:id/page.tsx"]
+    DeckDetail["Deck Detail Page<br>app/decks/:id/page.tsx"]
 
-    DeckDetail --> DeckHeader[Deck Header<br/>Title & Metadata]
-    DeckDetail --> CommanderDisplay[Commander Display<br/>Commander Images]
-    DeckDetail --> DeckTabs[Deck Tabs<br/>Different Views]
-    DeckDetail --> DeckSidebar[Deck Sidebar<br/>Stats Panel]
+    DeckDetail --> DeckHeader[Deck Header<br>Title & Metadata]
+    DeckDetail --> CommanderDisplay[Commander Display<br>Commander Images]
+    DeckDetail --> DeckTabs[Deck Tabs<br>Different Views]
+    DeckDetail --> DeckSidebar[Deck Sidebar<br>Stats Panel]
 
     DeckHeader --> TitleSection[Title Section]
     DeckHeader --> AuthorInfo[Author Info]
-    DeckHeader --> ActionButtons[Action Buttons<br/>View/Export]
+    DeckHeader --> ActionButtons[Action Buttons<br>View/Export]
 
     CommanderDisplay --> CommanderImage1[CommanderImage]
     CommanderDisplay --> CommanderImage2[CommanderImage]
@@ -134,9 +134,9 @@ graph TB
     DeckTabs --> CardListTab[Card List Tab]
     DeckTabs --> AnalyticsTab[Analytics Tab]
 
-    StatsTab --> ManaCurve[ManaCurve<br/>CMC Distribution]
-    StatsTab --> ColorDist[ColorDist<br/>Color Distribution]
-    StatsTab --> Cardtypes[Cardtypes<br/>Type Breakdown]
+    StatsTab --> ManaCurve[ManaCurve<br>CMC Distribution]
+    StatsTab --> ColorDist[ColorDist<br>Color Distribution]
+    StatsTab --> Cardtypes[Cardtypes<br>Type Breakdown]
 
     CardListTab --> CardSection1[Commanders Section]
     CardListTab --> CardSection2[Mainboard Section]
@@ -146,9 +146,9 @@ graph TB
     CardSection2 --> CardPreview2[CardPreview]
     CardSection2 --> CardPreview3[CardPreview]
 
-    DeckSidebar --> DeckStatsView[DeckStatsView<br/>Numeric Stats]
-    DeckSidebar --> ManaAnalysisCard[ManaAnalysisCard<br/>Mana Analysis]
-    DeckSidebar --> RoastButton[RoastButton<br/>Submit for Roast]
+    DeckSidebar --> DeckStatsView[DeckStatsView<br>Numeric Stats]
+    DeckSidebar --> ManaAnalysisCard[ManaAnalysisCard<br>Mana Analysis]
+    DeckSidebar --> RoastButton[RoastButton<br>Submit for Roast]
 
     %% Styling
     classDef page fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
@@ -166,21 +166,21 @@ graph TB
 
 ```mermaid
 graph TB
-    ProfilePage[Profile Page<br/>app/profile/page.tsx]
+    ProfilePage[Profile Page<br>app/profile/page.tsx]
 
-    ProfilePage --> ProfilePanel[ProfilePanel<br/>User Info]
-    ProfilePage --> TierCreditsCard[TierCreditsCard<br/>Tier & Credits]
-    ProfilePage --> MySubmissions[MySubmissions<br/>Submission History]
-    ProfilePage --> UserDecks[UserDecks<br/>User's Decks]
-    ProfilePage --> MyDrafts[MyDrafts<br/>Draft Submissions]
+    ProfilePage --> ProfilePanel[ProfilePanel<br>User Info]
+    ProfilePage --> TierCreditsCard[TierCreditsCard<br>Tier & Credits]
+    ProfilePage --> MySubmissions[MySubmissions<br>Submission History]
+    ProfilePage --> UserDecks[UserDecks<br>User's Decks]
+    ProfilePage --> MyDrafts[MyDrafts<br>Draft Submissions]
 
-    ProfilePanel --> ProfileEditForm[ProfileEditForm<br/>Edit Profile]
-    ProfilePanel --> PatreonStatus[Patreon Status<br/>Tier Display]
+    ProfilePanel --> ProfileEditForm[ProfileEditForm<br>Edit Profile]
+    ProfilePanel --> PatreonStatus[Patreon Status<br>Tier Display]
 
-    TierCreditsCard --> TierBadge[TierBadge<br/>Tier Icon + Gradient<br/>Developer customization]
-    TierCreditsCard --> CreditDisplay[Credit Display<br/>Remaining Credits]
+    TierCreditsCard --> TierBadge[TierBadge<br>Tier Icon + Gradient<br>Developer customization]
+    TierCreditsCard --> CreditDisplay[Credit Display<br>Remaining Credits]
 
-    Note right of TierBadge: Enhanced with gradients<br/>Developer icon picker<br/>WUBRG glowing effect<br/>Compact mode available
+    Note right of TierBadge: Enhanced with gradients<br>Developer icon picker<br>WUBRG glowing effect<br>Compact mode available
 
     MySubmissions --> SubmissionList[Submission List]
     SubmissionList --> SubmissionCard1[Submission Card]
@@ -203,9 +203,9 @@ graph TB
 
 ```mermaid
 graph TB
-    AdminPage[Admin Dashboard<br/>app/admin/page.tsx]
+    AdminPage[Admin Dashboard<br>app/admin/page.tsx]
 
-    AdminPage --> AdminTabs[Admin Tabs<br/>Navigation]
+    AdminPage --> AdminTabs[Admin Tabs<br>Navigation]
 
     AdminTabs --> DecksTab[Decks Tab]
     AdminTabs --> SubmissionsTab[Submissions Tab]
@@ -215,30 +215,30 @@ graph TB
     AdminTabs --> SettingsTab[Settings Tab]
     AdminTabs --> DocsTab[Docs Tab]
 
-    DecksTab --> DecksList[DecksList<br/>All Decks]
+    DecksTab --> DecksList[DecksList<br>All Decks]
     DecksTab --> ImportButton[ImportAllDecksButton]
     DecksTab --> UpdateButton[UpdateAllDecksButton]
 
-    DecksList --> DeckEditForm[DeckEditForm<br/>Edit Deck]
-    DecksList --> DeckImportForm[DeckImportForm<br/>Import Single]
+    DecksList --> DeckEditForm[DeckEditForm<br>Edit Deck]
+    DecksList --> DeckImportForm[DeckImportForm<br>Import Single]
 
-    SubmissionsTab --> PendingSubmissions[PendingSubmissions<br/>Review Queue]
+    SubmissionsTab --> PendingSubmissions[PendingSubmissions<br>Review Queue]
     PendingSubmissions --> SubmissionCard[Submission Card]
 
-    UsersTab --> UserRoleManager[UserRoleManager<br/>Role Management]
+    UsersTab --> UserRoleManager[UserRoleManager<br>Role Management]
     UserRoleManager --> UserList[User List]
     UserList --> RoleSelector[Role Selector]
 
-    ProductsTab --> ProductsPanel[ProductsPanel<br/>Product CRUD]
+    ProductsTab --> ProductsPanel[ProductsPanel<br>Product CRUD]
     ProductsPanel --> ProductForm[Product Form]
 
-    CreditsTab --> CreditMatrix[CreditMatrix<br/>Tier Benefits]
-    CreditsTab --> DistributionManager[DistributionManager<br/>Credit Distribution]
-    CreditsTab --> CreditList[CreditList<br/>User Credits]
+    CreditsTab --> CreditMatrix[CreditMatrix<br>Tier Benefits]
+    CreditsTab --> DistributionManager[DistributionManager<br>Credit Distribution]
+    CreditsTab --> CreditList[CreditList<br>User Credits]
 
-    SettingsTab --> SiteConfigForm[SiteConfigForm<br/>Config Editor]
+    SettingsTab --> SiteConfigForm[SiteConfigForm<br>Config Editor]
 
-    DocsTab --> DocumentationView[DocumentationView<br/>API Docs]
+    DocsTab --> DocumentationView[DocumentationView<br>API Docs]
 
     %% Styling
     classDef page fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
@@ -270,38 +270,38 @@ graph TB
     end
 
     subgraph "Custom Shared Components"
-        DeckCard[DeckCard<br/>Deck Display]
-        Commander[Commander<br/>Commander Info]
-        CommanderImage[CommanderImage<br/>Card Image]
-        ManaSymbols[ManaSymbols<br/>Hybrid Mana Support]
-        TierBadge[TierBadge<br/>Enhanced Gradients]
-        TierBadgeCompact[TierBadgeCompact<br/>Compact Mode]
-        CardPreview[CardPreview<br/>Card Hover]
+        DeckCard[DeckCard<br>Deck Display]
+        Commander[Commander<br>Commander Info]
+        CommanderImage[CommanderImage<br>Card Image]
+        ManaSymbols[ManaSymbols<br>Hybrid Mana Support]
+        TierBadge[TierBadge<br>Enhanced Gradients]
+        TierBadgeCompact[TierBadgeCompact<br>Compact Mode]
+        CardPreview[CardPreview<br>Card Hover]
     end
 
-    Note right of ManaSymbols: Hybrid mana support<br/>W/U, B/R, etc.<br/>Phyrexian mana<br/>Color Identity parsing
+    Note right of ManaSymbols: Hybrid mana support<br>W/U, B/R, etc.<br>Phyrexian mana<br>Color Identity parsing
 
     subgraph "Form Components"
-        CommanderDeckForm[CommanderDeckForm<br/>Deck Submission]
-        RoastSubmissionForm[RoastSubmissionForm<br/>Roast Request]
-        ProfileEditForm2[ProfileEditForm<br/>Profile Update]
-        DeckEditForm2[DeckEditForm<br/>Deck Editor]
-        DeckImportForm2[DeckImportForm<br/>Deck Import]
-        SiteConfigForm2[SiteConfigForm<br/>Config Editor]
+        CommanderDeckForm[CommanderDeckForm<br>Deck Submission]
+        RoastSubmissionForm[RoastSubmissionForm<br>Roast Request]
+        ProfileEditForm2[ProfileEditForm<br>Profile Update]
+        DeckEditForm2[DeckEditForm<br>Deck Editor]
+        DeckImportForm2[DeckImportForm<br>Deck Import]
+        SiteConfigForm2[SiteConfigForm<br>Config Editor]
     end
 
     subgraph "Analytics Components"
-        ManaCurve2[ManaCurve<br/>CMC Chart]
-        ColorDist2[ColorDist<br/>Color Pie]
-        Cardtypes2[Cardtypes<br/>Type Chart]
-        ManaAnalysisCard2[ManaAnalysisCard<br/>Mana Stats]
-        ManaHealthBadge[ManaHealthBadge<br/>Health Indicator]
+        ManaCurve2[ManaCurve<br>CMC Chart]
+        ColorDist2[ColorDist<br>Color Pie]
+        Cardtypes2[Cardtypes<br>Type Chart]
+        ManaAnalysisCard2[ManaAnalysisCard<br>Mana Stats]
+        ManaHealthBadge[ManaHealthBadge<br>Health Indicator]
     end
 
     subgraph "Auth Components"
-        LoginButton2[LoginButton<br/>Login CTA]
-        LogoutButton2[LogoutButton<br/>Logout]
-        AuthLoadingModal[AuthLoadingModal<br/>Auth State]
+        LoginButton2[LoginButton<br>Login CTA]
+        LogoutButton2[LogoutButton<br>Logout]
+        AuthLoadingModal[AuthLoadingModal<br>Auth State]
     end
 
     %% Styling
