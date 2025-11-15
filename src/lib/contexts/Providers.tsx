@@ -27,14 +27,19 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-        <ManaColorProvider>
-          <AuthProvider>
+      <AuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ManaColorProvider>
             {children}
             <Toaster />
-          </AuthProvider>
-        </ManaColorProvider>
-      </ThemeProvider>
+          </ManaColorProvider>
+        </ThemeProvider>
+      </AuthProvider>
     </QueryClientProvider>
   )
 }

@@ -1,6 +1,7 @@
+import '@/styles'
+import type { ReactNode } from 'react'
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
-import '@/styles'
 import { Footer } from '@/components/layout/Footer'
 import { HeaderWrapper } from '@/components/layout/HeaderWrapper'
 import { Providers } from '../lib/contexts/Providers'
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: ReactNode
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
