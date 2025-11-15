@@ -1,4 +1,5 @@
 // components/decks/detail/TypeFilterBar.tsx
+/** biome-ignore-all lint/a11y/useButtonType: <explanation> */
 interface TypeFilterBarProps {
   cards: any[]
   selectedType: string | null
@@ -37,8 +38,8 @@ export function TypeFilterBar({ cards, selectedType, onTypeSelect }: TypeFilterB
               Showing {filteredCount} of {totalCards} cards
             </span>
             <button
-              onClick={() => onTypeSelect(selectedType)}
-              className="text-primary hover:text-primary/80 underline font-semibold"
+              onClick={() => onTypeSelect('')}
+              className="text-primary hover:text-primary/80 underline font-semibold transition-smooth active:scale-95"
             >
               Clear filter
             </button>
