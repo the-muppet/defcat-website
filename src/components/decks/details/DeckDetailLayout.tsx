@@ -60,24 +60,37 @@ export function DeckDetailLayout({ deck, cards }: DeckDetailLayoutProps) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content - Left Side (2/3) */}
-          <div className="lg:col-span-2 space-y-6">
-            <DeckHeader deck={deck} cards={cards} />
-            <DeckTabs 
-              deck={deck} 
-              cards={cards} 
-              selectedType={selectedType}
-              onTypeSelect={toggleTypeFilter}
-            />
-          </div>
+  {/* Main Content - Left Side (2/3) */}
+  <div className="lg:col-span-2 space-y-6 relative">
+    {/* Background Image Layer */}
+    <div 
+      className="absolute top-0 left-0 right-0 bottom-0 -z-10 opacity-20 rounded-2xl"
+      style={{
+        backgroundImage: `url("https://cards.scryfall.io/art_crop/front/c/c/cc30e027-8cb8-4b06-a24a-6ad49d6a2cf3.jpg")`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-background/90" />
+    </div>
 
-          {/* Sidebar - Right Side (1/3) */}
-          <DeckSidebar 
-            deck={deck} 
-            cards={cards}
-            selectedType={selectedType}
-          />
-        </div>
+    {/* Content */}
+    <DeckHeader deck={deck} cards={cards} />
+    <DeckTabs 
+      deck={deck} 
+      cards={cards} 
+      selectedType={selectedType}
+      onTypeSelect={toggleTypeFilter}
+    />
+  </div>
+
+  {/* Sidebar - Right Side (1/3) */}
+  <DeckSidebar 
+    deck={deck} 
+    cards={cards}
+    selectedType={selectedType}
+  />
+</div>
       </div>
     </div>
   )

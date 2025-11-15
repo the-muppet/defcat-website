@@ -1,6 +1,8 @@
 // components/decks/detail/DeckHeader.tsx
+/** biome-ignore-all lint/performance/noImgElement: <explanation> */
+/** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
 import { GlowingEffect } from '@/components/ui/glowEffect'
-import type { DecklistCardWithCard, Deck, DeckInfo } from '@/types/supabase'
+import type { Deck, DeckInfo, DecklistCardWithCard } from '@/types'
 
 interface DeckHeaderProps {
   deck: Deck & Partial<DeckInfo>
@@ -9,7 +11,7 @@ interface DeckHeaderProps {
 
 export function DeckHeader({ deck, cards }: DeckHeaderProps) {
   const commanderCards = cards.filter((dc) => dc.board === 'commanders')
-
+  
   const getCardImageUrl = (card: any, artCrop = false) => {
     if (!artCrop && card?.cached_image_url) return card.cached_image_url
     if (card?.scryfall_id) {
@@ -24,19 +26,24 @@ export function DeckHeader({ deck, cards }: DeckHeaderProps) {
     .filter(Boolean) as string[]
 
   return (
-    <div className="relative rounded-2xl border-3 md:rounded-2xl">
-      <GlowingEffect
-        blur={0}
-        borderWidth={3}
-        spread={80}
-        glow={true}
-        disabled={false}
-        proximity={64}
-        inactiveZone={0.01}
-      />
-      <div className="bg-card border-0 rounded-2xl overflow-hidden shadow-xl relative">
+    <div className="relative">
+      {/* Glow effect layer - absolutely positioned, doesn't affect layout */}
+      <div className="absolute inset-[-3px] pointer-events-none">
+        <GlowingEffect
+          blur={0}
+          borderWidth={3}
+          spread={80}
+          glow={true}
+          disabled={false}
+          proximity={64}
+          inactiveZone={0.01}
+        />
+      </div>
+      
+      {/* Actual content card */}
+      <div className="relative bg-card border-3 border-border rounded-2xl shadow-xl">
         {/* Gradient Header */}
-        <div className="relative bg-gradient-to-br from-primary/20 via-primary/10 to-transparent p-8 border-b border-border overflow-hidden">
+        <div className="relative bg-gradient-to-br from-primary/20 via-primary/10 to-transparent p-8 border-b border-border">
           {commanderImageUrls.length > 0 && (
             <div className="absolute inset-0 flex items-center justify-center">
               {commanderImageUrls.map((url, idx) => (
@@ -53,9 +60,9 @@ export function DeckHeader({ deck, cards }: DeckHeaderProps) {
 
           <div className="relative">
             {/* Color Identity Badge */}
-            {deck.color_identity && deck.color_identity.length > 0 && (
+            {deck.raw_data?.colorIdentity && deck.raw_data.colorIdentity.length > 0 && (
               <div className="inline-flex items-center gap-1.5 bg-black/60 backdrop-blur-sm rounded-full px-4 py-2 mb-4 border border-white/20 shadow-lg">
-                {(deck.color_identity || []).map((color, idx) => (
+                {(deck.raw_data.colorIdentity || []).map((color, idx) => (
                   <i key={idx} className={`ms ms-${color.toLowerCase()} ms-2x`} />
                 ))}
               </div>
@@ -92,10 +99,10 @@ export function DeckHeader({ deck, cards }: DeckHeaderProps) {
         </div>
 
         {/* Description */}
-        {deck.description && (
+        {deck.raw_data?.authors && (
           <div className="p-8 border-b border-border bg-accent/20">
             <p className="text-muted-foreground text-lg leading-relaxed">
-              {deck.description}
+              {deck.raw_data?.description}
             </p>
           </div>
         )}
