@@ -26,7 +26,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { useAuth, useSubmissionEligibility } from '@/lib/auth/client-auth'
+import { useAuth, useSubmissionEligibility } from '@/lib/auth/client'
 import { createClient } from '@/lib/supabase/client'
 import { ColorIdentity } from '@/types/colors'
 import { defCatBracketOptions } from '@/types/core'
@@ -250,57 +250,27 @@ export default function PagedDeckForm() {
       setIsLoading(true)
 
       try {
-        const supabase = createClient()
-
-        // Get current user
-        const {
-          data: { user },
-          error: userError,
-        } = await supabase.auth.getUser()
-
-        if (userError || !user) {
-          console.error('User not authenticated:', userError)
+        // Use auth from context instead of making redundant API call
+        if (!auth.user) {
+          console.error('User not authenticated')
           setErrors({ submit: 'Please log in to submit a deck request' })
           setIsLoading(false)
           return
         }
 
-        // Get user profile to fetch patreon_id, patreon_tier, and email
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('patreon_id, patreon_tier, email')
-          .eq('id', user.id)
-          .single()
-
-        if (profileError || !profile) {
-          console.error('Failed to fetch user profile:', profileError)
-          setErrors({
-            submit: 'Failed to fetch user profile. Please try again.',
-          })
-          setIsLoading(false)
-          return
-        }
-
-        // Only check Patreon requirement for non-draft submissions
-        if (!isDraft && (!profile.patreon_id || !profile.patreon_tier)) {
-          setErrors({
-            submit: 'Your account must be linked to Patreon to submit a deck request.',
-          })
-          setIsLoading(false)
-          return
-        }
+        const supabase = createClient()
 
         // Determine submission status
         const submissionStatus = isDraft ? 'draft' : willBeQueued ? 'queued' : 'pending'
 
-        // Submit deck request to database
+        // Submit deck request to database using auth context data
         const { data, error } = await supabase
           .from('deck_submissions')
           .insert({
-            user_id: user.id,
-            patreon_id: profile.patreon_id || '',
-            patreon_tier: profile.patreon_tier || '',
-            patreon_username: profile.email.split('@')[0], // Use email prefix as fallback patreon username
+            user_id: auth.user.id,
+            patreon_id: auth.user.user_metadata?.patreon_id || '',
+            patreon_tier: auth.profile.tier || '',
+            patreon_username: auth.user.email?.split('@')[0] || '', // Use email prefix as fallback patreon username
             email: formData.email || '',
             moxfield_username: formData.moxfieldUsername || '',
             discord_username: formData.discordUsername || '',
