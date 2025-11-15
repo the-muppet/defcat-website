@@ -40,6 +40,19 @@ const ColorMapping: Record<string, ColorInfo> = {
   C: { letter: 'C', name: 'Colorless', className: 'ms ms-c', color: ManaColorMap.C },
 }
 
+const HybridManaMap = {
+  GU: { letters: ['G', 'U'], name: 'Green-Blue', className: 'ms ms-gu ms-cost' },
+  GW: { letters: ['G', 'W'], name: 'Green-White', className: 'ms ms-gw ms-cost' },
+  BR: { letters: ['B', 'R'], name: 'Black-Red', className: 'ms ms-br ms-cost' },
+  BG: { letters: ['B', 'G'], name: 'Black-Green', className: 'ms ms-bg ms-cost' },
+  WB: { letters: ['W', 'B'], name: 'White-Black', className: 'ms ms-wb ms-cost' },
+  WU: { letters: ['W', 'U'], name: 'White-Blue', className: 'ms ms-wu ms-cost' },
+  UB: { letters: ['U', 'B'], name: 'Blue-Black', className: 'ms ms-ub ms-cost' },
+  UR: { letters: ['U', 'R'], name: 'Blue-Red', className: 'ms ms-ur ms-cost' },
+  RG: { letters: ['R', 'G'], name: 'Red-Green', className: 'ms ms-rg ms-cost' },
+  RW: { letters: ['R', 'W'], name: 'Red-White', className: 'ms ms-rw ms-cost' },
+}
+
 export const ColorIdentity = {
   // Constants
   ORDER: ['W', 'U', 'B', 'R', 'G', 'C'],
@@ -147,6 +160,29 @@ export const ColorIdentity = {
   },
 
   /**
+   * 
+   * Get hybrid mana class
+   * @param symbol Hybrid mana symbol (e.g., "W/U", "B/P")
+   * @returns CSS class string for the hybrid mana
+   */
+  getHybridClass: (colors: string[]): string => {
+    const normalized = ColorIdentity.normalize(colors)
+    const symbolMap = HybridManaMap
+    
+    // Check normalized (WUBRG) order first
+    if (symbolMap[normalized as keyof typeof HybridManaMap]) {
+      return symbolMap[normalized as keyof typeof HybridManaMap].className
+    }
+
+    // Check reversed order for Mana Font's required ordering
+    const reversed = normalized.split('').reverse().join('')
+    if (symbolMap[reversed as keyof typeof HybridManaMap]) {
+      return symbolMap[reversed as keyof typeof HybridManaMap].className
+    }
+    return ''
+  },
+
+  /**
    * Get icon class for a color identity
    * 'WU' -> 'ms-wu' (Azorius)
    * 'W' -> 'ms-w'
@@ -203,7 +239,7 @@ export const ColorIdentity = {
     if (normalized.length === 1) {
       return ColorMapping[normalized]?.name || 'Colorless'
     }
- 
+
     // Return color names instead of guild/clan names
     return normalized
       .split('')
