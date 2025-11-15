@@ -18,11 +18,11 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { GlowingEffect } from '@/components/ui/glowEffect'
-import { requireAdminAccess, requireModeratorAccess } from '@/lib/auth'
+import { requireAdmin, requireModerator } from '@/lib/auth/server'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function AdminDashboard() {
-  await requireModeratorAccess()
+  await requireModerator()
 
   const supabase = await createClient()
 
@@ -171,32 +171,26 @@ export default async function AdminDashboard() {
                 <Button asChild className="w-full btn-tinted-primary">
                   <Link href="/admin/decks">Manage Decks</Link>
                 </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="w-full border-tinted hover:bg-accent-tinted"
-                >
-                  <Link href="/admin/decks/import">Import from Moxfield</Link>
-                </Button>
-              </div>
+                </div>
             </CardContent>
           </Card>
           </div>
 
           <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3">
             <GlowingEffect
-              blur={0}
+              blur={1}
+              movementDuration={4}
               borderWidth={3}
-              spread={80}
+              spread={75}
               glow={true}
               disabled={false}
-              proximity={64}
-              inactiveZone={0.01}
+              proximity={74}
+              inactiveZone={0.05}
             />
             <Card className="card-glass border-0 hover:shadow-tinted-lg transition-all relative">
             <CardHeader>
               <ClipboardList className="h-8 w-8 mb-2" style={{ color: 'var(--mana-color)' }} />
-              <CardTitle className="text-foreground">Pending Submissions</CardTitle>
+              <CardTitle className="text-foreground">Pending Submissions {pendingCount ? `(${pendingCount})` : ''}</CardTitle>
               <CardDescription className="text-muted-foreground">
                 Review and manage deck submission requests
               </CardDescription>
@@ -204,7 +198,7 @@ export default async function AdminDashboard() {
             <CardContent>
               <Button asChild className="w-full btn-tinted-primary">
                 <Link href="/admin/submissions">
-                  View Submissions {pendingCount ? `(${pendingCount})` : ''}
+                  View Submissions 
                 </Link>
               </Button>
             </CardContent>
@@ -215,6 +209,7 @@ export default async function AdminDashboard() {
             <GlowingEffect
               blur={0}
               borderWidth={3}
+              movementDuration={2}
               spread={80}
               glow={true}
               disabled={false}
@@ -241,6 +236,7 @@ export default async function AdminDashboard() {
             <GlowingEffect
               blur={0}
               borderWidth={3}
+              movementDuration={5}
               spread={80}
               glow={true}
               disabled={false}
@@ -267,6 +263,7 @@ export default async function AdminDashboard() {
             <GlowingEffect
               blur={0}
               borderWidth={3}
+              movementDuration={2.5}
               spread={80}
               glow={true}
               disabled={false}
@@ -292,12 +289,13 @@ export default async function AdminDashboard() {
           <div className="relative rounded-2xl border p-2 md:rounded-3xl md:p-3">
             <GlowingEffect
               blur={0}
-              borderWidth={3}
-              spread={80}
+              borderWidth={4}
+              movementDuration={2}
+              spread={50}
               glow={true}
               disabled={false}
-              proximity={64}
-              inactiveZone={0.01}
+              proximity={70}
+              inactiveZone={0.04}
             />
             <Card className="card-glass border-0 hover:shadow-tinted-lg transition-all relative">
             <CardHeader>

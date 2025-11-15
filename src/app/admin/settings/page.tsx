@@ -8,13 +8,12 @@ import { CreditTypesList } from '@/components/admin/CreditList'
 import { TierBenefitsMatrix } from '@/components/admin/CreditMatrix'
 import { DistributionManager } from '@/components/admin/DistributionManager'
 import { SiteConfigForm } from '@/components/forms/SiteConfigForm'
-import { requireModeratorAccess, hasRole } from '@/lib/auth/'
-import { createClient } from '@/lib/supabase/server'
+import { requireModerator, hasRole } from '@/lib/auth/server'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminSettingsPage() {
-  await requireModeratorAccess()
+  await requireModerator()
 
   const canManageCredits = await hasRole('admin')
 

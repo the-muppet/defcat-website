@@ -3,7 +3,7 @@
  */
 
 import ProfilePanel from '@/components/profile/ProfilePanel'
-import { requireAuth } from '@/lib/auth'
+import { requireAuth } from '@/lib/auth/server'
 
 export const dynamic = 'force-dynamic'
 

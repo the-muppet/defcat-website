@@ -1,13 +1,13 @@
 // app/admin/submissions/page.tsx
 
 import { PendingSubmissions } from '@/components/admin/PendingSubmissions'
-import { requireAdminAccess } from '@/lib/auth'
+import { requireAdmin } from '@/lib/auth/server'
 
 // Force dynamic rendering - this page requires authentication
 export const dynamic = 'force-dynamic'
 
 export default async function SubmissionsPage() {
-  await requireAdminAccess()
+  await requireAdmin()
 
   return (
     <div className="container mx-auto px-4 py-8" data-page="admin-submissions">

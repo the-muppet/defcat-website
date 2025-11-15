@@ -1,12 +1,12 @@
 import { Users } from 'lucide-react'
 import { UserRoleManager } from '@/components/admin/UserRoleManager'
-import { requireAdminAccess } from '@/lib/auth'
+import { requireAdmin } from '@/lib/auth/server'
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
 
 export default async function AdminUsersPage() {
-  const { role } = await requireAdminAccess()
+  const { role } = await requireAdmin()
 
   return (
     <div className="container mx-auto px-4 py-8">

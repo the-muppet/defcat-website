@@ -10,13 +10,13 @@ import { ImportAllDecksButton } from '@/components/admin/ImportAllDecksButton'
 import { UpdateAllDecksButton } from '@/components/admin/UpdateAllDecksButton'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { requireAdminAccess } from '@/lib/auth'
+import { requireAdmin } from '@/lib/auth/server'
 import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminDecksPage() {
-  await requireAdminAccess()
+  await requireAdmin()
 
   const supabase = await createClient()
 

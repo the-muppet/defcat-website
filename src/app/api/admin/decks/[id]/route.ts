@@ -5,7 +5,7 @@
  */
 
 import { type NextRequest, NextResponse } from 'next/server'
-import { requireAdminAccess } from '@/lib/auth'
+import { requireAdmin } from '@/lib/auth/server'
 import { createClient } from '@/lib/supabase/server'
 
 interface RouteContext {
@@ -21,7 +21,7 @@ interface RouteContext {
 export async function PATCH(request: NextRequest, context: RouteContext) {
   try {
     // Verify admin access
-    await requireAdminAccess()
+    await requireAdmin()
 
     const { id } = await context.params
     const body = await request.json()
@@ -71,7 +71,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 export async function DELETE(_request: NextRequest, context: RouteContext) {
   try {
     // Verify admin access
-    await requireAdminAccess()
+    await requireAdmin()
 
     const { id } = await context.params
     const supabase = await createClient()
