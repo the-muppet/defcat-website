@@ -2,6 +2,8 @@
 
 This diagram shows the complete system architecture for DefCat's DeckVault, including all major components, services, and data flows.
 
+**Last Updated:** 2025-11-15
+
 ```mermaid
 graph TB
     subgraph "External Services"

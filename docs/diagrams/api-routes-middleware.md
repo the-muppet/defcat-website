@@ -2,6 +2,8 @@
 
 This document shows the complete API route structure and middleware flow in DefCat's DeckVault.
 
+**Last Updated:** 2025-11-15
+
 ## API Routes Structure
 
 ```mermaid

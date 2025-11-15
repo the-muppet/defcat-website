@@ -2,6 +2,8 @@
 
 This document shows how data flows through DefCat's DeckVault using TanStack Query, Server Components, and Supabase.
 
+**Last Updated:** 2025-11-15
+
 ## Overall Data Flow Architecture
 
 ```mermaid

@@ -2,6 +2,8 @@
 
 This document contains diagrams showing the authentication and authorization flows in DefCat's DeckVault.
 
+**Last Updated:** 2025-11-15
+
 ## 1. Three-Tier Supabase Client Architecture
 
 ```mermaid

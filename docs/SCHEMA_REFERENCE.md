@@ -696,4 +696,4 @@ const { data, error } = await supabase
 
 ---
 
-**Last Updated:** 2025-10-31
+**Last Updated:** 2025-11-15

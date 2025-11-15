@@ -2,6 +2,8 @@
 
 This document shows the React component hierarchy and organization in DefCat's DeckVault.
 
+**Last Updated:** 2025-11-15
+
 ## App-Level Component Structure
 
 ```mermaid
