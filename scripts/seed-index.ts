@@ -5,13 +5,14 @@ import fs from 'fs/promises'
 import path from 'path'
 import { chunkMarkdown } from '@/lib/data/chunker'
 
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!)
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 const openai = new OpenAI()
 
 async function generateEmbedding(text: string) {
   const response = await openai.embeddings.create({
     model: 'text-embedding-3-small', // Cheaper than ada-002
-    input: text
+    input: text,
+    encoding_format: 'base64'
   })
   return response.data[0].embedding
 }
