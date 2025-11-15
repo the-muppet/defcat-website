@@ -9,6 +9,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { Badge } from '@/components/ui/badge'
+import { useAuth } from '@/lib/auth/client'
 import { createClient } from '@/lib/supabase/client'
 
 interface Submission {
@@ -24,27 +25,27 @@ interface Submission {
 }
 
 export function MySubmissions() {
+  const auth = useAuth()
   const [submissions, setSubmissions] = useState<Submission[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    loadSubmissions()
-  }, [])
+    if (!auth.isLoading) {
+      loadSubmissions()
+    }
+  }, [auth.isLoading])
 
   async function loadSubmissions() {
+    // Use auth from context instead of making redundant API call
+    if (!auth.user) return
+
     const supabase = createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) return
-
     const { data, error } = await supabase
       .from('deck_submissions')
       .select(
         'id, created_at, status, commander, color_preference, bracket, mystery_deck, submission_type, updated_at'
       )
-      .eq('user_id', user.id)
+      .eq('user_id', auth.user.id)
       .in('status', ['pending', 'queued', 'in_progress', 'completed', 'cancelled'])
       .order('created_at', { ascending: false })
 

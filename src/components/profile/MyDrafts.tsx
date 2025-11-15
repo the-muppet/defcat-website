@@ -10,6 +10,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
+import { useAuth } from '@/lib/auth/client'
 import { createClient } from '@/lib/supabase/client'
 
 interface DraftSubmission {
@@ -22,26 +23,26 @@ interface DraftSubmission {
 }
 
 export function MyDrafts() {
+  const auth = useAuth()
   const [drafts, setDrafts] = useState<DraftSubmission[]>([])
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState<string | null>(null)
 
   useEffect(() => {
-    loadDrafts()
-  }, [])
+    if (!auth.isLoading) {
+      loadDrafts()
+    }
+  }, [auth.isLoading])
 
   async function loadDrafts() {
+    // Use auth from context instead of making redundant API call
+    if (!auth.user) return
+
     const supabase = createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) return
-
     const { data, error } = await supabase
       .from('deck_submissions')
       .select('id, created_at, commander, color_preference, bracket, mystery_deck')
-      .eq('user_id', user.id)
+      .eq('user_id', auth.user.id)
       .eq('status', 'draft')
       .order('created_at', { ascending: false })
 

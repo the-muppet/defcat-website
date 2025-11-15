@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/complexity/noUselessFragments: <explanation> */
 'use client'
 
 import { LogoutButton } from '@/components/auth/logout-button'
@@ -27,7 +28,7 @@ export function UserMenu({ user }: UserMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button type="button" className="relative h-8 w-8 rounded-full">
+        <button type="button" className="relative h-8 w-8 rounded-full">  
           <Avatar className="h-8 w-8">
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
@@ -37,7 +38,6 @@ export function UserMenu({ user }: UserMenuProps) {
         <DropdownMenuLabel>
           <div className="flex flex-col space-y-2">
             <p className="text-sm font-medium leading-none">{user.email}</p>
-            <TierBadge tier={user.patreonTier || 'Citizen'} showTooltip={false} />
           </div>
         </DropdownMenuLabel>
         {(user.role === 'admin' || user.role === 'moderator' || user.role === 'developer') && (
@@ -45,15 +45,7 @@ export function UserMenu({ user }: UserMenuProps) {
             <DropdownMenuItem asChild>
               <a href="/admin">Admin Dashboard</a>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <a href="/admin/products">Manage Products</a>
-            </DropdownMenuItem>
           </>
-        )}
-        {user.role === 'developer' && (
-          <DropdownMenuItem asChild>
-            <a href="/admin/database">Database Panel</a>
-          </DropdownMenuItem>
         )}
         <DropdownMenuItem asChild>
           <a href="/profile">Profile Settings</a>

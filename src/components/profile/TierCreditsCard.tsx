@@ -3,7 +3,7 @@
 import { Flame, Loader2, Sparkles } from 'lucide-react'
 import { TierBadge } from '@/components/tier/TierBadge'
 import { Card, CardContent } from '@/components/ui/card'
-import { useSubmissionEligibility, useRoastEligibility } from '@/lib/auth/client-auth'
+import { useSubmissionEligibility, useRoastEligibility } from '@/lib/auth/client'
 import type { PatreonTier } from '@/types/core'
 
 interface TierCreditsCardProps {

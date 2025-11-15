@@ -3,6 +3,7 @@
 import { ChevronDown, FileText, Library, Loader2, Package, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
+import { TierBadge } from '@/components/tier/TierBadge'
 import { MyDrafts } from '@/components/profile/MyDrafts'
 import { MySubmissions } from '@/components/profile/MySubmissions'
 import { ProfileEditForm } from '@/components/profile/ProfileEditForm'
@@ -12,16 +13,16 @@ import { ManaSymbolSelector } from '@/components/settings/ManaSymbolSelector'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { GlowingEffect } from '@/components/ui/glowEffect'
+import { useAuth } from '@/lib/auth/client'
 import { createClient } from '@/lib/supabase/client'
-import type { db } from '@/types/supabase'
+import type { Database } from '@/types/supabase/generated'
 
-type Profile = db['public']['Tables']['profiles']['Row']
+type Profile = Database['public']['Tables']['profiles']['Row']
 
 export default function ProfilePanel() {
   const router = useRouter()
-  const [user, setUser] = useState<any>(null)
+  const auth = useAuth()
   const [profile, setProfile] = useState<Profile | null>(null)
-  const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const supabase = createClient()
 
@@ -31,40 +32,35 @@ export default function ProfilePanel() {
         setRefreshing(true)
       }
 
-      const {
-        data: { user: authUser },
-      } = await supabase.auth.getUser()
-
-      if (!authUser) {
+      // Use auth from context instead of making redundant API call
+      if (!auth.user) {
         router.push('/auth/login')
         return
       }
-
-      setUser(authUser)
 
       const { data: profileData } = await supabase
         .from('profiles')
         .select(
           'id, patreon_tier, role, created_at, moxfield_username, email, patreon_id, updated_at'
         )
-        .eq('id', authUser.id)
+        .eq('id', auth.user.id)
         .single()
 
       setProfile(profileData)
-      setLoading(false)
       if (isRefresh) {
         setRefreshing(false)
       }
     },
-    [supabase, router]
+    [supabase, router, auth.user]
   )
 
   useEffect(() => {
-    loadProfile(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    if (!auth.isLoading) {
+      loadProfile(false)
+    }
+  }, [auth.isLoading, loadProfile])
 
-  if (loading) {
+  if (auth.isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -72,11 +68,11 @@ export default function ProfilePanel() {
     )
   }
 
-  if (!user) {
+  if (!auth.user) {
     return null
   }
 
-  const userTier = profile?.patreon_tier || 'Citizen'
+  const userTier = profile?.patreon_tier || auth.profile.tier || 'Citizen'
   const joinedDate = profile?.created_at
     ? new Date(profile.created_at).toLocaleDateString()
     : 'Unknown'
@@ -158,8 +154,8 @@ export default function ProfilePanel() {
                   <CardContent className="space-y-6 min-h-fit">
                     {/* Editable fields */}
                     <ProfileEditForm
-                      userId={user.id}
-                      currentEmail={profile?.email || user.email}
+                      userId={auth.user.id}
+                      currentEmail={profile?.email || auth.user.email || ''}
                       currentMoxfieldUsername={profile?.moxfield_username || null}
                       joinedDate={joinedDate}
                       onSuccess={() => {
