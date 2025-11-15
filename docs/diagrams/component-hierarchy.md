@@ -177,8 +177,10 @@ graph TB
     ProfilePanel --> ProfileEditForm[ProfileEditForm<br/>Edit Profile]
     ProfilePanel --> PatreonStatus[Patreon Status<br/>Tier Display]
 
-    TierCreditsCard --> TierBadge[TierBadge<br/>Tier Icon]
+    TierCreditsCard --> TierBadge[TierBadge<br/>Tier Icon + Gradient<br/>Developer customization]
     TierCreditsCard --> CreditDisplay[Credit Display<br/>Remaining Credits]
+
+    Note right of TierBadge: Enhanced with gradients<br/>Developer icon picker<br/>WUBRG glowing effect<br/>Compact mode available
 
     MySubmissions --> SubmissionList[Submission List]
     SubmissionList --> SubmissionCard1[Submission Card]
@@ -271,10 +273,13 @@ graph TB
         DeckCard[DeckCard<br/>Deck Display]
         Commander[Commander<br/>Commander Info]
         CommanderImage[CommanderImage<br/>Card Image]
-        ManaSymbols[ManaSymbols<br/>Mana Display]
-        TierBadge[TierBadge<br/>Tier Icon]
+        ManaSymbols[ManaSymbols<br/>Hybrid Mana Support]
+        TierBadge[TierBadge<br/>Enhanced Gradients]
+        TierBadgeCompact[TierBadgeCompact<br/>Compact Mode]
         CardPreview[CardPreview<br/>Card Hover]
     end
+
+    Note right of ManaSymbols: Hybrid mana support<br/>W/U, B/R, etc.<br/>Phyrexian mana<br/>Color Identity parsing
 
     subgraph "Form Components"
         CommanderDeckForm[CommanderDeckForm<br/>Deck Submission]
@@ -307,11 +312,26 @@ graph TB
     classDef auth fill:#fce4ec,stroke:#c2185b,stroke-width:2px
 
     class Button,Card,Dialog,Input,Select,Tabs,Badge,Avatar,Dropdown,Tooltip ui
-    class DeckCard,Commander,CommanderImage,ManaSymbols,TierBadge,CardPreview custom
+    class DeckCard,Commander,CommanderImage,ManaSymbols,TierBadge,TierBadgeCompact,CardPreview custom
     class CommanderDeckForm,RoastSubmissionForm,ProfileEditForm2,DeckEditForm2,DeckImportForm2,SiteConfigForm2 form
     class ManaCurve2,ColorDist2,Cardtypes2,ManaAnalysisCard2,ManaHealthBadge analytics
     class LoginButton2,LogoutButton2,AuthLoadingModal auth
 ```
+
+## Recent Component Enhancements
+
+### TierBadge Improvements
+- **Gradient backgrounds** for each tier with custom color schemes
+- **Developer mode** with icon picker dropdown (10 available icons)
+- **WUBRG glowing effect** for developer role (rainbow border animation)
+- **Compact mode** via `TierBadgeCompact` component
+- **Hover effects** with scale and brightness animations
+- **Rich tooltips** showing tier description and price
+
+### Mobile Navigation
+- Responsive header with mobile menu
+- Touch-optimized navigation
+- Collapsible dropdowns for mobile screens
 
 ## Component Type Breakdown
 
@@ -419,7 +439,7 @@ src/components/
 │   ├── DeckImportForm.tsx
 │   └── SiteConfigForm.tsx
 ├── tier/                   # Tier-related
-│   └── TierBadge.tsx
+│   └── TierBadge.tsx       # Enhanced with gradients, dev features
 ├── home/                   # Home page specific
 │   ├── FeaturedVideo.tsx
 │   ├── FeaturedDeckCard.tsx
